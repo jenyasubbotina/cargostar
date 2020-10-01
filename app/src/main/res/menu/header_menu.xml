@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/img_person"
+        android:enabled="true"
+        android:title="profile"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/navigation_edit_profile"
+        android:icon="@drawable/ic_edit_white"
+        android:enabled="true"
+        android:title="edit"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/navigation_create_user"
+        android:icon="@drawable/ic_personalize"
+        android:enabled="true"
+        android:title="create_user"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/navigation_calculator"
+        android:icon="@drawable/ic_calculator"
+        android:enabled="true"
+        android:title="@string/calculator"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/navigation_notifications"
+        android:icon="@drawable/ic_notifications"
+        android:enabled="true"
+        android:title="notifications"
+        app:showAsAction="ifRoom" />
+</menu>

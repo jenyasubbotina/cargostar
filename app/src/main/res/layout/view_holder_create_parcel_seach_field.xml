@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/create_parcel_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="58dp"
+        android:layout_marginStart="35dp"
+        android:textSize="19sp"
+        android:textColor="@color/colorBlack"
+        android:fontFamily="@font/geometria_bold"
+        android:text="@string/create_parcel_heading"/>
+
+    <View
+        android:id="@+id/create_parcel_stroke"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:layout_constraintTop_toBottomOf="@+id/create_parcel_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"
+        android:layout_marginHorizontal="24dp"
+        android:background="#F2F2F2"/>
+
+    <TextView
+        android:id="@+id/find_user_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/create_parcel_stroke"
+        app:layout_constraintStart_toStartOf="@id/create_parcel_text_view"
+        android:layout_marginTop="40dp"
+        android:textSize="19sp"
+        android:textColor="@color/colorBlack"
+        android:fontFamily="@font/geometria_actual"
+        android:text="@string/find_user"/>
+
+    <EditText
+        android:id="@+id/find_user_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/create_parcel_text_view"
+        app:layout_constraintTop_toBottomOf="@id/find_user_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="35dp"
+        android:inputType="text"
+        android:background="@drawable/edit_text_locked"
+        android:textSize="16sp"
+        android:hint="@string/user_id"
+        android:fontFamily="@font/geometria_actual"
+        android:textColor="@color/colorBlack"
+        android:padding="17dp"/>
+
+    <Button
+        android:id="@+id/choose_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/create_parcel_text_view"
+        app:layout_constraintTop_toBottomOf="@id/find_user_edit_text"
+        android:layout_marginTop="22dp"
+        android:text="@string/choose"
+        android:fontFamily="@font/geometria_medium"
+        android:textSize="19sp"
+        android:textColor="#FFF"
+        android:textAllCaps="false"
+        android:background="@drawable/btn_gradient_orange"
+        android:paddingHorizontal="33dp"
+        android:paddingVertical="14dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

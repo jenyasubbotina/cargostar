@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.activity.CreateParcelActivity">
+
+    <include
+        layout="@layout/header"
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/content_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <TextView
+                android:id="@+id/total_quantity_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/content_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/total_weight_text_view"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="19dp"
+                android:layout_marginTop="45dp"
+                android:fontFamily="@font/geometria_medium"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:text="@string/quantity"/>
+
+            <TextView
+                android:id="@+id/total_weight_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/total_quantity_text_view"
+                app:layout_constraintStart_toEndOf="@id/total_quantity_text_view"
+                app:layout_constraintEnd_toStartOf="@id/total_dimensions_text_view"
+                android:layout_marginHorizontal="24dp"
+                android:fontFamily="@font/geometria_medium"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:text="@string/weight"/>
+
+            <TextView
+                android:id="@+id/total_dimensions_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/total_quantity_text_view"
+                app:layout_constraintStart_toEndOf="@id/total_weight_text_view"
+                android:layout_marginStart="48dp"
+                android:fontFamily="@font/geometria_medium"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:text="@string/dimensions"/>
+
+            <TextView
+                android:id="@+id/total_quantity_value_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/total_quantity_text_view"
+                app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
+                android:layout_marginTop="19dp"
+                android:fontFamily="@font/geometria_actual"
+                android:textSize="16sp"
+                android:textColor="@color/colorBlack" />
+
+            <TextView
+                android:id="@+id/total_weight_value_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/total_quantity_value_text_view"
+                app:layout_constraintBottom_toBottomOf="@id/total_quantity_value_text_view"
+                app:layout_constraintStart_toStartOf="@id/total_weight_text_view"
+                android:fontFamily="@font/geometria_actual"
+                android:textSize="16sp"
+                android:textColor="@color/colorBlack" />
+
+            <TextView
+                android:id="@+id/total_dimensions_value_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/total_quantity_value_text_view"
+                app:layout_constraintBottom_toBottomOf="@id/total_quantity_value_text_view"
+                app:layout_constraintStart_toStartOf="@id/total_dimensions_text_view"
+                android:fontFamily="@font/geometria_actual"
+                android:textSize="16sp"
+                android:textColor="@color/colorBlack" />
+
+            <Button
+                android:id="@+id/calculate_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/total_dimensions_text_view"
+                app:layout_constraintStart_toEndOf="@id/total_dimensions_text_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="35dp"
+                android:layout_marginStart="52dp"
+                android:background="@drawable/btn_gradient_orange"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="18dp"
+                android:text="@string/calculate"
+                android:textAllCaps="false"
+                android:textColor="#FFF"
+                android:textSize="19sp"
+                android:fontFamily="@font/geometria_medium"
+                android:elevation="8dp"/>
+
+            <TextView
+                android:id="@+id/calculation_result_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/total_quantity_value_text_view"
+                app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
+                android:layout_marginTop="42dp"
+                android:textColor="@color/colorBlack"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_medium"
+                android:text="@string/calculation_results"/>
+
+            <RadioGroup
+                android:id="@+id/tariff_radio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/calculation_result_text_view"
+                app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
+                android:layout_marginTop="37dp"
+                android:orientation="vertical"
+                android:checkedButton="@id/express_radio_btn"
+                android:gravity="center">
+
+                <RadioButton
+                    android:id="@+id/express_radio_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorBlack"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textSize="16sp"
+                    android:text="@string/express"
+                    android:buttonTint="@color/colorBlue"
+                    android:layout_gravity="start"/>
+
+                <RadioButton
+                    android:id="@+id/economy_radio_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorBlack"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textSize="16sp"
+                    android:text="@string/economy_express"
+                    android:buttonTint="@color/colorBlue"
+                    android:layout_gravity="start"/>
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/express_sum_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/tariff_radio_group"
+                app:layout_constraintEnd_toEndOf="@id/calculate_btn"
+                android:layout_marginTop="6dp"
+                android:textColor="#0052A6"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_medium"
+                android:text="@string/sum_example"/>
+
+            <TextView
+                android:id="@+id/economy_express_sum_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/express_sum_text_view"
+                app:layout_constraintEnd_toEndOf="@id/calculate_btn"
+                android:layout_marginTop="12dp"
+                android:textColor="#0052A6"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_medium"
+                android:text="@string/sum_example"/>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/first_card"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                app:layout_constraintTop_toBottomOf="@id/tariff_radio_group"
+                app:layout_constraintStart_toStartOf="@id/tariff_radio_group"
+                app:layout_constraintEnd_toStartOf="@id/second_card"
+                android:layout_marginTop="35dp"
+                android:layout_marginEnd="8dp"
+                android:elevation="8dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioButton
+                        android:id="@+id/first_card_radio_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:buttonTint="@color/colorBlue"/>
+
+                    <ImageView
+                        android:id="@+id/first_card_logo"
+                        android:layout_width="76dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/first_card_radio_btn"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:src="@drawable/logo_cargo_calc"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/second_card"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                app:layout_constraintTop_toTopOf="@id/first_card"
+                app:layout_constraintStart_toEndOf="@id/first_card"
+                app:layout_constraintEnd_toEndOf="@id/economy_express_sum_text_view"
+                android:layout_marginStart="8dp"
+                android:elevation="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioButton
+                        android:id="@+id/second_card_radio_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:buttonTint="@color/colorBlue"/>
+
+                    <ImageView
+                        android:id="@+id/second_card_logo"
+                        android:layout_width="76dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/second_card_radio_btn"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:src="@drawable/logo_tnt_cacl"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <View
+                android:id="@+id/payment_stroke"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintTop_toBottomOf="@id/tariff_radio_group"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="41dp"
+                android:background="@color/colorGrey" />
+
+            <TextView
+                android:id="@+id/payment_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/payment_stroke"
+                app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
+                android:layout_marginTop="37dp"
+                android:textSize="19sp"
+                android:textColor="@color/colorBlack"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/payment" />
+
+            <RadioGroup
+                android:id="@+id/payment_method_radio_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/payment_text_view"
+                app:layout_constraintStart_toStartOf="@id/payment_text_view"
+                android:layout_marginTop="37dp"
+                android:orientation="horizontal"
+                android:checkedButton="@id/cash_radio_btn"
+                android:gravity="center">
+
+                <RadioButton
+                    android:id="@+id/cash_radio_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:enabled="true"
+                    android:text="@string/cash"
+                    android:textColor="@color/colorBlack"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textSize="16sp"
+                    android:layout_weight="0.5"
+                    android:buttonTint="@color/colorBlue"
+                    android:gravity="center"/>
+
+                <RadioButton
+                    android:id="@+id/terminal_radio_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/terminal"
+                    android:textColor="@color/colorBlack"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textSize="16sp"
+                    android:layout_weight="0.5"
+                    android:buttonTint="@color/colorBlue"
+                    android:gravity="center"/>
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/save_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/payment_method_radio_group"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
+                android:layout_marginTop="37dp"
+                android:layout_marginBottom="46dp"
+                android:text="@string/save"
+                android:fontFamily="@font/geometria_medium"
+                android:textSize="19sp"
+                android:textColor="#FFF"
+                android:textAllCaps="false"
+                android:background="@drawable/btn_gradient_orange"
+                android:paddingHorizontal="33dp"
+                android:paddingVertical="14dp"/>
+
+            <Button
+                android:id="@+id/create_receipt_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/save_btn"
+                app:layout_constraintBottom_toBottomOf="@id/save_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="35dp"
+                android:text="Создать накладную"
+                android:fontFamily="@font/geometria_medium"
+                android:textSize="19sp"
+                android:textColor="#FFF"
+                android:textAllCaps="false"
+                android:background="@drawable/btn_gradient_orange"
+                android:paddingHorizontal="33dp"
+                android:paddingVertical="14dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

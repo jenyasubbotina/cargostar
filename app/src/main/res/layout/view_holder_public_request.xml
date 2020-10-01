@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/index_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginVertical="25dp"
+        android:layout_marginStart="36dp"
+        android:fontFamily="@font/geometria_bold"
+        android:textSize="21sp"
+        android:textColor="#0052A6"
+        android:text="1." />
+
+    <ImageView
+        android:id="@+id/arrow_down_image_view"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        app:layout_constraintTop_toTopOf="@id/index_text_view"
+        app:layout_constraintBottom_toBottomOf="@id/index_text_view"
+        app:layout_constraintStart_toEndOf="@id/index_text_view"
+        app:layout_constraintEnd_toStartOf="@id/parcel_id_text_view"
+        android:layout_marginHorizontal="14dp"
+        android:contentDescription="@string/public_bids"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_down_arrow"/>
+
+    <TextView
+        android:id="@+id/parcel_id_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/index_text_view"
+        app:layout_constraintBottom_toBottomOf="@id/index_text_view"
+        app:layout_constraintStart_toEndOf="@id/arrow_down_image_view"
+        android:layout_marginStart="15dp"
+        android:fontFamily="@font/geometria_medium"
+        android:textSize="16sp"
+        android:textColor="@color/colorBlack"
+        android:text="# C123456789012"/>
+
+    <TextView
+        android:id="@+id/from_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/parcel_id_text_view"
+        app:layout_constraintStart_toStartOf="@id/parcel_id_text_view"
+        android:layout_marginTop="12dp"
+        android:textSize="16sp"
+        android:textColor="#A5ABC0"
+        android:fontFamily="@font/geometria_bold"
+        android:text="@string/tas"/>
+
+    <ImageView
+        android:id="@+id/is_new_indicator_image_view"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        app:layout_constraintDimensionRatio="1:1"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="@id/parcel_id_text_view"
+        app:layout_constraintBottom_toBottomOf="@id/from_text_view"
+        app:layout_constraintEnd_toStartOf="@id/is_paid_image_view"
+        android:layout_marginEnd="35dp"
+        android:contentDescription="@string/new_bid"
+        android:src="@drawable/ic_dot_red"/>
+
+    <ImageView
+        android:id="@+id/is_paid_image_view"
+        android:layout_width="10dp"
+        android:layout_height="20dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="@id/parcel_id_text_view"
+        app:layout_constraintBottom_toBottomOf="@id/from_text_view"
+        app:layout_constraintEnd_toStartOf="@+id/plus_image_view"
+        android:layout_marginEnd="35dp"
+        android:contentDescription="@string/new_bid"
+        android:src="@drawable/ic_dollar_green"/>
+
+    <ImageView
+        android:id="@+id/plus_image_view"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        app:layout_constraintTop_toTopOf="@id/parcel_id_text_view"
+        app:layout_constraintBottom_toBottomOf="@id/from_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        android:layout_marginEnd="41dp"
+        android:padding="16dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/new_bid"
+        android:src="@drawable/ic_plus_grey"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

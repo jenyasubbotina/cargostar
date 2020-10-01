@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="countries">
+        <item>Узбекистан</item>
+        <item>Казахстан</item>
+        <item>Кыргизстан</item>
+        <item>Россия</item>
+        <item>Откуда</item>
+        <item>Куда</item>
+    </string-array>
+    <string-array name="uzbekistan_cities">
+        <item>Ташкент</item>
+        <item>Андижан</item>
+        <item>Бухара</item>
+        <item>Гулистан</item>
+        <item>Джизак</item>
+        <item>Карши</item>
+        <item>Наманган</item>
+        <item>Навои</item>
+        <item>Нукус</item>
+        <item>Самарканд</item>
+        <item>Термез</item>
+        <item>Ургенч</item>
+        <item>Фергана</item>
+        <item>Откуда</item>
+        <item>Куда</item>
+    </string-array>
+    <string-array name="kazakhstan_cities">
+        <item>Алматы</item>
+        <item>Астана</item>
+        <item>Шымкент</item>
+        <item>Степногорск</item>
+        <item>Откуда</item>
+        <item>Куда</item>
+    </string-array>
+    <string-array name="kirgizstan_cities">
+        <item>Бишкек</item>
+        <item>Джалал-Абад</item>
+        <item>Нарын</item>
+        <item>Узген</item>
+        <item>Откуда</item>
+        <item>Куда</item>
+    </string-array>
+    <string-array name="russia_cities">
+        <item>Москва</item>
+        <item>Санкт-Петербург</item>
+        <item>Казань</item>
+        <item>Владивосток</item>
+        <item>Новосибирск</item>
+        <item>Камчатка</item>
+        <item>Откуда</item>
+        <item>Куда</item>
+    </string-array>
+    <string-array name="package_types">
+        <item>Коробка</item>
+        <item>Конверт</item>
+        <item>Палетта</item>
+        <item>Тубус</item>
+        <item>Тип упаковки</item>
+    </string-array>
+    <string-array name="payer_types">
+        <item>Физическое</item>
+        <item>Юридическое</item>
+        <item>Лицо</item>
+    </string-array>
+    <string-array name="tariff_types">
+        <item>Express</item>
+        <item>Economy Express</item>
+        <item>Тариф</item>
+    </string-array>
+    <string-array name="direction_types">
+        <item>Импорт</item>
+        <item>Экспорт</item>
+        <item>Направление</item>
+    </string-array>
+</resources>
