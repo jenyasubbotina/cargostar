@@ -35,6 +35,7 @@ import com.example.cargostar.view.activity.ProfileActivity;
 import com.example.cargostar.view.adapter.ParcelData;
 import com.example.cargostar.view.adapter.ParcelDataAdapter;
 import com.example.cargostar.view.callback.ParcelDataCallback;
+import com.example.cargostar.viewmodel.HeaderViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
 
 import java.text.SimpleDateFormat;
@@ -97,6 +98,7 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView notificationsImageView;
+    private TextView badgeCounterTextView;
     //main content views
     private RecyclerView dataRecyclerView;
     private ParcelDataAdapter adapter;
@@ -146,6 +148,7 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
+        badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         dataRecyclerView = root.findViewById(R.id.data_recycler_view);
         adapter = new ParcelDataAdapter(context, this);
@@ -179,14 +182,14 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final PopulateViewModel model = new ViewModelProvider(this).get(PopulateViewModel.class);
+        final HeaderViewModel headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
         //header views
-        model.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        model.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -201,7 +204,7 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            model.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -225,7 +228,7 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
             startActivity(createParcelIntent);
         });
 
-        model.selectRequest(requestId).observe(getViewLifecycleOwner(), request -> {
+        headerViewModel.selectRequest(requestId).observe(getViewLifecycleOwner(), request -> {
             itemList.clear();
             //public data
             itemList.add(publicDataHeading);

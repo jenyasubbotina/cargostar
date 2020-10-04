@@ -32,6 +32,8 @@ import com.example.cargostar.model.location.Point;
 import com.example.cargostar.utils.Regex;
 import com.example.cargostar.view.Constants;
 import com.example.cargostar.view.UiUtils;
+import com.example.cargostar.viewmodel.CreateUserViewModel;
+import com.example.cargostar.viewmodel.HeaderViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
 
 public class CreateUserActivity extends AppCompatActivity {
@@ -46,6 +48,7 @@ public class CreateUserActivity extends AppCompatActivity {
     private ImageView profileImageView;
     private ImageView notificationsImageView;
     private ImageView calculatorImageView;
+    private TextView badgeCounterTextView;
     //user data
     private EditText loginEditText;
     private EditText passwordEditText;
@@ -94,8 +97,9 @@ public class CreateUserActivity extends AppCompatActivity {
     private ImageView signatureResultImageView;
     private ImageView contractImageView;
     private ImageView contractResultImageView;
-
-    private PopulateViewModel model;
+    //ViewModel
+    private HeaderViewModel headerViewModel;
+    private CreateUserViewModel createUserViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,15 +108,15 @@ public class CreateUserActivity extends AppCompatActivity {
         initUI();
         context = this;
 
-        model = new ViewModelProvider(this).get(PopulateViewModel.class);
+        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        createUserViewModel = new ViewModelProvider(this).get(CreateUserViewModel.class);
 
-        final PopulateViewModel model = new ViewModelProvider(this).get(PopulateViewModel.class);
-        model.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
+        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        model.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(this, branch -> {
+        headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(this, branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -127,7 +131,7 @@ public class CreateUserActivity extends AppCompatActivity {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            model.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
+            headerViewModel.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -286,16 +290,16 @@ public class CreateUserActivity extends AppCompatActivity {
                 Toast.makeText(context, "Заполните физ. или юр. данные", Toast.LENGTH_SHORT).show();
                 return;
             }
-            final long userId = model.createCustomer(customer);
+            final long userId = createUserViewModel.createCustomer(customer);
 
             if (passportData != null) {
                 passportData.setUserId(userId);
-                model.createPassportData(passportData);
+                createUserViewModel.createPassportData(passportData);
                 Toast.makeText(context, "Аккаунт " + userId + " был успешно создан для физ. лица " + firstName, Toast.LENGTH_SHORT).show();
             }
             else {
                 paymentData.setUserId(userId);
-                model.createPaymentData(paymentData);
+                createUserViewModel.createPaymentData(paymentData);
                 Toast.makeText(context, "Аккаунт " + userId + " был успешно создан для юр. лица " + firstName, Toast.LENGTH_SHORT).show();
             }
             startActivity(new Intent(this, MainActivity.class));
@@ -347,6 +351,7 @@ public class CreateUserActivity extends AppCompatActivity {
         profileImageView = findViewById(R.id.profile_image_view);
         notificationsImageView = findViewById(R.id.notifications_image_view);
         calculatorImageView = findViewById(R.id.calculator_image_view);
+        badgeCounterTextView = findViewById(R.id.badge_counter_text_view);
         //user data
         loginEditText = findViewById(R.id.login_edit_text);
         passwordEditText = findViewById(R.id.password_edit_text);

@@ -36,6 +36,8 @@ import com.example.cargostar.view.activity.ProfileActivity;
 import com.example.cargostar.view.adapter.NotificationAdapter;
 import com.example.cargostar.view.callback.NotificationCallback;
 import com.example.cargostar.view.viewholder.NotificationViewHolder;
+import com.example.cargostar.viewmodel.HeaderViewModel;
+import com.example.cargostar.viewmodel.NotificationsViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
 
 import java.time.Instant;
@@ -48,7 +50,8 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     private FragmentActivity activity;
     private Context context;
     //viewModel
-    private PopulateViewModel model;
+    private HeaderViewModel headerViewModel;
+    private NotificationsViewModel notificationsViewModel;
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
@@ -58,6 +61,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView profileImageView;
+    private TextView badgeCounterTextView;
     //main content views
     private final List<Notification> notificationList = new ArrayList<>();
     private RecyclerView notificationRecyclerView;
@@ -87,6 +91,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         profileImageView = activity.findViewById(R.id.profile_image_view);
+        badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         notificationRecyclerView = root.findViewById(R.id.notificationRecyclerView);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -122,14 +127,15 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //header views
-        model = new ViewModelProvider(this).get(PopulateViewModel.class);
+        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        notificationsViewModel = new ViewModelProvider(this).get(NotificationsViewModel.class);
 
-        model.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        model.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -144,7 +150,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            model.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -160,7 +166,8 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
             });
         });
         //init notificationList
-        model.selectAllNotifications().observe(getViewLifecycleOwner(), notificationList -> {
+        notificationsViewModel.selectAllNotifications().observe(getViewLifecycleOwner(), notificationList -> {
+            Log.i(NotificationsFragment.class.toString(), "notificationList=" + notificationList);
             notificationAdapter.setNotificationList(notificationList);
             notificationAdapter.notifyDataSetChanged();
         });
@@ -172,7 +179,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         final String myBids = getString(R.string.my_bids_one_line);
 
         currentItem.setRead(true);
-        model.readNotification(currentItem.getReceiptId());
+        notificationsViewModel.readNotification(currentItem.getReceiptId());
 
         final Intent requestsIntent = new Intent(getContext(), MainActivity.class);
         if (currentItem.getLink().equalsIgnoreCase(publicBids)) {

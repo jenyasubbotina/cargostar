@@ -34,7 +34,9 @@ import com.example.cargostar.view.activity.NotificationsActivity;
 import com.example.cargostar.view.activity.ProfileActivity;
 import com.example.cargostar.view.adapter.MyRequestAdapter;
 import com.example.cargostar.view.callback.RequestCallback;
+import com.example.cargostar.viewmodel.HeaderViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
+import com.example.cargostar.viewmodel.RequestsViewModel;
 
 import java.util.List;
 
@@ -42,7 +44,8 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     private Context context;
     private FragmentActivity activity;
     //viewModel
-    private PopulateViewModel model;
+    private HeaderViewModel headerViewModel;
+    private RequestsViewModel requestsViewModel;
     private RecyclerView myRequestsRecyclerView;
     private MyRequestAdapter adapter;
     //header views
@@ -55,6 +58,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView notificationsImageView;
+    private TextView badgeCounterTextView;
 
     public MyRequestsFragment() {
         // Required empty public constructor
@@ -80,6 +84,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
+        badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         myRequestsRecyclerView = root.findViewById(R.id.my_bids_recycler_view);
         adapter = new MyRequestAdapter(context, this);
@@ -115,15 +120,15 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-       model = new ViewModelProvider(this).get(PopulateViewModel.class);
+       headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+       requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
         //header views
-        model.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        model.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -138,7 +143,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            model.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -154,7 +159,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
             });
         });
 
-        model.selectMyRequests(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), myRequests -> {
+        requestsViewModel.selectMyRequests(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), myRequests -> {
             adapter.setMyRequestList(myRequests);
             adapter.notifyDataSetChanged();
         });
@@ -164,7 +169,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     @Override
     public void onRequestSelected(ReceiptWithCargoList currentItem, RecyclerView.ViewHolder holder) {
         currentItem.getReceipt().setRead(true);
-        model.readReceipt(currentItem.getReceipt().getId());
+        requestsViewModel.readReceipt(currentItem.getReceipt().getId());
 
         final MyRequestsFragmentDirections.ActionMyBidsFragmentToParcelDataFragment action = MyRequestsFragmentDirections.actionMyBidsFragmentToParcelDataFragment();
         action.setParcelId(currentItem.getReceipt().getId());

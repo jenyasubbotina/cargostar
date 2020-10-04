@@ -44,6 +44,8 @@ import com.example.cargostar.view.activity.ScanQrActivity;
 import com.example.cargostar.view.adapter.ParcelAdapter;
 import com.example.cargostar.view.adapter.SpinnerAdapter;
 import com.example.cargostar.view.callback.ParcelCallback;
+import com.example.cargostar.viewmodel.CurrentParcelsViewModel;
+import com.example.cargostar.viewmodel.HeaderViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
 
 import java.util.List;
@@ -55,7 +57,8 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
     private Context context;
     private FragmentActivity activity;
     //viewModel
-    private PopulateViewModel model;
+    private HeaderViewModel headerViewModel;
+    private CurrentParcelsViewModel currentParcelsViewModel;
     //transportation statuses -> all
     private static TransportationStatus[] statusArray;
     //header views
@@ -68,6 +71,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView notificationsImageView;
+    private TextView badgeCounterTextView;
     //main content views
     private int statusFlag;
 
@@ -116,6 +120,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
+        badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         inTransitCheckBox = root.findViewById(R.id.in_transit_check_box);
         onTheWayCheckBox = root.findViewById(R.id.on_the_way_check_box);
@@ -166,15 +171,15 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        currentParcelsViewModel = new ViewModelProvider(this).get(CurrentParcelsViewModel.class);
 
-        model = new ViewModelProvider(this).get(PopulateViewModel.class);
-
-        model.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        model.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -189,7 +194,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            model.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -204,14 +209,14 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
                 startActivity(mainIntent);
             });
         });
-
-        model.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
-            Log.i(TAG, "onActivityCreated(): " + transitPointList);
-            if (transitPointList != null) {
-                this.transitPointList = transitPointList;
-                initCitySpinner(transitPointList);
-            }
-        });
+        //todo: create viewModel for CurrentParcelsFragment
+//        model.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
+//            Log.i(TAG, "onActivityCreated(): " + transitPointList);
+//            if (transitPointList != null) {
+//                this.transitPointList = transitPointList;
+//                initCitySpinner(transitPointList);
+//            }
+//        });
 
         inTransitCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
             initParcels(b, onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), allCheckBox.isChecked());
@@ -251,7 +256,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
                     }
                 }
                 if (inTransitCheckBox.isChecked()) {
-                    model.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getTransitPointId()).observe(getViewLifecycleOwner(), parcelList -> {
+                    currentParcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getTransitPointId()).observe(getViewLifecycleOwner(), parcelList -> {
                         Log.i(TAG, "parcelList: " + parcelList);
                         if (parcelList != null) {
                             parcelAdapter.setParcelList(parcelList);
@@ -365,7 +370,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
             statusArray = new TransportationStatus[] {};
             initCitySpinner(null);
         }
-        model.selectParcelsByStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray).observe(getViewLifecycleOwner(), parcelList -> {
+        currentParcelsViewModel.selectParcelsByStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray).observe(getViewLifecycleOwner(), parcelList -> {
             parcelAdapter.setParcelList(parcelList);
             parcelAdapter.notifyDataSetChanged();
         });

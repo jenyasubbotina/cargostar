@@ -12,6 +12,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.preference.PreferenceActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,13 +35,16 @@ import com.example.cargostar.view.activity.ProfileActivity;
 import com.example.cargostar.view.adapter.PublicRequestAdapter;
 import com.example.cargostar.view.callback.RequestCallback;
 import com.example.cargostar.view.viewholder.PublicRequestViewHolder;
+import com.example.cargostar.viewmodel.HeaderViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
+import com.example.cargostar.viewmodel.RequestsViewModel;
 
 public class PublicRequestsFragment extends Fragment implements RequestCallback {
     private static final String TAG = PublicRequestsFragment.class.toString();
     private Context context;
     private FragmentActivity activity;
-    private PopulateViewModel model;
+    private HeaderViewModel headerViewModel;
+    private RequestsViewModel requestsViewModel;
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
@@ -51,6 +55,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView notificationsImageView;
+    private TextView badgeCounterTextView;
     //main content views
     private PublicRequestAdapter adapter;
     private RecyclerView publicBidsRecyclerView;
@@ -79,6 +84,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
+        badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         publicBidsRecyclerView = root.findViewById(R.id.public_bids_recycler_view);
         adapter = new PublicRequestAdapter(context, this);
@@ -114,19 +120,20 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        model = new ViewModelProvider(this).get(PopulateViewModel.class);
+        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
 
-        model.selectPublicRequests().observe(getViewLifecycleOwner(), requestList -> {
+        requestsViewModel.selectPublicRequests().observe(getViewLifecycleOwner(), requestList -> {
             adapter.setRequestList(requestList);
             adapter.notifyDataSetChanged();
         });
         //header views
-        model.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        model.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -140,7 +147,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            model.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -160,7 +167,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
     @Override
     public void onRequestSelected(ReceiptWithCargoList currentItem, RecyclerView.ViewHolder holder) {
         currentItem.getReceipt().setRead(true);
-        model.readReceipt(currentItem.getReceipt().getId());
+        requestsViewModel.readReceipt(currentItem.getReceipt().getId());
 
         final PublicRequestsFragmentDirections.ActionPublicBidsFragmentToParcelDataFragment action = PublicRequestsFragmentDirections.actionPublicBidsFragmentToParcelDataFragment();
         action.setParcelId(currentItem.getReceipt().getId());
@@ -173,7 +180,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
     public void onPlusClicked(Receipt currentItem) {
         if (currentItem.getCourierId() <= 0) {
             currentItem.setCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID));
-            model.updateReceipt(currentItem);
+            requestsViewModel.updateReceipt(currentItem);
             adapter.notifyDataSetChanged();
             Toast.makeText(context, "Заявка " + currentItem.getId() + " успешно добавлена в Мои Заявки", Toast.LENGTH_SHORT).show();
         }

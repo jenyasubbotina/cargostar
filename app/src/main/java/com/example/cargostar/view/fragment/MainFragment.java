@@ -32,6 +32,7 @@ import com.example.cargostar.view.activity.MainActivity;
 import com.example.cargostar.view.activity.NotificationsActivity;
 import com.example.cargostar.view.activity.ProfileActivity;
 import com.example.cargostar.view.activity.ScanQrActivity;
+import com.example.cargostar.viewmodel.HeaderViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -49,6 +50,7 @@ public class MainFragment extends Fragment {
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView notificationsImageView;
+    private TextView badgeCounterTextView;
     //main content views
     private ImageView publicBidsImageView;
     private ImageView myBidsImageView;
@@ -81,6 +83,7 @@ public class MainFragment extends Fragment {
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
+        badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         publicBidsImageView = root.findViewById(R.id.public_bids_image_view);
         myBidsImageView = root.findViewById(R.id.my_bids_image_view);
@@ -144,14 +147,14 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //header views
-        final PopulateViewModel model = new ViewModelProvider(this).get(PopulateViewModel.class);
+        final HeaderViewModel headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
 
-        model.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        model.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -170,7 +173,7 @@ public class MainFragment extends Fragment {
             }
             try {
                 final long parcelId = Long.parseLong(parcelIdStr);
-                model.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+                headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                     if (receiptWithCargoList == null) {
                         Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                         return;

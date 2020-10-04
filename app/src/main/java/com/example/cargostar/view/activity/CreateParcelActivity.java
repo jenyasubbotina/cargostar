@@ -36,6 +36,7 @@ import com.example.cargostar.view.Constants;
 import com.example.cargostar.view.adapter.CreateParcelAdapter;
 import com.example.cargostar.view.adapter.CreateParcelData;
 import com.example.cargostar.view.callback.CreateParcelCallback;
+import com.example.cargostar.viewmodel.HeaderViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
 
 import java.util.ArrayList;
@@ -67,8 +68,9 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView notificationsImageView;
+    private TextView badgeCounterTextView;
 
-    private PopulateViewModel model;
+    private HeaderViewModel headerViewModel;
     private ReceiptWithCargoList currentReceipt;
     private List<CreateParcelData> itemList;
     private List<Cargo> cargoList = new ArrayList<>();
@@ -99,7 +101,6 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
     private String secondCardValue;
 
     //EditText watcher values
-    //TODO: fix courierId NULL
     private String courierId;
     private String operatorId;
     private String accountantId;
@@ -173,7 +174,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         context = this;
 
         itemList = new ArrayList<>();
-        model = new ViewModelProvider(this).get(PopulateViewModel.class);
+        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
 
         if (getIntent() != null) {
             final int requestKey = getIntent().getIntExtra(Constants.INTENT_REQUEST_KEY, -1);
@@ -183,7 +184,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
             initUI();
 
             if (requestKey == Constants.REQUEST_EDIT_PARCEL) {
-                model.selectRequest(requestId).observe(this, receipt -> {
+                headerViewModel.selectRequest(requestId).observe(this, receipt -> {
                     if (receipt != null) {
                         if (requestOrParcel == Constants.INTENT_REQUEST) {
                             saveReceiptBtn.setVisibility(View.VISIBLE);
@@ -213,13 +214,13 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
                 createReceiptBtn.setVisibility(View.VISIBLE);
             }
         }
-        model.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
+        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
 
-        model.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(this, branch -> {
+        headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(this, branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -234,7 +235,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            model.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
+            headerViewModel.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -257,12 +258,12 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         createReceiptBtn.setOnClickListener(v -> {
             createReceipt();
         });
-
-        model.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
-            Log.i(TAG, "entries=" + addressBookEntries);
-            adapter.setAddressBookEntries(addressBookEntries);
-            adapter.notifyDataSetChanged();
-        });
+        //todo: cretea viewModel for CreateParcelAcitivity
+//        model.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
+//            Log.i(TAG, "entries=" + addressBookEntries);
+//            adapter.setAddressBookEntries(addressBookEntries);
+//            adapter.notifyDataSetChanged();
+//        });
     }
 
     @Override
@@ -285,7 +286,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         createUserImageView = findViewById(R.id.create_user_image_view);
         calculatorImageView = findViewById(R.id.calculator_image_view);
         notificationsImageView = findViewById(R.id.notifications_image_view);
-
+        badgeCounterTextView = findViewById(R.id.badge_counter_text_view);
         //service provider
         firstCard = findViewById(R.id.first_card);
         secondCard = findViewById(R.id.second_card);
@@ -388,7 +389,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         itemList.add(new CreateParcelData(getString(R.string.last_name), getString(R.string.phone_number), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_PHONE, true, true));
         itemList.add(new CreateParcelData(getString(R.string.email), getString(R.string.discount), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, true));
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, false));
         itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
         //account numbers
         itemList.add(new CreateParcelData(getString(R.string.cargostar_account_number), null, null, null,
@@ -751,7 +752,8 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
             newPayerAddress.setZip(payerZip);
             currentReceipt.getReceipt().setPayerAddress(newPayerAddress);
         }
-        model.updateReceipt(currentReceipt.getReceipt());
+        //todo: create viewModel for CreateParcelAcitivity
+//        model.updateReceipt(currentReceipt.getReceipt());
         Toast.makeText(context, "Данные сохранены успешно", Toast.LENGTH_SHORT).show();
         finish();
     }
@@ -900,10 +902,6 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
             Toast.makeText(context, "Для создания заявки укажите email получателя", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(recipientSignature)) {
-            Toast.makeText(context, "Для создания заявки добавьте подпись получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
         //payer data
         if (TextUtils.isEmpty(payerAddress)) {
             Toast.makeText(context, "Для создания заявки укажите адрес плательщика", Toast.LENGTH_SHORT).show();
@@ -982,7 +980,6 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         newRequest.setRecipientLastName(recipientLastName);
         newRequest.setRecipientPhone(recipientPhone);
         newRequest.setRecipientEmail(recipientEmail);
-        newRequest.setRecipientSignature(recipientSignature);
         newRequest.setPayerAddress(newPayerAddress);
         newRequest.setPayerFirstName(payerFirstName);
         newRequest.setPayerMiddleName(payerMiddleName);
@@ -1006,6 +1003,9 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 
         if (!TextUtils.isEmpty(discount)) {
             newRequest.setDiscount(Integer.parseInt(discount));
+        }
+        if (!TextUtils.isEmpty(recipientSignature)) {
+            newRequest.setRecipientSignature(recipientSignature);
         }
 
         newRequest.setCheckingAccount(checkingAccount);
@@ -1085,9 +1085,8 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
             case 6: {
                 //senderLogin
                 senderLogin = editable.toString();
-
-                model.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, this::initPayerAddressBook);
-
+                //todo: create viewModel for CreateParcelActivity
+//                model.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, this::initPayerAddressBook);
                 break;
             }
             case 7: {

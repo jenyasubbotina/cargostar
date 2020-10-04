@@ -36,19 +36,16 @@ import com.example.cargostar.view.activity.CalculatorActivity;
 import com.example.cargostar.view.activity.CreateUserActivity;
 import com.example.cargostar.view.activity.MainActivity;
 import com.example.cargostar.view.activity.NotificationsActivity;
-import com.example.cargostar.view.activity.ProfileActivity;
 import com.example.cargostar.view.activity.SignInActivity;
+import com.example.cargostar.viewmodel.HeaderViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
+import com.example.cargostar.viewmodel.ProfileViewModel;
 
 public class ProfileFragment extends Fragment {
     private FragmentActivity activity;
     private Context context;
-    private PopulateViewModel model;
+    private HeaderViewModel headerViewModel;
+    private ProfileViewModel profileViewModel;
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
@@ -58,6 +55,7 @@ public class ProfileFragment extends Fragment {
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView notificationsImageView;
+    private TextView badgeCounterTextView;
     //main content views
     private EditText userIdEditText;
     private EditText loginEditText;
@@ -236,7 +234,7 @@ public class ProfileFragment extends Fragment {
                 courier.setPhoto(new Document(photo, photo));
             }
 
-            model.updateCourier(courier);
+            profileViewModel.updateCourier(courier);
             Toast.makeText(activity, "Изменения сохранены", Toast.LENGTH_SHORT).show();
         });
 
@@ -257,10 +255,11 @@ public class ProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        model = new ViewModelProvider(this).get(PopulateViewModel.class);
+        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
         final String login = SharedPrefs.getInstance(getContext()).getString(SharedPrefs.LOGIN);
 
-        model.selectCourierByLogin(login).observe(getViewLifecycleOwner(), employee -> {
+        headerViewModel.selectCourierByLogin(login).observe(getViewLifecycleOwner(), employee -> {
             userIdEditText.setText(String.valueOf(employee.getId()));
             userIdEditText.setBackgroundResource(R.drawable.edit_text_active);
             if (!TextUtils.isEmpty(employee.getAccount().getLogin())) {
@@ -330,7 +329,7 @@ public class ProfileFragment extends Fragment {
 
         });
 
-        model.selectBranchByCourierId(courierId).observe(getViewLifecycleOwner(), branch -> {
+        headerViewModel.selectBranchByCourierId(courierId).observe(getViewLifecycleOwner(), branch -> {
             Log.i(ProfileFragment.class.toString(), "branch" + branch);
             if (branch != null) {
                 branchId = branch.getId();
@@ -345,7 +344,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        model.selectCountryByCourierId(courierId).observe(getViewLifecycleOwner(), country -> {
+        profileViewModel.selectCountryByCourierId(courierId).observe(getViewLifecycleOwner(), country -> {
             Log.i(ProfileFragment.class.toString(), "branchId=" + branchId + "country=" + country);
             if (country != null) {
                 if (!TextUtils.isEmpty(country.getName())) {
@@ -357,7 +356,7 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-        model.selectRegionByCourierId(courierId).observe(getViewLifecycleOwner(), region -> {
+        profileViewModel.selectRegionByCourierId(courierId).observe(getViewLifecycleOwner(), region -> {
             Log.i(ProfileFragment.class.toString(), "branchId=" + branchId + "region=" + region);
             if (region != null) {
                 if (!TextUtils.isEmpty(region.getName())) {
@@ -369,7 +368,7 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-        model.selectCityByCourierId(courierId).observe(getViewLifecycleOwner(), city -> {
+        profileViewModel.selectCityByCourierId(courierId).observe(getViewLifecycleOwner(), city -> {
             Log.i(ProfileFragment.class.toString(), "branchId=" + branchId + "city=" + city);
             if (city != null) {
                 if (!TextUtils.isEmpty(city.getName())) {
@@ -391,7 +390,7 @@ public class ProfileFragment extends Fragment {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            model.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                 if (receiptWithCargoList == null) {
                     return;
@@ -418,6 +417,7 @@ public class ProfileFragment extends Fragment {
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
+        badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         userIdEditText = root.findViewById(R.id.user_id_edit_text);
         loginEditText = root.findViewById(R.id.login_edit_text);

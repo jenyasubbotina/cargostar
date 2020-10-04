@@ -27,29 +27,13 @@ import com.example.cargostar.model.shipping.ReceiptWithCargoList;
 import java.util.List;
 
 public class PopulateViewModel extends AndroidViewModel {
-    private Repository repository;
-    private LiveData<List<Customer>> customerList;
+    private final Repository repository;
     private LiveData<List<Courier>> courierList;
-
-    private LiveData<List<Country>> countryList;
-    private LiveData<List<Region>> regionList;
-    private LiveData<List<City>> cityList;
-
-    private LiveData<List<ReceiptWithCargoList>> requestList;
-    private LiveData<List<ReceiptWithCargoList>> publicRequestList;
-//    private LiveData<List<Parcel>> parcelList;
 
     public PopulateViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
-        this.customerList = repository.selectAllCustomers();
         this.courierList = repository.selectAllCouriers();
-        this.countryList = repository.selectAllCountries();
-        this.regionList = repository.selectAllRegions();
-        this.cityList = repository.selectAllCities();
-
-        this.requestList = repository.selectAllRequests();
-        this.publicRequestList = repository.selectPublicRequests();
     }
 
     /* Courier queries */
@@ -57,16 +41,8 @@ public class PopulateViewModel extends AndroidViewModel {
         return repository.createCourier(newCourier);
     }
 
-    public void updateCourier(final Courier courier) {
-        repository.updateCourier(courier);
-    }
-
     public LiveData<Courier> selectCourier(final String userId) {
         return repository.selectCourier(userId);
-    }
-
-    public LiveData<Courier> selectCourierByLogin(final String login) {
-        return repository.selectCourierByLogin(login);
     }
 
     public LiveData<List<Courier>> selectAllCouriers() {
@@ -77,78 +53,11 @@ public class PopulateViewModel extends AndroidViewModel {
         repository.dropCouriers();
     }
 
-    /* Customer queries */
-    public long createCustomer(final Customer newCustomer) {
-        return repository.createCustomer(newCustomer);
-    }
-
-    public LiveData<Customer> selectCustomer(final String userId) {
-        return repository.selectCustomer(userId);
-    }
-
-    public LiveData<List<Customer>> selectAllCustomers() {
-        return customerList;
-    }
-
-    public void dropCustomers() {
-        repository.dropCustomers();
-    }
-
-    public LiveData<Customer> selectCustomerByLogin(final String senderLogin) {
-        return repository.selectCustomerByLogin(senderLogin);
-    }
-
-    /* Passport data queries */
-    public void createPassportData(final PassportData passportData) {
-        repository.createPassportData(passportData);
-    }
-
-    public LiveData<PassportData> selectPassportData(final String userId) {
-        return repository.selectPassportData(userId);
-    }
-
-    public LiveData<List<PassportData>> selectAllPassportData() {
-        return repository.selectAllPassportData();
-    }
-
-    public void dropPassportData() {
-        repository.dropPassportData();
-    }
-
-    /* Payment data queries */
-    public void createPaymentData(final PaymentData paymentData) {
-        repository.createPaymentData(paymentData);
-    }
-
-    public LiveData<PaymentData> selectPaymentData(final String userId) {
-        return repository.selectPaymentData(userId);
-    }
-
-    public LiveData<List<PaymentData>> selectAllPaymentData() {
-        return repository.selectAllPaymentData();
-    }
-
-    public void dropPaymentData() {
-        repository.dropPaymentData();
+    public LiveData<Courier> selectCourierByLogin(final String login) {
+        return repository.selectCourierByLogin(login);
     }
 
     /*Request queries*/
-    public LiveData<ReceiptWithCargoList> selectRequest(final long requestId) {
-        return repository.selectRequest(requestId);
-    }
-
-    public LiveData<List<ReceiptWithCargoList>> selectAllRequests() {
-        return requestList;
-    }
-
-    public LiveData<List<ReceiptWithCargoList>> selectPublicRequests() {
-        return publicRequestList;
-    }
-
-    public LiveData<List<ReceiptWithCargoList>> selectMyRequests(final long courierId) {
-        return repository.selectMyRequests(courierId);
-    }
-
     public long createRequest(final Receipt newRequest) {
         return repository.createRequest(newRequest);
     }
@@ -159,26 +68,6 @@ public class PopulateViewModel extends AndroidViewModel {
 
     public long createParcelTransitPointCrossRef(final ReceiptTransitPointCrossRef receiptTransitPointCrossRef) {
         return repository.createParcelTransitPointCrossRef(receiptTransitPointCrossRef);
-    }
-
-    public void updateReceipt(final Receipt updatedReceipt) {
-        repository.updateReceipt(updatedReceipt);
-    }
-
-    public LiveData<List<Parcel>> selectParcelsByStatus(final long courierId, final TransportationStatus transportationStatus) {
-        return repository.selectParcelsByStatus(courierId, transportationStatus);
-    }
-
-    public LiveData<List<Parcel>> selectParcelsByStatus(final long courierId, final TransportationStatus[] statusArray) {
-        return repository.selectParcelsByStatus(courierId, statusArray);
-    }
-
-    public LiveData<List<Parcel>> selectParcelsByLocation(final long courierId, final long locationId) {
-        return repository.selectParcelsByLocation(courierId, TransportationStatus.IN_TRANSIT, locationId);
-    }
-
-    public LiveData<List<Parcel>> selectParcelsByLocationAndStatus(final long courierId, final TransportationStatus[] statusList, final long locationId) {
-        return repository.selectParcelsByLocationAndStatus(courierId, statusList, locationId);
     }
 
     public void dropRequests() {
@@ -292,22 +181,6 @@ public class PopulateViewModel extends AndroidViewModel {
         return repository.createBranches(branchList);
     }
 
-    public LiveData<Branch> selectBranchByCourierId(final long courierId) {
-        return repository.selectBranchByCourierId(courierId);
-    }
-
-    public LiveData<Country> selectCountryByCourierId(final long courierId) {
-        return repository.selectCountryByCourierId(courierId);
-    }
-
-    public LiveData<Region> selectRegionByCourierId(final long courierId) {
-        return repository.selectRegionByCourierId(courierId);
-    }
-
-    public LiveData<City> selectCityByCourierId(final long courierId) {
-        return repository.selectCityByCourierId(courierId);
-    }
-
     public LiveData<List<Branch>> selectAllBranches() {
         return repository.selectAllBranches();
     }
@@ -365,39 +238,6 @@ public class PopulateViewModel extends AndroidViewModel {
         return repository.selectAllTransitPointsByCountry(countryId);
     }
 
-    public void readReceipt(final long receiptId) {
-        repository.readReceipt(receiptId);
-    }
-
-    /*Notification queries*/
-    public void createNotification(final List<Notification> notificationList) {
-        repository.createNotification(notificationList);
-    }
-
-    public void createNotification(final Notification notification) {
-        repository.createNotification(notification);
-    }
-
-    public void updateNotification(final Notification updatedNotification) {
-        repository.updateNotification(updatedNotification);
-    }
-
-    public LiveData<Notification> selectNotification(final long receiptId) {
-        return repository.selectNotification(receiptId);
-    }
-
-    public LiveData<List<Notification>> selectAllNotifications() {
-        return repository.selectAllNotifications();
-    }
-
-    public LiveData<List<Notification>> selectNewNotifications() {
-        return repository.selectNewNotifications();
-    }
-
-    public void readNotification(final long receiptId) {
-        repository.readNotification(receiptId);
-    }
-
     /*address book*/
     public long createAddressBookEntry(final AddressBook addressBook) {
         return repository.createAddressBookEntry(addressBook);
@@ -438,5 +278,18 @@ public class PopulateViewModel extends AndroidViewModel {
 
     public LiveData<Parcel> selectParcelByConsolidationNumber(final long consolidationNumber, final long parcelId) {
         return repository.selectParcelByConsolidationNumber(consolidationNumber, parcelId);
+    }
+
+    //Notification queries
+    public void createNotification(final List<Notification> notificationList) {
+        repository.createNotification(notificationList);
+    }
+
+    public void createNotification(final Notification notification) {
+        repository.createNotification(notification);
+    }
+
+    public void updateNotification(final Notification updatedNotification) {
+        repository.updateNotification(updatedNotification);
     }
 }

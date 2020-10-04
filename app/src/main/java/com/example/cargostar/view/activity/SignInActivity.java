@@ -37,10 +37,10 @@ import com.example.cargostar.model.location.Region;
 import com.example.cargostar.model.location.TransitPoint;
 import com.example.cargostar.model.shipping.Cargo;
 import com.example.cargostar.model.shipping.Consolidation;
-import com.example.cargostar.model.shipping.Parcel;
 import com.example.cargostar.model.shipping.Receipt;
 import com.example.cargostar.model.shipping.ReceiptTransitPointCrossRef;
 import com.example.cargostar.view.UiUtils;
+import com.example.cargostar.viewmodel.CreateUserViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
 
 import java.util.ArrayList;
@@ -64,15 +64,16 @@ public class SignInActivity extends AppCompatActivity {
     private TextView forgotPasswordTextView;
     private ImageView passwordEyeImageView;
 
-    private PopulateViewModel model;
+    private PopulateViewModel populateViewModel;
+    private CreateUserViewModel createUserViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         initUI();
-        model = new ViewModelProvider(this).get(PopulateViewModel.class);
-
+        populateViewModel = new ViewModelProvider(this).get(PopulateViewModel.class);
+        createUserViewModel = new ViewModelProvider(this).get(CreateUserViewModel.class);
 //        initPlaces();
 //        initCustomers();
 //        initRequests();
@@ -89,7 +90,7 @@ public class SignInActivity extends AppCompatActivity {
                 Toast.makeText(this, "Пароль не может быть пустым", Toast.LENGTH_SHORT).show();
                 return;
             }
-            model.selectCourierByLogin(login).observe(this, employee -> {
+            populateViewModel.selectCourierByLogin(login).observe(this, employee -> {
                 if (employee == null) {
                     Toast.makeText(this, "Пользователь не зарегистрирован", Toast.LENGTH_SHORT).show();
                     return;
@@ -128,7 +129,7 @@ public class SignInActivity extends AppCompatActivity {
         countryList.add(new Country("Китай", "CN"));
         countryList.add(new Country("Южная Корея", "KR"));
 
-        final long[] countryIds = model.createCountries(countryList);
+        final long[] countryIds = populateViewModel.createCountries(countryList);
 
         //Uzbekistan regions
         regionList.add(new Region(countryIds[0], "Ташкент"));
@@ -160,7 +161,7 @@ public class SignInActivity extends AppCompatActivity {
         //Korea regions
         regionList.add(new Region(countryIds[4],"Сеул"));
 
-        final long[] regionIds = model.createRegions(regionList);
+        final long[] regionIds = populateViewModel.createRegions(regionList);
 
         //Uzbekistan cities
         cityList.add(new City(regionIds[0], "Ташкент"));
@@ -191,7 +192,7 @@ public class SignInActivity extends AppCompatActivity {
         //Korea cities
         cityList.add(new City(regionIds[23],"Сеул"));
 
-        final long[] cityIds = model.createCities(cityList);
+        final long[] cityIds = populateViewModel.createCities(cityList);
 
         branchList.add(new Branch(cityIds[0], "Ташкент", "Метро Ойбек", "100190", new Point(10, 10), "+998712223344"));
         branchList.add(new Branch(cityIds[1], "Андижан", "ул. Андижан", "100110", new Point(10, 10), "+998712223345"));
@@ -212,7 +213,7 @@ public class SignInActivity extends AppCompatActivity {
         branchList.add(new Branch(cityIds[18], "Пекин", "Уханьский рынок", "3100120", new Point(10, 10), "+567249081230"));
         branchList.add(new Branch(cityIds[19], "Сеул", "Тондемун", "200120", new Point(10, 10), "+82100116825"));
 
-        final long[] branchIds = model.createBranches(branchList);
+        final long[] branchIds = populateViewModel.createBranches(branchList);
 
         initCouriers(branchIds);
         initParcels(branchIds);
@@ -248,10 +249,10 @@ public class SignInActivity extends AppCompatActivity {
                 "+998974371039",
                 new Account("rustico", "12345", "rustan_gel@gmail.com"),
                 branchIds[1]);
-        model.createCourier(defaultCourier);
-        model.createCourier(sergey);
-        model.createCourier(navruz);
-        model.createCourier(rustam);
+        populateViewModel.createCourier(defaultCourier);
+        populateViewModel.createCourier(sergey);
+        populateViewModel.createCourier(navruz);
+        populateViewModel.createCourier(rustam);
     }
 
     private void initCustomers() {
@@ -271,12 +272,12 @@ public class SignInActivity extends AppCompatActivity {
                 new Account("dud", "12345", "vdud@gmail.com"),
                 new Address("Россия", "Москва", "Москва", "Парк Сокольники"),
                 "0987654321");
-        final long crosbyId = model.createCustomer(crosby);
-        final long dudId = model.createCustomer(dud);
+        final long crosbyId = createUserViewModel.createCustomer(crosby);
+        final long dudId = createUserViewModel.createCustomer(dud);
 
         final PassportData passportData = new PassportData("AA7776633");
         passportData.setUserId(crosbyId);
-        model.createPassportData(passportData);
+        createUserViewModel.createPassportData(passportData);
 
         final PaymentData paymentData = new PaymentData("65472819122", "Вдудь");
         paymentData.setUserId(dudId);
@@ -285,7 +286,7 @@ public class SignInActivity extends AppCompatActivity {
         paymentData.setVat("888888888");
         paymentData.setBank("Тинькофф");
         paymentData.setCheckingAccount("999999999");
-        model.createPaymentData(paymentData);
+        createUserViewModel.createPaymentData(paymentData);
 
         final AddressBook crosbyAddressBook1 = new AddressBook(
                 crosby.getAccount().getLogin(),
@@ -307,11 +308,11 @@ public class SignInActivity extends AppCompatActivity {
                 crosby.getAccount().getLogin(),
                 "Андроид", "Валерьевич", "Ким", "+998909876541", "android@gmail.com",
                 new Address("Узбекистан", "Ташкент", "Ташкент", "Юнусабад-17"));
-        model.createAddressBookEntry(crosbyAddressBook1);
-        model.createAddressBookEntry(crosbyAddressBook2);
-        model.createAddressBookEntry(crosbyAddressBook3);
-        model.createAddressBookEntry(crosbyAddressBook4);
-        model.createAddressBookEntry(crosbyAddressBook4);
+        populateViewModel.createAddressBookEntry(crosbyAddressBook1);
+        populateViewModel.createAddressBookEntry(crosbyAddressBook2);
+        populateViewModel.createAddressBookEntry(crosbyAddressBook3);
+        populateViewModel.createAddressBookEntry(crosbyAddressBook4);
+        populateViewModel.createAddressBookEntry(crosbyAddressBook4);
     }
 
     private void initRequests() {
@@ -335,41 +336,41 @@ public class SignInActivity extends AppCompatActivity {
         sergeyCargoList.add(new Cargo("Документы", "Конверт", 50, 30, 3, 1, null));
         sergeyCargoList.add(new Cargo("Канцтовары", "Конверт", 25, 12, 3, 1, null));
         sergeyCargoList.add(new Cargo("Кредитные карты", "Конверт", 7, 5, 3, 1, null));
-        final long sergeyParcelId = model.createRequest(sergeyRequest);
+        final long sergeyParcelId = populateViewModel.createRequest(sergeyRequest);
 
         for (final Cargo cargo : sergeyCargoList) {
             cargo.setReceiptId(sergeyParcelId);
         }
-        model.createCargo(sergeyCargoList);
+        populateViewModel.createCargo(sergeyCargoList);
 
         final List<Cargo> amberCargoList = new ArrayList<>();
         amberCargoList.add(new Cargo("Одежда", "Коробка", 70, 70, 40, 5, null));
         amberCargoList.add(new Cargo("Обувь", "Коробка", 70, 40, 40, 6, null));
         amberCargoList.add(new Cargo("Одежда", "Пакет", 50, 80, 50, 4, null));
-        final long amberParcelId = model.createRequest(amberRequest);
+        final long amberParcelId = populateViewModel.createRequest(amberRequest);
 
         for (final Cargo cargo : amberCargoList) {
             cargo.setReceiptId(amberParcelId);
         }
-        model.createCargo(amberCargoList);
+        populateViewModel.createCargo(amberCargoList);
 
         final List<Cargo> galCargoList = new ArrayList<>();
         galCargoList.add(new Cargo("Твердый груз", "Паллета", 450, 380, 70, 40, null));
         galCargoList.add(new Cargo("Детали для сбора механизмов", "Паллета", 450, 380, 70, 25, null));
         galCargoList.add(new Cargo("Стройматериалы", "Паллета", 450, 380, 70, 120, null));
-        final long galParcelId = model.createRequest(galRequest);
+        final long galParcelId = populateViewModel.createRequest(galRequest);
 
         for (final Cargo cargo : galCargoList) {
             cargo.setReceiptId(galParcelId);
         }
-        model.createCargo(galCargoList);
+        populateViewModel.createCargo(galCargoList);
         //init notifications
         final Notification galNotification = new Notification(galParcelId, -1, galRequest.getSenderAddress(), galRequest.getRecipientAddress(), new Date(), false);
         final Notification amberNotification = new Notification(amberParcelId, -1, amberRequest.getSenderAddress(), amberRequest.getRecipientAddress(), new Date(), false);
         final Notification dudNotification = new Notification(sergeyParcelId, -1, sergeyRequest.getSenderAddress(), sergeyRequest.getRecipientAddress(), new Date(), false);
-        model.createNotification(galNotification);
-        model.createNotification(amberNotification);
-        model.createNotification(dudNotification);
+        populateViewModel.createNotification(galNotification);
+        populateViewModel.createNotification(amberNotification);
+        populateViewModel.createNotification(dudNotification);
 
         Log.i(TAG, "initRequests: " + sergeyRequest);
     }
@@ -394,7 +395,7 @@ public class SignInActivity extends AppCompatActivity {
         transitPointList.add(new TransitPoint(branchIds[16], "Пекин"));
         transitPointList.add(new TransitPoint(branchIds[17], "Сеул"));
 
-        final long[] transitPointIds = model.createTransitPoint(transitPointList);
+        final long[] transitPointIds = populateViewModel.createTransitPoint(transitPointList);
         //android parcel
         final Address androidSenderAddress = new Address("Узбекистан", "Ташкент", "Ташкент", "Юнусабад-8");
         final Address androidRecipientAddress = new Address("Узбекистан", "Кашкадарьинская область", "Карши", "Пустырь 1");
@@ -435,12 +436,12 @@ public class SignInActivity extends AppCompatActivity {
         androidReceipt.setCourierId(1);
         androidReceipt.setCurrentLocation(transitPointIds[0]);
         androidReceipt.setRead(true);
-        final long androidParcelId = model.createRequest(androidReceipt);
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[0]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[2]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[3]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[4]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[1]));
+        final long androidParcelId = populateViewModel.createRequest(androidReceipt);
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[0]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[2]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[3]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[4]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(androidParcelId, transitPointIds[1]));
 
         final List<Cargo> androidCargoList = new ArrayList<>();
         androidCargoList.add(new Cargo("Твердый груз", "Паллета", 450, 380, 70, 40, "1234567890"));
@@ -450,7 +451,7 @@ public class SignInActivity extends AppCompatActivity {
         for (final Cargo cargo : androidCargoList) {
             cargo.setReceiptId(androidParcelId);
         }
-        model.createCargo(androidCargoList);
+        populateViewModel.createCargo(androidCargoList);
         //navruz parcel
         final Address navruzSenderAddress = new Address("Узбекистан", "Ташкент", "Ташкент", "Юнусабад-8");
         final Address navruzRecipientAddress = new Address("Узбекистан", "Республика Каракалпакстан", "Нукус", "Пустыня 1");
@@ -492,11 +493,11 @@ public class SignInActivity extends AppCompatActivity {
         navruzReceipt.setCurrentLocation(transitPointIds[0]);
         navruzReceipt.setRead(true);
 
-        final long navruzParcelId = model.createRequest(navruzReceipt);
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(navruzParcelId, transitPointIds[0]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(navruzParcelId, transitPointIds[1]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(navruzParcelId, transitPointIds[8]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(navruzParcelId, transitPointIds[12]));
+        final long navruzParcelId = populateViewModel.createRequest(navruzReceipt);
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(navruzParcelId, transitPointIds[0]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(navruzParcelId, transitPointIds[1]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(navruzParcelId, transitPointIds[8]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(navruzParcelId, transitPointIds[12]));
 
         final List<Cargo> navruzCargoList = new ArrayList<>();
         navruzCargoList.add(new Cargo("Твердый груз", "Паллета", 450, 380, 70, 40, "2345678901"));
@@ -506,7 +507,7 @@ public class SignInActivity extends AppCompatActivity {
         for (final Cargo cargo : navruzCargoList) {
             cargo.setReceiptId(navruzParcelId);
         }
-        model.createCargo(navruzCargoList);
+        populateViewModel.createCargo(navruzCargoList);
         //sergey parcel
         final Address sergeySenderAddress = new Address("Узбекистан", "Ташкент", "Ташкент", "Юнусабад-8");
         final Address sergeyRecipientAddress = new Address("Узбекистан", "Ташкент", "Ташкент", "Карасу-6");
@@ -548,8 +549,8 @@ public class SignInActivity extends AppCompatActivity {
         sergeyReceipt.setCurrentLocation(transitPointIds[0]);
         sergeyReceipt.setRead(true);
 
-        final long sergeyParcelId = model.createRequest(sergeyReceipt);
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(sergeyParcelId, transitPointIds[0]));
+        final long sergeyParcelId = populateViewModel.createRequest(sergeyReceipt);
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(sergeyParcelId, transitPointIds[0]));
 
         final List<Cargo> sergeyCargoList = new ArrayList<>();
         sergeyCargoList.add(new Cargo("Твердый груз", "Паллета", 450, 380, 70, 40, "2345678904"));
@@ -559,7 +560,7 @@ public class SignInActivity extends AppCompatActivity {
         for (final Cargo cargo : sergeyCargoList) {
             cargo.setReceiptId(sergeyParcelId);
         }
-        model.createCargo(sergeyCargoList);
+        populateViewModel.createCargo(sergeyCargoList);
         //crosby parcel
         final Address crosbySenderAddress = new Address("Узбекистан", "Ташкент", "Ташкент", "Юнусабад-8");
         final Address crosbyRecipientAddress = new Address("Россия", "Москва", "Москва", "Пингвинс 123");
@@ -601,13 +602,13 @@ public class SignInActivity extends AppCompatActivity {
         crosbyReceipt.setCurrentLocation(transitPointIds[0]);
         crosbyReceipt.setRead(true);
 
-        final long crosbyParcelId = model.createRequest(crosbyReceipt);
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[0]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[2]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[7]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[13]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[14]));
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[15]));
+        final long crosbyParcelId = populateViewModel.createRequest(crosbyReceipt);
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[0]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[2]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[7]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[13]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[14]));
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(crosbyParcelId, transitPointIds[15]));
 
         final List<Cargo> crosbyCargoList = new ArrayList<>();
         crosbyCargoList.add(new Cargo("Твердый груз", "Паллета", 450, 380, 70, 40, "2345678905"));
@@ -617,12 +618,12 @@ public class SignInActivity extends AppCompatActivity {
         for (final Cargo cargo : crosbyCargoList) {
             cargo.setReceiptId(crosbyParcelId);
         }
-        model.createCargo(crosbyCargoList);
+        populateViewModel.createCargo(crosbyCargoList);
     }
 
     private void initConsolidations(final long[] transitPointIds) {
         final Consolidation consolidation = new Consolidation("9901116824");
-        final long consolidationId = model.createConsolidation(consolidation);
+        final long consolidationId = populateViewModel.createConsolidation(consolidation);
         //mikye parcel for consolidation
         final Address mikyeSenderAddress = new Address("Узбекистан", "Наманганская Область", "Наманган", "Юнусабад-8");
         final Address rustamRecipientAddress = new Address("Узбекистан", " Андижанская Область", "Андижан", "Улица Пустырь 1");
@@ -664,8 +665,8 @@ public class SignInActivity extends AppCompatActivity {
         mikyeReceipt.setCurrentLocation(transitPointIds[6]);
         mikyeReceipt.setRead(true);
         mikyeReceipt.setConsolidationNumber(consolidationId);
-        final long mikyeParcelId = model.createRequest(mikyeReceipt);
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(mikyeParcelId, transitPointIds[6]));
+        final long mikyeParcelId = populateViewModel.createRequest(mikyeReceipt);
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(mikyeParcelId, transitPointIds[6]));
 
         final List<Cargo> mikyeCargoList = new ArrayList<>();
         mikyeCargoList.add(new Cargo("Твердый груз", "Паллета", 450, 380, 70, 40, "1234567890"));
@@ -675,8 +676,8 @@ public class SignInActivity extends AppCompatActivity {
         for (final Cargo cargo : mikyeCargoList) {
             cargo.setReceiptId(mikyeParcelId);
         }
-        model.createCargo(mikyeCargoList);
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(mikyeParcelId, transitPointIds[1]));
+        populateViewModel.createCargo(mikyeCargoList);
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(mikyeParcelId, transitPointIds[1]));
         //dud parcel for consolidation
         final Address dudSenderAddress = new Address("Россия", "Москва", "Москва", "Ул. Ленина 6");
         final Address navruzRecipientAddress = new Address("Узбекистан", "Республика Каракалпакстан", "Нукус", "Пустыня 1");
@@ -719,8 +720,8 @@ public class SignInActivity extends AppCompatActivity {
         dudReceipt.setRead(true);
         dudReceipt.setConsolidationNumber(consolidationId);
 
-        final long dudParcelId = model.createRequest(dudReceipt);
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(dudParcelId, transitPointIds[15]));
+        final long dudParcelId = populateViewModel.createRequest(dudReceipt);
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(dudParcelId, transitPointIds[15]));
         final List<Cargo> dudCargoList = new ArrayList<>();
         dudCargoList.add(new Cargo("Твердый груз", "Паллета", 450, 380, 70, 40, "2345678901"));
         dudCargoList.add(new Cargo("Детали для сбора механизмов", "Паллета", 450, 380, 70, 25, "3456789012"));
@@ -729,8 +730,8 @@ public class SignInActivity extends AppCompatActivity {
         for (final Cargo cargo : dudCargoList) {
             cargo.setReceiptId(dudParcelId);
         }
-        model.createCargo(dudCargoList);
-        model.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(dudParcelId, transitPointIds[12]));
+        populateViewModel.createCargo(dudCargoList);
+        populateViewModel.createParcelTransitPointCrossRef(new ReceiptTransitPointCrossRef(dudParcelId, transitPointIds[12]));
     }
 
     private void initUI() {
