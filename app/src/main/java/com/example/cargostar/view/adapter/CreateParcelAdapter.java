@@ -359,13 +359,14 @@ public class CreateParcelAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             viewHolder.destinationTextView.setText(itemList.get(position).destination);
             viewHolder.weightTextView.setText(itemList.get(position).weight);
             viewHolder.dimensionsTextView.setText(itemList.get(position).dimensions);
+            Log.i(CreateParcelAdapter.class.toString(), "position=" + position);
             viewHolder.bind(position, callback);
         }
         //address book spinner
         else if (getItemViewType(position) == CreateParcelData.TYPE_SINGLE_SPINNER) {
             final CreateParcelSingleSpinnerViewHolder viewHolder = (CreateParcelSingleSpinnerViewHolder) holder;
             viewHolder.textView.setText(itemList.get(position).firstKey);
-           //todo: addressBook Spinner
+
             final SpinnerAdapter<AddressBook> addressBookSpinnerAdapter = new SpinnerAdapter<>(context, R.layout.spinner_item, addressBookEntries);
             addressBookSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
             viewHolder.spinner.setAdapter(addressBookSpinnerAdapter);

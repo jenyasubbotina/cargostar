@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.cargostar.model.TransportationStatus;
 import com.example.cargostar.model.database.Repository;
+import com.example.cargostar.model.location.TransitPoint;
 import com.example.cargostar.model.shipping.Parcel;
 
 import java.util.List;
@@ -34,5 +35,22 @@ public class CurrentParcelsViewModel extends AndroidViewModel {
 
     public LiveData<List<Parcel>> selectParcelsByLocationAndStatus(final long courierId, final TransportationStatus[] statusList, final long locationId) {
         return repository.selectParcelsByLocationAndStatus(courierId, statusList, locationId);
+    }
+
+    /*Transit points*/
+    public LiveData<List<TransitPoint>> selectAllTransitPoints() {
+        return repository.selectAllTransitPoints();
+    }
+
+    public LiveData<TransitPoint> selectTransitPointByBranch(final long branchId) {
+        return repository.selectTransitPointByBranch(branchId);
+    }
+
+    public LiveData<List<TransitPoint>> selectTransitPointsByCity(final long cityId) {
+        return repository.selectAllTransitPointsByCity(cityId);
+    }
+
+    public LiveData<List<TransitPoint>> selectTransitPointsByCountry(final long countryId) {
+        return repository.selectAllTransitPointsByCountry(countryId);
     }
 }

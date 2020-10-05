@@ -26,6 +26,7 @@ import com.example.cargostar.R;
 import com.example.cargostar.model.TransportationStatus;
 import com.example.cargostar.view.Constants;
 import com.example.cargostar.view.UiUtils;
+import com.example.cargostar.viewmodel.ParcelStatusViewModel;
 import com.example.cargostar.viewmodel.PopulateViewModel;
 
 import java.util.ArrayList;
@@ -118,9 +119,9 @@ public class ParcelStatusFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final PopulateViewModel model = new ViewModelProvider(this).get(PopulateViewModel.class);
+        final ParcelStatusViewModel parcelStatusViewModel = new ViewModelProvider(this).get(ParcelStatusViewModel.class);
 
-        model.selectParcel(requestId).observe(getViewLifecycleOwner(), parcel -> {
+        parcelStatusViewModel.selectParcel(requestId).observe(getViewLifecycleOwner(), parcel -> {
             currentLocationId = parcel.getReceipt().getCurrentLocation();
 
             parcelIdTextView.setText(String.valueOf(parcel.getReceipt().getId()));
@@ -148,7 +149,7 @@ public class ParcelStatusFragment extends Fragment {
             }
         });
 
-        model.selectTransitPoint(currentLocationId).observe(getViewLifecycleOwner(), transitPoint -> {
+        parcelStatusViewModel.selectTransitPoint(currentLocationId).observe(getViewLifecycleOwner(), transitPoint -> {
            if (transitPoint != null) {
                currentPointTextView.setText(transitPoint.getName());
            }

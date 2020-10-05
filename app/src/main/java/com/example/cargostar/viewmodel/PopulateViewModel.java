@@ -78,10 +78,6 @@ public class PopulateViewModel extends AndroidViewModel {
         repository.deleteReceipt(requestId);
     }
 
-    public LiveData<Parcel> selectParcel(final long receiptId) {
-        return repository.selectParcel(receiptId);
-    }
-
     public LiveData<Receipt> selectReceipt(final long receiptId) {
         return repository.selectReceipt(receiptId);
     }
@@ -218,26 +214,6 @@ public class PopulateViewModel extends AndroidViewModel {
         repository.dropTransitPoints();
     }
 
-    public LiveData<List<TransitPoint>> selectAllTransitPoints() {
-        return repository.selectAllTransitPoints();
-    }
-
-    public LiveData<TransitPoint> selectTransitPoint(final long pointId) {
-        return repository.selectTransitPoint(pointId);
-    }
-
-    public LiveData<TransitPoint> selectTransitPointByBranch(final long branchId) {
-        return repository.selectTransitPointByBranch(branchId);
-    }
-
-    public LiveData<List<TransitPoint>> selectTransitPointsByCity(final long cityId) {
-        return repository.selectAllTransitPointsByCity(cityId);
-    }
-
-    public LiveData<List<TransitPoint>> selectTransitPointsByCountry(final long countryId) {
-        return repository.selectAllTransitPointsByCountry(countryId);
-    }
-
     /*address book*/
     public long createAddressBookEntry(final AddressBook addressBook) {
         return repository.createAddressBookEntry(addressBook);
@@ -245,18 +221,6 @@ public class PopulateViewModel extends AndroidViewModel {
 
     public void updateAddressBookEntry(final AddressBook updatedAddressBook) {
         repository.updateAddressBookEntry(updatedAddressBook);
-    }
-
-    public LiveData<List<AddressBook>> selectAddressBookEntriesBySenderLogin(final String senderLogin) {
-        return repository.selectAddressBookEntriesBySenderLogin(senderLogin);
-    }
-
-    public LiveData<AddressBook> selectAddressBookEntryById(final long id) {
-        return repository.selectAddressBookEntryById(id);
-    }
-
-    public LiveData<List<AddressBook>> selectAddressBookEntries() {
-        return repository.selectAddressBookEntries();
     }
 
     /*Consolidation queries*/

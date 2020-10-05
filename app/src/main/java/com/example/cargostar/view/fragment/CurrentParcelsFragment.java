@@ -209,14 +209,13 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
                 startActivity(mainIntent);
             });
         });
-        //todo: create viewModel for CurrentParcelsFragment
-//        model.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
-//            Log.i(TAG, "onActivityCreated(): " + transitPointList);
-//            if (transitPointList != null) {
-//                this.transitPointList = transitPointList;
-//                initCitySpinner(transitPointList);
-//            }
-//        });
+        currentParcelsViewModel.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
+            Log.i(TAG, "onActivityCreated(): " + transitPointList);
+            if (transitPointList != null) {
+                this.transitPointList = transitPointList;
+                initCitySpinner(transitPointList);
+            }
+        });
 
         inTransitCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
             initParcels(b, onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), allCheckBox.isChecked());

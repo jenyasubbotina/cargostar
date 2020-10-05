@@ -36,9 +36,8 @@ import com.example.cargostar.view.Constants;
 import com.example.cargostar.view.adapter.CreateParcelAdapter;
 import com.example.cargostar.view.adapter.CreateParcelData;
 import com.example.cargostar.view.callback.CreateParcelCallback;
+import com.example.cargostar.viewmodel.CreateParcelViewModel;
 import com.example.cargostar.viewmodel.HeaderViewModel;
-import com.example.cargostar.viewmodel.PopulateViewModel;
-
 import java.util.ArrayList;
 import java.util.List;
 import static com.example.cargostar.view.adapter.CreateParcelData.TYPE_BUTTON;
@@ -71,6 +70,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
     private TextView badgeCounterTextView;
 
     private HeaderViewModel headerViewModel;
+    private CreateParcelViewModel createParcelViewModel;
     private ReceiptWithCargoList currentReceipt;
     private List<CreateParcelData> itemList;
     private List<Cargo> cargoList = new ArrayList<>();
@@ -89,7 +89,6 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
     private Button saveReceiptBtn;
     private Button createReceiptBtn;
     private CreateParcelAdapter adapter;
-
     //service provider
     private CardView firstCard;
     private CardView secondCard;
@@ -175,6 +174,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 
         itemList = new ArrayList<>();
         headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        createParcelViewModel = new ViewModelProvider(this).get(CreateParcelViewModel.class);
 
         if (getIntent() != null) {
             final int requestKey = getIntent().getIntExtra(Constants.INTENT_REQUEST_KEY, -1);
@@ -258,20 +258,18 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         createReceiptBtn.setOnClickListener(v -> {
             createReceipt();
         });
-        //todo: cretea viewModel for CreateParcelAcitivity
-//        model.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
-//            Log.i(TAG, "entries=" + addressBookEntries);
-//            adapter.setAddressBookEntries(addressBookEntries);
-//            adapter.notifyDataSetChanged();
-//        });
+        createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
+            Log.i(TAG, "entries=" + addressBookEntries);
+            adapter.setAddressBookEntries(addressBookEntries);
+            adapter.notifyDataSetChanged();
+        });
     }
 
     @Override
     public void onDeleteItemClicked(final int position) {
-        Log.i(TAG, "onDeleteItemClicked(): ");
-        cargoList.remove(position);
+        cargoList.remove(position - 51);
         itemList.remove(position);
-        adapter.notifyItemRemoved(position);
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -377,7 +375,6 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         //payer data
         itemList.add(new CreateParcelData(getString(R.string.payer_data), null, null, null, TYPE_HEADING));
         itemList.add(new CreateParcelData(getString(R.string.address_book), null, null, null, TYPE_SINGLE_SPINNER));
-        //todo: add adapter to the spinner
         itemList.add(new CreateParcelData(getString(R.string.login_email), getString(R.string.delivery_address), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_TEXT, true, true));
         itemList.add(new CreateParcelData(getString(R.string.country), getString(R.string.city), null, null,
@@ -520,8 +517,6 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         recipientPhone = receipt != null ? receipt.getReceipt().getRecipientPhone() : null;
         recipientEmail = receipt != null ? receipt.getReceipt().getRecipientEmail() : null;
         //payer data
-        //todo: insert address book spinner (payerFirstName + payerLastName + payerAddress)
-//        itemList.get(24).firstValue = receipt != null ? receipt.getReceipt().get
         itemList.get(25).firstValue = receipt != null ? receipt.getReceipt().getPayerLogin() : null;
         itemList.get(25).secondValue = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getAddress() : null;
         itemList.get(26).firstValue = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getCountry() : null;
@@ -534,8 +529,6 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         itemList.get(29).secondValue = receipt != null ? receipt.getReceipt().getPayerPhone() : null;
         itemList.get(30).firstValue = receipt != null ? receipt.getReceipt().getPayerEmail() : null;
         itemList.get(30).secondValue = receipt != null && receipt.getReceipt().getDiscount() > 0 ? String.valueOf(receipt.getReceipt().getDiscount()) : null;
-        //todo: insert address book spinner
-//        addressBook =
         payerLogin = receipt != null ? receipt.getReceipt().getPayerLogin() : null;
         payerAddress = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getAddress() : null;
         payerCountry = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getCountry() : null;
@@ -625,7 +618,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 
         cargoList.add(newItem);
         itemList.add(calcItem);
-        adapter.notifyItemInserted(itemList.size() - 1);
+        adapter.notifyDataSetChanged();
     }
 
     private void saveReceipt() {
@@ -752,8 +745,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
             newPayerAddress.setZip(payerZip);
             currentReceipt.getReceipt().setPayerAddress(newPayerAddress);
         }
-        //todo: create viewModel for CreateParcelAcitivity
-//        model.updateReceipt(currentReceipt.getReceipt());
+        createParcelViewModel.updateReceipt(currentReceipt.getReceipt());
         Toast.makeText(context, "Данные сохранены успешно", Toast.LENGTH_SHORT).show();
         finish();
     }
@@ -1085,8 +1077,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
             case 6: {
                 //senderLogin
                 senderLogin = editable.toString();
-                //todo: create viewModel for CreateParcelActivity
-//                model.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, this::initPayerAddressBook);
+                createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, this::initPayerAddressBook);
                 break;
             }
             case 7: {
