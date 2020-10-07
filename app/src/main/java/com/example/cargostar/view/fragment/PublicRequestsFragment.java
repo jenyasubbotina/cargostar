@@ -138,6 +138,11 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
         });
+        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+            if (newNotificationsCount != null) {
+                badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
+            }
+        });
         parcelSearchImageView.setOnClickListener(v -> {
             final String parcelIdStr = parcelSearchEditText.getText().toString();
             if (TextUtils.isEmpty(parcelIdStr)) {

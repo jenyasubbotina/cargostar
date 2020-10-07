@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.cargostar.model.actor.AddressBook;
+import com.example.cargostar.model.actor.Customer;
 import com.example.cargostar.model.database.Repository;
 import com.example.cargostar.model.shipping.Receipt;
 
@@ -34,5 +35,13 @@ public class CreateParcelViewModel extends AndroidViewModel {
 
     public void updateReceipt(final Receipt updatedReceipt) {
         repository.updateReceipt(updatedReceipt);
+    }
+
+    public LiveData<Customer> selectCustomer(final String userId) {
+        return repository.selectCustomer(userId);
+    }
+
+    public LiveData<Customer> selectCustomerByLogin(final String senderLogin) {
+        return repository.selectCustomerByLogin(senderLogin);
     }
 }

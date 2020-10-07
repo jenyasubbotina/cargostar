@@ -93,6 +93,7 @@ public class Receipt {
     @Embedded(prefix = "invoice_") @Nullable private Document invoice;
 
     @ColumnInfo(name = "current_location_id") private Long currentLocation;
+
     @ColumnInfo(name = "transportation_status") @NonNull private TransportationStatus transportationStatus;
     @ColumnInfo(name = "payment_status") @NonNull private PaymentStatus paymentStatus;
     @ColumnInfo(name = "is_read", defaultValue = "true") private boolean isRead;

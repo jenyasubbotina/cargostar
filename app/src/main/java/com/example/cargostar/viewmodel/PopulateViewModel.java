@@ -1,6 +1,7 @@
 package com.example.cargostar.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -11,6 +12,7 @@ import com.example.cargostar.model.actor.Courier;
 import com.example.cargostar.model.actor.Customer;
 import com.example.cargostar.model.actor.PassportData;
 import com.example.cargostar.model.actor.PaymentData;
+import com.example.cargostar.model.api.RetrofitClient;
 import com.example.cargostar.model.database.Repository;
 import com.example.cargostar.model.location.Branch;
 import com.example.cargostar.model.location.City;
@@ -22,11 +24,14 @@ import com.example.cargostar.model.shipping.Consolidation;
 import com.example.cargostar.model.shipping.Parcel;
 import com.example.cargostar.model.shipping.Receipt;
 import com.example.cargostar.model.shipping.ReceiptTransitPointCrossRef;
-import com.example.cargostar.model.shipping.ReceiptWithCargoList;
-
+import com.google.gson.JsonElement;
 import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PopulateViewModel extends AndroidViewModel {
+    private static final String TAG = PopulateViewModel.class.toString();
     private final Repository repository;
     private LiveData<List<Courier>> courierList;
 
@@ -39,18 +44,6 @@ public class PopulateViewModel extends AndroidViewModel {
     /* Courier queries */
     public long createCourier(final Courier newCourier) {
         return repository.createCourier(newCourier);
-    }
-
-    public LiveData<Courier> selectCourier(final String userId) {
-        return repository.selectCourier(userId);
-    }
-
-    public LiveData<List<Courier>> selectAllCouriers() {
-        return courierList;
-    }
-
-    public void dropCouriers() {
-        repository.dropCouriers();
     }
 
     public LiveData<Courier> selectCourierByLogin(final String login) {
@@ -70,20 +63,8 @@ public class PopulateViewModel extends AndroidViewModel {
         return repository.createParcelTransitPointCrossRef(receiptTransitPointCrossRef);
     }
 
-    public void dropRequests() {
-        repository.dropReceipts();
-    }
-
-    public void deleteRequest(final long requestId) {
-        repository.deleteReceipt(requestId);
-    }
-
     public LiveData<Receipt> selectReceipt(final long receiptId) {
         return repository.selectReceipt(receiptId);
-    }
-
-    public LiveData<List<Parcel>> selectCurrentParcels(final long courierId) {
-        return repository.selectCurrentParcels(courierId);
     }
 
     public LiveData<List<Parcel>> selectAllParcels() {
@@ -108,119 +89,210 @@ public class PopulateViewModel extends AndroidViewModel {
     }
 
     /* Location Queries */
-    public long createCountry(final Country newCountry) {
-        return repository.createCountry(newCountry);
-    }
-
     public long[] createCountries(final List<Country> countryList) {
         return repository.createCountries(countryList);
     }
 
+    //TODO: check query here
     public LiveData<List<Country>> selectAllCountries() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getCountries(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "selectAllCountries(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "selectAllCountries(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "selectAllCountries(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "selectAllCountries(): ", t);
+            }
+        });
         return repository.selectAllCountries();
     }
 
-    public void dropCountries() {
-        repository.dropCountries();
-    }
-
-    public long createRegion(final Region newRegion) {
-        return repository.createRegion(newRegion);
-    }
-
-    public long[] createRegions(final List<Region> regionList) {
-        return repository.createRegions(regionList);
-    }
-
     public LiveData<List<Region>> selectAllRegions() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getRegions(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "selectAllRegions(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "selectAllRegions(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "selectAllRegions(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "selectAllRegions(): ", t);
+            }
+        });
         return repository.selectAllRegions();
     }
 
-    public LiveData<List<Region>> selectRegionsByCountry(final long countryId) {
-        return repository.selectRegionsByCountry(countryId);
+    public LiveData<List<City>> selectAllCities() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getCities(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "selectAllCities(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "selectAllCities(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "selectAllCities(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "selectAllCities(): ", t);
+            }
+        });
+        return repository.selectAllCities();
     }
 
-    public void dropRegions() {
-        repository.dropRegions();
+    public LiveData<List<Branch>> selectAllTransitPoints() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getTransitPoints(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "selectAllTransitPoints(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "selectAllTransitPoints(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "selectAllTransitPoints(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "selectAllTransitPoints(): ", t);
+            }
+        });
+        return repository.selectAllBranches();
     }
 
-    public long createCity(final City newCity) {
-        return repository.createCity(newCity);
+    public LiveData<List<Branch>> selectPackagingTypes() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getPackageTypes(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "selectPackagingTypes(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "selectPackagingTypes(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "selectPackagingTypes(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "selectPackagingTypes(): ", t);
+            }
+        });
+        return null;
+    }
+
+    public LiveData<List<Branch>> selectPackaging() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getPackaging(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "selectPackaging(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "selectPackaging(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "selectPackaging(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "selectPackaging(): ", t);
+            }
+        });
+        return null;
+    }
+
+    public LiveData<List<Branch>> selectZones() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getZones(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "selectZones(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "selectZones(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "selectZones(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "selectZones(): ", t);
+            }
+        });
+        return null;
+    }
+
+    public LiveData<List<Branch>> selectZoneSettings() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getZoneSettings(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "selectZoneSettings(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "selectZoneSettings(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "selectZoneSettings(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "selectZoneSettings(): ", t);
+            }
+        });
+        return null;
+    }
+
+    public LiveData<List<Branch>> selectAddressBook() {
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getAddressBook(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
+                Log.i(TAG, "getAddressBook(): code=" + response.code());
+                if (response.isSuccessful()) {
+                    Log.i(TAG, "getAddressBook(): response=" + response.body());
+                    return;
+                }
+                Log.e(TAG, "getAddressBook(): error=" + response.errorBody());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
+                Log.e(TAG, "getAddressBook(): ", t);
+            }
+        });
+        return null;
+    }
+
+    //TODO:
+    public long[] createRegions(final List<Region> regionList) {
+        return repository.createRegions(regionList);
     }
 
     public long[] createCities(final List<City> cityList) {
         return repository.createCities(cityList);
     }
 
-    public LiveData<List<City>> selectAllCities() {
-        return repository.selectAllCities();
-    }
-
-    public LiveData<List<City>> selectCitiesByRegion(final long regionId) {
-        return repository.selectAllCitiesByRegion(regionId);
-    }
-
-    public LiveData<List<City>> selectCitiesByCountry(final long countryId) {
-        return repository.selectAllCitiesByCountry(countryId);
-    }
-
-    public void dropCities() {
-        repository.dropCities();
-    }
-
-    /*branches*/
-    public long createBranch(final Branch newBranch) {
-        return repository.createBranch(newBranch);
-    }
-
     public long[] createBranches(final List<Branch> branchList) {
         return repository.createBranches(branchList);
-    }
-
-    public LiveData<List<Branch>> selectAllBranches() {
-        return repository.selectAllBranches();
-    }
-
-    public LiveData<List<Branch>> selectBranchesByCity(final long cityId) {
-        return repository.selectAllBranchesByCity(cityId);
-    }
-
-    public LiveData<List<Branch>> selectBranchesByRegion(final long regionId) {
-        return repository.selectAllBranchesByRegion(regionId);
-    }
-
-    public LiveData<List<Branch>> selectBranchesByCountry(final long countryId) {
-        return repository.selectAllBranchesByCountry(countryId);
-    }
-
-    public void dropBranches() {
-        repository.dropBranches();
-    }
-
-    /*transit points*/
-    public long createTransitPoint(final TransitPoint transitPoint) {
-        return repository.createTransitPoint(transitPoint);
     }
 
     public long[] createTransitPoint(final List<TransitPoint> transitPointList) {
         return repository.createTransitPoint(transitPointList);
     }
 
-    public void updateTransitPoint(final TransitPoint updatedTransitPoint) {
-        repository.updateTransitPoint(updatedTransitPoint);
-    }
-
-    public void dropTransitPoints() {
-        repository.dropTransitPoints();
-    }
-
-    /*address book*/
     public long createAddressBookEntry(final AddressBook addressBook) {
         return repository.createAddressBookEntry(addressBook);
-    }
-
-    public void updateAddressBookEntry(final AddressBook updatedAddressBook) {
-        repository.updateAddressBookEntry(updatedAddressBook);
     }
 
     /*Consolidation queries*/

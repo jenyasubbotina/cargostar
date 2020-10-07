@@ -121,6 +121,11 @@ public class CreateUserActivity extends AppCompatActivity {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
         });
+        headerViewModel.selectNewNotificationsCount().observe(this, newNotificationsCount -> {
+            if (newNotificationsCount != null) {
+                badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
+            }
+        });
 
         parcelSearchImageView.setOnClickListener(v -> {
             final String parcelIdStr = parcelSearchEditText.getText().toString();

@@ -343,6 +343,11 @@ public class ProfileFragment extends Fragment {
                 geolocationEditText.setBackgroundResource(R.drawable.edit_text_active);
             }
         });
+        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+            if (newNotificationsCount != null) {
+                badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
+            }
+        });
 
         profileViewModel.selectCountryByCourierId(courierId).observe(getViewLifecycleOwner(), country -> {
             Log.i(ProfileFragment.class.toString(), "branchId=" + branchId + "country=" + country);

@@ -28,4 +28,8 @@ public class HeaderViewModel extends AndroidViewModel {
     public LiveData<ReceiptWithCargoList> selectRequest(final long requestId) {
         return repository.selectRequest(requestId);
     }
+
+    public LiveData<Integer> selectNewNotificationsCount() {
+        return repository.selectNewNotificationsCount();
+    }
 }

@@ -329,10 +329,6 @@ public class Repository {
         return parcelDao.selectReceipt(receiptId);
     }
 
-    public LiveData<List<Parcel>> selectCurrentParcels(final long courierId) {
-        return parcelDao.selectCurrentParcels(courierId);
-    }
-
     public LiveData<List<Parcel>> selectAllParcels() {
         return parcelDao.selectAllParcels();
     }
@@ -372,7 +368,7 @@ public class Repository {
     }
 
     public LiveData<List<Parcel>> selectParcelsByLocationAndStatus(final long courierId, final TransportationStatus[] statusList, final long locationId) {
-        return parcelDao.selectParcelsByLocationAndStatus(courierId, TransportationStatus.IN_TRANSIT, statusList, locationId);
+        return parcelDao.selectParcelsByLocationAndStatus(courierId, TransportationStatus.IN_TRANSIT, locationId, statusList);
     }
 
     public void dropReceipts() {
@@ -423,6 +419,10 @@ public class Repository {
 
     public LiveData<List<Notification>> selectNewNotifications() {
         return parcelDao.selectNewNotifications(false);
+    }
+
+    public LiveData<Integer> selectNewNotificationsCount() {
+        return parcelDao.selectNewNotificationsCount(false);
     }
 
     public void readNotification(final long receiptId) {

@@ -46,6 +46,8 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelViewHolder> {
         final Parcel currentParcel = parcelList.get(position);
         final Receipt currentReceipt = currentParcel.getReceipt();
 
+        Log.i(ParcelAdapter.class.toString(), "position=" + position + " route=" + currentParcel.getRoute());
+
         if (currentReceipt != null) {
             final String parcelIndex = (position + 1) + ".";
             final String parcelId = "# " + currentReceipt.getId();

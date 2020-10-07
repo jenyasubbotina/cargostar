@@ -183,36 +183,55 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 
             initUI();
 
-            if (requestKey == Constants.REQUEST_EDIT_PARCEL) {
-                headerViewModel.selectRequest(requestId).observe(this, receipt -> {
-                    if (receipt != null) {
-                        if (requestOrParcel == Constants.INTENT_REQUEST) {
-                            saveReceiptBtn.setVisibility(View.VISIBLE);
-                            createReceiptBtn.setVisibility(View.VISIBLE);
-                        }
-                        else if (requestOrParcel == Constants.INTENT_PARCEL) {
-                            saveReceiptBtn.setVisibility(View.VISIBLE);
-                            createReceiptBtn.setVisibility(View.INVISIBLE);
-                        }
-                        if (receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID ||
-                                receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_MORE ||
-                                receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_PARTIALLY) {
-                            cashRadioBtn.setVisibility(View.INVISIBLE);
-                            terminalRadioBtn.setVisibility(View.INVISIBLE);
-                        }
-                        else if (receipt.getReceipt().getPaymentStatus() == PaymentStatus.WAITING_CHECK || receipt.getReceipt().getPaymentStatus() == PaymentStatus.WAITING_PAYMENT) {
-                            cashRadioBtn.setVisibility(View.VISIBLE);
-                            terminalRadioBtn.setVisibility(View.VISIBLE);
-                        }
-                        currentReceipt = receipt;
-                        updateUI(currentReceipt);
+            headerViewModel.selectRequest(requestId).observe(this, receipt -> {
+                if (receipt != null) {
+                    if (requestOrParcel == Constants.INTENT_REQUEST) {
+                        saveReceiptBtn.setVisibility(View.VISIBLE);
+                        createReceiptBtn.setVisibility(View.VISIBLE);
                     }
-                });
-            }
-            else {
-                saveReceiptBtn.setVisibility(View.INVISIBLE);
-                createReceiptBtn.setVisibility(View.VISIBLE);
-            }
+                    else if (requestOrParcel == Constants.INTENT_PARCEL) {
+                        saveReceiptBtn.setVisibility(View.VISIBLE);
+                        createReceiptBtn.setVisibility(View.INVISIBLE);
+                    }
+                    if (receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID ||
+                            receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_MORE ||
+                            receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_PARTIALLY) {
+                        cashRadioBtn.setVisibility(View.INVISIBLE);
+                        terminalRadioBtn.setVisibility(View.INVISIBLE);
+                        paymentMethodRadioGroup.setVisibility(View.INVISIBLE);
+                        firstCardRadioBtn.setVisibility(View.INVISIBLE);
+                        secondCardRadioBtn.setVisibility(View.INVISIBLE);
+                        firstCardImageView.setVisibility(View.INVISIBLE);
+                        secondCardImageView.setVisibility(View.INVISIBLE);
+                        firstCard.setVisibility(View.INVISIBLE);
+                        secondCard.setVisibility(View.INVISIBLE);
+                        expressRadioBtn.setVisibility(View.INVISIBLE);
+                        economyRadioBtn.setVisibility(View.INVISIBLE);
+                        tariffRadioGroup.setVisibility(View.INVISIBLE);
+                    }
+                    else if (receipt.getReceipt().getPaymentStatus() == PaymentStatus.WAITING_CHECK || receipt.getReceipt().getPaymentStatus() == PaymentStatus.WAITING_PAYMENT) {
+                        cashRadioBtn.setVisibility(View.VISIBLE);
+                        terminalRadioBtn.setVisibility(View.VISIBLE);
+                        paymentMethodRadioGroup.setVisibility(View.VISIBLE);
+                        firstCardRadioBtn.setVisibility(View.VISIBLE);
+                        secondCardRadioBtn.setVisibility(View.VISIBLE);
+                        firstCardImageView.setVisibility(View.VISIBLE);
+                        secondCardImageView.setVisibility(View.VISIBLE);
+                        firstCard.setVisibility(View.VISIBLE);
+                        secondCard.setVisibility(View.VISIBLE);
+                        expressRadioBtn.setVisibility(View.VISIBLE);
+                        economyRadioBtn.setVisibility(View.VISIBLE);
+                        tariffRadioGroup.setVisibility(View.VISIBLE);
+                    }
+                    currentReceipt = receipt;
+                    updateUI(currentReceipt);
+                }
+                if (requestKey != Constants.REQUEST_EDIT_PARCEL) {
+                    saveReceiptBtn.setVisibility(View.INVISIBLE);
+                    createReceiptBtn.setVisibility(View.VISIBLE);
+                }
+            });
+
         }
         headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
             if (courier != null) {
@@ -223,6 +242,11 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         headerViewModel.selectBranchByCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(this, branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
+            }
+        });
+        headerViewModel.selectNewNotificationsCount().observe(this, newNotificationsCount -> {
+            if (newNotificationsCount != null) {
+                badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
         });
 
@@ -1078,6 +1102,35 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
                 //senderLogin
                 senderLogin = editable.toString();
                 createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, this::initPayerAddressBook);
+                createParcelViewModel.selectCustomerByLogin(senderLogin).observe(this, customer -> {
+                    if (customer != null) {
+                        if (customer.getSignature() != null) {
+                            itemList.get(5).firstValue =  customer.getSignature().getName();
+                            adapter.notifyItemChanged(5);
+                        }
+                        itemList.get(6).firstValue = customer.getAccount().getLogin();
+                        itemList.get(6).secondValue = customer.getCargostarAccountNumber();
+                        adapter.notifyItemChanged(6);
+                        itemList.get(7).firstValue = customer.getTntAccountNumber();
+                        itemList.get(7).secondValue = customer.getFedexAccountNumber();
+                        adapter.notifyItemChanged(7);
+                        itemList.get(8).firstValue = customer.getAddress().getAddress();
+                        itemList.get(8).secondValue = customer.getAddress().getCountry();
+                        adapter.notifyItemChanged(8);
+                        itemList.get(9).firstValue = customer.getAddress().getCity();
+                        itemList.get(9).secondValue = customer.getAddress().getRegion();
+                        adapter.notifyItemChanged(9);
+                        itemList.get(10).firstValue = customer.getAddress().getZip();
+                        itemList.get(10).secondValue = customer.getFirstName();
+                        adapter.notifyItemChanged(10);
+                        itemList.get(11).firstValue = customer.getMiddleName();
+                        itemList.get(11).secondValue = customer.getLastName();
+                        adapter.notifyItemChanged(11);
+                        itemList.get(12).firstValue = customer.getPhone();
+                        itemList.get(12).secondValue = customer.getAccount().getEmail();
+                        adapter.notifyItemChanged(12);
+                    }
+                });
                 break;
             }
             case 7: {

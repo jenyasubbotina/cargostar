@@ -312,45 +312,6 @@ public interface ParcelDao {
             "tracking_code IS NOT NULL AND " +
             "qr IS NOT NULL AND " +
             "current_location_id IS NOT NULL AND " +
-            "transportation_status IS NOT NULL AND " +
-            "tariff IS NOT NULL AND " +
-            "cost > 0 AND " +
-            "fuel_charge > 0 AND " +
-            "vat > 0 AND " +
-            "dispatch_date IS NOT NULL AND " +
-            "arrival_date IS NOT NULL AND " +
-            "receipt_name IS NOT NULL AND receipt_link IS NOT NULL AND " +
-            "invoice_name IS NOT NULL AND invoice_link IS NOT NULL")
-    LiveData<List<Parcel>> selectCurrentParcels(final long courierId);
-
-    @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
-            "service_provider IS NOT NULL AND " +
-            "courier_id == :courierId AND " +
-            "operator_id IS NOT NULL AND " +
-            "sender_signature IS NOT NULL AND " +
-            "recipient_signature IS NOT NULL AND " +
-            "sender_country IS NOT NULL AND sender_region IS NOT NULL AND sender_city IS NOT NULL AND sender_address IS NOT NULL AND sender_zip IS NOT NULL AND " +
-            "sender_first_name IS NOT NULL AND " +
-            "sender_middle_name IS NOT NULL AND " +
-            "sender_last_name IS NOT NULL AND " +
-            "sender_phone IS NOT NULL AND " +
-            "sender_email IS NOT NULL AND " +
-            "recipient_country IS NOT NULL AND recipient_region IS NOT NULL AND recipient_city IS NOT NULL AND recipient_address IS NOT NULL AND recipient_zip IS NOT NULL AND " +
-            "recipient_first_name IS NOT NULL AND " +
-            "recipient_middle_name IS NOT NULL AND " +
-            "recipient_last_name IS NOT NULL AND " +
-            "recipient_phone IS NOT NULL AND " +
-            "recipient_email IS NOT NULL AND " +
-            "payer_country IS NOT NULL AND payer_region IS NOT NULL AND payer_city IS NOT NULL AND payer_address IS NOT NULL AND payer_zip IS NOT NULL AND " +
-            "payer_first_name IS NOT NULL AND " +
-            "payer_middle_name IS NOT NULL AND " +
-            "payer_last_name IS NOT NULL AND " +
-            "payer_phone IS NOT NULL AND " +
-            "payer_email IS NOT NULL AND " +
-            "tracking_code IS NOT NULL AND " +
-            "qr IS NOT NULL AND " +
-            "current_location_id IS NOT NULL AND " +
             "transportation_status == :transportationStatus AND " +
             "tariff IS NOT NULL AND " +
             "cost > 0 AND " +
@@ -469,6 +430,8 @@ public interface ParcelDao {
             "qr IS NOT NULL AND " +
             "(current_location_id == :locationId AND " +
             "transportation_status == :inTransitStatus) OR " +
+//            "(current_location_id == :locationId AND " +
+//            "transportation_status == :onTheWayStatus) OR " +
             "(transportation_status IN (:statusList) AND " +
             "transportation_status != :inTransitStatus) AND " +
             "tariff IS NOT NULL AND " +
@@ -479,7 +442,7 @@ public interface ParcelDao {
             "arrival_date IS NOT NULL AND " +
             "receipt_name IS NOT NULL AND receipt_link IS NOT NULL AND " +
             "invoice_name IS NOT NULL AND invoice_link IS NOT NULL")
-    LiveData<List<Parcel>> selectParcelsByLocationAndStatus(final long courierId, final TransportationStatus inTransitStatus, final TransportationStatus[] statusList, final long locationId);
+    LiveData<List<Parcel>> selectParcelsByLocationAndStatus(final long courierId, final TransportationStatus inTransitStatus, final long locationId,  final TransportationStatus[] statusList);
 
     @Transaction
     @Query("SELECT * FROM receipt WHERE " +
@@ -546,6 +509,9 @@ public interface ParcelDao {
 
     @Query("SELECT * FROM notification WHERE is_read == :isRead ORDER BY receive_date DESC")
     LiveData<List<Notification>> selectNewNotifications(final boolean isRead);
+
+    @Query("SELECT COUNT() FROM notification WHERE is_read == :isRead")
+    LiveData<Integer> selectNewNotificationsCount(final boolean isRead);
 
     /*Consolidation queries*/
     @Transaction

@@ -25,20 +25,12 @@ public class CreateUserViewModel extends AndroidViewModel {
         return repository.createCustomer(newCustomer);
     }
 
-    public LiveData<Customer> selectCustomer(final String userId) {
-        return repository.selectCustomer(userId);
-    }
-
     public LiveData<List<Customer>> selectAllCustomers() {
         return customerList;
     }
 
     public void dropCustomers() {
         repository.dropCustomers();
-    }
-
-    public LiveData<Customer> selectCustomerByLogin(final String senderLogin) {
-        return repository.selectCustomerByLogin(senderLogin);
     }
 
     /* Passport data queries */

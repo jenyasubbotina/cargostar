@@ -177,4 +177,8 @@
     <string name="logout">Выйти</string>
     <string name="address_book">Адресная книга</string>
     <string name="uzbekistan">Узбекистан</string>
+<!--    server configuration-->
+    <string name="default_server_url">https://cargo.alex-its.uz/api/</string>
+    <string name="default_api_login">admin</string>
+    <string name="default_api_password">5N8zWV2BbQ</string>
 </resources>

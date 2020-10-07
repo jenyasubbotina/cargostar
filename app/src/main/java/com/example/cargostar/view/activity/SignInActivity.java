@@ -78,6 +78,16 @@ public class SignInActivity extends AppCompatActivity {
 //        initCustomers();
 //        initRequests();
 
+        populateViewModel.selectAllCountries();
+        populateViewModel.selectAllRegions();
+        populateViewModel.selectAllCities();
+        populateViewModel.selectAllTransitPoints();
+        populateViewModel.selectPackagingTypes();
+        populateViewModel.selectPackaging();
+        populateViewModel.selectZones();
+        populateViewModel.selectZoneSettings();
+        populateViewModel.selectAddressBook();
+
         signInBtn.setOnClickListener(v -> {
             final String login = loginEditText.getText().toString();
             final String password = passwordEditText.getText().toString();
@@ -272,6 +282,7 @@ public class SignInActivity extends AppCompatActivity {
                 new Account("dud", "12345", "vdud@gmail.com"),
                 new Address("Россия", "Москва", "Москва", "Парк Сокольники"),
                 "0987654321");
+
         final long crosbyId = createUserViewModel.createCustomer(crosby);
         final long dudId = createUserViewModel.createCustomer(dud);
 
@@ -323,15 +334,6 @@ public class SignInActivity extends AppCompatActivity {
                 new Address("США", "Калифорния", "Сан-Хосе", "Justice str. 9"),
                 "+987654321098",
                 TransportationStatus.IN_TRANSIT, PaymentStatus.WAITING_CHECK);
-        final Receipt amberRequest = new Receipt("Эмбер", "", "Херд",
-                new Address("Франция", "", "Париж", "Eiffel tower area"), "+999999999999",
-                TransportationStatus.IN_TRANSIT, PaymentStatus.PAID);
-        final Receipt sidneyRequest = new Receipt("Сидни", "", "Кросби",
-                new Address("Канада", "Онтарио", "Торонто", "Penguins str. 999"), "+123456789009",
-                TransportationStatus.IN_TRANSIT, PaymentStatus.PAID_PARTIALLY);
-        final Receipt dudRequest = new Receipt("Юрий", "Александрович", "Дудь",
-                new Address("Россия", "Москва", "Москва", "Парк Сокольники"), "+564739271199",
-                TransportationStatus.IN_TRANSIT, PaymentStatus.PAID_MORE);
         final List<Cargo> sergeyCargoList = new ArrayList<>();
         sergeyCargoList.add(new Cargo("Документы", "Конверт", 50, 30, 3, 1, null));
         sergeyCargoList.add(new Cargo("Канцтовары", "Конверт", 25, 12, 3, 1, null));
@@ -342,6 +344,76 @@ public class SignInActivity extends AppCompatActivity {
             cargo.setReceiptId(sergeyParcelId);
         }
         populateViewModel.createCargo(sergeyCargoList);
+
+        /*amber account & request*/
+        final Customer amber = new Customer(
+                "Эмбер",
+                "",
+                "Херд",
+                "+75327652987",
+                new Account("amber", "12345", "amber@gmail.com"),
+                new Address("Франция", "Париж", "Париж", "st. Eclear Str 289 22B"),
+                "9567543218");
+        final long amberId = createUserViewModel.createCustomer(amber);
+
+        final PaymentData amberPaymentData = new PaymentData("753421869", "Warner Bros. LTD");
+        amberPaymentData.setUserId(amberId);
+        amberPaymentData.setOked("145362987");
+        amberPaymentData.setMfo("748965123");
+        amberPaymentData.setVat("654381927");
+        amberPaymentData.setBank("Тинькофф");
+        amberPaymentData.setCheckingAccount("951951753");
+        createUserViewModel.createPaymentData(amberPaymentData);
+        /*Amber addressBook*/
+        final AddressBook amberAddressBook1 = new AddressBook(
+                amber.getAccount().getLogin(),
+                "Сергей", "Львович", "Ким", "+998990116824", "the_real_king@gmail.com",
+                new Address("Узбекистан", "Ташкент", "Ташкент", "Юнусабад-8"));
+        final AddressBook amberAddressBook2 = new AddressBook(
+                amber.getAccount().getLogin(),
+                "Сергей", "Игоревич", "Бя", "+998909868886", "the_mighty_dwarf@gmail.com",
+                new Address("Узбекистан", "Ташкент", "Ташкент", "Карасу-6"));
+        final AddressBook amberAddressBook3 = new AddressBook(
+                amber.getAccount().getLogin(),
+                "Наврус", "Жандуллаевич", "Жандуллаев", "+998912552255", "njay@gmail.com",
+                new Address("Узбекистан", "Республика Каракалпакстан", "Нукус", "Улица пустынная 23"));
+        final AddressBook amberAddressBook4 = new AddressBook(
+                amber.getAccount().getLogin(),
+                "Рустан", "Таджиевич", "Таджиев", "+998974213212", "bad_carma@gmail.com",
+                new Address("Узбекистан", "Андижанская Область", "Андижан", "Улица пустырей 19"));
+        final AddressBook amberAddressBook5 = new AddressBook(
+                amber.getAccount().getLogin(),
+                "Андроид", "Валерьевич", "Ким", "+998909876541", "android@gmail.com",
+                new Address("Узбекистан", "Ташкент", "Ташкент", "Юнусабад-17"));
+        populateViewModel.createAddressBookEntry(amberAddressBook1);
+        populateViewModel.createAddressBookEntry(amberAddressBook2);
+        populateViewModel.createAddressBookEntry(amberAddressBook3);
+        populateViewModel.createAddressBookEntry(amberAddressBook4);
+        populateViewModel.createAddressBookEntry(amberAddressBook5);
+
+        final Receipt amberRequest = new Receipt(amber.getFirstName(), amber.getMiddleName(), amber.getLastName(),
+                new Address(amber.getAddress().getCountry(), amber.getAddress().getRegion(), amber.getAddress().getCity(), amber.getAddress().getAddress()), amber.getPhone(),
+                TransportationStatus.IN_TRANSIT, PaymentStatus.PAID);
+
+        amberRequest.setPayerLogin(amber.getAccount().getLogin());
+        amberRequest.setPayerAddress(amber.getAddress());
+        amberRequest.setPayerFirstName(amber.getFirstName());
+        amberRequest.setPayerMiddleName(amber.getMiddleName());
+        amberRequest.setPayerLastName(amber.getLastName());
+        amberRequest.setPayerPhone(amber.getPhone());
+        amberRequest.setPayerEmail(amber.getAccount().getEmail());
+        amberRequest.setDiscount(10);
+        amberRequest.setPayerCargostarAccountNumber(amber.getCargostarAccountNumber());
+        amberRequest.setPayerTntAccountNumber(amber.getTntAccountNumber());
+        amberRequest.setPayerFedexAccountNumber(amber.getTntAccountNumber());
+        amberRequest.setCheckingAccount(amberPaymentData.getCheckingAccount());
+        amberRequest.setBank(amberPaymentData.getBank());
+        amberRequest.setRegistrationCode("11433699582");
+        amberRequest.setMfo(amberPaymentData.getMfo());
+        amberRequest.setOked(amberPaymentData.getOked());
+        amberRequest.setTariff(getString(R.string.express));
+        amberRequest.setServiceProvider(getString(R.string.fedex));
+        amberRequest.setCost(10500600);
 
         final List<Cargo> amberCargoList = new ArrayList<>();
         amberCargoList.add(new Cargo("Одежда", "Коробка", 70, 70, 40, 5, null));
@@ -371,8 +443,6 @@ public class SignInActivity extends AppCompatActivity {
         populateViewModel.createNotification(galNotification);
         populateViewModel.createNotification(amberNotification);
         populateViewModel.createNotification(dudNotification);
-
-        Log.i(TAG, "initRequests: " + sergeyRequest);
     }
 
     private void initParcels(final long[] branchIds) {

@@ -165,12 +165,18 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
                 startActivity(mainIntent);
             });
         });
+        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+            if (newNotificationsCount != null) {
+                badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
+            }
+        });
         //init notificationList
         notificationsViewModel.selectAllNotifications().observe(getViewLifecycleOwner(), notificationList -> {
             Log.i(NotificationsFragment.class.toString(), "notificationList=" + notificationList);
             notificationAdapter.setNotificationList(notificationList);
             notificationAdapter.notifyDataSetChanged();
         });
+
     }
 
     @Override
