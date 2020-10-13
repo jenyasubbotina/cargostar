@@ -46,7 +46,7 @@ import com.example.cargostar.model.shipping.ReceiptTransitPointCrossRef;
         ReceiptTransitPointCrossRef.class,
         Cargo.class,
         Consolidation.class,
-        Notification.class}, version = 33, exportSchema = false)
+        Notification.class}, version = 34, exportSchema = false)
 @TypeConverters({ PointConverter.class, TransportationStatusConverter.class, PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";

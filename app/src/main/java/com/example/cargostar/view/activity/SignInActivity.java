@@ -79,14 +79,14 @@ public class SignInActivity extends AppCompatActivity {
 //        initRequests();
 
         populateViewModel.selectAllCountries();
-        populateViewModel.selectAllRegions();
-        populateViewModel.selectAllCities();
-        populateViewModel.selectAllTransitPoints();
-        populateViewModel.selectPackagingTypes();
-        populateViewModel.selectPackaging();
-        populateViewModel.selectZones();
-        populateViewModel.selectZoneSettings();
-        populateViewModel.selectAddressBook();
+//        populateViewModel.selectAllRegions();
+//        populateViewModel.selectAllCities();
+//        populateViewModel.selectAllTransitPoints();
+//        populateViewModel.selectPackagingTypes();
+//        populateViewModel.selectPackaging();
+//        populateViewModel.selectZones();
+//        populateViewModel.selectZoneSettings();
+//        populateViewModel.selectAddressBook();
 
         signInBtn.setOnClickListener(v -> {
             final String login = loginEditText.getText().toString();
