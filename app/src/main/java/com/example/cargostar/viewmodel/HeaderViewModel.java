@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import com.example.cargostar.model.actor.Courier;
 import com.example.cargostar.model.database.Repository;
-import com.example.cargostar.model.location.Branch;
+import com.example.cargostar.model.location.Branche;
 import com.example.cargostar.model.shipping.ReceiptWithCargoList;
 
 public class HeaderViewModel extends AndroidViewModel {
@@ -21,7 +21,7 @@ public class HeaderViewModel extends AndroidViewModel {
         return repository.selectCourierByLogin(login);
     }
 
-    public LiveData<Branch> selectBranchByCourierId(final long courierId) {
+    public LiveData<Branche> selectBranchByCourierId(final long courierId) {
         return repository.selectBranchByCourierId(courierId);
     }
 

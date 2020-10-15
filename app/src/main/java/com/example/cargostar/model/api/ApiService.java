@@ -1,6 +1,13 @@
 package com.example.cargostar.model.api;
 
+import com.example.cargostar.model.location.City;
+import com.example.cargostar.model.location.Country;
+import com.example.cargostar.model.location.Region;
+import com.example.cargostar.model.location.TransitPoint;
 import com.google.gson.JsonElement;
+
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
@@ -8,7 +15,7 @@ import retrofit2.http.Headers;
 public interface ApiService {
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transit-point")
-    Call<JsonElement> getTransitPoints();
+    Call<List<TransitPoint>> getTransitPoints();
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("packaging-type")
@@ -28,15 +35,15 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("country")
-    Call<JsonElement> getCountries();
+    Call<List<Country>> getCountries();
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("region")
-    Call<JsonElement> getRegions();
+    Call<List<Region>> getRegions();
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("city")
-    Call<JsonElement> getCities();
+    Call<List<City>> getCities();
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("address-book")

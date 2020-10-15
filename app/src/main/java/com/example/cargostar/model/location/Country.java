@@ -4,23 +4,76 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
 @Entity(tableName = "country")
 public class Country {
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") private long id;
-    @ColumnInfo(name = "name") @NonNull private final String name;
-    @ColumnInfo(name = "code") @NonNull private final String code;
-    @ColumnInfo(name = "status1") private int status1;
-    @ColumnInfo(name = "code2") private String code2;
-    @ColumnInfo(name = "status2") private int status2;
-    @ColumnInfo(name = "name_en") private String nameEn;
-    @ColumnInfo(name = "created_at") @Nullable private Date createAt;
-    @ColumnInfo(name = "updated_at") @Nullable private Date updatedAt;
+    @SerializedName("id")
+    @Expose
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    private long id;
+
+    @SerializedName("name")
+    @Expose
+    @ColumnInfo(name = "name")
+    @NonNull private final String name;
+
+    @SerializedName("code")
+    @Expose
+    @ColumnInfo(name = "code")
+    @NonNull private final String code;
+
+    @SerializedName("status")
+    @Expose
+    @ColumnInfo(name = "status")
+    private int status;
+
+    @SerializedName("code2")
+    @Expose
+    @ColumnInfo(name = "code2")
+    private String code2;
+
+    @SerializedName("name_en")
+    @Expose
+    @ColumnInfo(name = "name_en")
+    private String nameEn;
+
+    @SerializedName("create_at")
+    @Expose
+    @ColumnInfo(name = "created_at")
+    @Nullable private Date createdAt;
+
+    @SerializedName("updated_at")
+    @Expose
+    @ColumnInfo(name = "updated_at")
+    @Nullable private Date updatedAt;
 
 
+    public Country(final long id,
+                   @NonNull final String name,
+                   @NonNull final String code,
+                   final int status,
+                   @Nullable final String code2,
+                   @Nullable final String nameEn,
+                   @Nullable final Date createdAt,
+                   @Nullable final Date updatedAt) {
+        this.name = name;
+        this.code = code;
+        this.status = status;
+        this.code2 = code2;
+        this.nameEn = nameEn;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    @Ignore
     public Country(@NonNull final String name, @NonNull final String code) {
         this.name = name;
         this.code = code;
@@ -44,12 +97,12 @@ public class Country {
         this.id = id;
     }
 
-    public int getStatus1() {
-        return status1;
+    public int getStatus() {
+        return status;
     }
 
-    public void setStatus1(int status1) {
-        this.status1 = status1;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getCode2() {
@@ -58,14 +111,6 @@ public class Country {
 
     public void setCode2(String code2) {
         this.code2 = code2;
-    }
-
-    public int getStatus2() {
-        return status2;
-    }
-
-    public void setStatus2(int status2) {
-        this.status2 = status2;
     }
 
     public String getNameEn() {
@@ -77,12 +122,12 @@ public class Country {
     }
 
     @Nullable
-    public Date getCreateAt() {
-        return createAt;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreateAt(@Nullable Date createAt) {
-        this.createAt = createAt;
+    public void setCreatedAt(@Nullable Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Nullable
@@ -101,6 +146,11 @@ public class Country {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", code='" + code + '\'' +
+                ", status=" + status +
+                ", code2='" + code2 + '\'' +
+                ", nameEn='" + nameEn + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

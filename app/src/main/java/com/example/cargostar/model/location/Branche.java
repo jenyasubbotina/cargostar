@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey;
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE)},
         indices = {@Index(value = "city_id")})
-public class Branch {
+public class Branche {
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") private long id;
     @ColumnInfo(name = "city_id") private final long cityId;
     @ColumnInfo(name = "name") @NonNull private final String name;
@@ -24,7 +24,7 @@ public class Branch {
     @Embedded @NonNull private final Point geolocation;
     @ColumnInfo(name = "phone") @NonNull private final String phone;
 
-    public Branch( long cityId, @NonNull String name, @NonNull String address, @NonNull final String zip, @NonNull final Point geolocation, @NonNull String phone) {
+    public Branche(long cityId, @NonNull String name, @NonNull String address, @NonNull final String zip, @NonNull final Point geolocation, @NonNull String phone) {
         this.cityId = cityId;
         this.name = name;
         this.address = address;

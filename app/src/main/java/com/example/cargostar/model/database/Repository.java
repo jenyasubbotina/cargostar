@@ -3,11 +3,6 @@ package com.example.cargostar.model.database;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Transaction;
-import androidx.room.Update;
 
 import com.example.cargostar.model.Notification;
 import com.example.cargostar.model.TransportationStatus;
@@ -19,7 +14,7 @@ import com.example.cargostar.model.actor.PaymentData;
 import com.example.cargostar.model.database.dao.ActorDao;
 import com.example.cargostar.model.database.dao.LocationDao;
 import com.example.cargostar.model.database.dao.ParcelDao;
-import com.example.cargostar.model.location.Branch;
+import com.example.cargostar.model.location.Branche;
 import com.example.cargostar.model.location.City;
 import com.example.cargostar.model.location.Country;
 import com.example.cargostar.model.location.Region;
@@ -143,15 +138,15 @@ public class Repository {
     }
 
     /*branches*/
-    public long createBranch(final Branch newBranch) {
-        return locationDao.createBranch(newBranch);
+    public long createBranch(final Branche newBranche) {
+        return locationDao.createBranch(newBranche);
     }
 
-    public long[] createBranches(final List<Branch> branchList) {
-        return locationDao.createBranches(branchList);
+    public long[] createBranches(final List<Branche> brancheList) {
+        return locationDao.createBranches(brancheList);
     }
 
-    public LiveData<Branch> selectBranchByCourierId(final long courierId) {
+    public LiveData<Branche> selectBranchByCourierId(final long courierId) {
         return locationDao.selectBranchByCourierId(courierId);
     }
 
@@ -167,19 +162,19 @@ public class Repository {
         return locationDao.selectCityByCourierId(courierId);
     }
 
-    public LiveData<List<Branch>> selectAllBranches() {
+    public LiveData<List<Branche>> selectAllBranches() {
         return locationDao.selectAllBranches();
     }
 
-    public LiveData<List<Branch>> selectAllBranchesByCity(final long cityId) {
+    public LiveData<List<Branche>> selectAllBranchesByCity(final long cityId) {
         return locationDao.selectAllBranchesByCity(cityId);
     }
 
-    public LiveData<List<Branch>> selectAllBranchesByRegion(final long regionId) {
+    public LiveData<List<Branche>> selectAllBranchesByRegion(final long regionId) {
         return locationDao.selectAllBranchesByRegion(regionId);
     }
 
-    public LiveData<List<Branch>> selectAllBranchesByCountry(final long countryId) {
+    public LiveData<List<Branche>> selectAllBranchesByCountry(final long countryId) {
         return locationDao.selectAllBranchesByCountry(countryId);
     }
 

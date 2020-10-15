@@ -29,7 +29,7 @@ import com.example.cargostar.model.actor.PassportData;
 import com.example.cargostar.model.actor.PaymentData;
 import com.example.cargostar.model.database.SharedPrefs;
 import com.example.cargostar.model.location.Address;
-import com.example.cargostar.model.location.Branch;
+import com.example.cargostar.model.location.Branche;
 import com.example.cargostar.model.location.City;
 import com.example.cargostar.model.location.Country;
 import com.example.cargostar.model.location.Point;
@@ -54,7 +54,7 @@ public class SignInActivity extends AppCompatActivity {
     private final List<Country> countryList = new ArrayList<>();
     private final List<Region> regionList = new ArrayList<>();
     private final List<City> cityList = new ArrayList<>();
-    private final List<Branch> branchList = new ArrayList<>();
+    private final List<Branche> brancheList = new ArrayList<>();
     private final List<TransitPoint> transitPointList = new ArrayList<>();
 
     private EditText loginEditText;
@@ -78,15 +78,15 @@ public class SignInActivity extends AppCompatActivity {
 //        initCustomers();
 //        initRequests();
 
-        populateViewModel.selectAllCountries();
-//        populateViewModel.selectAllRegions();
-//        populateViewModel.selectAllCities();
-//        populateViewModel.selectAllTransitPoints();
-//        populateViewModel.selectPackagingTypes();
-//        populateViewModel.selectPackaging();
-//        populateViewModel.selectZones();
-//        populateViewModel.selectZoneSettings();
-//        populateViewModel.selectAddressBook();
+//        populateViewModel.initCountryList(this);
+//        populateViewModel.initRegionList(this);
+//        populateViewModel.initCityList(this);
+        populateViewModel.initTransitPointList();
+        populateViewModel.initZoneList();
+        populateViewModel.initZoneSettings();
+        populateViewModel.initAddressBook();
+        populateViewModel.initPackagingTypes();
+        populateViewModel.initPackaging();
 
         signInBtn.setOnClickListener(v -> {
             final String login = loginEditText.getText().toString();
@@ -204,26 +204,26 @@ public class SignInActivity extends AppCompatActivity {
 
         final long[] cityIds = populateViewModel.createCities(cityList);
 
-        branchList.add(new Branch(cityIds[0], "Ташкент", "Метро Ойбек", "100190", new Point(10, 10), "+998712223344"));
-        branchList.add(new Branch(cityIds[1], "Андижан", "ул. Андижан", "100110", new Point(10, 10), "+998712223345"));
-        branchList.add(new Branch(cityIds[2], "Бухара", "ул. Бухара", "100120", new Point(10, 10), "+998712223346"));
-        branchList.add(new Branch(cityIds[3], "Джизак", "ул. Джизак", "100130", new Point(10, 10), "+998712223347"));
-        branchList.add(new Branch(cityIds[4], "Карши", "ул. Карши", "100140", new Point(10, 10), "+998712223348"));
-        branchList.add(new Branch(cityIds[5], "Навои", "ул. Навои", "100150", new Point(10, 10), "+998712223349"));
-        branchList.add(new Branch(cityIds[6], "Наманган", "ул. Наманган", "100160", new Point(10, 10), "+998712223350"));
-        branchList.add(new Branch(cityIds[7], "Самарканд", "ул. Самарканд", "100170", new Point(10, 10), "+998712223351"));
-        branchList.add(new Branch(cityIds[8], "Термез", "ул. Термез", "100180", new Point(10, 10), "+998712223352"));
-        branchList.add(new Branch(cityIds[9], "Гулистан", "ул. Гулистан", "100050", new Point(10, 10), "+998712223353"));
-        branchList.add(new Branch(cityIds[10], "Фергана", "ул. Фергана", "100060", new Point(10, 10), "+998712223354"));
-        branchList.add(new Branch(cityIds[11], "Ургенч", "ул. Ургенч", "100070", new Point(10, 10), "+998712223355"));
-        branchList.add(new Branch(cityIds[12], "Нукус", "ул. Нукус", "100080", new Point(10, 10), "+998712223356"));
-        branchList.add(new Branch(cityIds[13], "Астана", "ул. Нурлан", "980760", new Point(10, 10), "+79878887698"));
-        branchList.add(new Branch(cityIds[14], "Алматы", "Метро Сабур", "980760", new Point(10, 10), "+79898971432"));
-        branchList.add(new Branch(cityIds[17], "Москва", "Парк Сокольники", "3100120", new Point(10, 10), "+74715648733"));
-        branchList.add(new Branch(cityIds[18], "Пекин", "Уханьский рынок", "3100120", new Point(10, 10), "+567249081230"));
-        branchList.add(new Branch(cityIds[19], "Сеул", "Тондемун", "200120", new Point(10, 10), "+82100116825"));
+        brancheList.add(new Branche(cityIds[0], "Ташкент", "Метро Ойбек", "100190", new Point(10, 10), "+998712223344"));
+        brancheList.add(new Branche(cityIds[1], "Андижан", "ул. Андижан", "100110", new Point(10, 10), "+998712223345"));
+        brancheList.add(new Branche(cityIds[2], "Бухара", "ул. Бухара", "100120", new Point(10, 10), "+998712223346"));
+        brancheList.add(new Branche(cityIds[3], "Джизак", "ул. Джизак", "100130", new Point(10, 10), "+998712223347"));
+        brancheList.add(new Branche(cityIds[4], "Карши", "ул. Карши", "100140", new Point(10, 10), "+998712223348"));
+        brancheList.add(new Branche(cityIds[5], "Навои", "ул. Навои", "100150", new Point(10, 10), "+998712223349"));
+        brancheList.add(new Branche(cityIds[6], "Наманган", "ул. Наманган", "100160", new Point(10, 10), "+998712223350"));
+        brancheList.add(new Branche(cityIds[7], "Самарканд", "ул. Самарканд", "100170", new Point(10, 10), "+998712223351"));
+        brancheList.add(new Branche(cityIds[8], "Термез", "ул. Термез", "100180", new Point(10, 10), "+998712223352"));
+        brancheList.add(new Branche(cityIds[9], "Гулистан", "ул. Гулистан", "100050", new Point(10, 10), "+998712223353"));
+        brancheList.add(new Branche(cityIds[10], "Фергана", "ул. Фергана", "100060", new Point(10, 10), "+998712223354"));
+        brancheList.add(new Branche(cityIds[11], "Ургенч", "ул. Ургенч", "100070", new Point(10, 10), "+998712223355"));
+        brancheList.add(new Branche(cityIds[12], "Нукус", "ул. Нукус", "100080", new Point(10, 10), "+998712223356"));
+        brancheList.add(new Branche(cityIds[13], "Астана", "ул. Нурлан", "980760", new Point(10, 10), "+79878887698"));
+        brancheList.add(new Branche(cityIds[14], "Алматы", "Метро Сабур", "980760", new Point(10, 10), "+79898971432"));
+        brancheList.add(new Branche(cityIds[17], "Москва", "Парк Сокольники", "3100120", new Point(10, 10), "+74715648733"));
+        brancheList.add(new Branche(cityIds[18], "Пекин", "Уханьский рынок", "3100120", new Point(10, 10), "+567249081230"));
+        brancheList.add(new Branche(cityIds[19], "Сеул", "Тондемун", "200120", new Point(10, 10), "+82100116825"));
 
-        final long[] branchIds = populateViewModel.createBranches(branchList);
+        final long[] branchIds = populateViewModel.createBranches(brancheList);
 
         initCouriers(branchIds);
         initParcels(branchIds);

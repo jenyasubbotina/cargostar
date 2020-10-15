@@ -20,7 +20,7 @@ import com.example.cargostar.model.database.converters.TransportationStatusConve
 import com.example.cargostar.model.database.dao.ActorDao;
 import com.example.cargostar.model.database.dao.LocationDao;
 import com.example.cargostar.model.database.dao.ParcelDao;
-import com.example.cargostar.model.location.Branch;
+import com.example.cargostar.model.location.Branche;
 import com.example.cargostar.model.location.City;
 import com.example.cargostar.model.location.Country;
 import com.example.cargostar.model.location.Region;
@@ -40,13 +40,13 @@ import com.example.cargostar.model.shipping.ReceiptTransitPointCrossRef;
         Country.class,
         Region.class,
         City.class,
-        Branch.class,
+        Branche.class,
         TransitPoint.class,
         Receipt.class,
         ReceiptTransitPointCrossRef.class,
         Cargo.class,
         Consolidation.class,
-        Notification.class}, version = 34, exportSchema = false)
+        Notification.class}, version = 37, exportSchema = false)
 @TypeConverters({ PointConverter.class, TransportationStatusConverter.class, PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";

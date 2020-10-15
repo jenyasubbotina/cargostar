@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.cargostar.model.location.Branch;
+import com.example.cargostar.model.location.Branche;
 import com.example.cargostar.model.location.City;
 import com.example.cargostar.model.location.Country;
 import com.example.cargostar.model.location.Region;
@@ -64,46 +64,46 @@ public interface LocationDao {
 
     /*branches*/
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    long createBranch(final Branch newBranch);
+    long createBranch(final Branche newBranche);
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    long[] createBranches(final List<Branch> branchList);
+    long[] createBranches(final List<Branche> brancheList);
 
-    @Query("SELECT * FROM branch WHERE id == (SELECT id FROM courier WHERE id == :courierId)")
-    LiveData<Branch> selectBranchByCourierId(final long courierId);
+    @Query("SELECT * FROM Branche WHERE id == (SELECT id FROM courier WHERE id == :courierId)")
+    LiveData<Branche> selectBranchByCourierId(final long courierId);
 
-    @Query("SELECT * FROM branch ORDER BY city_id ASC")
-    LiveData<List<Branch>> selectAllBranches();
+    @Query("SELECT * FROM Branche ORDER BY city_id ASC")
+    LiveData<List<Branche>> selectAllBranches();
 
     @Query("SELECT * FROM country WHERE id == " +
             "(SELECT country_id FROM region WHERE id == " +
             "(SELECT region_id FROM city WHERE id == " +
-            "(SELECT city_id FROM branch WHERE id == " +
+            "(SELECT city_id FROM Branche WHERE id == " +
             "(SELECT branch_id FROM courier WHERE id == :courierId))))")
     LiveData<Country> selectCountryByCourierId(final long courierId);
 
     @Query("SELECT * FROM region WHERE id == " +
             "(SELECT region_id FROM city WHERE id == " +
-            "(SELECT city_id FROM branch WHERE id == " +
+            "(SELECT city_id FROM Branche WHERE id == " +
             "(SELECT branch_id FROM courier WHERE id == :courierId)))")
     LiveData<Region> selectRegionByCourierId(final long courierId);
 
     @Query("SELECT * FROM city WHERE id == " +
-            "(SELECT city_id FROM branch WHERE id == " +
+            "(SELECT city_id FROM Branche WHERE id == " +
             "(SELECT branch_id FROM courier WHERE id == :courierId))")
     LiveData<City> selectCityByCourierId(final long courierId);
 
-    @Query("SELECT * FROM branch WHERE city_id == :cityId ORDER BY city_id")
-    LiveData<List<Branch>> selectAllBranchesByCity(final long cityId);
+    @Query("SELECT * FROM Branche WHERE city_id == :cityId ORDER BY city_id")
+    LiveData<List<Branche>> selectAllBranchesByCity(final long cityId);
 
-    @Query("SELECT * FROM branch WHERE city_id IN (SELECT id FROM region WHERE id == :regionId) ORDER BY city_id")
-    LiveData<List<Branch>> selectAllBranchesByRegion(final long regionId);
+    @Query("SELECT * FROM Branche WHERE city_id IN (SELECT id FROM region WHERE id == :regionId) ORDER BY city_id")
+    LiveData<List<Branche>> selectAllBranchesByRegion(final long regionId);
 
-    @Query("SELECT * FROM branch WHERE city_id IN (SELECT id FROM city WHERE region_id IN " +
+    @Query("SELECT * FROM Branche WHERE city_id IN (SELECT id FROM city WHERE region_id IN " +
             "(SELECT id FROM region WHERE country_id == :countryId)) ORDER BY city_id")
-    LiveData<List<Branch>> selectAllBranchesByCountry(final long countryId);
+    LiveData<List<Branche>> selectAllBranchesByCountry(final long countryId);
 
-    @Query("DELETE FROM branch")
+    @Query("DELETE FROM Branche")
     void dropBranches();
 
     /*transit points*/
@@ -128,10 +128,10 @@ public interface LocationDao {
     @Query("SELECT * FROM transit_point WHERE branch_id == :branchId ORDER BY branch_id")
     LiveData<TransitPoint> selectTransitPointByBranch(final long branchId);
 
-    @Query("SELECT * FROM transit_point WHERE branch_id IN (SELECT id FROM branch WHERE city_id == :cityId) ORDER BY transit_point_id")
+    @Query("SELECT * FROM transit_point WHERE branch_id IN (SELECT id FROM Branche WHERE city_id == :cityId) ORDER BY transit_point_id")
     LiveData<List<TransitPoint>> selectAllTransitPointsByCity(final long cityId);
 
-    @Query("SELECT * FROM transit_point WHERE branch_id IN (SELECT id FROM branch WHERE city_id IN " +
+    @Query("SELECT * FROM transit_point WHERE branch_id IN (SELECT id FROM Branche WHERE city_id IN " +
             "(SELECT id FROM city WHERE region_id IN (SELECT id FROM region WHERE country_id == :countryId))) ORDER BY transit_point_id")
     LiveData<List<TransitPoint>> selectAllTransitPointsByCountry(final long countryId);
 }

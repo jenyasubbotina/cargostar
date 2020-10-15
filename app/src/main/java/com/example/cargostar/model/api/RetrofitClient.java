@@ -3,8 +3,14 @@ package com.example.cargostar.model.api;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import com.example.cargostar.R;
+import com.example.cargostar.model.location.City;
+import com.example.cargostar.model.location.Country;
+import com.example.cargostar.model.location.Region;
+import com.example.cargostar.model.location.TransitPoint;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -16,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
     private static final String TAG = RetrofitClient.class.toString();
 
-    private ApiService apiService;
+    private final ApiService apiService;
     private static RetrofitClient INSTANCE;
 
     private RetrofitClient(@NonNull final Context context) {
@@ -48,8 +54,8 @@ public class RetrofitClient {
         return INSTANCE;
     }
 
-    public void getTransitPoints(final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.getTransitPoints();
+    public void getTransitPoints(final Callback<List<TransitPoint>> callback) {
+        final Call<List<TransitPoint>> call = apiService.getTransitPoints();
         call.enqueue(callback);
     }
 
@@ -58,18 +64,18 @@ public class RetrofitClient {
         call.enqueue(callback);
     }
 
-    public void getCountries(final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.getCountries();
+    public void getCountries(final Callback<List<Country>> callback) {
+        final Call<List<Country>> call = apiService.getCountries();
         call.enqueue(callback);
     }
 
-    public void getRegions(final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.getRegions();
+    public void getRegions(final Callback<List<Region>> callback) {
+        final Call<List<Region>> call = apiService.getRegions();
         call.enqueue(callback);
     }
 
-    public void getCities(final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.getCities();
+    public void getCities(final Callback<List<City>> callback) {
+        final Call<List<City>> call = apiService.getCities();
         call.enqueue(callback);
     }
 

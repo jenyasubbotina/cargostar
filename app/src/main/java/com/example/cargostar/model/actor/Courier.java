@@ -6,12 +6,10 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 
-import com.example.cargostar.model.location.Address;
-import com.example.cargostar.model.location.Branch;
-import com.example.cargostar.model.location.Country;
+import com.example.cargostar.model.location.Branche;
 
 @Entity(tableName = "courier", inheritSuperIndices = true,
-        foreignKeys = {@ForeignKey(entity = Branch.class,
+        foreignKeys = {@ForeignKey(entity = Branche.class,
         parentColumns = "id",
         childColumns = "branch_id",
         onDelete = ForeignKey.CASCADE,
