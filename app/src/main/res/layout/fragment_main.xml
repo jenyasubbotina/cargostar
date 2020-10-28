@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.fragment.MainFragment">
+    tools:context="uz.alexits.cargostar.view.fragment.MainFragment">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -14,7 +14,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:context=".view.fragment.MainFragment"
+        tools:context="uz.alexits.cargostar.view.fragment.MainFragment"
         android:orientation="vertical"
         android:background="#FFF">
 

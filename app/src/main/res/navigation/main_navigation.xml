@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.cargostar.view.fragment.MainFragment"
+        android:name="uz.alexits.cargostar.view.fragment.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
@@ -76,7 +76,7 @@
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"
-        android:name="com.example.cargostar.view.fragment.CalculatorFragment"
+        android:name="uz.alexits.cargostar.view.fragment.CalculatorFragment"
         android:label="fragment_calculator"
         tools:layout="@layout/fragment_calculator" >
         <action
@@ -89,7 +89,7 @@
     </fragment>
     <fragment
         android:id="@+id/publicBidsFragment"
-        android:name="com.example.cargostar.view.fragment.PublicRequestsFragment"
+        android:name="uz.alexits.cargostar.view.fragment.PublicRequestsFragment"
         android:label="fragment_public_bids"
         tools:layout="@layout/fragment_public_requests" >
         <action
@@ -133,7 +133,7 @@
     </fragment>
     <fragment
         android:id="@+id/myBidsFragment"
-        android:name="com.example.cargostar.view.fragment.MyRequestsFragment"
+        android:name="uz.alexits.cargostar.view.fragment.MyRequestsFragment"
         android:label="fragment_my_bids"
         tools:layout="@layout/fragment_my_requests" >
         <action
@@ -181,7 +181,7 @@
     </fragment>
     <fragment
         android:id="@+id/currentParcelsFragment"
-        android:name="com.example.cargostar.view.fragment.CurrentParcelsFragment"
+        android:name="uz.alexits.cargostar.view.fragment.CurrentParcelsFragment"
         android:label="fragment_current_parcels"
         tools:layout="@layout/fragment_current_parcels" >
         <action
@@ -223,12 +223,12 @@
     </fragment>
     <activity
         android:id="@+id/scanQrActivity"
-        android:name="com.example.cargostar.view.activity.ScanQrActivity"
+        android:name="uz.alexits.cargostar.view.activity.ScanQrActivity"
         android:label="activity_scan_qr"
         tools:layout="@layout/activity_scan_qr" />
     <fragment
         android:id="@+id/parcelDataFragment"
-        android:name="com.example.cargostar.view.fragment.ParcelDataFragment"
+        android:name="uz.alexits.cargostar.view.fragment.ParcelDataFragment"
         android:label="fragment_parcel_data"
         tools:layout="@layout/fragment_parcel_data" >
         <action
@@ -250,13 +250,29 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
+            android:name="invoice_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="provider_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="user_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="client_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
             android:name="request_or_parcel"
             app:argType="integer"
             android:defaultValue="-1"/>
     </fragment>
     <fragment
         android:id="@+id/partyFragment"
-        android:name="com.example.cargostar.view.fragment.PartyFragment"
+        android:name="uz.alexits.cargostar.view.fragment.PartyFragment"
         android:label="fragment_party"
         tools:layout="@layout/fragment_party" >
         <action
@@ -283,7 +299,7 @@
     </fragment>
     <fragment
         android:id="@+id/parcelStatusFragment"
-        android:name="com.example.cargostar.view.fragment.ParcelStatusFragment"
+        android:name="uz.alexits.cargostar.view.fragment.ParcelStatusFragment"
         android:label="fragment_parcel_status"
         tools:layout="@layout/fragment_parcel_status" >
         <action
@@ -314,7 +330,7 @@
     </fragment>
     <fragment
         android:id="@+id/partyStatusFragment"
-        android:name="com.example.cargostar.view.fragment.PartyStatusFragment"
+        android:name="uz.alexits.cargostar.view.fragment.PartyStatusFragment"
         android:label="fragment_party_status"
         tools:layout="@layout/fragment_party_status" >
         <action
@@ -344,7 +360,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.cargostar.view.fragment.ProfileFragment"
+        android:name="uz.alexits.cargostar.view.fragment.ProfileFragment"
         android:label="fragment_personal_data"
         tools:layout="@layout/fragment_profile" >
         <action
@@ -357,12 +373,12 @@
     </fragment>
     <activity
         android:id="@+id/notificationsActivity"
-        android:name="com.example.cargostar.view.activity.NotificationsActivity"
+        android:name="uz.alexits.cargostar.view.activity.NotificationsActivity"
         android:label="activity_notifications"
         tools:layout="@layout/activity_notifications" />
     <fragment
         android:id="@+id/notificationsFragment"
-        android:name="com.example.cargostar.view.fragment.NotificationsFragment"
+        android:name="uz.alexits.cargostar.view.fragment.NotificationsFragment"
         android:label="fragment_notifications"
         tools:layout="@layout/fragment_notifications" >
         <action

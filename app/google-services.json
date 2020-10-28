@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1086428692094",
+    "firebase_url": "https://cargostar-70295.firebaseio.com",
+    "project_id": "cargostar-70295",
+    "storage_bucket": "cargostar-70295.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086428692094:android:3aedbd9aeb764319fc222f",
+        "android_client_info": {
+          "package_name": "uz.alexits.cargostar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1086428692094-js22r9qud5m5nqbnn7ko61k4fsri09s1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg-QH-2L78M6qWLKYbvmIwpuncR2uqqeg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1086428692094-js22r9qud5m5nqbnn7ko61k4fsri09s1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

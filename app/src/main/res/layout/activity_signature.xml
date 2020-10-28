@@ -5,10 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activity.SignatureActivity"
+    tools:context="uz.alexits.cargostar.view.activity.SignatureActivity"
     android:background="#FFF">
 
-    <com.example.cargostar.view.PaintView
+    <uz.alexits.cargostar.view.PaintView
         android:id="@+id/paint_view"
         android:layout_width="0dp"
         android:layout_height="520dp"

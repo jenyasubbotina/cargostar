@@ -1,0 +1,2182 @@
+[
+    {
+        "id": 171,
+        "name": "Словения",
+        "code": "SI",
+        "status": 1,
+        "code2": "SVN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Slovenia"
+    },
+    {
+        "id": 117,
+        "name": "Мальта",
+        "code": "MT",
+        "status": 1,
+        "code2": "MLT",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Malta"
+    },
+    {
+        "id": 173,
+        "name": "Сомали",
+        "code": "SO",
+        "status": 1,
+        "code2": "SOM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Somalia"
+    },
+    {
+        "id": 124,
+        "name": "Марокко",
+        "code": "MA",
+        "status": 1,
+        "code2": "MAR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Morocco"
+    },
+    {
+        "id": 119,
+        "name": "Мексика",
+        "code": "MX",
+        "status": 1,
+        "code2": "MEX",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Mexico"
+    },
+    {
+        "id": 11,
+        "name": "Антигуа и Барбуда",
+        "code": "AG",
+        "status": 1,
+        "code2": "ATG",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Antigua and Barbuda"
+    },
+    {
+        "id": 18,
+        "name": "Бангладеш",
+        "code": "BD",
+        "status": 1,
+        "code2": "BGD",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Bangladesh"
+    },
+    {
+        "id": 19,
+        "name": "Барбадос",
+        "code": "BB",
+        "status": 1,
+        "code2": "BRB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Barbados"
+    },
+    {
+        "id": 20,
+        "name": "Бахрейн",
+        "code": "BH",
+        "status": 1,
+        "code2": "BHR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Bahrain"
+    },
+    {
+        "id": 21,
+        "name": "Беларусь",
+        "code": "BY",
+        "status": 1,
+        "code2": "BLR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Belarus"
+    },
+    {
+        "id": 22,
+        "name": "Белиз",
+        "code": "BZ",
+        "status": 1,
+        "code2": "BLZ",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Belize"
+    },
+    {
+        "id": 23,
+        "name": "Бельгия",
+        "code": "BE",
+        "status": 1,
+        "code2": "BEL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Belgium"
+    },
+    {
+        "id": 24,
+        "name": "Бенин",
+        "code": "BJ",
+        "status": 1,
+        "code2": "BEN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Benin"
+    },
+    {
+        "id": 26,
+        "name": "Болгария",
+        "code": "BG",
+        "status": 1,
+        "code2": "BGR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Bulgaria"
+    },
+    {
+        "id": 205,
+        "name": "Швейцария",
+        "code": "CH",
+        "status": 1,
+        "code2": "CHE",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Switzerland"
+    },
+    {
+        "id": 126,
+        "name": "Мэн о-в",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 137,
+        "name": "Норфолк о-в",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 138,
+        "name": "О.А.Э.",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 145,
+        "name": "Питкэрн о-в",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 28,
+        "name": "Босния/Герцеговина",
+        "code": "BA",
+        "status": 1,
+        "code2": "BIH",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Bosnia and Herzegovina"
+    },
+    {
+        "id": 153,
+        "name": "Сальвадор",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 160,
+        "name": "Святой Елены о-в",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 161,
+        "name": "Северная Корея",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 162,
+        "name": "Сейшеллы",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 163,
+        "name": "Сен-Пьер и Микелон",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 165,
+        "name": "Сент Китс и Невис",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 29,
+        "name": "Ботсвана",
+        "code": "BW",
+        "status": 1,
+        "code2": "BWA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Botswana"
+    },
+    {
+        "id": 30,
+        "name": "Бразилия",
+        "code": "BR",
+        "status": 1,
+        "code2": "BRA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Brazil"
+    },
+    {
+        "id": 34,
+        "name": "Бурунди",
+        "code": "BI",
+        "status": 1,
+        "code2": "BDI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Burundi"
+    },
+    {
+        "id": 35,
+        "name": "Бутан",
+        "code": "BT",
+        "status": 1,
+        "code2": "BTN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Bhutan"
+    },
+    {
+        "id": 174,
+        "name": "Судан",
+        "code": "SD",
+        "status": 1,
+        "code2": "SDN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Sudan"
+    },
+    {
+        "id": 178,
+        "name": "Тайвань",
+        "code": "TW",
+        "status": 1,
+        "code2": "TWN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Taiwan, Province of China"
+    },
+    {
+        "id": 39,
+        "name": "Венгрия",
+        "code": "HU",
+        "status": 1,
+        "code2": "HUN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Hungary"
+    },
+    {
+        "id": 40,
+        "name": "Венесуэла",
+        "code": "VE",
+        "status": 1,
+        "code2": "VEN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Venezuela"
+    },
+    {
+        "id": 184,
+        "name": "Тринидад и Тобаго",
+        "code": "TT",
+        "status": 1,
+        "code2": "TTO",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Trinidad and Tobago"
+    },
+    {
+        "id": 42,
+        "name": "Вьетнам",
+        "code": "VN",
+        "status": 1,
+        "code2": "VNM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Vietnam"
+    },
+    {
+        "id": 45,
+        "name": "Гайана",
+        "code": "GY",
+        "status": 1,
+        "code2": "GUY",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Guyana"
+    },
+    {
+        "id": 128,
+        "name": "Науру",
+        "code": "NR",
+        "status": 1,
+        "code2": "NRU",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Nauru"
+    },
+    {
+        "id": 129,
+        "name": "Непал",
+        "code": "NP",
+        "status": 1,
+        "code2": "NPL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Nepal"
+    },
+    {
+        "id": 130,
+        "name": "Нигер",
+        "code": "NE",
+        "status": 1,
+        "code2": "NER",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Niger"
+    },
+    {
+        "id": 185,
+        "name": "Тувалу",
+        "code": "TV",
+        "status": 1,
+        "code2": "TUV",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Tuvalu"
+    },
+    {
+        "id": 131,
+        "name": "Нигерия",
+        "code": "NG",
+        "status": 1,
+        "code2": "NGA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Nigeria"
+    },
+    {
+        "id": 189,
+        "name": "Турция",
+        "code": "TR",
+        "status": 1,
+        "code2": "TUR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Turkey"
+    },
+    {
+        "id": 133,
+        "name": "Никарагуа",
+        "code": "NI",
+        "status": 1,
+        "code2": "NIC",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Nicaragua"
+    },
+    {
+        "id": 136,
+        "name": "Норвегия",
+        "code": "NO",
+        "status": 1,
+        "code2": "NOR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Norway"
+    },
+    {
+        "id": 139,
+        "name": "Оман",
+        "code": "OM",
+        "status": 1,
+        "code2": "OMN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Oman"
+    },
+    {
+        "id": 140,
+        "name": "Пакистан",
+        "code": "PK",
+        "status": 1,
+        "code2": "PAK",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Pakistan"
+    },
+    {
+        "id": 148,
+        "name": "Пуэрто Рико",
+        "code": "PR",
+        "status": 1,
+        "code2": "PRI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Puerto Rico"
+    },
+    {
+        "id": 158,
+        "name": "Свазиленд",
+        "code": "SZ",
+        "status": 1,
+        "code2": "SWZ",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Swaziland"
+    },
+    {
+        "id": 190,
+        "name": "Уганда",
+        "code": "UG",
+        "status": 1,
+        "code2": "UGA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Uganda"
+    },
+    {
+        "id": 191,
+        "name": "Узбекистан",
+        "code": "UZ",
+        "status": 1,
+        "code2": "UZB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Uzbekistan"
+    },
+    {
+        "id": 192,
+        "name": "Уругвай",
+        "code": "UY",
+        "status": 1,
+        "code2": "URY",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Uruguay"
+    },
+    {
+        "id": 193,
+        "name": "Фарерские о-ва",
+        "code": "FO",
+        "status": 1,
+        "code2": "FRO",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Faroe Islands"
+    },
+    {
+        "id": 194,
+        "name": "Фиджи",
+        "code": "FJ",
+        "status": 1,
+        "code2": "FJI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Fiji"
+    },
+    {
+        "id": 47,
+        "name": "Гана",
+        "code": "GH",
+        "status": 1,
+        "code2": "GHA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Ghana"
+    },
+    {
+        "id": 196,
+        "name": "Финляндия",
+        "code": "FI",
+        "status": 1,
+        "code2": "FIN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Finland"
+    },
+    {
+        "id": 204,
+        "name": "Чили",
+        "code": "CL",
+        "status": 1,
+        "code2": "CHL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Chile"
+    },
+    {
+        "id": 164,
+        "name": "Сенегал",
+        "code": "SN",
+        "status": 1,
+        "code2": "SEN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Senegal"
+    },
+    {
+        "id": 211,
+        "name": "Эстония",
+        "code": "EE",
+        "status": 1,
+        "code2": "EST",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Estonia"
+    },
+    {
+        "id": 212,
+        "name": "Эфиопия",
+        "code": "ET",
+        "status": 1,
+        "code2": "ETH",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Ethiopia"
+    },
+    {
+        "id": 214,
+        "name": "Южная Корея",
+        "code": "ZA",
+        "status": 1,
+        "code2": "ZAF",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "South Africa"
+    },
+    {
+        "id": 53,
+        "name": "Гернси о-в",
+        "code": "GG",
+        "status": 1,
+        "code2": "GGY",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Guernsey"
+    },
+    {
+        "id": 32,
+        "name": "Бруней",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 36,
+        "name": "Валлис и Футуна о-ва",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 38,
+        "name": "Великобритания",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 41,
+        "name": "Восточный Тимор",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 74,
+        "name": "Иран",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 91,
+        "name": "Коморские о-ва",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 98,
+        "name": "Кука о-ва",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 215,
+        "name": "Южная Осетия",
+        "code": "OS",
+        "status": 1,
+        "code2": "OST",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "South Ossetia"
+    },
+    {
+        "id": 216,
+        "name": "Ямайка",
+        "code": "JM",
+        "status": 1,
+        "code2": "JAM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Jamaica"
+    },
+    {
+        "id": 217,
+        "name": "Япония",
+        "code": "JP",
+        "status": 1,
+        "code2": "JPN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Japan"
+    },
+    {
+        "id": 167,
+        "name": "Сербия",
+        "code": "RS",
+        "status": 1,
+        "code2": "SRB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Serbia"
+    },
+    {
+        "id": 168,
+        "name": "Сингапур",
+        "code": "SG",
+        "status": 1,
+        "code2": "SGP",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Singapore"
+    },
+    {
+        "id": 55,
+        "name": "Гондурас",
+        "code": "HN",
+        "status": 1,
+        "code2": "HND",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Honduras"
+    },
+    {
+        "id": 62,
+        "name": "Джерси о-в",
+        "code": "JE",
+        "status": 1,
+        "code2": "JEY",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Jersey"
+    },
+    {
+        "id": 64,
+        "name": "Доминиканская республика",
+        "code": "DM",
+        "status": 1,
+        "code2": "DMA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Dominica"
+    },
+    {
+        "id": 170,
+        "name": "Словакия",
+        "code": "SK",
+        "status": 1,
+        "code2": "SVK",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Slovakia"
+    },
+    {
+        "id": 81,
+        "name": "Казахстан",
+        "code": "KZ",
+        "status": 1,
+        "code2": "KAZ",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Kazakhstan"
+    },
+    {
+        "id": 84,
+        "name": "Канада",
+        "code": "CA",
+        "status": 1,
+        "code2": "CAN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Canada"
+    },
+    {
+        "id": 86,
+        "name": "Кения",
+        "code": "KE",
+        "status": 1,
+        "code2": "KEN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Kenya"
+    },
+    {
+        "id": 108,
+        "name": "Люксембург",
+        "code": "LU",
+        "status": 1,
+        "code2": "LUX",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Luxembourg"
+    },
+    {
+        "id": 127,
+        "name": "Намибия",
+        "code": "NA",
+        "status": 1,
+        "code2": "NAM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Namibia"
+    },
+    {
+        "id": 134,
+        "name": "Новая Зеландия",
+        "code": "NZ",
+        "status": 1,
+        "code2": "NZL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "New Zealand"
+    },
+    {
+        "id": 146,
+        "name": "Польша",
+        "code": "PL",
+        "status": 1,
+        "code2": "POL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Poland"
+    },
+    {
+        "id": 147,
+        "name": "Португалия",
+        "code": "PT",
+        "status": 1,
+        "code2": "PRT",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Portugal"
+    },
+    {
+        "id": 149,
+        "name": "Реюньон",
+        "code": "RE",
+        "status": 1,
+        "code2": "REU",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Reunion"
+    },
+    {
+        "id": 109,
+        "name": "Маврикий",
+        "code": "MU",
+        "status": 1,
+        "code2": "MUS",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Mauritius"
+    },
+    {
+        "id": 110,
+        "name": "Мавритания",
+        "code": "MR",
+        "status": 1,
+        "code2": "MRT",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Mauritania"
+    },
+    {
+        "id": 95,
+        "name": "Кот-д''Ивуар",
+        "code": "CI",
+        "status": 1,
+        "code2": "CIV",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 0,
+        "name": "Россия",
+        "code": "RU",
+        "status": 1,
+        "code2": "RUS",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Russian Federation"
+    },
+    {
+        "id": 150,
+        "name": "Руанда",
+        "code": "RW",
+        "status": 1,
+        "code2": "RWA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Rwanda"
+    },
+    {
+        "id": 151,
+        "name": "Румыния",
+        "code": "RO",
+        "status": 1,
+        "code2": "ROU",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Romania"
+    },
+    {
+        "id": 154,
+        "name": "Самоа",
+        "code": "WS",
+        "status": 1,
+        "code2": "WSM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Samoa"
+    },
+    {
+        "id": 155,
+        "name": "Сан-Марино",
+        "code": "SM",
+        "status": 1,
+        "code2": "SMR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "San Marino"
+    },
+    {
+        "id": 156,
+        "name": "Сан-Томе и Принсипи",
+        "code": "ST",
+        "status": 1,
+        "code2": "STP",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Sao Tome and Principe"
+    },
+    {
+        "id": 181,
+        "name": "Того",
+        "code": "TG",
+        "status": 1,
+        "code2": "TGO",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Togo"
+    },
+    {
+        "id": 5,
+        "name": "Азербайджан",
+        "code": "AZ",
+        "status": 1,
+        "code2": "AZE",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Azerbaijan"
+    },
+    {
+        "id": 52,
+        "name": "Германия",
+        "code": "DE",
+        "status": 1,
+        "code2": "DEU",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Germany"
+    },
+    {
+        "id": 61,
+        "name": "Дания",
+        "code": "DK",
+        "status": 1,
+        "code2": "DNK",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Denmark"
+    },
+    {
+        "id": 157,
+        "name": "Саудовская Аравия",
+        "code": "SA",
+        "status": 1,
+        "code2": "SAU",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Saudi Arabia"
+    },
+    {
+        "id": 159,
+        "name": "Святая Люсия",
+        "code": "SH",
+        "status": 1,
+        "code2": "SHN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Saint Helena, Ascension And Tristan Da Cunha"
+    },
+    {
+        "id": 166,
+        "name": "Сент-Винсент и Гренадины",
+        "code": "VC",
+        "status": 1,
+        "code2": "VCT",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Saint Vincent and the Grenadines"
+    },
+    {
+        "id": 172,
+        "name": "Соломоновы о-ва",
+        "code": "SB",
+        "status": 1,
+        "code2": "SLB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Solomon Islands"
+    },
+    {
+        "id": 66,
+        "name": "Замбия",
+        "code": "ZM",
+        "status": 1,
+        "code2": "ZMB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Zambia"
+    },
+    {
+        "id": 67,
+        "name": "Западная Сахара",
+        "code": "EH",
+        "status": 1,
+        "code2": "ESH",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Western Sahara"
+    },
+    {
+        "id": 68,
+        "name": "Зимбабве",
+        "code": "ZW",
+        "status": 1,
+        "code2": "ZWE",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Zimbabwe"
+    },
+    {
+        "id": 69,
+        "name": "Израиль",
+        "code": "IL",
+        "status": 1,
+        "code2": "ISR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Israel"
+    },
+    {
+        "id": 70,
+        "name": "Индия",
+        "code": "IN",
+        "status": 1,
+        "code2": "IND",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "India"
+    },
+    {
+        "id": 76,
+        "name": "Исландия",
+        "code": "IS",
+        "status": 1,
+        "code2": "ISL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Iceland"
+    },
+    {
+        "id": 111,
+        "name": "Мадагаскар",
+        "code": "MG",
+        "status": 1,
+        "code2": "MDG",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Madagascar"
+    },
+    {
+        "id": 113,
+        "name": "Малави",
+        "code": "MW",
+        "status": 1,
+        "code2": "MWI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Malawi"
+    },
+    {
+        "id": 77,
+        "name": "Испания",
+        "code": "ES",
+        "status": 1,
+        "code2": "ESP",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Spain"
+    },
+    {
+        "id": 78,
+        "name": "Италия",
+        "code": "IT",
+        "status": 1,
+        "code2": "ITA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Italy"
+    },
+    {
+        "id": 114,
+        "name": "Малайзия",
+        "code": "MY",
+        "status": 1,
+        "code2": "MYS",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Malaysia"
+    },
+    {
+        "id": 141,
+        "name": "Панама",
+        "code": "PA",
+        "status": 1,
+        "code2": "PAN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Panama"
+    },
+    {
+        "id": 115,
+        "name": "Мали",
+        "code": "ML",
+        "status": 1,
+        "code2": "MLI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Mali"
+    },
+    {
+        "id": 100,
+        "name": "Лаос",
+        "code": "LA",
+        "status": 1,
+        "code2": "LAO",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 175,
+        "name": "Суринам",
+        "code": "SR",
+        "status": 1,
+        "code2": "SUR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Suriname"
+    },
+    {
+        "id": 182,
+        "name": "Токелау о-ва",
+        "code": "TK",
+        "status": 1,
+        "code2": "TKL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Tokelau"
+    },
+    {
+        "id": 143,
+        "name": "Парагвай",
+        "code": "PY",
+        "status": 1,
+        "code2": "PRY",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Paraguay"
+    },
+    {
+        "id": 176,
+        "name": "Сьерра-Леоне",
+        "code": "SL",
+        "status": 1,
+        "code2": "SLE",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Sierra Leone"
+    },
+    {
+        "id": 79,
+        "name": "Йемен",
+        "code": "YE",
+        "status": 1,
+        "code2": "YEM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Yemen"
+    },
+    {
+        "id": 80,
+        "name": "Кабо-Верде",
+        "code": "CV",
+        "status": 1,
+        "code2": "CPV",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Cape Verde"
+    },
+    {
+        "id": 186,
+        "name": "Тунис",
+        "code": "TN",
+        "status": 1,
+        "code2": "TUN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Tunisia"
+    },
+    {
+        "id": 1,
+        "name": "Украина",
+        "code": "UA",
+        "status": 1,
+        "code2": "UKR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Ukraine"
+    },
+    {
+        "id": 195,
+        "name": "Филиппины",
+        "code": "PH",
+        "status": 1,
+        "code2": "PHL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Philippines"
+    },
+    {
+        "id": 202,
+        "name": "Черногория",
+        "code": "ME",
+        "status": 1,
+        "code2": "MNE",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Montenegro"
+    },
+    {
+        "id": 199,
+        "name": "Французская Полинезия",
+        "code": "PF",
+        "status": 1,
+        "code2": "PYF",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "French Polynesia"
+    },
+    {
+        "id": 206,
+        "name": "Швеция",
+        "code": "SE",
+        "status": 1,
+        "code2": "SWE",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Sweden"
+    },
+    {
+        "id": 207,
+        "name": "Шри-Ланка",
+        "code": "LK",
+        "status": 1,
+        "code2": "LKA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Sri Lanka"
+    },
+    {
+        "id": 208,
+        "name": "Эквадор",
+        "code": "EC",
+        "status": 1,
+        "code2": "ECU",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Ecuador"
+    },
+    {
+        "id": 209,
+        "name": "Экваториальная Гвинея",
+        "code": "GQ",
+        "status": 1,
+        "code2": "GNQ",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Equatorial Guinea"
+    },
+    {
+        "id": 12,
+        "name": "Антильские о-ва",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 87,
+        "name": "Кипр",
+        "code": "CY",
+        "status": 1,
+        "code2": "CYP",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Cyprus"
+    },
+    {
+        "id": 16,
+        "name": "Афганистан",
+        "code": "AF",
+        "status": 1,
+        "code2": "AFG",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Afghanistan"
+    },
+    {
+        "id": 25,
+        "name": "Бермуды",
+        "code": "BM",
+        "status": 1,
+        "code2": "BMU",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Bermuda"
+    },
+    {
+        "id": 177,
+        "name": "Таджикистан",
+        "code": "TJ",
+        "status": 1,
+        "code2": "TJK",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Tajikistan"
+    },
+    {
+        "id": 179,
+        "name": "Таиланд",
+        "code": "TH",
+        "status": 1,
+        "code2": "THA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Thailand"
+    },
+    {
+        "id": 37,
+        "name": "Вануату",
+        "code": "VU",
+        "status": 1,
+        "code2": "VUT",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Vanuatu"
+    },
+    {
+        "id": 31,
+        "name": "Британские Виргинские о-ва",
+        "code": "VG",
+        "status": 1,
+        "code2": "VGB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Virgin Islands, British"
+    },
+    {
+        "id": 15,
+        "name": "Арулько",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 43,
+        "name": "Габон",
+        "code": "GA",
+        "status": 1,
+        "code2": "GAB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Gabon"
+    },
+    {
+        "id": 44,
+        "name": "Гаити",
+        "code": "HT",
+        "status": 1,
+        "code2": "HTI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Haiti"
+    },
+    {
+        "id": 46,
+        "name": "Гамбия",
+        "code": "GM",
+        "status": 1,
+        "code2": "GMB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Gambia"
+    },
+    {
+        "id": 183,
+        "name": "Тонга",
+        "code": "TO",
+        "status": 1,
+        "code2": "TON",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Tonga"
+    },
+    {
+        "id": 48,
+        "name": "Гваделупа",
+        "code": "GP",
+        "status": 1,
+        "code2": "GLP",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Guadeloupe"
+    },
+    {
+        "id": 49,
+        "name": "Гватемала",
+        "code": "GT",
+        "status": 1,
+        "code2": "GTM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Guatemala"
+    },
+    {
+        "id": 50,
+        "name": "Гвинея",
+        "code": "GN",
+        "status": 1,
+        "code2": "GIN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Guinea"
+    },
+    {
+        "id": 142,
+        "name": "Папуа Новая Гвинея",
+        "code": "GN",
+        "status": 1,
+        "code2": "GIN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Guinea"
+    },
+    {
+        "id": 198,
+        "name": "Французская Гвинея",
+        "code": "GN",
+        "status": 1,
+        "code2": "GIN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Guinea"
+    },
+    {
+        "id": 210,
+        "name": "Эритрея",
+        "code": "ER",
+        "status": 1,
+        "code2": "ERI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Eritrea"
+    },
+    {
+        "id": 88,
+        "name": "Кирибати",
+        "code": "KI",
+        "status": 1,
+        "code2": "KIR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Kiribati"
+    },
+    {
+        "id": 92,
+        "name": "Конго (Brazzaville)",
+        "code": "CG",
+        "status": 1,
+        "code2": "COG",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Congo"
+    },
+    {
+        "id": 93,
+        "name": "Конго (Kinshasa)",
+        "code": "CG",
+        "status": 1,
+        "code2": "COG",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Congo"
+    },
+    {
+        "id": 107,
+        "name": "Лихтенштейн",
+        "code": "LI",
+        "status": 1,
+        "code2": "LIE",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Liechtenstein"
+    },
+    {
+        "id": 106,
+        "name": "Литва",
+        "code": "LT",
+        "status": 1,
+        "code2": "LTU",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Lithuania"
+    },
+    {
+        "id": 118,
+        "name": "Мартиника о-в",
+        "code": "MQ",
+        "status": 1,
+        "code2": "MTQ",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Martinique"
+    },
+    {
+        "id": 120,
+        "name": "Мозамбик",
+        "code": "MZ",
+        "status": 1,
+        "code2": "MOZ",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Mozambique"
+    },
+    {
+        "id": 122,
+        "name": "Монако",
+        "code": "MC",
+        "status": 1,
+        "code2": "MCO",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Monaco"
+    },
+    {
+        "id": 123,
+        "name": "Монголия",
+        "code": "MN",
+        "status": 1,
+        "code2": "MNG",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Mongolia"
+    },
+    {
+        "id": 125,
+        "name": "Мьянма (Бирма)",
+        "code": "MM",
+        "status": 1,
+        "code2": "MMR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Myanmar"
+    },
+    {
+        "id": 144,
+        "name": "Перу",
+        "code": "PE",
+        "status": 1,
+        "code2": "PER",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Peru"
+    },
+    {
+        "id": 3,
+        "name": "Австралия",
+        "code": "AU",
+        "status": 1,
+        "code2": "AUS",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Australia"
+    },
+    {
+        "id": 4,
+        "name": "Австрия",
+        "code": "AT",
+        "status": 1,
+        "code2": "AUT",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Austria"
+    },
+    {
+        "id": 6,
+        "name": "Албания",
+        "code": "AL",
+        "status": 1,
+        "code2": "ALB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Albania"
+    },
+    {
+        "id": 7,
+        "name": "Алжир",
+        "code": "DZ",
+        "status": 1,
+        "code2": "DZA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Algeria"
+    },
+    {
+        "id": 33,
+        "name": "Буркина Фасо",
+        "code": "BF",
+        "status": 1,
+        "code2": "BFA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Burkina Faso"
+    },
+    {
+        "id": 89,
+        "name": "Китай",
+        "code": "CN",
+        "status": 1,
+        "code2": "CHN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "China"
+    },
+    {
+        "id": 90,
+        "name": "Колумбия",
+        "code": "CO",
+        "status": 1,
+        "code2": "COL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Colombia"
+    },
+    {
+        "id": 94,
+        "name": "Коста-Рика",
+        "code": "CR",
+        "status": 1,
+        "code2": "CRI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Costa Rica"
+    },
+    {
+        "id": 96,
+        "name": "Куба",
+        "code": "CU",
+        "status": 1,
+        "code2": "CUB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Cuba"
+    },
+    {
+        "id": 97,
+        "name": "Кувейт",
+        "code": "KW",
+        "status": 1,
+        "code2": "KWT",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Kuwait"
+    },
+    {
+        "id": 101,
+        "name": "Латвия",
+        "code": "LV",
+        "status": 1,
+        "code2": "LVA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Latvia"
+    },
+    {
+        "id": 102,
+        "name": "Лесото",
+        "code": "LS",
+        "status": 1,
+        "code2": "LSO",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Lesotho"
+    },
+    {
+        "id": 104,
+        "name": "Ливан",
+        "code": "LB",
+        "status": 1,
+        "code2": "LBN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Lebanon"
+    },
+    {
+        "id": 103,
+        "name": "Либерия",
+        "code": "LR",
+        "status": 1,
+        "code2": "LBR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Liberia"
+    },
+    {
+        "id": 187,
+        "name": "Туркменистан",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 188,
+        "name": "Туркс и Кейкос",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 203,
+        "name": "Чехия",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 213,
+        "name": "ЮАР",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 9,
+        "name": "Ангуилья",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 2,
+        "name": "Абхазия",
+        "code": "AB",
+        "status": 1,
+        "code2": "ABH",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Abkhazia"
+    },
+    {
+        "id": 8,
+        "name": "Ангола",
+        "code": "AO",
+        "status": 1,
+        "code2": "AGO",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Angola"
+    },
+    {
+        "id": 71,
+        "name": "Индонезия",
+        "code": "ID",
+        "status": 1,
+        "code2": "IDN",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Indonesia"
+    },
+    {
+        "id": 72,
+        "name": "Иордания",
+        "code": "JO",
+        "status": 1,
+        "code2": "JOR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Jordan"
+    },
+    {
+        "id": 73,
+        "name": "Ирак",
+        "code": "IQ",
+        "status": 1,
+        "code2": "IRQ",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Iraq"
+    },
+    {
+        "id": 75,
+        "name": "Ирландия",
+        "code": "IE",
+        "status": 1,
+        "code2": "IRL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Ireland"
+    },
+    {
+        "id": 82,
+        "name": "Камбоджа",
+        "code": "KH",
+        "status": 1,
+        "code2": "KHM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Cambodia"
+    },
+    {
+        "id": 83,
+        "name": "Камерун",
+        "code": "CM",
+        "status": 1,
+        "code2": "CMR",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Cameroon"
+    },
+    {
+        "id": 85,
+        "name": "Катар",
+        "code": "QA",
+        "status": 1,
+        "code2": "QAT",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Qatar"
+    },
+    {
+        "id": 132,
+        "name": "Нидерланды (Голландия)",
+        "code": "NL",
+        "status": 1,
+        "code2": "NLD",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Netherlands"
+    },
+    {
+        "id": 135,
+        "name": "Новая Каледония о-в",
+        "code": "NZ",
+        "status": 1,
+        "code2": "NZL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "New Zealand"
+    },
+    {
+        "id": 197,
+        "name": "Франция",
+        "code": "FR",
+        "status": 1,
+        "code2": "FRA",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "France"
+    },
+    {
+        "id": 200,
+        "name": "Хорватия",
+        "code": "HR",
+        "status": 1,
+        "code2": "HRV",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Croatia"
+    },
+    {
+        "id": 201,
+        "name": "Чад",
+        "code": "TD",
+        "status": 1,
+        "code2": "TCD",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Chad"
+    },
+    {
+        "id": 17,
+        "name": "Багамские о-ва",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 27,
+        "name": "Боливия",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 99,
+        "name": "Кыргызстан",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 105,
+        "name": "Ливия",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 169,
+        "name": "Сирия",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 180,
+        "name": "Танзания",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 112,
+        "name": "Македония",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 116,
+        "name": "Мальдивские о-ва",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 121,
+        "name": "Молдова",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 152,
+        "name": "США",
+        "code": null,
+        "status": 1,
+        "code2": null,
+        "created_at": null,
+        "updated_at": null,
+        "name_en": null
+    },
+    {
+        "id": 10,
+        "name": "Андорра",
+        "code": "AD",
+        "status": 1,
+        "code2": "AND",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Andorra"
+    },
+    {
+        "id": 13,
+        "name": "Аргентина",
+        "code": "AR",
+        "status": 1,
+        "code2": "ARG",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Argentina"
+    },
+    {
+        "id": 14,
+        "name": "Армения",
+        "code": "AM",
+        "status": 1,
+        "code2": "ARM",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Armenia"
+    },
+    {
+        "id": 51,
+        "name": "Гвинея-Бисау",
+        "code": "GW",
+        "status": 1,
+        "code2": "GNB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Guinea-Bissau"
+    },
+    {
+        "id": 54,
+        "name": "Гибралтар",
+        "code": "GI",
+        "status": 1,
+        "code2": "GIB",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Gibraltar"
+    },
+    {
+        "id": 56,
+        "name": "Гонконг",
+        "code": "HK",
+        "status": 1,
+        "code2": "HKG",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Hong Kong"
+    },
+    {
+        "id": 57,
+        "name": "Гренада",
+        "code": "GD",
+        "status": 1,
+        "code2": "GRD",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Grenada"
+    },
+    {
+        "id": 58,
+        "name": "Гренландия",
+        "code": "GL",
+        "status": 1,
+        "code2": "GRL",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Greenland"
+    },
+    {
+        "id": 59,
+        "name": "Греция",
+        "code": "GR",
+        "status": 1,
+        "code2": "GRC",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Greece"
+    },
+    {
+        "id": 60,
+        "name": "Грузия",
+        "code": "GE",
+        "status": 1,
+        "code2": "GEO",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Georgia"
+    },
+    {
+        "id": 63,
+        "name": "Джибути",
+        "code": "DJ",
+        "status": 1,
+        "code2": "DJI",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Djibouti"
+    },
+    {
+        "id": 65,
+        "name": "Египет",
+        "code": "EG",
+        "status": 1,
+        "code2": "EGY",
+        "created_at": null,
+        "updated_at": null,
+        "name_en": "Egypt"
+    }
+]

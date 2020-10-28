@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">CargoStar</string>
+    <string name="app_name">CargoStar</string>\
+    <string name="default_notification_channel_id">1</string>
+    <string name="implicit_notification_channel_id">2</string>
+    <string name="implicit_notification_channel_name">Implicit Notification Channel</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <!-- sign in -->
