@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,6 +26,13 @@ import android.widget.Toast;
 import com.google.gson.JsonElement;
 
 import org.w3c.dom.Text;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -327,14 +337,13 @@ public class CreateUserActivity extends AppCompatActivity {
 //            if (vat) {
 //
 //            }
-            //todo: serialize photo into bytes and to json string from onActivityResult
-//            if (photo) {
-//
-//            }
-            //todo: serialize signature into bytes and json string from onActivityResult
-//            if (signature) {
-//
-//            }
+            if (!TextUtils.isEmpty(photo)) {
+                final Bitmap photoBitmap = getBitmapFromUri(context, Uri.parse(photo));
+                //todo: serialize Bitmap -> bytes -> json -> send to server
+            }
+            if (!TextUtils.isEmpty(signature)) {
+                //todo: serialize File -> bytes -> json -> send to server
+            }
             if (!TextUtils.isEmpty(geolocation)) {
                 if (!Regex.isGeolocation(geolocation)) {
                     Toast.makeText(context, "Геолокация должна быть указана в формате ХХ.ХХ", Toast.LENGTH_SHORT).show();
@@ -450,6 +459,10 @@ public class CreateUserActivity extends AppCompatActivity {
                     photoResultImageView.setImageResource(R.drawable.ic_image_green);
                     photoResultImageView.setVisibility(View.VISIBLE);
                     photoEditText.setBackgroundResource(R.drawable.edit_text_active);
+
+                    Log.i(TAG, "selected photo: " + selectedImage);
+                    photoEditText.setText(selectedImage.toString());
+
                     return;
                 }
             }
@@ -466,7 +479,11 @@ public class CreateUserActivity extends AppCompatActivity {
                 signatureResultImageView.setImageResource(R.drawable.ic_image_green);
                 signatureResultImageView.setVisibility(View.VISIBLE);
                 signatureEditText.setBackgroundResource(R.drawable.edit_text_active);
-                signatureEditText.setText(data.getStringExtra(Constants.INTENT_RESULT_VALUE));
+
+                final String signatureFilePath = data.getStringExtra(Constants.INTENT_RESULT_VALUE);
+
+                Log.i(TAG, "signature filepath: " + signatureFilePath);
+                signatureEditText.setText(signatureFilePath);
             }
         }
     }
@@ -759,5 +776,47 @@ public class CreateUserActivity extends AppCompatActivity {
         calculatorImageView.setOnClickListener(v -> {
             startActivity(new Intent(this, CalculatorActivity.class));
         });
+    }
+
+    private Bitmap getBitmapFromUri(@NonNull final Context context, @NonNull final Uri imageUri) {
+        InputStream is = null;
+        try {
+            is = context.getContentResolver().openInputStream(imageUri);
+        }
+        catch (FileNotFoundException e) {
+            Log.e(TAG, "getBitmapFromUri(): ", e);
+        }
+        return is != null ? BitmapFactory.decodeStream(is) : null;
+    }
+
+    private void convertBitmapToFile(@NonNull final File destFile, @NonNull final Bitmap bitmap) {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        FileOutputStream fos = null;
+        byte[] bitmapBytes;
+
+        try {
+            if (!destFile.createNewFile()) {
+                Log.e(TAG, "convertBitmapToFile(): couldn't create file " + destFile);
+                return;
+            }
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+            bitmapBytes = bos.toByteArray();
+            fos = new FileOutputStream(destFile);
+            fos.write(bitmapBytes);
+        }
+        catch (IOException e) {
+            Log.e(TAG, "convertBitmapToFile(): ", e);
+        }
+        finally {
+            if (fos != null) {
+                try {
+                    fos.flush();
+                    fos.close();
+                }
+                catch (IOException e) {
+                    Log.e(TAG, "convertBitmapToFile(): ", e);
+                }
+            }
+        }
     }
 }

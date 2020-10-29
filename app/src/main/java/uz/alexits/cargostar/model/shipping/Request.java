@@ -33,42 +33,42 @@ public class Request {
     @Expose
     @SerializedName("country_id")
     @ColumnInfo(name = "country_id")
-    private long senderCountryId;
+    private Long senderCountryId;
 
     @Expose
     @SerializedName("region_id")
     @ColumnInfo(name = "region_id")
-    private long senderRegionId;
+    private Long senderRegionId;
 
     @Expose
     @SerializedName("city_id")
     @ColumnInfo(name = "city_id")
-    private long senderCityId;
+    private Long senderCityId;
 
     @Expose
     @SerializedName("user_id")
     @ColumnInfo(name = "user_id")
-    private long userId;
+    private Long userId;
 
     @Expose
     @SerializedName("client_id")
     @ColumnInfo(name = "client_id")
-    private long clientId;
+    private Long clientId;
 
     @Expose
     @SerializedName("employee_id")
     @ColumnInfo(name = "employee_id")
-    private long courierId;
+    private Long courierId;
 
     @Expose
     @SerializedName("provider_id")
     @ColumnInfo(name = "provider_id")
-    private long providerId;
+    private Long providerId;
 
     @Expose
     @SerializedName("invoice_id")
     @ColumnInfo(name = "invoice_id")
-    private long invoiceId;
+    private Long invoiceId;
 
     @Expose
     @SerializedName("firstname")
@@ -137,17 +137,17 @@ public class Request {
                    final String senderEmail,
                    final String senderPhone,
                    final String senderAddress,
-                   final long senderCountryId,
-                   final long senderRegionId,
-                   final long senderCityId,
-                   final long recipientCountryId,
-                   final long recipientCityId,
+                   final Long senderCountryId,
+                   final Long senderRegionId,
+                   final Long senderCityId,
+                   final Long recipientCountryId,
+                   final Long recipientCityId,
                    final String comment,
-                   final long userId,
-                   final long clientId,
-                   final long courierId,
-                   final long providerId,
-                   final long invoiceId,
+                   final Long userId,
+                   final Long clientId,
+                   final Long courierId,
+                   final Long providerId,
+                   final Long invoiceId,
                    final int status,
                    final Date createdAt,
                    final Date updatedAt) {
@@ -230,7 +230,7 @@ public class Request {
         this.senderAddress = senderAddress;
     }
 
-    public long getSenderCountryId() {
+    public Long getSenderCountryId() {
         return senderCountryId;
     }
 
@@ -238,7 +238,7 @@ public class Request {
         this.senderCountryId = senderCountryId;
     }
 
-    public long getSenderRegionId() {
+    public Long getSenderRegionId() {
         return senderRegionId;
     }
 
@@ -246,7 +246,7 @@ public class Request {
         this.senderRegionId = senderRegionId;
     }
 
-    public long getSenderCityId() {
+    public Long getSenderCityId() {
         return senderCityId;
     }
 
@@ -254,7 +254,7 @@ public class Request {
         this.senderCityId = senderCityId;
     }
 
-    public long getRecipientCountryId() {
+    public Long getRecipientCountryId() {
         return recipientCountryId;
     }
 
@@ -278,7 +278,7 @@ public class Request {
         this.comment = comment;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
@@ -286,7 +286,7 @@ public class Request {
         this.userId = userId;
     }
 
-    public long getClientId() {
+    public Long getClientId() {
         return clientId;
     }
 
@@ -294,7 +294,7 @@ public class Request {
         this.clientId = clientId;
     }
 
-    public long getCourierId() {
+    public Long getCourierId() {
         return courierId;
     }
 
@@ -302,15 +302,15 @@ public class Request {
         this.courierId = courierId;
     }
 
-    public long getProviderId() {
+    public Long getProviderId() {
         return providerId;
     }
 
-    public void setProviderId(long providerId) {
+    public void setProviderId(Long providerId) {
         this.providerId = providerId;
     }
 
-    public long getInvoiceId() {
+    public Long getInvoiceId() {
         return invoiceId;
     }
 

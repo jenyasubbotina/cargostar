@@ -567,7 +567,8 @@
                     android:textSize="16sp"
                     android:fontFamily="@font/geometria_actual"
                     android:textColor="@color/colorBlack"
-                    android:padding="17dp"
+                    android:paddingVertical="17dp"
+                    android:paddingHorizontal="36dp"
                     android:cursorVisible="false"
                     android:focusable="false"
                     android:focusableInTouchMode="false"/>
@@ -650,7 +651,8 @@
                     android:textSize="16sp"
                     android:fontFamily="@font/geometria_actual"
                     android:textColor="@color/colorBlack"
-                    android:padding="17dp"
+                    android:paddingVertical="17dp"
+                    android:paddingHorizontal="36dp"
                     android:cursorVisible="false"
                     android:focusable="false"
                     android:focusableInTouchMode="false"/>

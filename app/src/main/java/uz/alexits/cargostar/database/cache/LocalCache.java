@@ -73,7 +73,7 @@ import java.util.zip.CheckedOutputStream;
         Request.class,
         Provider.class,
         Packaging.class,
-        PackagingType.class}, version = 47, exportSchema = false)
+        PackagingType.class}, version = 49, exportSchema = false)
 @TypeConverters({ PointConverter.class, TransportationStatusConverter.class, PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";
