@@ -1,5 +1,6 @@
 package uz.alexits.cargostar.view.activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,10 +20,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+
+import org.w3c.dom.Text;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.Account;
+import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.location.Address;
 import uz.alexits.cargostar.model.location.Point;
 import uz.alexits.cargostar.utils.Regex;
@@ -203,6 +213,7 @@ public class CreateUserActivity extends AppCompatActivity {
             final String oked = okedEditText.getText().toString();
             final String contract = contractEditText.getText().toString();
 
+            /* check for empty fields */
             if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(middleName) || TextUtils.isEmpty(lastName)) {
                 Toast.makeText(context, "Имя не указано или указано не полностью", Toast.LENGTH_SHORT).show();
                 return;
@@ -231,81 +242,198 @@ public class CreateUserActivity extends AppCompatActivity {
                 Toast.makeText(context, "Укажите номер аккаунта CargoStar", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (TextUtils.isEmpty(passportSerial) && TextUtils.isEmpty(inn) && TextUtils.isEmpty(company)) {
+                Toast.makeText(context, "Заполните физ. или юр. данные", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            final Address newAddress = new Address(country, region, city, address);
-            newAddress.setZip(zip);
-
+            /* check for regular expressions */
+            if (!Regex.isEmail(email)) {
+                Toast.makeText(context, "Email указан неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isName(firstName)) {
+                Toast.makeText(context, "Имя указано неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isName(middleName)) {
+                Toast.makeText(context, "Отчество указано неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isName(lastName)) {
+                Toast.makeText(context, "Фамилия указана неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isPhoneNumber(phone)) {
+                Toast.makeText(context, "Номер телефона указан неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isLocation(country)) {
+                Toast.makeText(context, "Страна указана неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isLocation(region)) {
+                Toast.makeText(context, "Регион/территория указаны неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isLocation(city)) {
+                Toast.makeText(context, "Город указан неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isAccountNumber(cargostarAccountNumber)) {
+                Toast.makeText(context, "Номер аккаунта CargoStar указан неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isAccountNumber(tntAccountNumber)) {
+                Toast.makeText(context, "Номер аккаунта TNT указан неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isAccountNumber(fedexAccountNumber)) {
+                Toast.makeText(context, "Номер аккаунта Fedex указан неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isZip(zip)) {
+                Toast.makeText(context, "Почтовый индекс должен содержать только цифры", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!TextUtils.isEmpty(discount)) {
+                if (!Regex.isZip(discount)) {
+                    Toast.makeText(context, "Скидка указана неверно", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            if (TextUtils.isEmpty(passportSerial) && (TextUtils.isEmpty(inn) || TextUtils.isEmpty(company))) {
+                Toast.makeText(context, "Для юр. лица укажите ИНН и название компании", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!TextUtils.isEmpty(inn)) {
+                if (!Regex.isAccountNumber(inn)) {
+                    Toast.makeText(context, "ИНН указан неверно", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+//            if (checkingAccount) {
+//
+//            }
+//            if (bank) {
+//
+//            }
+//            if (mfo) {
+//
+//            }
+//            if (oked) {
+//
+//            }
+//            if (vat) {
+//
+//            }
+            //todo: serialize photo into bytes and to json string from onActivityResult
+//            if (photo) {
+//
+//            }
+            //todo: serialize signature into bytes and json string from onActivityResult
+//            if (signature) {
+//
+//            }
             if (!TextUtils.isEmpty(geolocation)) {
                 if (!Regex.isGeolocation(geolocation)) {
                     Toast.makeText(context, "Геолокация должна быть указана в формате ХХ.ХХ", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                newAddress.setGeolocation(new Point(geolocation));
             }
-            final Account newAccount = new Account(login, password, email);
 
-            //todo: create Customer, Passport and Payment data
-//            final Customer customer = new Customer(firstName, middleName, lastName, phone, newAccount, newAddress, cargostarAccountNumber);
-//            customer.setTntAccountNumber(tntAccountNumber);
-//            customer.setFedexAccountNumber(fedexAccountNumber);
-//
-//            if (!TextUtils.isEmpty(discount)) {
-//                customer.setDiscount(Integer.parseInt(discount));
-//            }
-//            if (!TextUtils.isEmpty(signature)) {
-//                customer.setSignature(new Document(signature, signature));
-//            }
-//            if (!TextUtils.isEmpty(photo)) {
-//                customer.setPhoto(new Document(photo, photo));
-//            }
+            int userType = 0;
 
-//            PassportData passportData = null;
-//            PaymentData paymentData = null;
-//
-//            if (!TextUtils.isEmpty(passportSerial)) {
-//                passportData = new PassportData(passportSerial);
-//            }
-//            else {
-//                if (!TextUtils.isEmpty(inn) && !TextUtils.isEmpty(company)) {
-//                    paymentData = new PaymentData(inn, company);
-//                    if (!TextUtils.isEmpty(checkingAccount)) {
-//                        paymentData.setCheckingAccount(checkingAccount);
-//                    }
-//                    if (!TextUtils.isEmpty(bank)) {
-//                        paymentData.setBank(bank);
-//                    }
-//                    if (!TextUtils.isEmpty(vat)) {
-//                        paymentData.setVat(vat);
-//                    }
-//                    if (!TextUtils.isEmpty(mfo)) {
-//                        paymentData.setMfo(mfo);
-//                    }
-//                    if (!TextUtils.isEmpty(oked)) {
-//                        paymentData.setOked(oked);
-//                    }
-//                    if (!TextUtils.isEmpty(contract)) {
-//                        paymentData.setContract(new Document(contract, contract));
-//                    }
-//                }
-//            }
-//            if (passportData == null && paymentData == null) {
-//                Toast.makeText(context, "Заполните физ. или юр. данные", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//            final long userId = createUserViewModel.createCustomer(customer);
+            if (!TextUtils.isEmpty(passportSerial)) {
+                userType = 1;
+            }
+            else {
+                userType = 2;
+            }
 
-//            if (passportData != null) {
-//                passportData.setUserId(userId);
-//                createUserViewModel.createPassportData(passportData);
-//                Toast.makeText(context, "Аккаунт " + userId + " был успешно создан для физ. лица " + firstName, Toast.LENGTH_SHORT).show();
-//            }
-//            else {
-//                paymentData.setUserId(userId);
-//                createUserViewModel.createPaymentData(paymentData);
-//                Toast.makeText(context, "Аккаунт " + userId + " был успешно создан для юр. лица " + firstName, Toast.LENGTH_SHORT).show();
-//            }
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
+            RetrofitClient.getInstance(context).createClient(
+                    login,
+                    password,
+                    email,
+                    cargostarAccountNumber,
+                    tntAccountNumber,
+                    fedexAccountNumber,
+                    firstName,
+                    middleName,
+                    lastName,
+                    phone,
+                    country,
+                    region,
+                    city,
+                    address,
+                    geolocation,
+                    zip,
+                    TextUtils.isEmpty(discount) ? 0 : Integer.parseInt(discount),
+                    userType,
+                    passportSerial,
+                    inn,
+                    company,
+                    bank,
+                    mfo,
+                    oked,
+                    checkingAccount,
+                    vat,
+                    photo,
+                    signature,
+                    new Callback<JsonElement>() {
+                        @Override
+                        public void onResponse(@NonNull final Call<JsonElement> call, @NonNull final Response<JsonElement> response) {
+                            Log.i(TAG, "createClient(): code=" + response.code());
+
+                            if (response.isSuccessful()) {
+                                Log.i(TAG, "createClient(): " + response.body());
+
+                                //todo: save new Customer into DB (AddressBook || Client table)
+//                                final Customer newCustomer = new Customer(
+//                                        login,
+//                                        password,
+//                                        email,
+//                                        cargostarAccountNumber,
+//                                        tntAccountNumber,
+//                                        fedexAccountNumber,
+//                                        firstName,
+//                                        middleName,
+//                                        lastName,
+//                                        phone,
+//                                        country,
+//                                        region,
+//                                        city,
+//                                        address,
+//                                        geolocation,
+//                                        zip,
+//                                        Integer.parseInt(discount),
+//                                        userType,
+//                                        passportSerial,
+//                                        inn,
+//                                        company,
+//                                        bank,
+//                                        mfo,
+//                                        oked,
+//                                        checkingAccount,
+//                                        vat,
+//                                        photo,
+//                                        signature);
+
+                                startActivity(new Intent(context, MainActivity.class));
+                                finish();
+                                return;
+                            }
+                            if (response.errorBody() != null) {
+                                Log.e(TAG, "createClient(): " + response.errorBody());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull final Call<JsonElement> call, @NonNull final Throwable t) {
+                            Log.e(TAG, "createClient() ", t);
+                            Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
     }
 

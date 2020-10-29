@@ -603,7 +603,7 @@
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
-                android:text="@string/discount"/>
+                android:text="@string/discount" />
 
             <EditText
                 android:id="@+id/discount_edit_text"
@@ -617,7 +617,8 @@
                 android:textSize="16sp"
                 android:fontFamily="@font/geometria_actual"
                 android:textColor="@color/colorBlack"
-                android:padding="17dp"/>
+                android:padding="17dp"
+                android:maxLength="2" />
 
             <TextView
                 android:id="@+id/signature_text_view"

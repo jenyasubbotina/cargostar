@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.messaging.FirebaseMessaging;
 import uz.alexits.cargostar.R;
+import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
 import uz.alexits.cargostar.viewmodel.SingInViewModel;
@@ -53,6 +54,10 @@ public class SignInActivity extends AppCompatActivity {
         obtainFcmToken(this);
 
         signInViewModel = new ViewModelProvider(this).get(SingInViewModel.class);
+
+        LocalCache.getInstance(this).actorDao().selectAllCouriers().observe(this, couriers -> {
+            Log.i(TAG, "couriers: " + couriers);
+        });
 
         signInBtn.setOnClickListener(v -> {
             final String login = loginEditText.getText().toString();

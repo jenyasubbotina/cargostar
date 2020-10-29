@@ -1,9 +1,16 @@
 package uz.alexits.cargostar.api;
 
 import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
+
+import retrofit2.http.Body;
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.api.params.BindRequestParams;
+import uz.alexits.cargostar.api.params.CreateClientParams;
+import uz.alexits.cargostar.api.params.UpdateCourierParams;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
@@ -108,13 +115,13 @@ public class RetrofitClient {
         return apiService.getPublicRequests().execute();
     }
 
-    public void updateRequest(final long requestId, final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.updateRequest(requestId);
-        call.enqueue(callback);
-    }
+//    public void updateRequest(final long requestId, final Callback<JsonElement> callback) {
+//        final Call<JsonElement> call = apiService.updateRequest(requestId);
+//        call.enqueue(callback);
+//    }
 
     public void bindRequest(final long requestId, final long courierId, final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.bindRequest(requestId, courierId);
+        final Call<JsonElement> call = apiService.bindRequest(new BindRequestParams(requestId, courierId));
         call.enqueue(callback);
     }
 
@@ -129,6 +136,69 @@ public class RetrofitClient {
 
     public Response<List<PackagingType>> getPackagingTypes() throws IOException {
         return apiService.getPackagingTypes().execute();
+    }
+
+    /* Client */
+    public void createClient(final String login,
+                                              final String password,
+                                              final String email,
+                                              final String cargostarAccountNumber,
+                                              final String tntAccountNumber,
+                                              final String fedexAccountNumber,
+                                              final String firstName,
+                                              final String middleName,
+                                              final String lastName,
+                                              final String phone,
+                                              final String country,
+                                              final String region,
+                                              final String city,
+                                              final String address,
+                                              final String geolocation,
+                                              final String zip,
+                                              final int discount,
+                                              final int userType,
+                                              final String passportSerial,
+                                              final String inn,
+                                              final String company,
+                                              final String bank,
+                                              final String mfo,
+                                              final String oked,
+                                              final String checkingAccount,
+                                              final String registrationCode,
+                                              final String photoUrl,
+                                              final String signatureUrl,
+                                              final Callback<JsonElement> callback) {
+        final CreateClientParams clientParams = new CreateClientParams(
+                login,
+                password,
+                email,
+                cargostarAccountNumber,
+                tntAccountNumber,
+                fedexAccountNumber,
+                firstName,
+                middleName,
+                lastName,
+                phone,
+                country,
+                region,
+                city,
+                address,
+                geolocation,
+                zip,
+                discount,
+                userType,
+                passportSerial,
+                inn,
+                company,
+                bank,
+                mfo,
+                oked,
+                checkingAccount,
+                registrationCode,
+                photoUrl,
+                signatureUrl);
+        Log.i(TAG, "createClient(): " + clientParams);
+        apiService.createClient(clientParams).enqueue(callback);
     }
 
     private static final String TAG = RetrofitClient.class.toString();

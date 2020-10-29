@@ -225,7 +225,7 @@ public class ProfileFragment extends Fragment {
             if (!TextUtils.isEmpty(geolocation)) {
                 newAddress.setGeolocation(new Point(geolocation));
             }
-            final Account newAccount = new Account(login, password, email);
+            final Account newAccount = new Account(login, password);
             //todo: create Customer with Ids
 //            final Courier courier = new Courier(
 //                    id,
@@ -292,8 +292,8 @@ public class ProfileFragment extends Fragment {
             else {
                 passwordEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
-            if (!TextUtils.isEmpty(employee.getAccount().getEmail())) {
-                emailEditText.setText(employee.getAccount().getEmail());
+            if (!TextUtils.isEmpty(employee.getEmail())) {
+                emailEditText.setText(employee.getEmail());
                 emailEditText.setBackgroundResource(R.drawable.edit_text_active);
             }
             else {

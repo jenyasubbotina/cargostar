@@ -2,15 +2,21 @@ package uz.alexits.cargostar.model.actor;
 
 import androidx.annotation.NonNull;
 
-public class Account {
-    @NonNull private String login;
-    @NonNull private String passwordHash;
-    @NonNull private String email;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-    public Account(@NonNull final String login, @NonNull final String passwordHash, @NonNull final String email) {
+public class Account {
+    @Expose
+    @SerializedName("username")
+    @NonNull private String login;
+
+    @Expose
+    @SerializedName("password")
+    @NonNull private String passwordHash;
+
+    public Account(@NonNull final String login, @NonNull final String passwordHash) {
         this.login = login;
         this.passwordHash = passwordHash;
-        this.email = email;
     }
 
     @NonNull
@@ -23,11 +29,6 @@ public class Account {
         return passwordHash;
     }
 
-    @NonNull
-    public String getEmail() {
-        return email;
-    }
-
     public void setLogin(@NonNull final String login) {
         this.login = login;
     }
@@ -36,17 +37,12 @@ public class Account {
         this.passwordHash = passwordHash;
     }
 
-    public void setEmail(@NonNull final String email) {
-        this.email = email;
-    }
-
     @NonNull
     @Override
     public String toString() {
         return "Account{" +
                 "login='" + login + '\'' +
                 ", passwordHash='" + passwordHash + '\'' +
-                ", email='" + email + '\'' +
                 '}';
     }
 }

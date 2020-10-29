@@ -33,6 +33,7 @@ public class Courier extends User {
                    @NonNull final String middleName,
                    @NonNull final String lastName,
                    @NonNull final String phone,
+                   @NonNull final String email,
                    @Nullable final String address,
                    @Nullable final String geo,
                    @Nullable final String zip,
@@ -41,7 +42,22 @@ public class Courier extends User {
                    @Nullable final Date updatedAt,
                    @NonNull final Account account,
                    final long brancheId) {
-        super(id, countryId, regionId, cityId, firstName, middleName, lastName, phone, address, geo, zip, status, createdAt, updatedAt, account);
+        super(id,
+                countryId,
+                regionId,
+                cityId,
+                firstName,
+                middleName,
+                lastName,
+                phone,
+                email,
+                address,
+                geo,
+                zip,
+                status,
+                createdAt,
+                updatedAt,
+                account);
         this.brancheId = brancheId;
         this.position = "Курьер";
     }

@@ -23,6 +23,7 @@ import uz.alexits.cargostar.database.dao.LocationDao;
 import uz.alexits.cargostar.database.dao.PackagingDao;
 import uz.alexits.cargostar.database.dao.ParcelDao;
 import uz.alexits.cargostar.database.dao.RequestDao;
+import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
@@ -55,7 +56,7 @@ import java.util.zip.CheckedOutputStream;
 @Database(entities = {
         User.class,
         Courier.class,
-//        Customer.class,
+        Customer.class,
 //        PassportData.class,
 //        PaymentData.class,
         AddressBook.class,
@@ -72,7 +73,7 @@ import java.util.zip.CheckedOutputStream;
         Request.class,
         Provider.class,
         Packaging.class,
-        PackagingType.class}, version = 45, exportSchema = false)
+        PackagingType.class}, version = 47, exportSchema = false)
 @TypeConverters({ PointConverter.class, TransportationStatusConverter.class, PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";
@@ -175,13 +176,14 @@ public abstract class LocalCache extends RoomDatabase {
                 "",
                 "Kadushkin",
                 "+998935977577",
-                "adres",
+                "android.kim@gmail.com",
+                "Chilonzor 24",
                 "",
                 "111111",
                 1,
                 null,
                 null,
-                new Account("android", "12345", "android@gmail.com"),
+                new Account("android", "12345"),
                 1));
     }
 

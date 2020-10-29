@@ -65,6 +65,11 @@ public abstract class User {
     @NonNull protected final String phone;
 
     @Expose
+    @SerializedName("email")
+    @ColumnInfo(name = "email")
+    @NonNull protected final String email;
+
+    @Expose
     @SerializedName("address")
     @ColumnInfo(name = "address")
     @Nullable protected String address;
@@ -105,6 +110,7 @@ public abstract class User {
                 @Nullable final String middleName,
                 @NonNull final String lastName,
                 @NonNull final String phone,
+                @NonNull final String email,
                 @Nullable final String address,
                 @Nullable final String geo,
                 @Nullable final String zip,
@@ -120,6 +126,7 @@ public abstract class User {
         this.middleName = middleName;
         this.lastName = lastName;
         this.phone = phone;
+        this.email = email;
         this.address = address;
         this.geo = geo;
         this.zip = zip;
@@ -127,6 +134,11 @@ public abstract class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.account = account;
+    }
+
+    @NonNull
+    public String getEmail() {
+        return email;
     }
 
     public long getId() {
@@ -235,6 +247,7 @@ public abstract class User {
                 ", middleName='" + middleName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
                 ", geo='" + geo + '\'' +
                 ", zip='" + zip + '\'' +

@@ -1,5 +1,10 @@
 package uz.alexits.cargostar.api;
 
+import retrofit2.http.Body;
+import retrofit2.http.HeaderMap;
+import uz.alexits.cargostar.api.params.BindRequestParams;
+import uz.alexits.cargostar.api.params.CreateClientParams;
+import uz.alexits.cargostar.api.params.UpdateCourierParams;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
@@ -13,6 +18,7 @@ import uz.alexits.cargostar.model.packaging.Provider;
 import com.google.gson.JsonElement;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -55,19 +61,11 @@ public interface ApiService {
     @GET("request")
     Call<List<Request>> getPublicRequests();
 
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @PUT("request/update")
-    Call<JsonElement> updateRequest(@Query("id") final long id);
+//    @Headers("Content-Type: application/json; charset=utf-8;")
+//    @PUT("request/update")
+//    Call<JsonElement> updateRequest(@Query("id") final long id, @Body UpdateRequestParams updateRequestParams);
 
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @POST("request-additional/create")
-    Call<JsonElement> bindRequest(@Query("request_id") final long requestId, @Query("employee)id") final long courierId);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("address-book")
-    Call<JsonElement> getAddressBook();
-
-    /*Providers / packaging */
+    /* Providers / packaging */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("provider")
     Call<List<Provider>> getProviders();
@@ -79,4 +77,22 @@ public interface ApiService {
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("packaging")
     Call<List<Packaging>> getPackaging();
+
+    /* Client */
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @POST("client")
+    Call<JsonElement> createClient(@Body CreateClientParams createClientParams);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("address-book")
+    Call<JsonElement> getAddressBook();
+
+    /* Courier */
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @POST("request-additional/create")
+    Call<JsonElement> bindRequest(@Body BindRequestParams bindRequestParams);
+
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @PUT("employee/update")
+    Call<JsonElement> updateCourierData(@Query("id") final long courierId, @Body UpdateCourierParams updatedCourierParams);
 }
