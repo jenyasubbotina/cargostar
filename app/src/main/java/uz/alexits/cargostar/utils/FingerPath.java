@@ -1,4 +1,4 @@
-package uz.alexits.cargostar.view;
+package uz.alexits.cargostar.utils;
 
 import android.graphics.Path;
 

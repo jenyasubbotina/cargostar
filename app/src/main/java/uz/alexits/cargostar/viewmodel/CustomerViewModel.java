@@ -6,11 +6,11 @@ import androidx.lifecycle.AndroidViewModel;
 import uz.alexits.cargostar.database.cache.Repository;
 
 //todo: create customerList, passportDataList and paymentDataList
-public class CreateUserViewModel extends AndroidViewModel {
+public class CustomerViewModel extends AndroidViewModel {
     private final Repository repository;
 //    private LiveData<List<Customer>> customerList;
 
-    public CreateUserViewModel(@NonNull Application application) {
+    public CustomerViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
 //        this.customerList = repository.selectAllCustomers();

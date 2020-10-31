@@ -27,9 +27,9 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.Notification;
 import uz.alexits.cargostar.view.viewholder.NotificationViewHolder;
-import uz.alexits.cargostar.viewmodel.HeaderViewModel;
+import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.NotificationsViewModel;
-import uz.alexits.cargostar.view.Constants;
+import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
@@ -44,7 +44,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     private FragmentActivity activity;
     private Context context;
     //viewModel
-    private HeaderViewModel headerViewModel;
+    private CourierViewModel courierViewModel;
     private NotificationsViewModel notificationsViewModel;
     //header views
     private TextView fullNameTextView;
@@ -121,15 +121,15 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //header views
-        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         notificationsViewModel = new ViewModelProvider(this).get(NotificationsViewModel.class);
 
-        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        headerViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
@@ -144,7 +144,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -154,12 +154,12 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
 //                    return;
 //                }
                 final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_VALUE, parcelId);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
                 startActivity(mainIntent);
             });
         });
-        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+        courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
@@ -183,10 +183,10 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
 
         final Intent requestsIntent = new Intent(getContext(), MainActivity.class);
         if (currentItem.getLink().equalsIgnoreCase(publicBids)) {
-            requestsIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_PUBLIC_REQUESTS);
+            requestsIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_PUBLIC_REQUESTS);
         }
         else if (currentItem.getLink().equalsIgnoreCase(myBids)) {
-            requestsIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_MY_REQUESTS);
+            requestsIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_MY_REQUESTS);
         }
         startActivity(requestsIntent);
     }

@@ -11,6 +11,9 @@ public class CreateClientParams {
     @SerializedName("password")
     private final String password;
 
+    @SerializedName("password_repeat")
+    private final String passwordRepeat;
+
     @SerializedName("email")
     private final String email;
 
@@ -54,7 +57,7 @@ public class CreateClientParams {
     private final String zip;
 
     @SerializedName("discount")
-    private final int discount;
+    private final double discount;
 
     @SerializedName("photo")
     private final String photoUrl;
@@ -108,7 +111,7 @@ public class CreateClientParams {
                               final String address,
                               final String geolocation,
                               final String zip,
-                              final int discount,
+                              final double discount,
                               final int userType,
                               final String passportSerial,
                               final String inn,
@@ -122,6 +125,7 @@ public class CreateClientParams {
                               final String signatureUrl) {
         this.login = login;
         this.password = password;
+        this.passwordRepeat = password;
         this.email = email;
         this.cargostarAccountNumber = cargostarAccountNumber;
         this.tntAccountNumber = tntAccountNumber;
@@ -214,7 +218,7 @@ public class CreateClientParams {
         return zip;
     }
 
-    public int getDiscount() {
+    public double getDiscount() {
         return discount;
     }
 
@@ -260,6 +264,10 @@ public class CreateClientParams {
 
     public String getRegistrationCode() {
         return registrationCode;
+    }
+
+    public String getPasswordRepeat() {
+        return passwordRepeat;
     }
 
     @NonNull

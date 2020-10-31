@@ -23,7 +23,7 @@ import uz.alexits.cargostar.view.viewholder.CreateParcelSingleSpinnerViewHolder;
 import uz.alexits.cargostar.view.viewholder.CreateParcelTwoEditTextsViewHolder;
 import uz.alexits.cargostar.view.viewholder.CreateParcelTwoImageEditTextsViewHolder;
 import uz.alexits.cargostar.view.viewholder.ParcelDataStrokeViewHolder;
-import uz.alexits.cargostar.view.UiUtils;
+import uz.alexits.cargostar.utils.UiUtils;
 
 import java.util.List;
 

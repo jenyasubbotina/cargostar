@@ -13,10 +13,10 @@ import uz.alexits.cargostar.model.shipping.Parcel;
 
 import java.util.List;
 
-public class CurrentParcelsViewModel extends AndroidViewModel {
+public class ParcelsViewModel extends AndroidViewModel {
     private final Repository repository;
 
-    public CurrentParcelsViewModel(@NonNull Application application) {
+    public ParcelsViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
     }

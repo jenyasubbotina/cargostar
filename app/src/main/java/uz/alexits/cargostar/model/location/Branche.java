@@ -29,17 +29,17 @@ public class Branche {
     @Expose
     @SerializedName("country_id")
     @ColumnInfo(name = "country_id")
-    private final long countryId;
+    private final Long countryId;
 
     @Expose
     @SerializedName("region_id")
     @ColumnInfo(name = "region_id")
-    private final long regionId;
+    private final Long regionId;
 
     @Expose
     @SerializedName("city_id")
     @ColumnInfo(name = "city_id")
-    private final long cityId;
+    private final Long cityId;
 
     @Expose
     @SerializedName("name")
@@ -82,9 +82,9 @@ public class Branche {
     @Nullable private Date updatedAt;
 
     public Branche(final long id,
-                   final long countryId,
-                   final long regionId,
-                   final long cityId,
+                   final Long countryId,
+                   final Long regionId,
+                   final Long cityId,
                    @NonNull final String name,
                    @Nullable final String address,
                    @Nullable final String zip,
@@ -111,15 +111,15 @@ public class Branche {
         return id;
     }
 
-    public long getCountryId() {
+    public Long getCountryId() {
         return countryId;
     }
 
-    public long getRegionId() {
+    public Long getRegionId() {
         return regionId;
     }
 
-    public long getCityId() {
+    public Long getCityId() {
         return cityId;
     }
 

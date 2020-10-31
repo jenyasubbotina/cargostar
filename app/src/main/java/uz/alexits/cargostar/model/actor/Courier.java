@@ -4,31 +4,38 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
+import uz.alexits.cargostar.model.location.Branche;
+
 @Entity(tableName = "courier", inheritSuperIndices = true,
         foreignKeys = {
-//        @ForeignKey(entity = Branche.class, parentColumns = "id", childColumns = "branche_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)
-        }
-//        indices = {@Index(value = "branche_id")}
-        )
+        @ForeignKey(entity = Branche.class, parentColumns = "id", childColumns = "branche_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {@Index(value = "branche_id")})
 public class Courier extends User {
     @Expose
     @SerializedName("branche_id")
     @ColumnInfo(name = "branche_id")
-    private long brancheId;
+    private Long brancheId;
 
     @ColumnInfo(name = "position")
     @NonNull private String position;
 
+    @Expose
+    @SerializedName("photo")
+    @ColumnInfo(name = "photo_url")
+    @Nullable private String photoUrl;
+
     public Courier(final long id,
-                   final long countryId,
-                   final long regionId,
-                   final long cityId,
+                   final Long countryId,
+                   final Long regionId,
+                   final Long cityId,
                    @NonNull final String firstName,
                    @NonNull final String middleName,
                    @NonNull final String lastName,
@@ -40,8 +47,9 @@ public class Courier extends User {
                    final int status,
                    @Nullable final Date createdAt,
                    @Nullable final Date updatedAt,
-                   @NonNull final Account account,
-                   final long brancheId) {
+                   final Long brancheId,
+                   @NonNull final String login,
+                   @Nullable final String photoUrl) {
         super(id,
                 countryId,
                 regionId,
@@ -57,17 +65,22 @@ public class Courier extends User {
                 status,
                 createdAt,
                 updatedAt,
-                account);
+                login);
         this.brancheId = brancheId;
         this.position = "Курьер";
+        this.photoUrl = photoUrl;
     }
 
-//    @Expose
-//    @SerializedName("photo")
-//    @Embedded(prefix = "photo_")
-//    @Nullable protected Document photo;
+    public void setPhotoUrl(@Nullable String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
 
-    public long getBrancheId() {
+    @Nullable
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public Long getBrancheId() {
         return brancheId;
     }
 
@@ -90,6 +103,23 @@ public class Courier extends User {
         return "Courier{" +
                 "brancheId=" + brancheId +
                 ", position='" + position + '\'' +
+                ", id=" + id +
+                ", countryId=" + countryId +
+                ", regionId=" + regionId +
+                ", cityId=" + cityId +
+                ", firstName='" + firstName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", geo='" + geo + '\'' +
+                ", zip='" + zip + '\'' +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", login=" + login +
+                ", password=" + password +
                 '}';
     }
 }

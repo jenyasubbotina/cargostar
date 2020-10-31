@@ -131,14 +131,6 @@ public class Region {
     @NonNull
     @Override
     public String toString() {
-        return "Region{" +
-                "id=" + id +
-                ", countryId=" + countryId +
-                ", name='" + name + '\'' +
-                ", nameEn='" + nameEn + '\'' +
-                ", status=" + status +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return name;
     }
 }

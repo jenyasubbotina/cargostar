@@ -1,4 +1,4 @@
-package uz.alexits.cargostar.model.packaging;
+package uz.alexits.cargostar.model.calculation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,11 +13,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
 @Entity(tableName = "packagingType",
-        foreignKeys = {@ForeignKey(entity = Packaging.class,
-                parentColumns = "id",
-                childColumns = "packaging_id",
-                onDelete = ForeignKey.CASCADE,
-                onUpdate = ForeignKey.CASCADE)},
+        foreignKeys = {@ForeignKey(entity = Packaging.class, parentColumns = "id", childColumns = "packaging_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
         indices = {@Index(value = "packaging_id")})
 public class PackagingType {
     @Expose
@@ -52,14 +48,9 @@ public class PackagingType {
     @Nullable private final String description;
 
     @Expose
-    @SerializedName("description_en")
-    @ColumnInfo(name = "description_en")
-    @Nullable private final String descriptionEn;
-
-    @Expose
-    @SerializedName("description_uz")
-    @ColumnInfo(name = "description_uz")
-    @Nullable private final String descriptionUz;
+    @SerializedName("type")
+    @ColumnInfo(name = "type")
+    private final int type;
 
     @Expose
     @SerializedName("status")
@@ -82,8 +73,7 @@ public class PackagingType {
                          @Nullable final String nameEn,
                          @Nullable final String nameUz,
                          @Nullable final String description,
-                         @Nullable final String descriptionEn,
-                         @Nullable final String descriptionUz,
+                         final int type,
                          final int status,
                          @Nullable final Date createdAt,
                          @Nullable final Date updatedAt) {
@@ -93,8 +83,7 @@ public class PackagingType {
         this.nameEn = nameEn;
         this.nameUz = nameUz;
         this.description = description;
-        this.descriptionEn = descriptionEn;
-        this.descriptionUz = descriptionUz;
+        this.type = type;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -128,16 +117,6 @@ public class PackagingType {
         return description;
     }
 
-    @Nullable
-    public String getDescriptionEn() {
-        return descriptionEn;
-    }
-
-    @Nullable
-    public String getDescriptionUz() {
-        return descriptionUz;
-    }
-
     public int getStatus() {
         return status;
     }
@@ -152,9 +131,30 @@ public class PackagingType {
         return updatedAt;
     }
 
-    @NonNull
+    public int getType() {
+        return type;
+    }
+
+//    @NonNull
+//    @Override
+//    public String toString() {
+//        return name;
+//    }
+
+
     @Override
     public String toString() {
-        return name;
+        return "PackagingType{" +
+                "id=" + id +
+                ", packagingId=" + packagingId +
+                ", name='" + name + '\'' +
+                ", nameEn='" + nameEn + '\'' +
+                ", nameUz='" + nameUz + '\'' +
+                ", description='" + description + '\'' +
+                ", type=" + type +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

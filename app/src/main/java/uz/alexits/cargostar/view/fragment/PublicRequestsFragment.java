@@ -21,13 +21,20 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.JsonElement;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.shipping.Request;
-import uz.alexits.cargostar.viewmodel.HeaderViewModel;
+import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.RequestsViewModel;
-import uz.alexits.cargostar.view.Constants;
+import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
@@ -35,14 +42,13 @@ import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.PublicRequestAdapter;
 import uz.alexits.cargostar.view.callback.RequestCallback;
-import uz.alexits.cargostar.view.fragment.PublicRequestsFragmentDirections;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class PublicRequestsFragment extends Fragment implements RequestCallback {
     private static final String TAG = PublicRequestsFragment.class.toString();
     private Context context;
     private FragmentActivity activity;
-    private HeaderViewModel headerViewModel;
+    private CourierViewModel courierViewModel;
     private RequestsViewModel requestsViewModel;
     //header views
     private TextView fullNameTextView;
@@ -123,7 +129,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
 
         requestsViewModel.getPublicRequests().observe(getViewLifecycleOwner(), requestList -> {
@@ -133,17 +139,17 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         });
 
         //header views
-        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        headerViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
         });
-        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+        courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
@@ -157,7 +163,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -167,8 +173,8 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
 //                    return;
 //                }
                 final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_VALUE, parcelId);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
                 startActivity(mainIntent);
             });
         });
@@ -176,7 +182,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
 
     @Override
     public void onRequestSelected(Request currentItem, RecyclerView.ViewHolder holder) {
-//        currentItem.setRead(true);
+        currentItem.setNew(false);
         requestsViewModel.readReceipt(currentItem.getId());
         final PublicRequestsFragmentDirections.ActionPublicBidsFragmentToParcelDataFragment action = PublicRequestsFragmentDirections.actionPublicBidsFragmentToParcelDataFragment();
         action.setParcelId(currentItem.getId());
@@ -189,18 +195,37 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
 //        action.setInvoiceId(currentItem.getInvoiceId());
 //        action.setUserId(currentItem.getUserId());
 //        action.setClientId(currentItem.getClientId());
-        action.setRequestOrParcel(Constants.INTENT_REQUEST);
+        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
         NavHostFragment.findNavController(this).navigate(action);
 
     }
 
     @Override
     public void onPlusClicked(Request currentItem) {
-        if (currentItem.getCourierId() <= 0) {
-            currentItem.setCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID));
-            requestsViewModel.updateReceipt(currentItem);
-            adapter.notifyDataSetChanged();
-            Toast.makeText(context, "Заявка " + currentItem.getId() + " успешно добавлена в Мои Заявки", Toast.LENGTH_SHORT).show();
+        if (currentItem.getCourierId() == null) {
+            RetrofitClient.getInstance(
+                    context,
+                    SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH))
+            .bindRequest(currentItem.getId(), SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), new Callback<JsonElement>() {
+                @Override
+                public void onResponse(@NonNull final Call<JsonElement> call, @NonNull final Response<JsonElement> response) {
+                    Log.i(TAG, "body: " + response.body());
+                    Log.e(TAG, "errorBody: " + response.errorBody());
+
+                    //todo: sync public requests once again
+
+                    currentItem.setCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID));
+                    requestsViewModel.updateReceipt(currentItem);
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(context, "Заявка " + currentItem.getId() + " успешно добавлена в Мои Заявки", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(@NonNull final Call<JsonElement> call, @NonNull final Throwable t) {
+                    Log.e(TAG, "onFailure: ", t);
+                }
+            });
         }
     }
 }

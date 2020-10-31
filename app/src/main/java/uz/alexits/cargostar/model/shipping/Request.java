@@ -4,13 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.packaging.Provider;
+import uz.alexits.cargostar.model.calculation.Provider;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -130,6 +131,14 @@ public class Request {
     @ColumnInfo(name = "updated_at")
     private Date updatedAt;
 
+    @ColumnInfo(name = "is_new")
+    private boolean isNew;
+
+    @Ignore
+    public Request() {
+        this.isNew = true;
+    }
+
     public Request(final long id,
                    final String senderFirstName,
                    final String senderMiddleName,
@@ -172,6 +181,43 @@ public class Request {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.isNew = true;
+    }
+
+    public void setSenderCountryId(Long senderCountryId) {
+        this.senderCountryId = senderCountryId;
+    }
+
+    public void setSenderRegionId(Long senderRegionId) {
+        this.senderRegionId = senderRegionId;
+    }
+
+    public void setSenderCityId(Long senderCityId) {
+        this.senderCityId = senderCityId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setCourierId(Long courierId) {
+        this.courierId = courierId;
+    }
+
+    public void setInvoiceId(Long invoiceId) {
+        this.invoiceId = invoiceId;
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew) {
+        isNew = aNew;
     }
 
     public long getId() {

@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.view.Constants;
+import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.fragment.MainFragmentDirections;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,18 +20,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (getIntent() != null) {
-            if (getIntent().getIntExtra(Constants.INTENT_REQUEST_KEY, -1) == Constants.REQUEST_PUBLIC_REQUESTS) {
+            if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_PUBLIC_REQUESTS) {
                 Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_publicBidsFragment);
                 return;
             }
-            if (getIntent().getIntExtra(Constants.INTENT_REQUEST_KEY, -1) == Constants.REQUEST_MY_REQUESTS) {
+            if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_MY_REQUESTS) {
                 Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_myBidsFragment);
                 return;
             }
-            if (getIntent().getIntExtra(Constants.INTENT_REQUEST_KEY, -1) == Constants.REQUEST_FIND_PARCEL) {
+            if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_FIND_PARCEL) {
                 final MainFragmentDirections.ActionMainFragmentToParcelDataFragment action =
                         MainFragmentDirections.actionMainFragmentToParcelDataFragment();
-                action.setParcelId(getIntent().getLongExtra(Constants.INTENT_REQUEST_VALUE, -1));
+                action.setParcelId(getIntent().getLongExtra(IntentConstants.INTENT_REQUEST_VALUE, -1));
                 Navigation.findNavController(this, R.id.main_fragment_container).navigate(action);
             }
         }

@@ -1,4 +1,4 @@
-package uz.alexits.cargostar.model.packaging;
+package uz.alexits.cargostar.model.calculation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

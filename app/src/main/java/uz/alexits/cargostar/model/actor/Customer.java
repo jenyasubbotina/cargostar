@@ -105,8 +105,24 @@ public class Customer extends User {
                     final int status,
                     @Nullable final Date createdAt,
                     @Nullable final Date updatedAt,
-                    @NonNull final Account account) {
-        super(id, countryId, regionId, cityId, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt, account);
+                    @NonNull final String login,
+                    @NonNull final String password) {
+        super(id,
+                countryId,
+                regionId,
+                cityId,
+                firstName,
+                middleName,
+                lastName,
+                phone,
+                email,
+                address,
+                geo,
+                zip,
+                status,
+                createdAt,
+                updatedAt,
+                login);
     }
 
     public Customer(final long id,
@@ -124,7 +140,8 @@ public class Customer extends User {
                     final int status,
                     @Nullable final Date createdAt,
                     @Nullable final Date updatedAt,
-                    @NonNull final Account account,
+                    @NonNull final String login,
+                    @NonNull final String password,
                     @Nullable final String cargostarAccountNumber,
                     @Nullable final String tntAccountNumber,
                     @Nullable final String fedexAccountNumber,
@@ -140,7 +157,8 @@ public class Customer extends User {
                     @Nullable final String oked,
                     @Nullable final String checkingAccount,
                     @Nullable final String registrationCode) {
-        super(id, countryId, regionId, cityId, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt, account);
+        super(id, countryId, regionId, cityId, firstName, middleName,
+                lastName, phone, email, address, geo, zip, status, createdAt, updatedAt, login);
         this.cargostarAccountNumber = cargostarAccountNumber;
         this.tntAccountNumber = tntAccountNumber;
         this.fedexAccountNumber = fedexAccountNumber;
@@ -324,7 +342,8 @@ public class Customer extends User {
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", account=" + account +
+                ", login=" + login +
+                ", password=" + password +
                 '}';
     }
 }

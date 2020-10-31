@@ -1,4 +1,4 @@
-package uz.alexits.cargostar.workers.packaging;
+package uz.alexits.cargostar.workers.calculation;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,7 +8,8 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.api.RetrofitClient;
-import uz.alexits.cargostar.model.packaging.Provider;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.calculation.Provider;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,7 +26,11 @@ public class FetchProvidersWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            final Response<List<Provider>> response = RetrofitClient.getInstance(getApplicationContext()).getProviders();
+            final Response<List<Provider>> response = RetrofitClient.getInstance(
+                    getApplicationContext(),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
+                    .getProviders();
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

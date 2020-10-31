@@ -1,4 +1,4 @@
-package uz.alexits.cargostar.workers.packaging;
+package uz.alexits.cargostar.workers.calculation;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,7 +9,8 @@ import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.packaging.PackagingType;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.calculation.PackagingType;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +25,11 @@ public class FetchPackagingTypesWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            final Response<List<PackagingType>> response = RetrofitClient.getInstance(getApplicationContext()).getPackagingTypes();
+            final Response<List<PackagingType>> response = RetrofitClient.getInstance(
+                    getApplicationContext(),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
+                    .getPackagingTypes();
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

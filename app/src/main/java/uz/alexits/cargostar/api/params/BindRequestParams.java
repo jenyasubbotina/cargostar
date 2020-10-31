@@ -1,31 +1,25 @@
 package uz.alexits.cargostar.api.params;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 public class BindRequestParams {
-    @SerializedName("request_id")
-    private final long requestId;
-
     @SerializedName("employee_id")
     private final long courierId;
 
-    public BindRequestParams(final long requestId, final long courierId) {
-        this.requestId = requestId;
+    public BindRequestParams(final long courierId) {
         this.courierId = courierId;
-    }
-
-    public long getRequestId() {
-        return requestId;
     }
 
     public long getCourierId() {
         return courierId;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "BindRequestParams{" +
-                "requestId=" + requestId +
                 ", courierId=" + courierId +
                 '}';
     }

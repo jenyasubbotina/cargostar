@@ -26,9 +26,7 @@ import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.model.TransportationStatus;
 import uz.alexits.cargostar.viewmodel.ParcelStatusViewModel;
-import uz.alexits.cargostar.view.Constants;
-import uz.alexits.cargostar.view.fragment.ParcelStatusFragmentArgs;
-import uz.alexits.cargostar.view.fragment.ParcelStatusFragmentDirections;
+import uz.alexits.cargostar.utils.IntentConstants;
 
 public class ParcelStatusFragment extends Fragment {
     private Context context;
@@ -94,7 +92,7 @@ public class ParcelStatusFragment extends Fragment {
             final ParcelStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action =
                     ParcelStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
             action.setParcelId(requestId);
-            action.setRequestOrParcel(Constants.INTENT_PARCEL);
+            action.setRequestOrParcel(IntentConstants.INTENT_PARCEL);
             NavHostFragment.findNavController(this).navigate(action);
         });
 
@@ -120,16 +118,16 @@ public class ParcelStatusFragment extends Fragment {
         final ParcelStatusViewModel parcelStatusViewModel = new ViewModelProvider(this).get(ParcelStatusViewModel.class);
 
         parcelStatusViewModel.selectParcel(requestId).observe(getViewLifecycleOwner(), parcel -> {
-            currentLocationId = parcel.getReceipt().getCurrentLocation();
+            currentLocationId = parcel.getInvoice().getCurrentLocation();
 
-            parcelIdTextView.setText(String.valueOf(parcel.getReceipt().getId()));
-            parcelIdItemTextView.setText(String.valueOf(parcel.getReceipt().getId()));
-            fromTextView.setText(parcel.getReceipt().getSenderAddress().getCity());
-            toTextView.setText(parcel.getReceipt().getRecipientAddress().getCity());
+            parcelIdTextView.setText(String.valueOf(parcel.getInvoice().getId()));
+            parcelIdItemTextView.setText(String.valueOf(parcel.getInvoice().getId()));
+            fromTextView.setText(parcel.getInvoice().getSenderAddress().getCity());
+            toTextView.setText(parcel.getInvoice().getRecipientAddress().getCity());
             sourceTextView.setText(parcel.getRoute().get(0).getName());
             destinationTextView.setText(parcel.getRoute().get(parcel.getRoute().size() - 1).getName());
 
-            final TransportationStatus currentStatus = parcel.getReceipt().getTransportationStatus();
+            final TransportationStatus currentStatus = parcel.getInvoice().getTransportationStatus();
             if (currentStatus == null) {
                 submitStatusBtn.setText(TransportationStatus.IN_TRANSIT.toString());
                 return;

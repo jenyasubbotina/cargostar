@@ -73,7 +73,7 @@
                 android:text="@string/authorization_data"/>
 
             <TextView
-                android:id="@+id/login_text_view"
+                android:id="@+id/email_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/autorization_data_text_view"
@@ -82,18 +82,18 @@
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
-                android:text="@string/login"/>
+                android:text="@string/email"/>
 
             <EditText
-                android:id="@+id/login_edit_text"
+                android:id="@+id/email_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
-                app:layout_constraintTop_toBottomOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
+                app:layout_constraintTop_toBottomOf="@id/email_text_view"
                 app:layout_constraintEnd_toStartOf="@id/password_edit_text"
                 android:layout_marginEnd="12dp"
                 android:layout_marginTop="4dp"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:background="@drawable/edit_text_locked"
                 android:textSize="16sp"
                 android:fontFamily="@font/geometria_actual"
@@ -104,7 +104,7 @@
                 android:id="@+id/password_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/login_text_view"
+                app:layout_constraintTop_toTopOf="@id/email_text_view"
                 app:layout_constraintStart_toStartOf="@id/password_edit_text"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -115,8 +115,8 @@
                 android:id="@+id/password_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/login_edit_text"
-                app:layout_constraintStart_toEndOf="@id/login_edit_text"
+                app:layout_constraintTop_toTopOf="@id/email_edit_text"
+                app:layout_constraintStart_toEndOf="@id/email_edit_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="35dp"
                 android:layout_marginStart="12dp"
@@ -127,32 +127,32 @@
                 android:textColor="@color/colorBlack"
                 android:padding="17dp"/>
 
-            <TextView
-                android:id="@+id/email_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/login_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
-                android:layout_marginTop="20dp"
-                android:textSize="16sp"
-                android:textColor="#A5ABC0"
-                android:fontFamily="@font/geometria_actual"
-                android:text="@string/email"/>
+<!--            <TextView-->
+<!--                android:id="@+id/email_text_view"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/login_edit_text"-->
+<!--                app:layout_constraintStart_toStartOf="@id/login_text_view"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textColor="#A5ABC0"-->
+<!--                android:fontFamily="@font/geometria_actual"-->
+<!--                android:text="@string/email"/>-->
 
-            <EditText
-                android:id="@+id/email_edit_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/email_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
-                android:layout_marginTop="4dp"
-                android:inputType="textEmailAddress"
-                android:background="@drawable/edit_text_locked"
-                android:textSize="16sp"
-                android:fontFamily="@font/geometria_actual"
-                android:textColor="@color/colorBlack"
-                android:padding="17dp"/>
+<!--            <EditText-->
+<!--                android:id="@+id/email_edit_text"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/email_text_view"-->
+<!--                app:layout_constraintStart_toStartOf="@id/login_edit_text"-->
+<!--                app:layout_constraintEnd_toEndOf="@id/login_edit_text"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:inputType="textEmailAddress"-->
+<!--                android:background="@drawable/edit_text_locked"-->
+<!--                android:textSize="16sp"-->
+<!--                android:fontFamily="@font/geometria_actual"-->
+<!--                android:textColor="@color/colorBlack"-->
+<!--                android:padding="17dp"/>-->
 
             <View
                 android:id="@+id/client_account_numbers_stroke"
@@ -181,7 +181,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/client_account_data_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -192,8 +192,8 @@
                 android:id="@+id/cargostar_account_number_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@+id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@+id/email_edit_text"
                 app:layout_constraintTop_toBottomOf="@id/cargostar_account_number_text_view"
                 android:layout_marginTop="4dp"
                 android:inputType="numberDecimal"
@@ -233,7 +233,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/cargostar_account_number_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="20dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -245,8 +245,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/fedex_account_number_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 android:layout_marginTop="4dp"
                 android:inputType="numberDecimal"
                 android:background="@drawable/edit_text_locked"
@@ -282,7 +282,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/personal_information_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -293,8 +293,8 @@
                 android:id="@+id/first_name_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@+id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 app:layout_constraintTop_toBottomOf="@id/first_name_text_view"
                 android:layout_marginTop="4dp"
                 android:inputType="textPersonName"
@@ -334,7 +334,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/first_name_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -345,8 +345,8 @@
                 android:id="@+id/middle_name_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@+id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 app:layout_constraintTop_toBottomOf="@id/middle_name_text_view"
                 android:layout_marginTop="4dp"
                 android:inputType="textPersonName"
@@ -386,7 +386,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/middle_name_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -398,8 +398,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/address_text_view"
-                app:layout_constraintStart_toStartOf="@+id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@+id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@+id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@+id/email_edit_text"
                 android:layout_marginTop="4dp"
                 android:inputType="textEmailAddress"
                 android:background="@drawable/edit_text_locked"
@@ -438,27 +438,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/geolocation_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
                 android:text="@string/country"/>
 
-            <EditText
-                android:id="@+id/country_edit_text"
+            <RelativeLayout
+                android:id="@+id/country_field"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/country_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
-                android:layout_marginTop="4dp"
-                android:inputType="textCapWords"
-                android:background="@drawable/edit_text_locked"
-                android:textSize="16sp"
-                android:fontFamily="@font/geometria_actual"
-                android:textColor="@color/colorBlack"
-                android:padding="17dp"/>
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
+                app:layout_constraintHorizontal_weight="1"
+                android:background="@drawable/edit_text_locked">
+
+                <Spinner
+                    android:id="@+id/country_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="8dp" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/region_text_view"
@@ -471,46 +474,53 @@
                 android:fontFamily="@font/geometria_actual"
                 android:text="@string/region"/>
 
-            <EditText
-                android:id="@+id/region_edit_text"
+            <RelativeLayout
+                android:id="@+id/region_field"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/country_edit_text"
+                app:layout_constraintTop_toTopOf="@id/country_field"
                 app:layout_constraintStart_toStartOf="@id/password_edit_text"
                 app:layout_constraintEnd_toEndOf="@id/password_edit_text"
-                android:inputType="textCapWords"
-                android:background="@drawable/edit_text_locked"
-                android:textSize="16sp"
-                android:fontFamily="@font/geometria_actual"
-                android:textColor="@color/colorBlack"
-                android:padding="17dp"/>
+                app:layout_constraintHorizontal_weight="1"
+                android:background="@drawable/edit_text_locked">
+
+                <Spinner
+                    android:id="@+id/region_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="8dp" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/city_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/country_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintTop_toBottomOf="@id/country_field"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
                 android:text="@string/city"/>
 
-            <EditText
-                android:id="@+id/city_edit_text"
+            <RelativeLayout
+                android:id="@+id/city_field"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/city_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
-                android:layout_marginTop="4dp"
-                android:inputType="textCapWords"
-                android:background="@drawable/edit_text_locked"
-                android:textSize="16sp"
-                android:fontFamily="@font/geometria_actual"
-                android:textColor="@color/colorBlack"
-                android:padding="17dp"/>
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
+                app:layout_constraintHorizontal_weight="1"
+                android:background="@drawable/edit_text_locked">
+
+                <Spinner
+                    android:id="@+id/city_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="8dp" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/zip_text_view"
@@ -527,7 +537,7 @@
                 android:id="@+id/zip_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/city_edit_text"
+                app:layout_constraintTop_toTopOf="@id/city_field"
                 app:layout_constraintStart_toStartOf="@id/password_edit_text"
                 app:layout_constraintEnd_toEndOf="@id/password_edit_text"
                 android:inputType="numberDecimal"
@@ -541,8 +551,8 @@
                 android:id="@+id/photo_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/city_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintTop_toBottomOf="@id/city_field"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -554,8 +564,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/photo_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 android:layout_marginTop="4dp">
 
                 <EditText
@@ -626,7 +636,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/photo_field"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -638,8 +648,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/signature_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 android:layout_marginTop="4dp">
 
                 <EditText
@@ -696,7 +706,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/individual_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="17dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -707,8 +717,8 @@
                 android:id="@+id/passport_serial_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 app:layout_constraintTop_toBottomOf="@id/passport_serial_text_view"
                 android:layout_marginTop="4dp"
                 android:inputType="textCapCharacters"
@@ -735,7 +745,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/commercial_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="17dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -746,8 +756,8 @@
                 android:id="@+id/inn_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 app:layout_constraintTop_toBottomOf="@id/inn_text_view"
                 android:layout_marginTop="4dp"
                 android:inputType="numberDecimal"
@@ -809,7 +819,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/payment_data_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -821,8 +831,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/checking_account_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 android:layout_marginTop="4dp"
                 android:inputType="numberDecimal"
                 android:background="@drawable/edit_text_locked"
@@ -861,7 +871,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/checking_account_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -873,8 +883,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/vat_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 android:layout_marginTop="4dp"
                 android:inputType="numberDecimal"
                 android:background="@drawable/edit_text_locked"
@@ -913,7 +923,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/vat_edit_text"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
@@ -925,8 +935,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/oked_text_view"
-                app:layout_constraintStart_toStartOf="@id/login_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+                app:layout_constraintStart_toStartOf="@id/email_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/email_edit_text"
                 android:layout_marginTop="4dp"
                 android:inputType="numberDecimal"
                 android:background="@drawable/edit_text_locked"
@@ -995,7 +1005,7 @@
                 android:id="@+id/create_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/login_text_view"
+                app:layout_constraintStart_toStartOf="@id/email_text_view"
                 app:layout_constraintTop_toBottomOf="@id/oked_edit_text"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginTop="42dp"
@@ -1009,6 +1019,16 @@
                 android:paddingHorizontal="33dp"
                 android:paddingVertical="14dp"
                 android:elevation="8dp"/>
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                app:layout_constraintTop_toTopOf="@id/create_btn"
+                app:layout_constraintBottom_toBottomOf="@id/create_btn"
+                app:layout_constraintStart_toStartOf="@id/contract_field"
+                app:layout_constraintEnd_toEndOf="@id/contract_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

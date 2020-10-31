@@ -8,7 +8,7 @@
     tools:context="uz.alexits.cargostar.view.activity.SignatureActivity"
     android:background="#FFF">
 
-    <uz.alexits.cargostar.view.PaintView
+    <uz.alexits.cargostar.utils.PaintView
         android:id="@+id/paint_view"
         android:layout_width="0dp"
         android:layout_height="520dp"

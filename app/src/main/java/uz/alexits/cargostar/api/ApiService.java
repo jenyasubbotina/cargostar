@@ -1,24 +1,28 @@
 package uz.alexits.cargostar.api;
 
 import retrofit2.http.Body;
-import retrofit2.http.HeaderMap;
 import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
+import uz.alexits.cargostar.api.params.CreateInvoiceParams;
+import uz.alexits.cargostar.api.params.SignInParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
+import uz.alexits.cargostar.model.actor.Courier;
+import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.packaging.Packaging;
-import uz.alexits.cargostar.model.packaging.PackagingType;
+import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneSettings;
+import uz.alexits.cargostar.model.calculation.Packaging;
+import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.shipping.Request;
-import uz.alexits.cargostar.model.packaging.Provider;
+import uz.alexits.cargostar.model.calculation.Provider;
 
 import com.google.gson.JsonElement;
 
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -42,7 +46,7 @@ public interface ApiService {
 
     @Headers({"Content-Type: application/json; charset=utf-8;"})
     @GET("branche")
-    Call<List<Branche>> getBranches();
+    Call<List<Branche>> getBranches(@Query("per-page") final int perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transit-point")
@@ -50,20 +54,24 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("zone")
-    Call<JsonElement> getZones();
+    Call<List<Zone>> getZones(@Query("per-page") final int perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("zone-setting")
-    Call<JsonElement> getZoneSettings();
+    Call<List<ZoneSettings>> getZoneSettings(@Query("per-page") final int perPage);
 
     /*Requests requests */
     @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("request")
+    @GET("request/empty-employee")
     Call<List<Request>> getPublicRequests();
 
 //    @Headers("Content-Type: application/json; charset=utf-8;")
 //    @PUT("request/update")
 //    Call<JsonElement> updateRequest(@Query("id") final long id, @Body UpdateRequestParams updateRequestParams);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("request/employee")
+    Call<List<Request>> getMyRequests(@Query("id") final long courierId);
 
     /* Providers / packaging */
     @Headers("Content-Type: application/json; charset=utf-8;")
@@ -80,8 +88,8 @@ public interface ApiService {
 
     /* Client */
     @Headers("Content-type: application/json; charset=utf-8;")
-    @POST("client")
-    Call<JsonElement> createClient(@Body CreateClientParams createClientParams);
+    @POST("client/create-client")
+    Call<Customer> createClient(@Body CreateClientParams createClientParams);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("address-book")
@@ -89,10 +97,27 @@ public interface ApiService {
 
     /* Courier */
     @Headers("Content-type: application/json; charset=utf-8;")
-    @POST("request-additional/create")
-    Call<JsonElement> bindRequest(@Body BindRequestParams bindRequestParams);
+    @POST("employee/auth")
+    //login: testc1
+    //password: qweqwe
+    Call<Courier> signIn(@Body SignInParams signInParams);
+
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @PUT("request/update")
+    Call<JsonElement> bindRequest(@Query("id") final long requestId, @Body BindRequestParams bindRequestParams);
 
     @Headers("Content-type: application/json; charset=utf-8;")
     @PUT("employee/update")
-    Call<JsonElement> updateCourierData(@Query("id") final long courierId, @Body UpdateCourierParams updatedCourierParams);
+    Call<Courier> updateCourierData(@Query("id") final long courierId, @Body UpdateCourierParams updatedCourierParams);
+
+    /* Invoice */
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @POST("invoice/full-create")
+    Call<JsonElement> createInvoice(@Body CreateInvoiceParams createInvoiceParams);
+
+    /* Transportation */
+//    https://cargo.alex-its.uz/api/transportation-status/transportation?id=10
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("transportation")
+    Call<List<JsonElement>> getCurrentTransportations();
 }

@@ -13,8 +13,8 @@ import android.widget.ImageView;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.FileManager;
-import uz.alexits.cargostar.view.Constants;
-import uz.alexits.cargostar.view.PaintView;
+import uz.alexits.cargostar.utils.IntentConstants;
+import uz.alexits.cargostar.utils.PaintView;
 
 public class SignatureActivity extends AppCompatActivity {
     private PaintView paintView;
@@ -30,7 +30,7 @@ public class SignatureActivity extends AppCompatActivity {
         int resultValue = -1;
 
         if (getIntent() != null) {
-            resultValue = getIntent().getIntExtra(Constants.INTENT_RESULT_VALUE, -1);
+            resultValue = getIntent().getIntExtra(IntentConstants.INTENT_RESULT_VALUE, -1);
         }
 
         paintView = findViewById(R.id.paint_view);
@@ -55,7 +55,7 @@ public class SignatureActivity extends AppCompatActivity {
             final String screenshotFilename = FileManager.getInstance(this).storeBitmap(screenshot);
             if (screenshotFilename != null) {
                 final Intent resultIntent = new Intent();
-                resultIntent.putExtra(Constants.INTENT_RESULT_VALUE, screenshotFilename);
+                resultIntent.putExtra(IntentConstants.INTENT_RESULT_VALUE, screenshotFilename);
                 setResult(RESULT_OK, resultIntent);
                 finish();
                 return;

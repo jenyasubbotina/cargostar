@@ -15,17 +15,17 @@ import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Consolidation;
+import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Parcel;
-import uz.alexits.cargostar.model.shipping.Receipt;
 import uz.alexits.cargostar.model.shipping.ReceiptTransitPointCrossRef;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.Notification;
 import uz.alexits.cargostar.model.TransportationStatus;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
-import uz.alexits.cargostar.model.packaging.Packaging;
-import uz.alexits.cargostar.model.packaging.PackagingType;
-import uz.alexits.cargostar.model.packaging.Provider;
+import uz.alexits.cargostar.model.calculation.Packaging;
+import uz.alexits.cargostar.model.calculation.PackagingType;
+import uz.alexits.cargostar.model.calculation.Provider;
 
 import java.util.List;
 
@@ -102,6 +102,10 @@ public class Repository {
         return locationDao.selectCitiesByCountryId(countryId);
     }
 
+    public LiveData<List<City>> selectCitiesByRegionId(final long regionId) {
+        return locationDao.selectCitiesByRegionId(regionId);
+    }
+
     public LiveData<List<Branche>> selectAllBranches() {
         return brancheList;
     }
@@ -138,6 +142,10 @@ public class Repository {
         return locationDao.selectRegionById(regionId);
     }
 
+    public LiveData<List<Region>> selectRegionsByCountryId(final long countryId) {
+        return locationDao.selectRegionsByCountryId(countryId);
+    }
+
     public LiveData<City> selectCityById(final long cityId) {
         return locationDao.selectCityById(cityId);
     }
@@ -155,13 +163,34 @@ public class Repository {
         return packagingTypeList;
     }
 
+    public LiveData<List<Packaging>> selectPackagingsByProviderId(final long providerId) {
+        return packagingDao.selectPackagingsByProviderId(providerId);
+    }
+
+    public LiveData<List<PackagingType>> selectPackagingTypesByTypeAndPackagingIds(final long type, final long[] packagingIds) {
+        return packagingDao.selectPackagingTypesByTypeAndPackagingIds(type, packagingIds);
+    }
+
+    public LiveData<List<Long>> selectPackagingIdsByProviderId(final long providerId) {
+        return packagingDao.selectPackagingIdsByProviderId(providerId);
+    }
+
+    public LiveData<List<PackagingType>> selectPackagingTypesByProviderId(final long providerId, final long type) {
+        return packagingDao.selectPackagingTypesByProviderId(providerId, type);
+    }
+
     /* Courier queries */
     public long createCourier(final Courier newCourier) {
         return actorDao.createCourier(newCourier);
     }
 
-    public void updateCourier(final Courier courier) {
-        actorDao.updateCourier(courier);
+    public void updateCourier(final long courierId,
+                              final String password,
+                              final String firstName,
+                              final String middleName,
+                              final String lastName,
+                              final String phone) {
+        actorDao.updateCourier(courierId, password, firstName, middleName, lastName, phone);
     }
 
     public LiveData<Courier> selectCourier(final long userId) {
@@ -250,7 +279,7 @@ public class Repository {
         return parcelDao.selectParcel(receiptId);
     }
 
-    public LiveData<Receipt> selectReceipt(final long receiptId) {
+    public LiveData<Invoice> selectReceipt(final long receiptId) {
         return parcelDao.selectReceipt(receiptId);
     }
 
@@ -258,7 +287,7 @@ public class Repository {
         return parcelDao.selectAllParcels();
     }
 
-    public LiveData<List<Receipt>> selectAllReceipts() {
+    public LiveData<List<Invoice>> selectAllReceipts() {
         return parcelDao.selectAllReceipts();
     }
 
@@ -310,7 +339,7 @@ public class Repository {
     }
 
     public void readReceipt(final long receiptId) {
-        parcelDao.readReceipt(receiptId, true);
+        parcelDao.readReceipt(receiptId, false);
     }
 
     /*Notification queries*/

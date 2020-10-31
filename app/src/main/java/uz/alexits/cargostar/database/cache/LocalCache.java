@@ -1,7 +1,6 @@
 package uz.alexits.cargostar.database.cache;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -24,6 +23,8 @@ import uz.alexits.cargostar.database.dao.PackagingDao;
 import uz.alexits.cargostar.database.dao.ParcelDao;
 import uz.alexits.cargostar.database.dao.RequestDao;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
@@ -31,19 +32,17 @@ import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Consolidation;
-import uz.alexits.cargostar.model.shipping.Receipt;
+import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.ReceiptTransitPointCrossRef;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.Notification;
-import uz.alexits.cargostar.model.actor.Account;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.actor.User;
-import uz.alexits.cargostar.model.packaging.Packaging;
-import uz.alexits.cargostar.model.packaging.PackagingType;
-import uz.alexits.cargostar.model.packaging.Provider;
+import uz.alexits.cargostar.model.calculation.Packaging;
+import uz.alexits.cargostar.model.calculation.PackagingType;
+import uz.alexits.cargostar.model.calculation.Provider;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,21 +50,18 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.zip.CheckedOutputStream;
 
 @Database(entities = {
         User.class,
         Courier.class,
         Customer.class,
-//        PassportData.class,
-//        PaymentData.class,
         AddressBook.class,
         Country.class,
         Region.class,
         City.class,
         Branche.class,
         TransitPoint.class,
-        Receipt.class,
+        Invoice.class,
         ReceiptTransitPointCrossRef.class,
         Cargo.class,
         Consolidation.class,
@@ -73,7 +69,9 @@ import java.util.zip.CheckedOutputStream;
         Request.class,
         Provider.class,
         Packaging.class,
-        PackagingType.class}, version = 49, exportSchema = false)
+        PackagingType.class,
+        Zone.class,
+        ZoneSettings.class}, version = 58, exportSchema = false)
 @TypeConverters({ PointConverter.class, TransportationStatusConverter.class, PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";
@@ -99,9 +97,7 @@ public abstract class LocalCache extends RoomDatabase {
                                     super.onCreate(db);
 
                                     new Thread(() -> {
-                                        populateLocationData(context);
                                         populateProviders(context);
-                                        populateDefaultCourier(context);
                                     }).start();
                                 }
 
@@ -166,78 +162,26 @@ public abstract class LocalCache extends RoomDatabase {
         getInstance(context).packagingDao().insertProviders(providerList);
     }
 
-    private static void populateDefaultCourier(@NonNull final Context context) {
-        getInstance(context).actorDao().createCourier(new Courier(
-                8,
-                191,
-                0,
-                1,
-                "Sergey",
-                "",
-                "Kadushkin",
-                "+998935977577",
-                "android.kim@gmail.com",
-                "Chilonzor 24",
-                "",
-                "111111",
-                1,
-                null,
-                null,
-                new Account("android", "12345"),
-                1));
-    }
-
-    private static void populateLocationData(@NonNull final Context context) {
-        final Gson gson = new Gson();
-
-        InputStream countriesIs = null;
-        InputStream regionsIs = null;
-        InputStream citiesIs = null;
-
-        try {
-            countriesIs = context.getAssets().open("location/countries.json");
-            regionsIs = context.getAssets().open("location/regions.json");
-            citiesIs = context.getAssets().open("location/cities.json");
-
-            Log.i(TAG, "IS: " + countriesIs);
-
-            final Type countryType = new TypeToken<List<Country>>(){}.getType();
-            final List<Country> countryList = gson.fromJson(new JsonReader(new InputStreamReader(countriesIs)), countryType);
-
-            final Type regionType = new TypeToken<List<Region>>(){}.getType();
-            final List<Region> regionList = gson.fromJson(new JsonReader(new InputStreamReader(regionsIs)), regionType);
-
-            final Type cityType = new TypeToken<List<City>>(){}.getType();
-            final List<City> cityList = gson.fromJson(new JsonReader(new InputStreamReader(citiesIs)), cityType);
-
-            Log.i(TAG, "countryList=" + countryList.size());
-            Log.i(TAG, "regionList=" + regionList.size());
-            Log.i(TAG, "cityList=" + cityList.size());
-
-            getInstance(context).locationDao().insertCountries(countryList);
-            getInstance(context).locationDao().insertRegions(regionList);
-            getInstance(context).locationDao().insertCities(cityList);
-        }
-        catch (IOException e) {
-            Log.e(TAG, "populateLocationData(): ", e);
-        }
-        finally {
-            try {
-                if (countriesIs != null) {
-                    countriesIs.close();
-                }
-                if (regionsIs != null) {
-                    regionsIs.close();
-                }
-                if (citiesIs != null) {
-                    citiesIs.close();
-                }
-            }
-            catch (IOException e) {
-                Log.e(TAG, "populateLocationData(): ", e);
-            }
-        }
-    }
+//    private static void populateDefaultCourier(@NonNull final Context context) {
+//        getInstance(context).actorDao().createCourier(new Courier(
+//                8,
+//                191,
+//                0,
+//                1,
+//                "Sergey",
+//                "",
+//                "Kadushkin",
+//                "+998935977577",
+//                "android.kim@gmail.com",
+//                "Chilonzor 24",
+//                "",
+//                "111111",
+//                1,
+//                null,
+//                null,
+//                new Account("android", "12345"),
+//                1));
+//    }
 
     private static final String TAG = LocalCache.class.toString();
 }

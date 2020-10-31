@@ -172,11 +172,48 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
+        <RadioGroup
+            android:id="@+id/package_type_radio_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/first_card"
+            app:layout_constraintBottom_toTopOf="@id/calculator_stroke"
+            app:layout_constraintStart_toStartOf="@id/first_card"
+            app:layout_constraintEnd_toEndOf="@id/second_card"
+            android:layout_marginTop="37dp"
+            android:orientation="horizontal"
+            android:checkedButton="@id/express_radio_btn"
+            android:gravity="start"
+            android:visibility="invisible">
+
+            <RadioButton
+                android:id="@+id/doc_type_radio_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:fontFamily="@font/geometria_actual"
+                android:textSize="16sp"
+                android:text="@string/doc_type"
+                android:buttonTint="@color/colorBlue"
+                android:layout_gravity="start"/>
+
+            <RadioButton
+                android:id="@+id/box_type_radio_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:fontFamily="@font/geometria_actual"
+                android:textSize="16sp"
+                android:text="@string/box_type"
+                android:buttonTint="@color/colorBlue"
+                android:layout_gravity="start"/>
+        </RadioGroup>
+
         <View
             android:id="@+id/calculator_stroke"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@id/first_card"
+            app:layout_constraintTop_toBottomOf="@id/package_type_radio_group"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginHorizontal="24dp"
@@ -192,14 +229,16 @@
             app:layout_constraintEnd_toEndOf="@id/source_country_field"
             android:layout_marginTop="38dp"
             app:layout_constraintHorizontal_weight="1"
-            android:background="@drawable/edit_text_locked">
+            android:background="@drawable/edit_text_locked"
+            android:visibility="invisible">
 
             <Spinner
                 android:id="@+id/package_type_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp"/>
+                android:paddingVertical="8dp"
+                android:visibility="invisible"/>
         </RelativeLayout>
 
         <EditText
@@ -219,7 +258,8 @@
             android:textColor="@color/colorBlack"
             android:fontFamily="@font/geometria_medium"
             android:inputType="numberDecimal"
-            android:hint="@string/weight"/>
+            android:hint="@string/weight"
+            android:visibility="invisible"/>
 
         <EditText
             android:id="@+id/length_edit_text"
@@ -238,7 +278,8 @@
             android:textColor="@color/colorBlack"
             android:fontFamily="@font/geometria_medium"
             android:inputType="numberDecimal"
-            android:hint="@string/length"/>
+            android:hint="@string/length"
+            android:visibility="invisible"/>
 
         <EditText
             android:id="@+id/width_edit_text"
@@ -257,7 +298,8 @@
             android:textColor="@color/colorBlack"
             android:fontFamily="@font/geometria_medium"
             android:inputType="numberDecimal"
-            android:hint="@string/width"/>
+            android:hint="@string/width"
+            android:visibility="invisible"/>
 
         <EditText
             android:id="@+id/height_edit_text"
@@ -276,7 +318,8 @@
             android:textColor="@color/colorBlack"
             android:fontFamily="@font/geometria_medium"
             android:inputType="numberDecimal"
-            android:hint="@string/height"/>
+            android:hint="@string/height"
+            android:visibility="invisible"/>
 
         <Button
             android:id="@+id/add_item_btn"
@@ -294,7 +337,8 @@
             android:textColor="#FFF"
             android:textSize="19sp"
             android:fontFamily="@font/geometria_medium"
-            android:elevation="8dp"/>
+            android:elevation="8dp"
+            android:visibility="invisible"/>
 
         <View
             android:id="@+id/calculated_items_stroke"

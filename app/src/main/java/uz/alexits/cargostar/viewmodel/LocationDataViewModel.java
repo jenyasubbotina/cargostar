@@ -53,6 +53,10 @@ public class LocationDataViewModel extends AndroidViewModel {
         return repository.selectCitiesByCountryId(countryId);
     }
 
+    public LiveData<List<City>> getCitiesByRegionId(final long regionId) {
+        return repository.selectCitiesByRegionId(regionId);
+    }
+
     public LiveData<List<Branche>> getBrancheList() {
         return brancheList;
     }
@@ -63,6 +67,10 @@ public class LocationDataViewModel extends AndroidViewModel {
 
     public LiveData<Region> getRegionById(final long regionId) {
         return repository.selectRegionById(regionId);
+    }
+
+    public LiveData<List<Region>> getRegionsByCountryId(final long countryId) {
+        return repository.selectRegionsByCountryId(countryId);
     }
 
     public LiveData<City> getCityById(final long cityId) {

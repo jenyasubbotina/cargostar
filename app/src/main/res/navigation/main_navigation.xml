@@ -370,6 +370,22 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
+        <argument
+            android:name="courier_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="country_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="region_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="city_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
     </fragment>
     <activity
         android:id="@+id/notificationsActivity"

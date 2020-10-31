@@ -27,9 +27,9 @@ import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.shipping.Request;
-import uz.alexits.cargostar.viewmodel.HeaderViewModel;
+import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.RequestsViewModel;
-import uz.alexits.cargostar.view.Constants;
+import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
@@ -37,7 +37,7 @@ import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.MyRequestAdapter;
 import uz.alexits.cargostar.view.callback.RequestCallback;
-import uz.alexits.cargostar.view.fragment.MyRequestsFragmentDirections;
+import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class MyRequestsFragment extends Fragment implements RequestCallback {
     private Context context;
@@ -54,7 +54,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
     //viewModel
-    private HeaderViewModel headerViewModel;
+    private CourierViewModel courierViewModel;
     private RequestsViewModel requestsViewModel;
     //recycler view
     private RecyclerView myRequestsRecyclerView;
@@ -72,6 +72,8 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         context = getContext();
         activity = getActivity();
         currentCourierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
+
+        SyncWorkRequest.fetchRequestData(getContext(), 9);
     }
 
     @Override
@@ -123,20 +125,20 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-       headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+       courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
        requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
         //header views
-        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        headerViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
         });
-        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+        courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
@@ -151,7 +153,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -161,8 +163,8 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
 //                    return;
 //                }
                 final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_VALUE, parcelId);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
                 startActivity(mainIntent);
             });
         });
@@ -182,7 +184,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
 
         final MyRequestsFragmentDirections.ActionMyBidsFragmentToParcelDataFragment action = MyRequestsFragmentDirections.actionMyBidsFragmentToParcelDataFragment();
         action.setParcelId(currentItem.getId());
-        action.setRequestOrParcel(Constants.INTENT_REQUEST);
+        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
         NavHostFragment.findNavController(this).navigate(action);
     }
 

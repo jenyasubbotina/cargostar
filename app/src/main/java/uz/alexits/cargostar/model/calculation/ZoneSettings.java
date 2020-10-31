@@ -1,4 +1,4 @@
-package uz.alexits.cargostar.model.location;
+package uz.alexits.cargostar.model.calculation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,9 +9,6 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import uz.alexits.cargostar.model.packaging.Packaging;
-import uz.alexits.cargostar.model.packaging.PackagingType;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
@@ -20,8 +17,9 @@ import java.util.Date;
         foreignKeys = {
                 @ForeignKey(entity = Zone.class, parentColumns = "id", childColumns = "zone_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = PackagingType.class, parentColumns = "id", childColumns = "packaging_type_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Packaging.class, parentColumns = "id", childColumns = "packaging_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "zone_id"), @Index(value = "packaging_type"), @Index(value = "packaging_id")})
+                @ForeignKey(entity = Packaging.class, parentColumns = "id", childColumns = "packaging_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {@Index(value = "zone_id"), @Index(value = "packaging_type_id"), @Index(value = "packaging_id"), @Index(value = "provider_id")})
 public class ZoneSettings {
     @SerializedName("id")
     @Expose
@@ -32,42 +30,37 @@ public class ZoneSettings {
     @SerializedName("zone_id")
     @Expose
     @ColumnInfo(name = "zone_id")
-    private final long zoneId;
+    private final Long zoneId;
 
     @SerializedName("packaging_id")
     @Expose
     @ColumnInfo(name = "packaging_id")
-    private final long packagingId;
+    private final Long packagingId;
 
     @SerializedName("packaging_type_id")
     @Expose
     @ColumnInfo(name = "packaging_type_id")
-    private final long packagingTypeId;
+    private final Long packagingTypeId;
 
     @SerializedName("provider_id")
     @Expose
     @ColumnInfo(name = "provider_id")
-    private final long providerId;
-
-    @SerializedName("svg_id")
-    @Expose
-    @ColumnInfo(name = "svg_id")
-    private final long svg_id;
+    private final Long providerId;
 
     @SerializedName("weight_from")
     @Expose
     @ColumnInfo(name = "weight_from")
-    private final int weightFrom;
+    private final double weightFrom;
 
     @SerializedName("weight_to")
     @Expose
     @ColumnInfo(name = "weight_to")
-    private final int weightTo;
+    private final double weightTo;
 
     @SerializedName("weight_step")
     @Expose
     @ColumnInfo(name = "weight_step")
-    private final int weightStep;
+    private final double weightStep;
 
     @SerializedName("price_from")
     @Expose
@@ -90,18 +83,6 @@ public class ZoneSettings {
     @ColumnInfo(name = "description")
     @Nullable
     private String description;
-
-    @SerializedName("description_uz")
-    @Expose
-    @ColumnInfo(name = "description_uz")
-    @Nullable
-    private String descriptionUz;
-
-    @SerializedName("description_en")
-    @Expose
-    @ColumnInfo(name = "description_en")
-    @Nullable
-    private String descriptionEn;
 
     @SerializedName("fuel")
     @Expose
@@ -128,14 +109,13 @@ public class ZoneSettings {
 
     @Ignore
     public ZoneSettings(final long id,
-                        final long zoneId,
-                        final long packagingId,
-                        final long packagingTypeId,
-                        final long providerId,
-                        final long svg_id,
-                        final int weightFrom,
-                        final int weightTo,
-                        final int weightStep,
+                        final Long zoneId,
+                        final Long packagingId,
+                        final Long packagingTypeId,
+                        final Long providerId,
+                        final double weightFrom,
+                        final double weightTo,
+                        final double weightStep,
                         final long priceFrom,
                         final long priceStep,
                         @NonNull final String name,
@@ -145,7 +125,6 @@ public class ZoneSettings {
         this.packagingId = packagingId;
         this.packagingTypeId = packagingTypeId;
         this.providerId = providerId;
-        this.svg_id = svg_id;
         this.weightFrom = weightFrom;
         this.weightTo = weightTo;
         this.weightStep = weightStep;
@@ -156,20 +135,17 @@ public class ZoneSettings {
     }
 
     public ZoneSettings(final long id,
-                        final long zoneId,
-                        final long packagingId,
-                        final long packagingTypeId,
-                        final long providerId,
-                        final long svg_id,
-                        final int weightFrom,
-                        final int weightTo,
-                        final int weightStep,
+                        final Long zoneId,
+                        final Long packagingId,
+                        final Long packagingTypeId,
+                        final Long providerId,
+                        final double weightFrom,
+                        final double weightTo,
+                        final double weightStep,
                         final long priceFrom,
                         final long priceStep,
                         @NonNull final String name,
                         @Nullable final String description,
-                        @Nullable final String descriptionUz,
-                        @Nullable final String descriptionEn,
                         @Nullable final String fuel,
                         final int status,
                         @Nullable final Date createdAt,
@@ -179,7 +155,6 @@ public class ZoneSettings {
         this.packagingId = packagingId;
         this.packagingTypeId = packagingTypeId;
         this.providerId = providerId;
-        this.svg_id = svg_id;
         this.weightFrom = weightFrom;
         this.weightTo = weightTo;
         this.weightStep = weightStep;
@@ -187,8 +162,6 @@ public class ZoneSettings {
         this.priceStep = priceStep;
         this.name = name;
         this.description = description;
-        this.descriptionUz = descriptionUz;
-        this.descriptionEn = descriptionEn;
         this.fuel = fuel;
         this.status = status;
         this.createdAt = createdAt;
@@ -199,35 +172,31 @@ public class ZoneSettings {
         return id;
     }
 
-    public long getZoneId() {
+    public Long getZoneId() {
         return zoneId;
     }
 
-    public long getPackagingId() {
+    public Long getPackagingId() {
         return packagingId;
     }
 
-    public long getPackagingTypeId() {
+    public Long getPackagingTypeId() {
         return packagingTypeId;
     }
 
-    public long getProviderId() {
+    public Long getProviderId() {
         return providerId;
     }
 
-    public long getSvg_id() {
-        return svg_id;
-    }
-
-    public int getWeightFrom() {
+    public double getWeightFrom() {
         return weightFrom;
     }
 
-    public int getWeightTo() {
+    public double getWeightTo() {
         return weightTo;
     }
 
-    public int getWeightStep() {
+    public double getWeightStep() {
         return weightStep;
     }
 
@@ -251,24 +220,6 @@ public class ZoneSettings {
 
     public void setDescription(@Nullable String description) {
         this.description = description;
-    }
-
-    @Nullable
-    public String getDescriptionUz() {
-        return descriptionUz;
-    }
-
-    public void setDescriptionUz(@Nullable String descriptionUz) {
-        this.descriptionUz = descriptionUz;
-    }
-
-    @Nullable
-    public String getDescriptionEn() {
-        return descriptionEn;
-    }
-
-    public void setDescriptionEn(@Nullable String descriptionEn) {
-        this.descriptionEn = descriptionEn;
     }
 
     @Nullable
@@ -302,6 +253,7 @@ public class ZoneSettings {
         this.updatedAt = updatedAt;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "ZoneSettings{" +
@@ -310,7 +262,6 @@ public class ZoneSettings {
                 ", packagingId=" + packagingId +
                 ", packagingTypeId=" + packagingTypeId +
                 ", providerId=" + providerId +
-                ", svg_id=" + svg_id +
                 ", weightFrom=" + weightFrom +
                 ", weightTo=" + weightTo +
                 ", weightStep=" + weightStep +
@@ -318,8 +269,6 @@ public class ZoneSettings {
                 ", priceStep=" + priceStep +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", descriptionUz='" + descriptionUz + '\'' +
-                ", descriptionEn='" + descriptionEn + '\'' +
                 ", fuel='" + fuel + '\'' +
                 ", status=" + status +
                 ", createdAt=" + createdAt +

@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.model.TransportationStatus;
+import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Parcel;
-import uz.alexits.cargostar.model.shipping.Receipt;
 import uz.alexits.cargostar.view.callback.ParcelCallback;
 import uz.alexits.cargostar.view.viewholder.ParcelViewHolder;
 
@@ -45,32 +45,32 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ParcelViewHolder holder, int position) {
         final Parcel currentParcel = parcelList.get(position);
-        final Receipt currentReceipt = currentParcel.getReceipt();
+        final Invoice currentInvoice = currentParcel.getInvoice();
 
         Log.i(ParcelAdapter.class.toString(), "position=" + position + " route=" + currentParcel.getRoute());
 
-        if (currentReceipt != null) {
+        if (currentInvoice != null) {
             final String parcelIndex = (position + 1) + ".";
-            final String parcelId = "# " + currentReceipt.getId();
+            final String parcelId = "# " + currentInvoice.getId();
             holder.indexTextView.setText(parcelIndex);
             holder.parcelIdTextView.setText(parcelId);
             holder.fromTextView.setText(currentParcel.getRoute().get(0).getName());
             holder.toTextView.setText(currentParcel.getRoute().get(currentParcel.getRoute().size() - 1).getName());
             holder.parcelTypeTextView.setText(R.string.parcel);
 
-            if (currentReceipt.getTransportationStatus() == TransportationStatus.IN_TRANSIT) {
+            if (currentInvoice.getTransportationStatus() == TransportationStatus.IN_TRANSIT) {
                 holder.statusTextView.setText(context.getString(R.string.in_transit));
                 holder.statusTextView.setBackgroundResource(R.drawable.bg_purple);
             }
-            else if (currentReceipt.getTransportationStatus() == TransportationStatus.ON_THE_WAY) {
+            else if (currentInvoice.getTransportationStatus() == TransportationStatus.ON_THE_WAY) {
                 holder.statusTextView.setText(context.getString(R.string.on_the_way));
                 holder.statusTextView.setBackgroundResource(R.drawable.bg_blue);
             }
-            else if (currentReceipt.getTransportationStatus() == TransportationStatus.DELIVERED) {
+            else if (currentInvoice.getTransportationStatus() == TransportationStatus.DELIVERED) {
                 holder.statusTextView.setText(context.getString(R.string.delivered));
                 holder.statusTextView.setBackgroundResource(R.drawable.bg_green);
             }
-            else if (currentReceipt.getTransportationStatus() == TransportationStatus.LOST) {
+            else if (currentInvoice.getTransportationStatus() == TransportationStatus.LOST) {
                 holder.statusTextView.setText(context.getString(R.string.lost));
                 holder.statusTextView.setBackgroundResource(R.drawable.bg_red);
             }

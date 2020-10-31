@@ -8,6 +8,8 @@ import androidx.room.Query;
 import androidx.room.Update;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
+import uz.alexits.cargostar.model.actor.Customer;
+
 import java.util.List;
 
 @Dao
@@ -16,8 +18,12 @@ public interface ActorDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long createCourier(final Courier newCourier);
 
-    @Update
-    void updateCourier(final Courier courier);
+    @Query("UPDATE courier SET password = :password, " +
+            "first_name = :firstName, " +
+            "middle_name = :middleName, " +
+            "last_name = :lastName," +
+            " phone = :phone WHERE id == :courierId")
+    void updateCourier(final long courierId, final String password, final String firstName, final String middleName, final String lastName, final  String phone);
 
     @Query("SELECT * FROM courier WHERE id == :userId")
     LiveData<Courier> selectCourier(final long userId);
@@ -32,9 +38,8 @@ public interface ActorDao {
     void dropCouriers();
 
     /*Customer data*/
-    //todo: fill in Customer, Passport and Payment Data
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    long createCustomer(final Customer newCustomer);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    long createCustomer(final Customer newCustomer);
 //
 //    @Query("SELECT * FROM customer WHERE login == :senderLogin")
 //    LiveData<Customer> selectCustomerByLogin(final String senderLogin);

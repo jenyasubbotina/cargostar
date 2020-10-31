@@ -9,6 +9,7 @@ import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -29,7 +30,11 @@ public class FetchTransitPointsWorker extends Worker {
     @Override
     public Result doWork() {
         try {
-            final Response<List<TransitPoint>> response = RetrofitClient.getInstance(getApplicationContext()).getTransitPoints(perPage);
+            final Response<List<TransitPoint>> response = RetrofitClient.getInstance(
+                    getApplicationContext(),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
+                    .getTransitPoints(perPage);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

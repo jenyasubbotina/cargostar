@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.shipping.ReceiptTransitPointCrossRef;
 import uz.alexits.cargostar.model.Notification;
 import uz.alexits.cargostar.model.actor.AddressBook;
@@ -15,7 +16,7 @@ import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Consolidation;
 import uz.alexits.cargostar.model.shipping.Parcel;
-import uz.alexits.cargostar.model.shipping.Receipt;
+import uz.alexits.cargostar.model.shipping.Invoice;
 
 import com.google.gson.JsonElement;
 
@@ -34,46 +35,12 @@ public class PopulateViewModel extends AndroidViewModel {
         this.repository = Repository.getInstance(application);
     }
 
-    public void initZoneList() {
-        RetrofitClient.getInstance(getApplication().getApplicationContext()).getZones(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
-                Log.i(TAG, "selectZones(): code=" + response.code());
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "selectZones(): response=" + response.body());
-                    return;
-                }
-                Log.e(TAG, "selectZones(): error=" + response.errorBody());
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
-                Log.e(TAG, "selectZones(): ", t);
-            }
-        });
-    }
-
-    public void initZoneSettings() {
-        RetrofitClient.getInstance(getApplication().getApplicationContext()).getZoneSettings(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
-                Log.i(TAG, "selectZoneSettings(): code=" + response.code());
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "selectZoneSettings(): response=" + response.body());
-                    return;
-                }
-                Log.e(TAG, "selectZoneSettings(): error=" + response.errorBody());
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
-                Log.e(TAG, "selectZoneSettings(): ", t);
-            }
-        });
-    }
-
     public void initAddressBook() {
-        RetrofitClient.getInstance(getApplication().getApplicationContext()).getAddressBook(new Callback<JsonElement>() {
+        RetrofitClient.getInstance(
+                getApplication().getApplicationContext(),
+                SharedPrefs.getInstance(getApplication().getApplicationContext()).getString(SharedPrefs.LOGIN),
+                SharedPrefs.getInstance(getApplication().getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
+                .getAddressBook(new Callback<JsonElement>() {
             @Override
             public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
                 Log.i(TAG, "getAddressBook(): code=" + response.code());
@@ -104,7 +71,7 @@ public class PopulateViewModel extends AndroidViewModel {
         return repository.createParcelTransitPointCrossRef(receiptTransitPointCrossRef);
     }
 
-    public LiveData<Receipt> selectReceipt(final long receiptId) {
+    public LiveData<Invoice> selectReceipt(final long receiptId) {
         return repository.selectReceipt(receiptId);
     }
 
@@ -112,7 +79,7 @@ public class PopulateViewModel extends AndroidViewModel {
         return repository.selectAllParcels();
     }
 
-    public LiveData<List<Receipt>> selectAllReceipts() {
+    public LiveData<List<Invoice>> selectAllReceipts() {
         return repository.selectAllReceipts();
     }
 

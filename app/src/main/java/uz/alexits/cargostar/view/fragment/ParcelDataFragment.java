@@ -28,10 +28,10 @@ import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.viewmodel.HeaderViewModel;
-import uz.alexits.cargostar.view.Constants;
+import uz.alexits.cargostar.viewmodel.CourierViewModel;
+import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
-import uz.alexits.cargostar.view.activity.CreateParcelActivity;
+import uz.alexits.cargostar.view.activity.CreateInvoiceActivitiy;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
@@ -39,7 +39,6 @@ import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.ParcelData;
 import uz.alexits.cargostar.view.adapter.ParcelDataAdapter;
 import uz.alexits.cargostar.view.callback.ParcelDataCallback;
-import uz.alexits.cargostar.view.fragment.ParcelDataFragmentArgs;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
 
 import java.text.SimpleDateFormat;
@@ -188,19 +187,19 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final HeaderViewModel headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        final CourierViewModel courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         //header views
-        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        headerViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
         });
-        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+        courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
@@ -215,7 +214,7 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -225,28 +224,28 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
 //                    return;
 //                }
                 final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_VALUE, parcelId);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
                 startActivity(mainIntent);
             });
         });
 
         editParcelImageView.setOnClickListener(v -> {
-            final Intent createParcelIntent = new Intent(getContext(), CreateParcelActivity.class);
-            createParcelIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_EDIT_PARCEL);
-            createParcelIntent.putExtra(Constants.INTENT_REQUEST_VALUE, requestId);
-            createParcelIntent.putExtra(Constants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
+            final Intent createParcelIntent = new Intent(getContext(), CreateInvoiceActivitiy.class);
+            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_PARCEL);
+            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
+            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
             startActivity(createParcelIntent);
         });
 
-        headerViewModel.selectRequest(requestId).observe(getViewLifecycleOwner(), request -> {
+        courierViewModel.selectRequest(requestId).observe(getViewLifecycleOwner(), request -> {
             itemList.clear();
             //public data
             itemList.add(publicDataHeading);
             itemList.add(new ParcelData(getString(R.string.parcel_id), String.valueOf(request.getId()), ParcelData.TYPE_ITEM));
             //todo: get service provider through providerId in Provider table
             itemList.add(new ParcelData(getString(R.string.service_provider), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(request.getCourierId()) : null, ParcelData.TYPE_ITEM));
+            itemList.add(new ParcelData(getString(R.string.courier_id), request.getCourierId() != null ? String.valueOf(request.getCourierId()) : null, ParcelData.TYPE_ITEM));
             //todo: get operatorId
             itemList.add(new ParcelData(getString(R.string.operator_id), null, ParcelData.TYPE_ITEM));
             //todo: get accountantId
@@ -258,7 +257,7 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
             itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
             publicDataList.add(new ParcelData(getString(R.string.parcel_id), String.valueOf(request.getId()), ParcelData.TYPE_ITEM));
             publicDataList.add(new ParcelData(getString(R.string.service_provider), null, ParcelData.TYPE_ITEM));
-            publicDataList.add(new ParcelData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(request.getCourierId()) : null, ParcelData.TYPE_ITEM));
+            publicDataList.add(new ParcelData(getString(R.string.courier_id), request.getCourierId() != null ? String.valueOf(request.getCourierId()) : null, ParcelData.TYPE_ITEM));
             publicDataList.add(new ParcelData(getString(R.string.operator_id), null, ParcelData.TYPE_ITEM));
             publicDataList.add(new ParcelData(getString(R.string.accountant_id), null, ParcelData.TYPE_ITEM));
             publicDataList.add(new ParcelData(getString(R.string.sender_signature), null, ParcelData.TYPE_ITEM));

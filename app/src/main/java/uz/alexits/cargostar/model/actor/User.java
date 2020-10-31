@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -13,15 +14,17 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
+import uz.alexits.cargostar.model.location.City;
+import uz.alexits.cargostar.model.location.Country;
+import uz.alexits.cargostar.model.location.Region;
+
 @Entity(tableName = "user",
         foreignKeys = {
-//        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-//        @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-//        @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)
-        },
+        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+        @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+        @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
         indices = {
-//        @Index(value = {"country_id"}), @Index(value = {"region_id"}), @Index(value = {"city_id"}),
-                @Index(value = {"login"}, unique = true)})
+        @Index(value = {"country_id"}), @Index(value = {"region_id"}), @Index(value = {"city_id"})})
 public abstract class User {
     @Expose
     @SerializedName("id")
@@ -32,17 +35,17 @@ public abstract class User {
     @Expose
     @SerializedName("country_id")
     @ColumnInfo(name = "country_id")
-    protected final long countryId;
+    protected final Long countryId;
 
     @Expose
     @SerializedName("region_id")
     @ColumnInfo(name = "region_id")
-    protected final long regionId;
+    protected final Long regionId;
 
     @Expose
     @SerializedName("city_id")
     @ColumnInfo(name = "city_id")
-    protected final long cityId;
+    protected final Long cityId;
 
     @Expose
     @SerializedName("firstname")
@@ -67,7 +70,7 @@ public abstract class User {
     @Expose
     @SerializedName("email")
     @ColumnInfo(name = "email")
-    @NonNull protected final String email;
+    @NonNull protected String email;
 
     @Expose
     @SerializedName("address")
@@ -99,13 +102,20 @@ public abstract class User {
     @ColumnInfo(name = "updated_at")
     @Nullable protected Date updatedAt;
 
-    @Embedded
-    @NonNull protected final Account account;
+    @Expose
+    @SerializedName("username")
+    @ColumnInfo(name = "login")
+    @NonNull protected String login;
+
+    @Expose
+    @SerializedName("password")
+    @ColumnInfo(name = "password")
+    @Nullable protected String password;
 
     public User(final long id,
-                final long countryId,
-                final long regionId,
-                final long cityId,
+                final Long countryId,
+                final Long regionId,
+                final Long cityId,
                 @NonNull final String firstName,
                 @Nullable final String middleName,
                 @NonNull final String lastName,
@@ -117,7 +127,7 @@ public abstract class User {
                 final int status,
                 @Nullable final Date createdAt,
                 @Nullable final Date updatedAt,
-                @NonNull final Account account) {
+                @NonNull final String login) {
         this.id = id;
         this.countryId = countryId;
         this.regionId = regionId;
@@ -133,7 +143,15 @@ public abstract class User {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.account = account;
+        this.login = login;
+    }
+
+    public void setPassword(@Nullable String password) {
+        this.password = password;
+    }
+
+    public void setLogin(@NonNull String login) {
+        this.login = login;
     }
 
     @NonNull
@@ -145,15 +163,15 @@ public abstract class User {
         return id;
     }
 
-    public long getCountryId() {
+    public Long getCountryId() {
         return countryId;
     }
 
-    public long getRegionId() {
+    public Long getRegionId() {
         return regionId;
     }
 
-    public long getCityId() {
+    public Long getCityId() {
         return cityId;
     }
 
@@ -231,8 +249,17 @@ public abstract class User {
     }
 
     @NonNull
-    public Account getAccount() {
-        return account;
+    public String getLogin() {
+        return login;
+    }
+
+    public void setEmail(@NonNull String email) {
+        this.email = email;
+    }
+
+    @Nullable
+    public String getPassword() {
+        return password;
     }
 
     @NonNull
@@ -254,7 +281,8 @@ public abstract class User {
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", account=" + account +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 }

@@ -9,6 +9,7 @@ import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.shipping.Request;
 
 import java.io.IOException;
@@ -24,18 +25,17 @@ public class FetchRequestsWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            final Response<List<Request>> response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests();
+            final Response<List<Request>> response = RetrofitClient.getInstance(
+                    getApplicationContext(),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
+                    .getPublicRequests();
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllRequests(): response=" + response.body());
                     final List<Request> publicRequestList = response.body();
-
-                    for (final Request request : publicRequestList) {
-                        Log.i(TAG, "to be inserted request=" + request);
-                        LocalCache.getInstance(getApplicationContext()).requestDao().insertRequest(request);
-                    }
-//                    LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+                    LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
                     return ListenableWorker.Result.success();
                 }
             }

@@ -4,22 +4,29 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import retrofit2.http.Body;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
+import uz.alexits.cargostar.api.params.CreateInvoiceParams;
+import uz.alexits.cargostar.api.params.SignInParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
+import uz.alexits.cargostar.model.actor.Courier;
+import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.packaging.Packaging;
-import uz.alexits.cargostar.model.packaging.PackagingType;
+import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneSettings;
+import uz.alexits.cargostar.model.calculation.Packaging;
+import uz.alexits.cargostar.model.calculation.PackagingType;
+import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Request;
-import uz.alexits.cargostar.model.packaging.Provider;
+import uz.alexits.cargostar.model.calculation.Provider;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -41,7 +48,7 @@ public class RetrofitClient {
     private final ApiService apiService;
     private static RetrofitClient INSTANCE;
 
-    private RetrofitClient(@NonNull final Context context) {
+    private RetrofitClient(@NonNull final Context context, @NonNull final String login, @NonNull final String password) {
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(60L, TimeUnit.SECONDS)
                 .readTimeout(60L, TimeUnit.SECONDS)
@@ -49,7 +56,7 @@ public class RetrofitClient {
                 .callTimeout(60L, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .addInterceptor(new BasicAuthInterceptor(context.getString(R.string.default_api_login), context.getString(R.string.default_api_password)))
+                .addInterceptor(new BasicAuthInterceptor(login, password))
                 .build();
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(context.getString(R.string.default_server_url))
@@ -64,17 +71,18 @@ public class RetrofitClient {
         apiService = retrofit.create(ApiService.class);
     }
 
-    public static RetrofitClient getInstance(@NonNull final Context context) {
+    public static RetrofitClient getInstance(@NonNull final Context context, @NonNull final String login, @NonNull final String password) {
         if (INSTANCE == null) {
             synchronized (RetrofitClient.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new RetrofitClient(context);
+                    INSTANCE = new RetrofitClient(context, login, password);
                 }
             }
         }
         return INSTANCE;
     }
 
+    /* Location data */
     public Response<List<Country>> getCountries(final int perPage) throws IOException {
         return apiService.getCountries(perPage).execute();
     }
@@ -87,8 +95,8 @@ public class RetrofitClient {
         return apiService.getCities(perPage).execute();
     }
 
-    public Response<List<Branche>> getBranches() throws IOException {
-        return apiService.getBranches().execute();
+    public Response<List<Branche>> getBranches(final int perPage) throws IOException {
+        return apiService.getBranches(perPage).execute();
     }
 
     public Response<List<TransitPoint>> getTransitPoints(final int perPage) throws IOException {
@@ -100,32 +108,16 @@ public class RetrofitClient {
         call.enqueue(callback);
     }
 
-    public void getZones(final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.getZones();
-        call.enqueue(callback);
-    }
-
-    public void getZoneSettings(final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.getZoneSettings();
-        call.enqueue(callback);
-    }
-
     /*Requests requests */
     public Response<List<Request>> getPublicRequests() throws IOException {
         return apiService.getPublicRequests().execute();
     }
 
-//    public void updateRequest(final long requestId, final Callback<JsonElement> callback) {
-//        final Call<JsonElement> call = apiService.updateRequest(requestId);
-//        call.enqueue(callback);
-//    }
-
-    public void bindRequest(final long requestId, final long courierId, final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.bindRequest(new BindRequestParams(requestId, courierId));
-        call.enqueue(callback);
+    public Response<List<Request>> getMyRequests(final long courierId) throws IOException {
+        return apiService.getMyRequests(courierId).execute();
     }
 
-    /* Provider / packaging */
+    /* Provider / packaging for calculations */
     public Response<List<Provider>> getProviders() throws IOException {
         return apiService.getProviders().execute();
     }
@@ -138,36 +130,43 @@ public class RetrofitClient {
         return apiService.getPackagingTypes().execute();
     }
 
+    public Response<List<Zone>> getZones(final int perPage) throws IOException {
+        return apiService.getZones(perPage).execute();
+    }
+
+    public Response<List<ZoneSettings>> getZoneSettings(final int perPage) throws IOException {
+        return apiService.getZoneSettings(perPage).execute();
+    }
+
     /* Client */
-    public void createClient(final String login,
-                                              final String password,
-                                              final String email,
-                                              final String cargostarAccountNumber,
-                                              final String tntAccountNumber,
-                                              final String fedexAccountNumber,
-                                              final String firstName,
-                                              final String middleName,
-                                              final String lastName,
-                                              final String phone,
-                                              final String country,
-                                              final String region,
-                                              final String city,
-                                              final String address,
-                                              final String geolocation,
-                                              final String zip,
-                                              final int discount,
-                                              final int userType,
-                                              final String passportSerial,
-                                              final String inn,
-                                              final String company,
-                                              final String bank,
-                                              final String mfo,
-                                              final String oked,
-                                              final String checkingAccount,
-                                              final String registrationCode,
-                                              final String photoUrl,
-                                              final String signatureUrl,
-                                              final Callback<JsonElement> callback) {
+    public Response<Customer> createClient(final String login,
+                                           final String password,
+                                           final String email,
+                                           final String cargostarAccountNumber,
+                                           final String tntAccountNumber,
+                                           final String fedexAccountNumber,
+                                           final String firstName,
+                                           final String middleName,
+                                           final String lastName,
+                                           final String phone,
+                                           final String country,
+                                           final String region,
+                                           final String city,
+                                           final String address,
+                                           final String geolocation,
+                                           final String zip,
+                                           final double discount,
+                                           final int userType,
+                                           final String passportSerial,
+                                           final String inn,
+                                           final String company,
+                                           final String bank,
+                                           final String mfo,
+                                           final String oked,
+                                           final String checkingAccount,
+                                           final String registrationCode,
+                                           final String photoUrl,
+                                           final String signatureUrl) throws IOException {
         final CreateClientParams clientParams = new CreateClientParams(
                 login,
                 password,
@@ -197,8 +196,166 @@ public class RetrofitClient {
                 registrationCode,
                 photoUrl,
                 signatureUrl);
-        Log.i(TAG, "createClient(): " + clientParams);
-        apiService.createClient(clientParams).enqueue(callback);
+        return apiService.createClient(clientParams).execute();
+    }
+
+    //http://cargo.alex-its.uz/api/client/view/?id=51
+
+    /* Courier */
+    public Response<Courier> signIn(@NonNull final String fcmToken) throws IOException {
+        return apiService.signIn(new SignInParams(fcmToken)).execute();
+    }
+
+    public void bindRequest(final long requestId, final long courierId, final Callback<JsonElement> callback) {
+        final Call<JsonElement> call = apiService.bindRequest(requestId, new BindRequestParams(courierId));
+        call.enqueue(callback);
+    }
+
+    public Response<Courier> updateCourierData(final long courierId,
+                                               @NonNull final String login,
+                                               @NonNull final String email,
+                                               @NonNull final String password,
+                                               @Nullable final String firstName,
+                                               @Nullable final String middleName,
+                                               @Nullable final String lastName,
+                                               @Nullable final String phone,
+                                               @Nullable final String photo) throws IOException {
+        final UpdateCourierParams updateCourierParams = new UpdateCourierParams(
+                login, email, password, firstName, middleName, lastName, phone, photo);
+        return apiService.updateCourierData(courierId, updateCourierParams).execute();
+    }
+
+    /* Invoice */
+    public void createInvoice(final Long courierId,
+                              final Long operatorId,
+                              final Long accountantId,
+                              final String senderSignature,
+                              final String senderEmail,
+                              final String senderCargostarAccountNumber,
+                              final String senderTntAccountNumber,
+                              final String senderFedexAccountNumber,
+                              final String senderCountry,
+                              final String senderRegion,
+                              final String senderCity,
+                              final String senderAddress,
+                              final String senderZip,
+                              final String senderFirstName,
+                              final String senderMiddleName,
+                              final String senderLastName,
+                              final String senderPhone,
+                              final String recipientSignature,
+                              final String recipientEmail,
+                              final String recipientCargostarAccountNumber,
+                              final String recipientTntAccountNumber,
+                              final String recipientFedexAccountNumber,
+                              final String recipientCountry,
+                              final String recipientRegion,
+                              final String recipientCity,
+                              final String recipientAddress,
+                              final String recipientZip,
+                              final String recipientFirstName,
+                              final String recipientMiddleName,
+                              final String recipientLastName,
+                              final String recipientPhone,
+                              final String payerEmail,
+                              final String payerCargostarAccountNumber,
+                              final String payerTntAccountNumber,
+                              final String payerFedexAccountNumber,
+                              final String payerCountry,
+                              final String payerRegion,
+                              final String payerCity,
+                              final String payerAddress,
+                              final String payerZip,
+                              final String payerFirstName,
+                              final String payerMiddleName,
+                              final String payerLastName,
+                              final String payerPhone,
+                              final String discount,
+                              final String checkingAccount,
+                              final String bank,
+                              final String registrationCode,
+                              final String mfo,
+                              final String oked,
+                              final String qr,
+                              final String courierGuidelines,
+                              final List<Cargo> cargoList,
+                              final double price,
+                              final Long tariffId,
+                              final Long providerId,
+                              final int paymentMethod,
+                              @NonNull final Callback<JsonElement> callback) {
+        final CreateInvoiceParams createInvoiceParams = new CreateInvoiceParams(
+        courierId,
+        operatorId,
+        accountantId,
+        senderSignature,
+        senderEmail,
+        senderCargostarAccountNumber,
+        senderTntAccountNumber,
+        senderFedexAccountNumber,
+        senderCountry,
+        senderRegion,
+        senderCity,
+        senderAddress,
+        senderZip,
+        senderFirstName,
+        senderMiddleName,
+        senderLastName,
+        senderPhone,
+        recipientSignature,
+        recipientEmail,
+        recipientCargostarAccountNumber,
+        recipientTntAccountNumber,
+        recipientFedexAccountNumber,
+        recipientCountry,
+        recipientRegion,
+        recipientCity,
+        recipientAddress,
+        recipientZip,
+        recipientFirstName,
+        recipientMiddleName,
+        recipientLastName,
+        recipientPhone,
+        payerEmail,
+        payerCargostarAccountNumber,
+        payerTntAccountNumber,
+        payerFedexAccountNumber,
+        payerCountry,
+        payerRegion,
+        payerCity,
+        payerAddress,
+        payerZip,
+        payerFirstName,
+        payerMiddleName,
+        payerLastName,
+        payerPhone,
+        discount,
+        checkingAccount,
+        bank,
+        registrationCode,
+        mfo,
+        oked,
+        qr,
+        courierGuidelines,
+        cargoList,
+        price,
+        tariffId,
+        providerId,
+        paymentMethod);
+
+        Log.i(TAG, "createInvoice: " + createInvoiceParams);
+
+        apiService.createInvoice(createInvoiceParams).enqueue(callback);
+    }
+
+    //    public void updateRequest(final long requestId, final Callback<JsonElement> callback) {
+//        final Call<JsonElement> call = apiService.updateRequest(requestId);
+//        call.enqueue(callback);
+//    }
+
+    /* Transportation */
+    public Response<List<JsonElement>> getCurrentTransportations() throws IOException {
+        return apiService.getCurrentTransportations().execute();
     }
 
     private static final String TAG = RetrofitClient.class.toString();

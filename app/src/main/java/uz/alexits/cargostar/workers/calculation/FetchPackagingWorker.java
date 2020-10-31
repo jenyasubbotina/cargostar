@@ -1,4 +1,4 @@
-package uz.alexits.cargostar.workers.packaging;
+package uz.alexits.cargostar.workers.calculation;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,15 +9,14 @@ import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.packaging.Packaging;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.calculation.Packaging;
 
 import java.io.IOException;
 import java.util.List;
 import retrofit2.Response;
 
 public class FetchPackagingWorker extends Worker {
-    private static final String TAG = FetchPackagingWorker.class.toString();
-
     public FetchPackagingWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -26,7 +25,11 @@ public class FetchPackagingWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            final Response<List<Packaging>> response = RetrofitClient.getInstance(getApplicationContext()).getPackaging();
+            final Response<List<Packaging>> response = RetrofitClient.getInstance(
+                    getApplicationContext(),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
+                    .getPackaging();
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
@@ -46,4 +49,6 @@ public class FetchPackagingWorker extends Worker {
             return ListenableWorker.Result.failure();
         }
     }
+
+    private static final String TAG = FetchPackagingWorker.class.toString();
 }

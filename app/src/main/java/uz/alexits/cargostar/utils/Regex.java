@@ -4,7 +4,10 @@ import java.util.regex.Pattern;
 
 public class Regex {
     //1 word, letters only
-    private static final String NAME_PATTERN = "[A-Za-z]+";
+    private static final String NAME_PATTERN = "[A-Za-zа-яА-Я]+";
+
+    private static final String FLOAT_OR_INT_PATTERN = "[-+]?[0-9]*\\.?[0-9]+";
+
     //first +, digits only
     private static final String PHONE_NUMBER_PATTERN = "^(+??)\\d";
     //email pattern from Inet
@@ -46,5 +49,9 @@ public class Regex {
 
     public static boolean isZip(final String zip) {
         return Pattern.compile(ZIP_PATTERN).matcher(zip).matches();
+    }
+
+    public static boolean isFloatOrInt(final String number) {
+        return Pattern.compile(FLOAT_OR_INT_PATTERN).matcher(number).matches();
     }
 }

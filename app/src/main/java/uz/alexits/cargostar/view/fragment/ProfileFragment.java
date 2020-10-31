@@ -10,7 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,30 +23,32 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.UUID;
 
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.actor.Account;
-import uz.alexits.cargostar.model.location.Address;
-import uz.alexits.cargostar.model.location.Point;
-import uz.alexits.cargostar.viewmodel.HeaderViewModel;
-import uz.alexits.cargostar.viewmodel.ProfileViewModel;
-import uz.alexits.cargostar.view.Constants;
-import uz.alexits.cargostar.view.UiUtils;
+import uz.alexits.cargostar.model.actor.Courier;
+import uz.alexits.cargostar.utils.ImageSerializer;
+import uz.alexits.cargostar.viewmodel.CourierViewModel;
+import uz.alexits.cargostar.utils.IntentConstants;
+import uz.alexits.cargostar.utils.UiUtils;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.SignInActivity;
+import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
+import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class ProfileFragment extends Fragment {
     private FragmentActivity activity;
     private Context context;
-    private HeaderViewModel headerViewModel;
-    private ProfileViewModel profileViewModel;
+    private CourierViewModel courierViewModel;
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
@@ -76,8 +81,9 @@ public class ProfileFragment extends Fragment {
     private Button saveBtn;
     private TextView logoutTextView;
 
-    private long courierId;
-    private long branchId;
+    private ProgressBar progressBar;
+
+    private static Courier currentCourier = null;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -88,13 +94,14 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         context = getContext();
-        courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_profile, container, false);
+
         initUI(activity, root);
+
         return root;
     }
 
@@ -167,31 +174,19 @@ public class ProfileFragment extends Fragment {
         pickFromGallery.setAction(Intent.ACTION_GET_CONTENT);
 
         uploadPhotoImageView.setOnClickListener(v -> {
-            startActivityForResult(Intent.createChooser(pickFromGallery, "Выберите файл"), Constants.REQUEST_UPLOAD_PHOTO);
+            startActivityForResult(Intent.createChooser(pickFromGallery, "Выберите файл"), IntentConstants.REQUEST_UPLOAD_PHOTO);
         });
 
         saveBtn.setOnClickListener(v -> {
-            final String userId = userIdEditText.getText().toString();
-            final String login = loginEditText.getText().toString();
             final String password = passwordEditText.getText().toString();
-            final String email = emailEditText.getText().toString();
-
             final String firstName = firstNameEditText.getText().toString();
             final String middleName = middleNameEditText.getText().toString();
             final String lastName = lastNameEditText.getText().toString();
             final String phone = phoneEditText.getText().toString();
-
-            final String country = countryEditText.getText().toString();
-            final String region = regionEditText.getText().toString();
-            final String city = cityEditText.getText().toString();
-            final String zip = zipEditText.getText().toString();
-            final String address = addressEditText.getText().toString();
-            final String geolocation = geolocationEditText.getText().toString();
-
             final String photo = photoEditText.getText().toString();
 
-            if (TextUtils.isEmpty(userId) || TextUtils.isEmpty(login) || TextUtils.isEmpty(password) || TextUtils.isEmpty(email)) {
-                Toast.makeText(getContext(), "Данные авторизации не могут быть пустыми", Toast.LENGTH_SHORT).show();
+            if (TextUtils.isEmpty(password)) {
+                Toast.makeText(getContext(), "Пароль не может быть пустым", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(middleName) || TextUtils.isEmpty(lastName)) {
@@ -202,66 +197,61 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Номер телефона не указан", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (TextUtils.isEmpty(country)) {
-                Toast.makeText(getContext(), "Страна не указана", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (TextUtils.isEmpty(region)) {
-                Toast.makeText(getContext(), "Регион/территория не указаны", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (TextUtils.isEmpty(city)) {
-                Toast.makeText(getContext(), "Город не указан", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (TextUtils.isEmpty(address)) {
-                Toast.makeText(getContext(), "Адрес не указан", Toast.LENGTH_SHORT).show();
-                return;
-            }
 
-            final Address newAddress = new Address(country, region, city, address);
-            newAddress.setZip(zip);
+            String serializedPhoto = null;
 
-            if (!TextUtils.isEmpty(geolocation)) {
-                newAddress.setGeolocation(new Point(geolocation));
-            }
-            final Account newAccount = new Account(login, password);
-            //todo: create Customer with Ids
-//            final Courier courier = new Courier(
-//                    id,
-//                    countryId,
-//                    regionId,
-//                    cityId,
-//                    firstName,
-//                    middleName,
-//                    lastName,
-//                    phone,
-//                    address,
-//                    geolocation,
-//                    zip,
-//                    1,
-//                    createdAt,
-//                    new Date(),
-//                    newAccount,
-//                    1);
-
-            //todo: add photo to Courier
             if (!TextUtils.isEmpty(photo)) {
-//                courier.setPhoto(new Document(photo, photo));
+                serializedPhoto = ImageSerializer.bitmapToBase64(context, photo);
             }
 
-//            profileViewModel.updateCourier(courier);
-            Toast.makeText(activity, "Изменения сохранены", Toast.LENGTH_SHORT).show();
+            final UUID updateCourierRequestId = SyncWorkRequest.updateCourierData(
+                    context,
+                    currentCourier.getId(),
+                    currentCourier.getLogin(),
+                    currentCourier.getEmail(),
+                    !TextUtils.isEmpty(password) ? password : currentCourier.getPassword(),
+                    !TextUtils.isEmpty(firstName) ? firstName : currentCourier.getFirstName(),
+                    !TextUtils.isEmpty(middleName) ? middleName : currentCourier.getMiddleName(),
+                    !TextUtils.isEmpty(lastName) ? lastName : currentCourier.getLastName(),
+                    !TextUtils.isEmpty(phone) ? phone : currentCourier.getPhone(),
+                    !TextUtils.isEmpty(serializedPhoto) ? serializedPhoto : currentCourier.getPhotoUrl());
+
+            WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateCourierRequestId).observe(getViewLifecycleOwner(), workInfo -> {
+                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    saveBtn.setEnabled(true);
+
+                    SharedPrefs.getInstance(context).putString(SharedPrefs.PASSWORD_HASH, password);
+
+                    startActivity(new Intent(context, MainActivity.class));
+                    activity.finish();
+
+                    Toast.makeText(context, "Изменения приняты", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                    Log.e(TAG, "insertLocationData(): failed to insert location data");
+                    Toast.makeText(context, "Не удалось обновить данные", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.INVISIBLE);
+                    saveBtn.setEnabled(true);
+                    return;
+                }
+                progressBar.setVisibility(View.VISIBLE);
+                saveBtn.setEnabled(false);
+            });
         });
 
         logoutTextView.setOnClickListener(v -> {
             SharedPrefs.getInstance(activity).putString(SharedPrefs.LOGIN, null);
+            SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, 0);
+            SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, 0);
             SharedPrefs.getInstance(activity).putString(SharedPrefs.PASSWORD_HASH, null);
             SharedPrefs.getInstance(activity).putBoolean(SharedPrefs.KEEP_LOGGED, false);
             final Intent logoutIntent = new Intent(activity.getApplicationContext(), SignInActivity.class);
             logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
             logoutIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(logoutIntent);
+
             activity.setResult(Activity.RESULT_OK, null);
             activity.finish();
         });
@@ -271,85 +261,90 @@ public class ProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
-        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
+        final LocationDataViewModel locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
+
         final String login = SharedPrefs.getInstance(getContext()).getString(SharedPrefs.LOGIN);
 
-        headerViewModel.selectCourierByLogin(login).observe(getViewLifecycleOwner(), employee -> {
-            userIdEditText.setText(String.valueOf(employee.getId()));
-            userIdEditText.setBackgroundResource(R.drawable.edit_text_active);
-            if (!TextUtils.isEmpty(employee.getAccount().getLogin())) {
-                loginEditText.setText(employee.getAccount().getLogin());
-                loginEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                loginEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(employee.getAccount().getPasswordHash())) {
-                passwordEditText.setText(employee.getAccount().getPasswordHash());
-                passwordEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                passwordEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(employee.getEmail())) {
-                emailEditText.setText(employee.getEmail());
-                emailEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                emailEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(employee.getPosition())) {
-                positionEditText.setText(employee.getPosition());
-                positionEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                positionEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(employee.getFirstName())) {
-                firstNameEditText.setText(employee.getFirstName());
-                firstNameEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                firstNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(employee.getMiddleName())) {
-                middleNameEditText.setText(employee.getMiddleName());
-                middleNameEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                middleNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(employee.getLastName())) {
-                lastNameEditText.setText(employee.getLastName());
-                lastNameEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                lastNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(employee.getPhone())) {
-                phoneEditText.setText(employee.getPhone());
-                phoneEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                phoneEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            //todo: add photo field
-//            if (employee.getPhoto() != null) {
-//                photoEditText.setText(employee.getPhoto().getName());
-//                photoEditText.setBackgroundResource(R.drawable.edit_text_active);
-//            }
-//            else {
-//                photoEditText.setBackgroundResource(R.drawable.edit_text_locked);
-//            }
-            fullNameTextView.setText(employee.getFirstName() + " " + employee.getLastName());
+        courierViewModel.selectCourierByLogin(login).observe(getViewLifecycleOwner(), courier -> {
+            if (courier != null) {
+                currentCourier = courier;
+                courierViewModel.setCourierCountryId(courier.getCountryId());
+                courierViewModel.setCourierRegionId(courier.getRegionId());
+                courierViewModel.setCourierCityId(courier.getCityId());
 
+                userIdEditText.setText(String.valueOf(courier.getId()));
+                userIdEditText.setBackgroundResource(R.drawable.edit_text_active);
+                if (!TextUtils.isEmpty(courier.getLogin())) {
+                    loginEditText.setText(courier.getLogin());
+                    loginEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    loginEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                if (!TextUtils.isEmpty(courier.getPassword())) {
+                    passwordEditText.setText(courier.getPassword());
+                    passwordEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    passwordEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                if (!TextUtils.isEmpty(courier.getEmail())) {
+                    emailEditText.setText(courier.getEmail());
+                    emailEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    emailEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                if (!TextUtils.isEmpty(courier.getPosition())) {
+                    positionEditText.setText(courier.getPosition());
+                    positionEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    positionEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                if (!TextUtils.isEmpty(courier.getFirstName())) {
+                    firstNameEditText.setText(courier.getFirstName());
+                    firstNameEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    firstNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                if (!TextUtils.isEmpty(courier.getMiddleName())) {
+                    middleNameEditText.setText(courier.getMiddleName());
+                    middleNameEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    middleNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                if (!TextUtils.isEmpty(courier.getLastName())) {
+                    lastNameEditText.setText(courier.getLastName());
+                    lastNameEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    lastNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                if (!TextUtils.isEmpty(courier.getPhone())) {
+                    phoneEditText.setText(courier.getPhone());
+                    phoneEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    phoneEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                if (courier.getPhotoUrl() != null) {
+                    photoEditText.setText(courier.getPhotoUrl());
+                    photoEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    photoEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+                fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
+            }
         });
 
-        headerViewModel.selectBrancheById(courierId).observe(getViewLifecycleOwner(), branch -> {
+        courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             Log.i(ProfileFragment.class.toString(), "branch" + branch);
             if (branch != null) {
-                branchId = branch.getId();
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
                 //branch data
                 addressEditText.setText(branch.getAddress());
@@ -360,48 +355,46 @@ public class ProfileFragment extends Fragment {
                 geolocationEditText.setBackgroundResource(R.drawable.edit_text_active);
             }
         });
-        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+        courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
         });
 
-//        profileViewModel.selectCountryByCourierId(courierId).observe(getViewLifecycleOwner(), country -> {
-//            Log.i(ProfileFragment.class.toString(), "branchId=" + branchId + "country=" + country);
-//            if (country != null) {
-//                if (!TextUtils.isEmpty(country.getName())) {
-//                    countryEditText.setText(country.getName());
-//                    countryEditText.setBackgroundResource(R.drawable.edit_text_active);
-//                }
-//                else {
-//                    countryEditText.setBackgroundResource(R.drawable.edit_text_locked);
-//                }
-//            }
-//        });
-//        profileViewModel.selectRegionByCourierId(courierId).observe(getViewLifecycleOwner(), region -> {
-//            Log.i(ProfileFragment.class.toString(), "branchId=" + branchId + "region=" + region);
-//            if (region != null) {
-//                if (!TextUtils.isEmpty(region.getName())) {
-//                    regionEditText.setText(region.getName());
-//                    regionEditText.setBackgroundResource(R.drawable.edit_text_active);
-//                }
-//                else {
-//                    regionEditText.setBackgroundResource(R.drawable.edit_text_locked);
-//                }
-//            }
-//        });
-//        profileViewModel.selectCityByCourierId(courierId).observe(getViewLifecycleOwner(), city -> {
-//            Log.i(ProfileFragment.class.toString(), "branchId=" + branchId + "city=" + city);
-//            if (city != null) {
-//                if (!TextUtils.isEmpty(city.getName())) {
-//                    cityEditText.setText(city.getName());
-//                    cityEditText.setBackgroundResource(R.drawable.edit_text_active);
-//                }
-//                else {
-//                    cityEditText.setBackgroundResource(R.drawable.edit_text_locked);
-//                }
-//            }
-//        });
+        /* Location Data View Model */
+        courierViewModel.getCourierCountry().observe(getViewLifecycleOwner(), country -> {
+            if (country != null) {
+                if (!TextUtils.isEmpty(country.getName())) {
+                    countryEditText.setText(country.getName());
+                    countryEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    countryEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+            }
+        });
+        courierViewModel.getCourierRegion().observe(getViewLifecycleOwner(), region -> {
+            if (region != null) {
+                if (!TextUtils.isEmpty(region.getName())) {
+                    regionEditText.setText(region.getName());
+                    regionEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    regionEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+            }
+        });
+        courierViewModel.getCourierCity().observe(getViewLifecycleOwner(), city ->  {
+            if (city != null) {
+                if (!TextUtils.isEmpty(city.getName())) {
+                    cityEditText.setText(city.getName());
+                    cityEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    cityEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+            }
+        });
 
         parcelSearchImageView.setOnClickListener(v -> {
             final String parcelIdStr = parcelSearchEditText.getText().toString();
@@ -412,7 +405,7 @@ public class ProfileFragment extends Fragment {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                 if (receiptWithCargoList == null) {
                     return;
@@ -422,8 +415,8 @@ public class ProfileFragment extends Fragment {
 //                    return;
 //                }
                 final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_VALUE, parcelId);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
                 startActivity(mainIntent);
             });
         });
@@ -461,20 +454,31 @@ public class ProfileFragment extends Fragment {
         uploadResultImageView = root.findViewById(R.id.photo_result_image_view);
         saveBtn = root.findViewById(R.id.save_btn);
         logoutTextView = root.findViewById(R.id.logout_text_view);
+
+        progressBar = root.findViewById(R.id.progress_bar);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode == -1) {
-            if (requestCode == Constants.REQUEST_UPLOAD_PHOTO && data != null) {
-                final Uri selectedImage = data.getData();
-                if (selectedImage != null) {
-                    uploadResultImageView.setImageResource(R.drawable.ic_image_green);
-                    uploadResultImageView.setVisibility(View.VISIBLE);
-                    photoEditText.setBackgroundResource(R.drawable.edit_text_active);
+            if (requestCode == IntentConstants.REQUEST_UPLOAD_PHOTO) {
+                if (data != null) {
+                    final Uri selectedImage = data.getData();
+
+                    if (selectedImage != null) {
+                        uploadResultImageView.setImageResource(R.drawable.ic_image_green);
+                        uploadResultImageView.setVisibility(View.VISIBLE);
+                        photoEditText.setBackgroundResource(R.drawable.edit_text_active);
+
+                        Log.i(TAG, "selected photo: " + selectedImage);
+                        photoEditText.setText(selectedImage.toString());
+                    }
                 }
             }
         }
     }
+
+    private static final String TAG = ProfileFragment.class.toString();
 }

@@ -10,14 +10,14 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import uz.alexits.cargostar.model.location.Address;
-import uz.alexits.cargostar.model.shipping.Receipt;
+import uz.alexits.cargostar.model.shipping.Invoice;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 @Entity(tableName = "notification",
-        foreignKeys = {@ForeignKey(entity = Receipt.class, parentColumns = "id", childColumns = "receipt_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        foreignKeys = {@ForeignKey(entity = Invoice.class, parentColumns = "id", childColumns = "receipt_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
         indices = {@Index(value = "receipt_id", unique = true)})
 public class Notification {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.US);

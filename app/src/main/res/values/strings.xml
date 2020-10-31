@@ -82,6 +82,10 @@
     <string name="direction">Направление</string>
     <string name="for_each_cargo">Для каждой единицы груза</string>
     <string name="cargo_description">Описание груза</string>
+
+    <string name="doc_type">Документы</string>
+    <string name="box_type">Посылка</string>
+
     <string name="pkg">Упаковка</string>
     <string name="package_type">Тип упаковки</string>
     <string name="weight">Вес (кг)</string>
@@ -179,8 +183,8 @@
     <string name="png_picture">Изображение.png</string>
     <string name="logout">Выйти</string>
     <string name="address_book">Адресная книга</string>
-    <string name="uzbekistan">Узбекистан</string>
-<!--    server configuration-->
+    <string name="uzbekistan">uzbekistan</string>
+    <!--    server configuration-->
     <string name="default_server_url">https://cargo.alex-its.uz/api/</string>
     <string name="default_api_login">admin</string>
     <string name="default_api_password">5N8zWV2BbQ</string>

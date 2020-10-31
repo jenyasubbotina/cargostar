@@ -10,15 +10,15 @@ import uz.alexits.cargostar.model.location.TransitPoint;
 import java.util.List;
 
 public class Parcel {
-    @Embedded private Receipt receipt;
+    @Embedded private Invoice invoice;
     @Relation(parentColumn = "id", entityColumn = "id", associateBy = @Junction(ReceiptTransitPointCrossRef.class)) private List<TransitPoint> route;
 
-    public Receipt getReceipt() {
-        return receipt;
+    public Invoice getInvoice() {
+        return invoice;
     }
 
-    public void setReceipt(Receipt receipt) {
-        this.receipt = receipt;
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 
     public List<TransitPoint> getRoute() {
@@ -33,7 +33,7 @@ public class Parcel {
     @Override
     public String toString() {
         return "Parcel{" +
-                "receipt=" + receipt +
+                "receipt=" + invoice +
                 ", route=" + route +
                 '}';
     }

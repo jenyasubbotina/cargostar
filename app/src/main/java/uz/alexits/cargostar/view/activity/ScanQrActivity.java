@@ -5,10 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.view.Constants;
+import uz.alexits.cargostar.utils.IntentConstants;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -43,11 +44,11 @@ public class ScanQrActivity extends AppCompatActivity {
                 if (data != null) {
                     final String scannedData = data.getStringExtra("SCAN_RESULT");
                     if (scannedData != null) {
+                        Log.i(TAG, "scanResult: " + scannedData);
+
                         final Intent resultIntent = new Intent();
 
-                        final String qr = scannedData.substring(21);
-
-                        resultIntent.putExtra(Constants.INTENT_RESULT_VALUE, qr);
+                        resultIntent.putExtra(IntentConstants.INTENT_RESULT_VALUE, scannedData);
                         setResult(RESULT_OK, resultIntent);
                         finish();
                     }
@@ -58,4 +59,6 @@ public class ScanQrActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    private static final String TAG = ScanQrActivity.class.toString();
 }

@@ -1,4 +1,4 @@
-package uz.alexits.cargostar.model.location;
+package uz.alexits.cargostar.model.calculation;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,10 +11,13 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
+import uz.alexits.cargostar.model.location.Country;
+
 @Entity(tableName = "zone",
         foreignKeys = {
-        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "country_id")})
+        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {@Index(value = "country_id"), @Index(value = "provider_id")})
 public class Zone {
     @SerializedName("id")
     @Expose
@@ -25,12 +28,12 @@ public class Zone {
     @SerializedName("country_id")
     @Expose
     @ColumnInfo(name = "country_id")
-    private final long countryId;
+    private final Long countryId;
 
     @SerializedName("provider_id")
     @Expose
     @ColumnInfo(name = "provider_id")
-    private final long providerId;
+    private final Long providerId;
 
     @SerializedName("name")
     @Expose
@@ -56,8 +59,8 @@ public class Zone {
     private Date updatedAt;
 
     public Zone(final long id,
-                final long countryId,
-                final long providerId,
+                final Long countryId,
+                final Long providerId,
                 @NonNull final String name,
                 final int status,
                 @Nullable final Date createdAt,
@@ -75,11 +78,11 @@ public class Zone {
         return id;
     }
 
-    public long getCountryId() {
+    public Long getCountryId() {
         return countryId;
     }
 
-    public long getProviderId() {
+    public Long getProviderId() {
         return providerId;
     }
 

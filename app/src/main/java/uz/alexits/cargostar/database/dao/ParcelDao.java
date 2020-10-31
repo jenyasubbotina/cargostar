@@ -10,8 +10,8 @@ import androidx.room.Update;
 
 import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Consolidation;
+import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Parcel;
-import uz.alexits.cargostar.model.shipping.Receipt;
 import uz.alexits.cargostar.model.shipping.ReceiptTransitPointCrossRef;
 import uz.alexits.cargostar.model.shipping.ReceiptWithCargoList;
 import uz.alexits.cargostar.model.shipping.Request;
@@ -27,11 +27,11 @@ public interface ParcelDao {
     long createParcelTransitPointCrossRef(final ReceiptTransitPointCrossRef receiptTransitPointCrossRef);
 
     @Transaction
-    @Query("DELETE FROM receipt")
+    @Query("DELETE FROM invoice")
     void dropReceipts();
 
     @Transaction
-    @Query("DELETE FROM receipt WHERE id == :requestId")
+    @Query("DELETE FROM invoice WHERE id == :requestId")
     void deleteReceipt(final long requestId);
 
     @Update
@@ -39,7 +39,7 @@ public interface ParcelDao {
 
     @Transaction
     @Query("SELECT * FROM " +
-            "(SELECT * FROM receipt WHERE " +
+            "(SELECT * FROM invoice WHERE " +
             "service_provider IS NULL OR " +
             "sender_signature IS NULL OR " +
             "recipient_signature IS NULL OR " +
@@ -87,7 +87,7 @@ public interface ParcelDao {
 
     @Transaction
     @Query("SELECT * FROM " +
-            "(SELECT * FROM receipt WHERE " +
+            "(SELECT * FROM invoice WHERE " +
             "service_provider IS NULL OR " +
             "sender_signature IS NULL OR " +
             "recipient_signature IS NULL OR " +
@@ -134,7 +134,7 @@ public interface ParcelDao {
 
     @Transaction
     @Query("SELECT * FROM " +
-            "(SELECT * FROM receipt WHERE " +
+            "(SELECT * FROM invoice WHERE " +
             "service_provider IS NULL OR " +
             "sender_signature IS NULL OR " +
             "recipient_signature IS NULL OR " +
@@ -182,7 +182,7 @@ public interface ParcelDao {
 
     @Transaction
     @Query("SELECT * FROM " +
-            "(SELECT * FROM receipt WHERE " +
+            "(SELECT * FROM invoice WHERE " +
             "service_provider IS NULL OR " +
             "sender_signature IS NULL OR " +
             "recipient_signature IS NULL OR " +
@@ -236,7 +236,7 @@ public interface ParcelDao {
     void updateCargo(final Cargo updatedCargo);
 
     @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
+    @Query("SELECT * FROM invoice WHERE " +
             "service_provider IS NOT NULL AND " +
             "courier_id > 0 AND " +
             "operator_id IS NOT NULL AND " +
@@ -275,11 +275,11 @@ public interface ParcelDao {
             "id == :receiptId")
     LiveData<Parcel> selectParcel(final long receiptId);
 
-    @Query("SELECT * FROM receipt WHERE id == :receiptId")
-    LiveData<Receipt> selectReceipt(final long receiptId);
+    @Query("SELECT * FROM invoice WHERE id == :receiptId")
+    LiveData<Invoice> selectReceipt(final long receiptId);
 
     @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
+    @Query("SELECT * FROM invoice WHERE " +
             "service_provider IS NOT NULL AND " +
             "courier_id == :courierId AND " +
             "operator_id IS NOT NULL AND " +
@@ -318,7 +318,7 @@ public interface ParcelDao {
     LiveData<List<Parcel>> selectParcelsByStatus(final long courierId, final TransportationStatus transportationStatus);
 
     @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
+    @Query("SELECT * FROM invoice WHERE " +
             "service_provider IS NOT NULL AND " +
             "courier_id == :courierId AND " +
             "operator_id IS NOT NULL AND " +
@@ -357,7 +357,7 @@ public interface ParcelDao {
     LiveData<List<Parcel>> selectParcelsByStatus(final long courierId, final TransportationStatus[] statusArray);
 
     @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
+    @Query("SELECT * FROM invoice WHERE " +
             "service_provider IS NOT NULL AND " +
             "courier_id == :courierId AND " +
             "operator_id IS NOT NULL AND " +
@@ -396,7 +396,7 @@ public interface ParcelDao {
     LiveData<List<Parcel>> selectParcelsByLocation(final long courierId, final TransportationStatus transportationStatus, final long locationId);
 
     @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
+    @Query("SELECT * FROM invoice WHERE " +
             "service_provider IS NOT NULL AND " +
             "courier_id == :courierId AND " +
             "operator_id IS NOT NULL AND " +
@@ -439,7 +439,7 @@ public interface ParcelDao {
     LiveData<List<Parcel>> selectParcelsByLocationAndStatus(final long courierId, final TransportationStatus inTransitStatus, final long locationId,  final TransportationStatus[] statusList);
 
     @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
+    @Query("SELECT * FROM invoice WHERE " +
             "service_provider IS NOT NULL AND " +
             "operator_id IS NOT NULL AND " +
             "sender_signature IS NOT NULL AND " +
@@ -476,11 +476,11 @@ public interface ParcelDao {
             "invoice_name IS NOT NULL AND invoice_link IS NOT NULL")
     LiveData<List<Parcel>> selectAllParcels();
 
-    @Query("SELECT * FROM receipt ORDER BY id ASC")
-    LiveData<List<Receipt>> selectAllReceipts();
+    @Query("SELECT * FROM invoice ORDER BY id ASC")
+    LiveData<List<Invoice>> selectAllReceipts();
 
-    @Query("UPDATE receipt SET is_read = :isRead WHERE id == :receiptId")
-    void readReceipt(final long receiptId, final boolean isRead);
+    @Query("UPDATE request SET is_new = :isNew WHERE id == :receiptId")
+    void readReceipt(final long receiptId, final boolean isNew);
 
     /*Notification queries*/
     @Insert(onConflict = OnConflictStrategy.ABORT)
@@ -521,7 +521,7 @@ public interface ParcelDao {
     void updateConsolidation(final Consolidation updatedConsolidation);
 
     @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
+    @Query("SELECT * FROM Invoice WHERE " +
             "service_provider IS NOT NULL AND " +
             "operator_id IS NOT NULL AND " +
             "sender_signature IS NOT NULL AND " +
@@ -560,7 +560,7 @@ public interface ParcelDao {
     LiveData<List<Parcel>> selectParcelsByConsolidationNumber(final long consolidationNumber);
 
     @Transaction
-    @Query("SELECT * FROM receipt WHERE " +
+    @Query("SELECT * FROM Invoice WHERE " +
             "service_provider IS NOT NULL AND " +
             "operator_id IS NOT NULL AND " +
             "sender_signature IS NOT NULL AND " +

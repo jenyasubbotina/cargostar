@@ -58,12 +58,12 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
             //todo: get payment status from Invoice via invoiceId
 //            final PaymentStatus paymentStatus = currentRequest.getPaymentStatus();
             //todo: add isRead parameter for Request
-//            if (!currentRequest.isRead()) {
-//                holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
-//            }
-//            else {
-//                holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
-//            }
+            if (currentRequest.isNew()) {
+                holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
+            }
+            else {
+                holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
+            }
 //            if (paymentStatus == PaymentStatus.PAID || paymentStatus == PaymentStatus.PAID_PARTIALLY || paymentStatus == PaymentStatus.PAID_MORE) {
 //                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
 //            }

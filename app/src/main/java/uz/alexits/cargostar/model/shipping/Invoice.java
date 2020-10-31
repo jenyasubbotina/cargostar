@@ -16,14 +16,14 @@ import uz.alexits.cargostar.model.location.TransitPoint;
 
 import java.util.Date;
 
-@Entity(tableName = "receipt",
+@Entity(tableName = "invoice",
         foreignKeys = {@ForeignKey(entity = TransitPoint.class, parentColumns = "id", childColumns = "current_location_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
         indices = {@Index(value = "courier_id", unique = false),
                 @Index(value = "qr", unique = true),
                 @Index(value = "tracking_code", unique = true),
                 @Index(value = "current_location_id"),
                 @Index(value = "consolidation_number", unique = false)})
-public class Receipt {
+public class Invoice {
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") private long id;
     @ColumnInfo(name = "courier_id", defaultValue = "-1") private long courierId;
     @ColumnInfo(name = "service_provider") @Nullable private String serviceProvider;
@@ -100,7 +100,7 @@ public class Receipt {
 
     @ColumnInfo(name = "consolidation_number", defaultValue = "-1") private long consolidationNumber;
 
-    public Receipt(@NonNull final String senderFirstName,
+    public Invoice(@NonNull final String senderFirstName,
                    @NonNull final String senderMiddleName,
                    @NonNull final String senderLastName,
                    @NonNull final Address senderAddress,

@@ -32,9 +32,9 @@ import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.TransportationStatus;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.shipping.Parcel;
-import uz.alexits.cargostar.viewmodel.CurrentParcelsViewModel;
-import uz.alexits.cargostar.viewmodel.HeaderViewModel;
-import uz.alexits.cargostar.view.Constants;
+import uz.alexits.cargostar.viewmodel.ParcelsViewModel;
+import uz.alexits.cargostar.viewmodel.CourierViewModel;
+import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
@@ -44,7 +44,6 @@ import uz.alexits.cargostar.view.activity.ScanQrActivity;
 import uz.alexits.cargostar.view.adapter.ParcelAdapter;
 import uz.alexits.cargostar.view.adapter.SpinnerAdapter;
 import uz.alexits.cargostar.view.callback.ParcelCallback;
-import uz.alexits.cargostar.view.fragment.CurrentParcelsFragmentDirections;
 
 import java.util.List;
 
@@ -55,8 +54,8 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
     private Context context;
     private FragmentActivity activity;
     //viewModel
-    private HeaderViewModel headerViewModel;
-    private CurrentParcelsViewModel currentParcelsViewModel;
+    private CourierViewModel courierViewModel;
+    private ParcelsViewModel parcelsViewModel;
     //transportation statuses -> all
     private static TransportationStatus[] statusArray;
     //header views
@@ -100,7 +99,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
         activity = getActivity();
 
         if (getArguments() != null) {
-            statusFlag = getArguments().getInt(Constants.STATUS_FLAG);
+            statusFlag = getArguments().getInt(IntentConstants.STATUS_FLAG);
         }
     }
 
@@ -162,27 +161,27 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
 
         scanQrImageView.setOnClickListener(v -> {
             final Intent scanQrIntent = new Intent(context, ScanQrActivity.class);
-            startActivityForResult(scanQrIntent, Constants.REQUEST_SCAN_QR_MENU);
+            startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_MENU);
         });
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
-        currentParcelsViewModel = new ViewModelProvider(this).get(CurrentParcelsViewModel.class);
+        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
+        parcelsViewModel = new ViewModelProvider(this).get(ParcelsViewModel.class);
 
-        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-        headerViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(getViewLifecycleOwner(), branch -> {
+        courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
         });
-        headerViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+        courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
@@ -197,7 +196,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            headerViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
+            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -207,12 +206,12 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
 //                    return;
 //                }
                 final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_VALUE, parcelId);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
                 startActivity(mainIntent);
             });
         });
-        currentParcelsViewModel.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
+        parcelsViewModel.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
             Log.i(TAG, "onActivityCreated(): " + transitPointList);
             if (transitPointList != null) {
                 this.transitPointList = transitPointList;
@@ -258,7 +257,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
                     }
                 }
                 if (inTransitCheckBox.isChecked()) {
-                    currentParcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getId()).observe(getViewLifecycleOwner(), parcelList -> {
+                    parcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getId()).observe(getViewLifecycleOwner(), parcelList -> {
                         Log.i(TAG, "parcelList: " + parcelList);
                         if (parcelList != null) {
                             parcelAdapter.setParcelList(parcelList);
@@ -372,7 +371,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
             statusArray = new TransportationStatus[] {};
             initCitySpinner(null);
         }
-        currentParcelsViewModel.selectParcelsByStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray).observe(getViewLifecycleOwner(), parcelList -> {
+        parcelsViewModel.selectParcelsByStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray).observe(getViewLifecycleOwner(), parcelList -> {
             parcelAdapter.setParcelList(parcelList);
             parcelAdapter.notifyDataSetChanged();
         });
@@ -382,7 +381,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
     public void onParcelSelected(Parcel currentItem) {
         final CurrentParcelsFragmentDirections.ActionCurrentParcelsFragmentToParcelStatusFragment action =
                 CurrentParcelsFragmentDirections.actionCurrentParcelsFragmentToParcelStatusFragment();
-        action.setParcelId(currentItem.getReceipt().getId());
+        action.setParcelId(currentItem.getInvoice().getId());
         NavHostFragment.findNavController(this).navigate(action);
     }
 
@@ -400,11 +399,11 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
             return;
         }
         if (resultCode == RESULT_OK && data != null) {
-            if (requestCode == Constants.REQUEST_SCAN_QR_MENU) {
+            if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
                 final CurrentParcelsFragmentDirections.ActionCurrentParcelsFragmentToParcelDataFragment action =
                         CurrentParcelsFragmentDirections.actionCurrentParcelsFragmentToParcelDataFragment();
                 action.setParcelId(1);
-                action.setParcelId(Constants.INTENT_PARCEL);
+                action.setParcelId(IntentConstants.INTENT_PARCEL);
                 NavHostFragment.findNavController(this).navigate(action);
             }
         }

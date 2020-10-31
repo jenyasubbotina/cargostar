@@ -1,6 +1,6 @@
-package uz.alexits.cargostar.view;
+package uz.alexits.cargostar.utils;
 
-public class Constants {
+public class IntentConstants {
     public static final String INTENT_REQUEST_KEY = "intent_request_key";
     public static final int REQUEST_UPLOAD_PHOTO = 0x01;
     public static final int REQUEST_UPLOAD_DOCUMENT = 0x02;

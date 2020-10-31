@@ -1,5 +1,6 @@
 package uz.alexits.cargostar.view.activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -23,20 +24,25 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.PaymentStatus;
-import uz.alexits.cargostar.model.TransportationStatus;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.location.Address;
 import uz.alexits.cargostar.model.shipping.Cargo;
-import uz.alexits.cargostar.model.shipping.Receipt;
 import uz.alexits.cargostar.model.shipping.ReceiptWithCargoList;
+import uz.alexits.cargostar.utils.ImageSerializer;
 import uz.alexits.cargostar.view.callback.CreateParcelCallback;
 import uz.alexits.cargostar.viewmodel.CreateParcelViewModel;
-import uz.alexits.cargostar.viewmodel.HeaderViewModel;
-import uz.alexits.cargostar.view.Constants;
+import uz.alexits.cargostar.viewmodel.CourierViewModel;
+import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.adapter.CreateParcelAdapter;
 import uz.alexits.cargostar.view.adapter.CreateParcelData;
 
@@ -58,7 +64,7 @@ import static uz.alexits.cargostar.view.adapter.CreateParcelData.INPUT_TYPE_TEXT
 import static uz.alexits.cargostar.view.adapter.CreateParcelData.INPUT_TYPE_EMAIL;
 import static uz.alexits.cargostar.view.adapter.CreateParcelData.INPUT_TYPE_PHONE;
 
-public class CreateParcelActivity extends AppCompatActivity implements CreateParcelCallback {
+public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateParcelCallback {
     private Context context;
     //header views
     private TextView fullNameTextView;
@@ -72,7 +78,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
 
-    private HeaderViewModel headerViewModel;
+    private CourierViewModel courierViewModel;
     private CreateParcelViewModel createParcelViewModel;
     private ReceiptWithCargoList currentReceipt;
     private List<CreateParcelData> itemList;
@@ -176,23 +182,23 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         context = this;
 
         itemList = new ArrayList<>();
-        headerViewModel = new ViewModelProvider(this).get(HeaderViewModel.class);
+        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         createParcelViewModel = new ViewModelProvider(this).get(CreateParcelViewModel.class);
 
         if (getIntent() != null) {
-            final int requestKey = getIntent().getIntExtra(Constants.INTENT_REQUEST_KEY, -1);
-            final long requestId = getIntent().getLongExtra(Constants.INTENT_REQUEST_VALUE, -1);
-            final long requestOrParcel =  getIntent().getLongExtra(Constants.INTENT_REQUEST_OR_PARCEL, -1);
+            final int requestKey = getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1);
+            final long requestId = getIntent().getLongExtra(IntentConstants.INTENT_REQUEST_VALUE, -1);
+            final long requestOrParcel =  getIntent().getLongExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, -1);
 
             initUI();
 
-            headerViewModel.selectRequest(requestId).observe(this, receipt -> {
+            courierViewModel.selectRequest(requestId).observe(this, receipt -> {
                 if (receipt != null) {
-                    if (requestOrParcel == Constants.INTENT_REQUEST) {
+                    if (requestOrParcel == IntentConstants.INTENT_REQUEST) {
                         saveReceiptBtn.setVisibility(View.VISIBLE);
                         createReceiptBtn.setVisibility(View.VISIBLE);
                     }
-                    else if (requestOrParcel == Constants.INTENT_PARCEL) {
+                    else if (requestOrParcel == IntentConstants.INTENT_PARCEL) {
                         saveReceiptBtn.setVisibility(View.VISIBLE);
                         createReceiptBtn.setVisibility(View.INVISIBLE);
                     }
@@ -229,25 +235,24 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 //                    currentReceipt = receipt;
                     updateUI(currentReceipt);
                 }
-                if (requestKey != Constants.REQUEST_EDIT_PARCEL) {
+                if (requestKey != IntentConstants.REQUEST_EDIT_PARCEL) {
                     saveReceiptBtn.setVisibility(View.INVISIBLE);
                     createReceiptBtn.setVisibility(View.VISIBLE);
                 }
             });
 
         }
-        headerViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
-
-        headerViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)).observe(this, branch -> {
+        courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(this, branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
         });
-        headerViewModel.selectNewNotificationsCount().observe(this, newNotificationsCount -> {
+        courierViewModel.selectNewNotificationsCount().observe(this, newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
@@ -262,7 +267,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
-            headerViewModel.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
+            courierViewModel.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
@@ -272,8 +277,8 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 //                    return;
 //                }
                 final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_KEY, Constants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(Constants.INTENT_REQUEST_VALUE, parcelId);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
                 startActivity(mainIntent);
             });
         });
@@ -283,7 +288,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         });
 
         createReceiptBtn.setOnClickListener(v -> {
-            createReceipt();
+            sendInvoice();
         });
         createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
             Log.i(TAG, "entries=" + addressBookEntries);
@@ -473,122 +478,122 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
 
     private void updateUI(final ReceiptWithCargoList receipt) {
         //public data
-        itemList.get(1).firstValue = receipt != null ? String.valueOf(receipt.getReceipt().getCourierId()) : null;
-        itemList.get(1).secondValue = receipt != null ? receipt.getReceipt().getOperatorId() : null;
-        itemList.get(2).firstValue = receipt != null ? receipt.getReceipt().getAccountantId() : null;
-        itemList.get(2).secondValue = receipt != null ? receipt.getReceipt().getServiceProvider() : null;
-        courierId = receipt != null ? String.valueOf(receipt.getReceipt().getCourierId()) : null;
-        operatorId = receipt != null ? receipt.getReceipt().getOperatorId() : null;
-        accountantId = receipt != null ? receipt.getReceipt().getAccountantId() : null;
-        serviceProvider = receipt != null ? receipt.getReceipt().getServiceProvider() : null;
+        itemList.get(1).firstValue = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
+        itemList.get(1).secondValue = receipt != null ? receipt.getInvoice().getOperatorId() : null;
+        itemList.get(2).firstValue = receipt != null ? receipt.getInvoice().getAccountantId() : null;
+        itemList.get(2).secondValue = receipt != null ? receipt.getInvoice().getServiceProvider() : null;
+        courierId = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
+        operatorId = receipt != null ? receipt.getInvoice().getOperatorId() : null;
+        accountantId = receipt != null ? receipt.getInvoice().getAccountantId() : null;
+        serviceProvider = receipt != null ? receipt.getInvoice().getServiceProvider() : null;
         //sender data
-        itemList.get(5).firstValue = receipt != null ? receipt.getReceipt().getSenderSignature() : null;
-        itemList.get(5).secondValue = receipt != null ? receipt.getReceipt().getRecipientSignature() : null;
-        itemList.get(6).firstValue = receipt != null ? receipt.getReceipt().getSenderLogin() : null;
-        itemList.get(6).secondValue = receipt != null ? receipt.getReceipt().getSenderCargostarAccountNumber() : null;
-        itemList.get(7).firstValue = receipt != null ? receipt.getReceipt().getSenderTntAccountNumber() : null;
-        itemList.get(7).secondValue = receipt != null ? receipt.getReceipt().getSenderFedexAccountNumber(): null;
-        itemList.get(8).firstValue = receipt != null ? receipt.getReceipt().getSenderAddress().getAddress() : null;
-        itemList.get(8).secondValue = receipt != null ? receipt.getReceipt().getSenderAddress().getCountry() : null;
-        itemList.get(9).firstValue = receipt != null ? receipt.getReceipt().getSenderAddress().getCity() : null;
-        itemList.get(9).secondValue = receipt != null ? receipt.getReceipt().getSenderAddress().getRegion() : null;
-        itemList.get(10).firstValue = receipt != null ? receipt.getReceipt().getSenderAddress().getZip() : null;
-        itemList.get(10).secondValue = receipt != null ? receipt.getReceipt().getSenderFirstName() : null;
-        itemList.get(11).firstValue = receipt != null ? receipt.getReceipt().getSenderMiddleName() : null;
-        itemList.get(11).secondValue = receipt != null ? receipt.getReceipt().getSenderLastName() : null;
-        itemList.get(12).firstValue = receipt != null ? receipt.getReceipt().getSenderPhone() : null;
-        itemList.get(12).secondValue = receipt != null ? receipt.getReceipt().getSenderEmail() : null;
-        senderSignature = receipt != null ? receipt.getReceipt().getSenderSignature() : null;
-        recipientSignature = receipt != null ? receipt.getReceipt().getRecipientSignature() : null;
-        senderLogin = receipt != null ? receipt.getReceipt().getSenderLogin() : null;
-        senderCargostar = receipt != null ? receipt.getReceipt().getSenderCargostarAccountNumber() : null;
-        senderTnt = receipt != null ? receipt.getReceipt().getSenderTntAccountNumber() : null;
-        senderFedex = receipt != null ? receipt.getReceipt().getSenderFedexAccountNumber(): null;
-        senderAddress = receipt != null ? receipt.getReceipt().getSenderAddress().getAddress() : null;
-        senderCountry = receipt != null ? receipt.getReceipt().getSenderAddress().getCountry() : null;
-        senderCity = receipt != null ? receipt.getReceipt().getSenderAddress().getCity() : null;
-        senderRegion = receipt != null ? receipt.getReceipt().getSenderAddress().getRegion() : null;
-        senderZip = receipt != null ? receipt.getReceipt().getSenderAddress().getZip() : null;
-        senderFirstName = receipt != null ? receipt.getReceipt().getSenderFirstName() : null;
-        senderMiddleName = receipt != null ? receipt.getReceipt().getSenderMiddleName() : null;
-        senderLastName = receipt != null ? receipt.getReceipt().getSenderLastName() : null;
-        senderPhone = receipt != null ? receipt.getReceipt().getSenderPhone() : null;
-        senderEmail = receipt != null ? receipt.getReceipt().getSenderEmail() : null;
+        itemList.get(5).firstValue = receipt != null ? receipt.getInvoice().getSenderSignature() : null;
+        itemList.get(5).secondValue = receipt != null ? receipt.getInvoice().getRecipientSignature() : null;
+        itemList.get(6).firstValue = receipt != null ? receipt.getInvoice().getSenderLogin() : null;
+        itemList.get(6).secondValue = receipt != null ? receipt.getInvoice().getSenderCargostarAccountNumber() : null;
+        itemList.get(7).firstValue = receipt != null ? receipt.getInvoice().getSenderTntAccountNumber() : null;
+        itemList.get(7).secondValue = receipt != null ? receipt.getInvoice().getSenderFedexAccountNumber(): null;
+        itemList.get(8).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getAddress() : null;
+        itemList.get(8).secondValue = receipt != null ? receipt.getInvoice().getSenderAddress().getCountry() : null;
+        itemList.get(9).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getCity() : null;
+        itemList.get(9).secondValue = receipt != null ? receipt.getInvoice().getSenderAddress().getRegion() : null;
+        itemList.get(10).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getZip() : null;
+        itemList.get(10).secondValue = receipt != null ? receipt.getInvoice().getSenderFirstName() : null;
+        itemList.get(11).firstValue = receipt != null ? receipt.getInvoice().getSenderMiddleName() : null;
+        itemList.get(11).secondValue = receipt != null ? receipt.getInvoice().getSenderLastName() : null;
+        itemList.get(12).firstValue = receipt != null ? receipt.getInvoice().getSenderPhone() : null;
+        itemList.get(12).secondValue = receipt != null ? receipt.getInvoice().getSenderEmail() : null;
+        senderSignature = receipt != null ? receipt.getInvoice().getSenderSignature() : null;
+        recipientSignature = receipt != null ? receipt.getInvoice().getRecipientSignature() : null;
+        senderLogin = receipt != null ? receipt.getInvoice().getSenderLogin() : null;
+        senderCargostar = receipt != null ? receipt.getInvoice().getSenderCargostarAccountNumber() : null;
+        senderTnt = receipt != null ? receipt.getInvoice().getSenderTntAccountNumber() : null;
+        senderFedex = receipt != null ? receipt.getInvoice().getSenderFedexAccountNumber(): null;
+        senderAddress = receipt != null ? receipt.getInvoice().getSenderAddress().getAddress() : null;
+        senderCountry = receipt != null ? receipt.getInvoice().getSenderAddress().getCountry() : null;
+        senderCity = receipt != null ? receipt.getInvoice().getSenderAddress().getCity() : null;
+        senderRegion = receipt != null ? receipt.getInvoice().getSenderAddress().getRegion() : null;
+        senderZip = receipt != null ? receipt.getInvoice().getSenderAddress().getZip() : null;
+        senderFirstName = receipt != null ? receipt.getInvoice().getSenderFirstName() : null;
+        senderMiddleName = receipt != null ? receipt.getInvoice().getSenderMiddleName() : null;
+        senderLastName = receipt != null ? receipt.getInvoice().getSenderLastName() : null;
+        senderPhone = receipt != null ? receipt.getInvoice().getSenderPhone() : null;
+        senderEmail = receipt != null ? receipt.getInvoice().getSenderEmail() : null;
         //recipient data
-        itemList.get(15).firstValue = receipt != null ? receipt.getReceipt().getRecipientLogin() : null;
-        itemList.get(15).secondValue = receipt != null ? receipt.getReceipt().getRecipientCargostarAccountNumber() : null;
-        itemList.get(16).firstValue = receipt != null ? receipt.getReceipt().getRecipientTntAccountNumber() : null;
-        itemList.get(16).secondValue = receipt != null ? receipt.getReceipt().getRecipientFedexAccountNumber() : null;
-        itemList.get(17).firstValue = receipt != null && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getAddress() : null;
-        itemList.get(17).secondValue = receipt != null && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getCountry() : null;
-        itemList.get(18).firstValue = receipt != null  && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getCity() : null;
-        itemList.get(18).secondValue = receipt != null && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getRegion(): null;
-        itemList.get(19).firstValue = receipt != null && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getZip() : null;
-        itemList.get(19).secondValue = receipt != null ? receipt.getReceipt().getRecipientFirstName() : null;
-        itemList.get(20).firstValue = receipt != null ? receipt.getReceipt().getRecipientMiddleName() : null;
-        itemList.get(20).secondValue = receipt != null ? receipt.getReceipt().getRecipientLastName() : null;
-        itemList.get(21).firstValue = receipt != null ? receipt.getReceipt().getRecipientPhone() : null;
-        itemList.get(21).secondValue = receipt != null ? receipt.getReceipt().getRecipientEmail() : null;
-        recipientLogin = receipt != null ? receipt.getReceipt().getRecipientLogin() : null;
-        recipientCargo = receipt != null ? receipt.getReceipt().getRecipientCargostarAccountNumber() : null;
-        recipientTnt = receipt != null ? receipt.getReceipt().getRecipientTntAccountNumber() : null;
-        recipientFedex = receipt != null ? receipt.getReceipt().getRecipientFedexAccountNumber() : null;
-        recipientAddress = receipt != null && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getAddress() : null;
-        recipientCountry = receipt != null && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getCountry() : null;
-        recipientCity = receipt != null  && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getCity() : null;
-        recipientRegion = receipt != null && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getRegion(): null;
-        recipientZip = receipt != null && receipt.getReceipt().getRecipientAddress() != null ? receipt.getReceipt().getRecipientAddress().getZip() : null;
-        recipientFirstName = receipt != null ? receipt.getReceipt().getRecipientFirstName() : null;
-        recipientMiddleName = receipt != null ? receipt.getReceipt().getRecipientMiddleName() : null;
-        recipientLastName = receipt != null ? receipt.getReceipt().getRecipientLastName() : null;
-        recipientPhone = receipt != null ? receipt.getReceipt().getRecipientPhone() : null;
-        recipientEmail = receipt != null ? receipt.getReceipt().getRecipientEmail() : null;
+        itemList.get(15).firstValue = receipt != null ? receipt.getInvoice().getRecipientLogin() : null;
+        itemList.get(15).secondValue = receipt != null ? receipt.getInvoice().getRecipientCargostarAccountNumber() : null;
+        itemList.get(16).firstValue = receipt != null ? receipt.getInvoice().getRecipientTntAccountNumber() : null;
+        itemList.get(16).secondValue = receipt != null ? receipt.getInvoice().getRecipientFedexAccountNumber() : null;
+        itemList.get(17).firstValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getAddress() : null;
+        itemList.get(17).secondValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCountry() : null;
+        itemList.get(18).firstValue = receipt != null  && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCity() : null;
+        itemList.get(18).secondValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getRegion(): null;
+        itemList.get(19).firstValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getZip() : null;
+        itemList.get(19).secondValue = receipt != null ? receipt.getInvoice().getRecipientFirstName() : null;
+        itemList.get(20).firstValue = receipt != null ? receipt.getInvoice().getRecipientMiddleName() : null;
+        itemList.get(20).secondValue = receipt != null ? receipt.getInvoice().getRecipientLastName() : null;
+        itemList.get(21).firstValue = receipt != null ? receipt.getInvoice().getRecipientPhone() : null;
+        itemList.get(21).secondValue = receipt != null ? receipt.getInvoice().getRecipientEmail() : null;
+        recipientLogin = receipt != null ? receipt.getInvoice().getRecipientLogin() : null;
+        recipientCargo = receipt != null ? receipt.getInvoice().getRecipientCargostarAccountNumber() : null;
+        recipientTnt = receipt != null ? receipt.getInvoice().getRecipientTntAccountNumber() : null;
+        recipientFedex = receipt != null ? receipt.getInvoice().getRecipientFedexAccountNumber() : null;
+        recipientAddress = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getAddress() : null;
+        recipientCountry = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCountry() : null;
+        recipientCity = receipt != null  && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCity() : null;
+        recipientRegion = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getRegion(): null;
+        recipientZip = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getZip() : null;
+        recipientFirstName = receipt != null ? receipt.getInvoice().getRecipientFirstName() : null;
+        recipientMiddleName = receipt != null ? receipt.getInvoice().getRecipientMiddleName() : null;
+        recipientLastName = receipt != null ? receipt.getInvoice().getRecipientLastName() : null;
+        recipientPhone = receipt != null ? receipt.getInvoice().getRecipientPhone() : null;
+        recipientEmail = receipt != null ? receipt.getInvoice().getRecipientEmail() : null;
         //payer data
-        itemList.get(25).firstValue = receipt != null ? receipt.getReceipt().getPayerLogin() : null;
-        itemList.get(25).secondValue = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getAddress() : null;
-        itemList.get(26).firstValue = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getCountry() : null;
-        itemList.get(26).secondValue = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getCity() : null;
-        itemList.get(27).firstValue = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getRegion() : null;
-        itemList.get(27).secondValue = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getZip() : null;
-        itemList.get(28).firstValue = receipt != null ? receipt.getReceipt().getPayerFirstName() : null;
-        itemList.get(28).secondValue = receipt != null ? receipt.getReceipt().getPayerMiddleName() : null;
-        itemList.get(29).firstValue = receipt != null ? receipt.getReceipt().getPayerLastName() : null;
-        itemList.get(29).secondValue = receipt != null ? receipt.getReceipt().getPayerPhone() : null;
-        itemList.get(30).firstValue = receipt != null ? receipt.getReceipt().getPayerEmail() : null;
-        itemList.get(30).secondValue = receipt != null && receipt.getReceipt().getDiscount() > 0 ? String.valueOf(receipt.getReceipt().getDiscount()) : null;
-        payerLogin = receipt != null ? receipt.getReceipt().getPayerLogin() : null;
-        payerAddress = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getAddress() : null;
-        payerCountry = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getCountry() : null;
-        payerCity = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getCity() : null;
-        payerRegion = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getRegion() : null;
-        payerZip = receipt != null && receipt.getReceipt().getPayerAddress() != null ? receipt.getReceipt().getPayerAddress().getZip() : null;
-        payerFirstName = receipt != null ? receipt.getReceipt().getPayerFirstName() : null;
-        payerMiddleName = receipt != null ? receipt.getReceipt().getPayerMiddleName() : null;
-        payerLastName = receipt != null ? receipt.getReceipt().getPayerLastName() : null;
-        payerPhone = receipt != null ? receipt.getReceipt().getPayerPhone() : null;
-        payerEmail = receipt != null ? receipt.getReceipt().getPayerEmail() : null;
-        discount = receipt != null && receipt.getReceipt().getDiscount() > 0 ? String.valueOf(receipt.getReceipt().getDiscount()) : null;
+        itemList.get(25).firstValue = receipt != null ? receipt.getInvoice().getPayerLogin() : null;
+        itemList.get(25).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getAddress() : null;
+        itemList.get(26).firstValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCountry() : null;
+        itemList.get(26).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCity() : null;
+        itemList.get(27).firstValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getRegion() : null;
+        itemList.get(27).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getZip() : null;
+        itemList.get(28).firstValue = receipt != null ? receipt.getInvoice().getPayerFirstName() : null;
+        itemList.get(28).secondValue = receipt != null ? receipt.getInvoice().getPayerMiddleName() : null;
+        itemList.get(29).firstValue = receipt != null ? receipt.getInvoice().getPayerLastName() : null;
+        itemList.get(29).secondValue = receipt != null ? receipt.getInvoice().getPayerPhone() : null;
+        itemList.get(30).firstValue = receipt != null ? receipt.getInvoice().getPayerEmail() : null;
+        itemList.get(30).secondValue = receipt != null && receipt.getInvoice().getDiscount() > 0 ? String.valueOf(receipt.getInvoice().getDiscount()) : null;
+        payerLogin = receipt != null ? receipt.getInvoice().getPayerLogin() : null;
+        payerAddress = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getAddress() : null;
+        payerCountry = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCountry() : null;
+        payerCity = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCity() : null;
+        payerRegion = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getRegion() : null;
+        payerZip = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getZip() : null;
+        payerFirstName = receipt != null ? receipt.getInvoice().getPayerFirstName() : null;
+        payerMiddleName = receipt != null ? receipt.getInvoice().getPayerMiddleName() : null;
+        payerLastName = receipt != null ? receipt.getInvoice().getPayerLastName() : null;
+        payerPhone = receipt != null ? receipt.getInvoice().getPayerPhone() : null;
+        payerEmail = receipt != null ? receipt.getInvoice().getPayerEmail() : null;
+        discount = receipt != null && receipt.getInvoice().getDiscount() > 0 ? String.valueOf(receipt.getInvoice().getDiscount()) : null;
         //account numbers
-        itemList.get(33).firstValue = receipt != null ? receipt.getReceipt().getPayerTntAccountNumber() : null;
-        itemList.get(34).firstValue = receipt != null ? receipt.getReceipt().getPayerFedexAccountNumber() : null;
-        payerTnt = receipt != null ? receipt.getReceipt().getPayerTntAccountNumber() : null;
-        payerFedex = receipt != null ? receipt.getReceipt().getPayerFedexAccountNumber() : null;
+        itemList.get(33).firstValue = receipt != null ? receipt.getInvoice().getPayerTntAccountNumber() : null;
+        itemList.get(34).firstValue = receipt != null ? receipt.getInvoice().getPayerFedexAccountNumber() : null;
+        payerTnt = receipt != null ? receipt.getInvoice().getPayerTntAccountNumber() : null;
+        payerFedex = receipt != null ? receipt.getInvoice().getPayerFedexAccountNumber() : null;
         //payment data
-        itemList.get(37).firstValue = receipt != null ? receipt.getReceipt().getCheckingAccount() : null;
-        itemList.get(37).secondValue = receipt != null ? receipt.getReceipt().getBank() : null;
-        itemList.get(38).firstValue = receipt != null ? receipt.getReceipt().getRegistrationCode() : null;
-        itemList.get(38).secondValue = receipt != null ? receipt.getReceipt().getMfo() : null;
-        itemList.get(39).firstValue = receipt != null ? receipt.getReceipt().getOked() : null;
-        checkingAccount = receipt != null ? receipt.getReceipt().getCheckingAccount() : null;
-        bank = receipt != null ? receipt.getReceipt().getBank() : null;
-        registrationCode = receipt != null ? receipt.getReceipt().getRegistrationCode() : null;
-        mfo = receipt != null ? receipt.getReceipt().getMfo() : null;
-        oked = receipt != null ? receipt.getReceipt().getOked() : null;
+        itemList.get(37).firstValue = receipt != null ? receipt.getInvoice().getCheckingAccount() : null;
+        itemList.get(37).secondValue = receipt != null ? receipt.getInvoice().getBank() : null;
+        itemList.get(38).firstValue = receipt != null ? receipt.getInvoice().getRegistrationCode() : null;
+        itemList.get(38).secondValue = receipt != null ? receipt.getInvoice().getMfo() : null;
+        itemList.get(39).firstValue = receipt != null ? receipt.getInvoice().getOked() : null;
+        checkingAccount = receipt != null ? receipt.getInvoice().getCheckingAccount() : null;
+        bank = receipt != null ? receipt.getInvoice().getBank() : null;
+        registrationCode = receipt != null ? receipt.getInvoice().getRegistrationCode() : null;
+        mfo = receipt != null ? receipt.getInvoice().getMfo() : null;
+        oked = receipt != null ? receipt.getInvoice().getOked() : null;
         //parcel data
-        itemList.get(42).firstValue = receipt != null ? receipt.getReceipt().getQr() : null;
-        itemList.get(42).secondValue = receipt != null ? receipt.getReceipt().getInstructions() : null;
-        qr = receipt != null ? receipt.getReceipt().getQr() : null;
-        instructions = receipt != null ? receipt.getReceipt().getInstructions() : null;
+        itemList.get(42).firstValue = receipt != null ? receipt.getInvoice().getQr() : null;
+        itemList.get(42).secondValue = receipt != null ? receipt.getInvoice().getInstructions() : null;
+        qr = receipt != null ? receipt.getInvoice().getQr() : null;
+        instructions = receipt != null ? receipt.getInvoice().getInstructions() : null;
         //cargo data 50
         int i = 1;
 
@@ -598,7 +603,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
                 final CreateParcelData cargoData = new CreateParcelData(CreateParcelData.TYPE_CALCULATOR_ITEM);
                 cargoData.index = String.valueOf(i++);
                 cargoData.packageType = cargo.getPackageType();
-                cargoData.source = receipt.getReceipt().getSenderAddress().getCity();
+                cargoData.source = receipt.getInvoice().getSenderAddress().getCity();
                 cargoData.weight = String.valueOf(cargo.getWeight());
                 cargoData.dimensions = cargo.getLength() + "x" + cargo.getWidth() + "x" + cargo.getHeight();
                 itemList.add(cargoData);
@@ -707,42 +712,42 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
         else if (secondCardRadioBtn.isChecked()) {
             serviceProvider = secondCardValue;
         }
-        currentReceipt.getReceipt().setServiceProvider(serviceProvider);
-        currentReceipt.getReceipt().setSenderSignature(senderSignature);
-        currentReceipt.getReceipt().setSenderEmail(senderEmail);
-        currentReceipt.getReceipt().setSenderCargostarAccountNumber(senderCargostar);
-        currentReceipt.getReceipt().setRecipientFirstName(recipientFirstName);
-        currentReceipt.getReceipt().setRecipientMiddleName(recipientMiddleName);
-        currentReceipt.getReceipt().setRecipientLastName(recipientLastName);
-        currentReceipt.getReceipt().setRecipientPhone(recipientPhone);
-        currentReceipt.getReceipt().setRecipientEmail(recipientEmail);
-        currentReceipt.getReceipt().setRecipientSignature(recipientSignature);
-        currentReceipt.getReceipt().setPayerFirstName(payerFirstName);
-        currentReceipt.getReceipt().setPayerMiddleName(payerMiddleName);
-        currentReceipt.getReceipt().setPayerLastName(payerLastName);
-        currentReceipt.getReceipt().setPayerPhone(payerPhone);
-        currentReceipt.getReceipt().setPayerEmail(payerEmail);
-        currentReceipt.getReceipt().setQr(qr);
+        currentReceipt.getInvoice().setServiceProvider(serviceProvider);
+        currentReceipt.getInvoice().setSenderSignature(senderSignature);
+        currentReceipt.getInvoice().setSenderEmail(senderEmail);
+        currentReceipt.getInvoice().setSenderCargostarAccountNumber(senderCargostar);
+        currentReceipt.getInvoice().setRecipientFirstName(recipientFirstName);
+        currentReceipt.getInvoice().setRecipientMiddleName(recipientMiddleName);
+        currentReceipt.getInvoice().setRecipientLastName(recipientLastName);
+        currentReceipt.getInvoice().setRecipientPhone(recipientPhone);
+        currentReceipt.getInvoice().setRecipientEmail(recipientEmail);
+        currentReceipt.getInvoice().setRecipientSignature(recipientSignature);
+        currentReceipt.getInvoice().setPayerFirstName(payerFirstName);
+        currentReceipt.getInvoice().setPayerMiddleName(payerMiddleName);
+        currentReceipt.getInvoice().setPayerLastName(payerLastName);
+        currentReceipt.getInvoice().setPayerPhone(payerPhone);
+        currentReceipt.getInvoice().setPayerEmail(payerEmail);
+        currentReceipt.getInvoice().setQr(qr);
         //sender data
-        currentReceipt.getReceipt().setSenderLogin(senderLogin);
-        currentReceipt.getReceipt().setSenderTntAccountNumber(senderTnt);
-        currentReceipt.getReceipt().setSenderFedexAccountNumber(senderFedex);
-        currentReceipt.getReceipt().setRecipientLogin(recipientLogin);
-        currentReceipt.getReceipt().setRecipientCargostarAccountNumber(recipientCargo);
-        currentReceipt.getReceipt().setRecipientTntAccountNumber(recipientTnt);
-        currentReceipt.getReceipt().setRecipientFedexAccountNumber(recipientFedex);
+        currentReceipt.getInvoice().setSenderLogin(senderLogin);
+        currentReceipt.getInvoice().setSenderTntAccountNumber(senderTnt);
+        currentReceipt.getInvoice().setSenderFedexAccountNumber(senderFedex);
+        currentReceipt.getInvoice().setRecipientLogin(recipientLogin);
+        currentReceipt.getInvoice().setRecipientCargostarAccountNumber(recipientCargo);
+        currentReceipt.getInvoice().setRecipientTntAccountNumber(recipientTnt);
+        currentReceipt.getInvoice().setRecipientFedexAccountNumber(recipientFedex);
         //payer data
-        currentReceipt.getReceipt().setPayerLogin(payerLogin);
-        currentReceipt.getReceipt().setPayerCargostarAccountNumber(payerCargostar);
-        currentReceipt.getReceipt().setPayerTntAccountNumber(payerTnt);
-        currentReceipt.getReceipt().setPayerFedexAccountNumber(payerFedex);
-        currentReceipt.getReceipt().setCheckingAccount(checkingAccount);
-        currentReceipt.getReceipt().setBank(bank);
-        currentReceipt.getReceipt().setRegistrationCode(registrationCode);
-        currentReceipt.getReceipt().setMfo(mfo);
-        currentReceipt.getReceipt().setOked(oked);
-        currentReceipt.getReceipt().setInstructions(instructions);
-        currentReceipt.getReceipt().setPaymentStatus(PaymentStatus.WAITING_PAYMENT);
+        currentReceipt.getInvoice().setPayerLogin(payerLogin);
+        currentReceipt.getInvoice().setPayerCargostarAccountNumber(payerCargostar);
+        currentReceipt.getInvoice().setPayerTntAccountNumber(payerTnt);
+        currentReceipt.getInvoice().setPayerFedexAccountNumber(payerFedex);
+        currentReceipt.getInvoice().setCheckingAccount(checkingAccount);
+        currentReceipt.getInvoice().setBank(bank);
+        currentReceipt.getInvoice().setRegistrationCode(registrationCode);
+        currentReceipt.getInvoice().setMfo(mfo);
+        currentReceipt.getInvoice().setOked(oked);
+        currentReceipt.getInvoice().setInstructions(instructions);
+        currentReceipt.getInvoice().setPaymentStatus(PaymentStatus.WAITING_PAYMENT);
 
         Address newSenderAddress = null;
         Address newRecipientAddress = null;
@@ -758,304 +763,333 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
             newPayerAddress = new Address(payerCountry, payerRegion, payerCity, payerAddress);
         }
         if (!TextUtils.isEmpty(discount)) {
-            currentReceipt.getReceipt().setDiscount(Integer.parseInt(discount));
+            currentReceipt.getInvoice().setDiscount(Integer.parseInt(discount));
         }
         if (newSenderAddress != null) {
             newSenderAddress.setZip(senderZip);
-            currentReceipt.getReceipt().setSenderAddress(newSenderAddress);
+            currentReceipt.getInvoice().setSenderAddress(newSenderAddress);
         }
         if (newRecipientAddress != null) {
             newRecipientAddress.setZip(recipientZip);
-            currentReceipt.getReceipt().setRecipientAddress(newRecipientAddress);
+            currentReceipt.getInvoice().setRecipientAddress(newRecipientAddress);
         }
         if (newPayerAddress != null) {
             newPayerAddress.setZip(payerZip);
-            currentReceipt.getReceipt().setPayerAddress(newPayerAddress);
+            currentReceipt.getInvoice().setPayerAddress(newPayerAddress);
         }
 //        createParcelViewModel.updateReceipt(currentReceipt.getReceipt());
         Toast.makeText(context, "Данные сохранены успешно", Toast.LENGTH_SHORT).show();
         finish();
     }
 
-    private void createReceipt() {
-        Log.i(TAG, "createReceipt(): " +
-                "\nsenderCountry=" + senderCountry + " senderRegion=" + senderRegion + " senderCity=" + senderCity + " senderAddress=" + senderAddress +
-                "\nrecipientCountry=" + recipientCountry + " recipientRegion=" + recipientRegion + " recipientCity=" + recipientCity + " recipientAddress=" + recipientAddress +
-                "\npayerCountry=" + payerCountry + " payerRegion=" + payerRegion + " payerCity=" + payerCity + " payerAddress=" + payerAddress +
-                "\nsenderFirstName=" + senderFirstName +
-                "\nsenderMiddleName=" + senderMiddleName +
-                "\nsenderLastName=" + senderLastName +
-                "\nsenderPhone=" + senderPhone +
-                "\ncourierId=" + courierId +
-                "\nserviceProvider=" + serviceProvider +
-                "\nsenderSignature=" + senderSignature +
-                "\nsenderEmail=" + senderEmail +
-                "\nsenderCargostar=" + senderCargostar +
-                "\nrecipientFirstName=" + recipientFirstName +
-                "\nrecipientMiddleName=" + recipientMiddleName +
-                "\nrecipientLastName=" + recipientLastName +
-                "\nrecipientPhone=" + recipientPhone +
-                "\nrecipientEmail=" + recipientEmail +
-                "\nrecipientSignature=" + recipientSignature +
-                "\npayerFirstName=" + payerFirstName +
-                "\npayerMiddleName=" + payerMiddleName +
-                "\npayerLastName=" + payerLastName +
-                "\npayerPhone=" + payerPhone +
-                "\npayerEmail=" + payerEmail +
-                "\nqr=" + qr +
-                "\nsenderLogin=" + senderLogin +
-                "\nsenderTnt=" + senderTnt +
-                "\nsenderFedex=" + senderFedex +
-                "\nrecipientLogin=" + recipientLogin +
-                "\nrecipientCargo=" + recipientCargo +
-                "\nrecipientTnt=" + recipientTnt +
-                "\nrecipientFedex=" + recipientFedex +
-                "\npayerLogin=" + payerLogin +
-                "\npayerCargostar=" + payerCargostar +
-                "\npayerTnt=" + payerTnt +
-                "\npayerFedex=" + payerFedex +
-                "\ndiscount=" + discount +
-                "\ncheckingAccount=" + checkingAccount +
-                "\nbank=" + bank+
-                "\nregistrationCode=" + registrationCode +
-                "\nmfo=" + mfo +
-                "\noked=" + oked +
-                "\ninstructions=" + instructions +
-                "\ninstructions=" + instructions +
-                "\ninstructions=" + instructions);
-        //sender data
-        if (TextUtils.isEmpty(senderAddress)) {
-            Log.i(TAG, "senderAddress empty");
-            Toast.makeText(context, "Для создания заявки укажите адрес отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderCountry)) {
-            Log.i(TAG, "senderCountry empty");
-            Toast.makeText(context, "Для создания заявки укажите страну отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderRegion)) {
-            Log.i(TAG, "senderRegion empty");
-            Toast.makeText(context, "Для создания заявки укажите регион отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderCity)) {
-            Log.i(TAG, "senderCity empty");
-            Toast.makeText(context, "Для создания заявки укажите город отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderZip)) {
-            Log.i(TAG, "senderZip empty");
-            Toast.makeText(context, "Для создания заявки укажите почтовый индекс отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderFirstName)) {
-            Log.i(TAG, "senderFirstName empty");
-            Toast.makeText(context, "Для создания заявки укажите имя отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderMiddleName)) {
-            Log.i(TAG, "senderMiddleName empty");
-            Toast.makeText(context, "Для создания заявки укажите отчество отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderLastName)) {
-            Log.i(TAG, "senderLastName empty");
-            Toast.makeText(context, "Для создания заявки укажите фамилию отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderPhone)) {
-            Toast.makeText(context, "Для создания заявки укажите номер телефона отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderEmail)) {
-            Toast.makeText(context, "Для создания заявки укажите email отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderSignature)) {
-            Toast.makeText(context, "Для создания заявки добавьте подпись отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderCargostar)) {
-            Toast.makeText(context, "Для создания заявки укажите номер акканута CargoStar отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //recipient data
-        if (TextUtils.isEmpty(recipientAddress)) {
-            Toast.makeText(context, "Для создания заявки укажите адрес получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientCountry)) {
-            Toast.makeText(context, "Для создания заявки укажите страну получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientRegion)) {
-            Toast.makeText(context, "Для создания заявки укажите регион получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientCity)) {
-            Toast.makeText(context, "Для создания заявки укажите город получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientZip)) {
-            Toast.makeText(context, "Для создания заявки укажите почтовый индекс получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientFirstName)) {
-            Toast.makeText(context, "Для создания заявки укажите имя получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientMiddleName)) {
-            Toast.makeText(context, "Для создания заявки укажите отчество получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientLastName)) {
-            Toast.makeText(context, "Для создания заявки укажите фамилию получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientPhone)) {
-            Toast.makeText(context, "Для создания заявки укажите номер телефона получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(recipientEmail)) {
-            Toast.makeText(context, "Для создания заявки укажите email получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //payer data
-        if (TextUtils.isEmpty(payerAddress)) {
-            Toast.makeText(context, "Для создания заявки укажите адрес плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerCountry)) {
-            Toast.makeText(context, "Для создания заявки укажите страну плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerRegion)) {
-            Toast.makeText(context, "Для создания заявки укажите регион плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerCity)) {
-            Toast.makeText(context, "Для создания заявки укажите город плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerZip)) {
-            Toast.makeText(context, "Для создания заявки укажите почтовый индекс плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerFirstName)) {
-            Toast.makeText(context, "Для создания заявки укажите имя плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerMiddleName)) {
-            Toast.makeText(context, "Для создания заявки укажите отчество плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerLastName)) {
-            Toast.makeText(context, "Для создания заявки укажите фамилию плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerPhone)) {
-            Toast.makeText(context, "Для создания заявки укажите номер телефона плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerEmail)) {
-            Toast.makeText(context, "Для создания заявки укажите email плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //parcel data
-        if (TextUtils.isEmpty(qr)) {
-            Toast.makeText(context, "Для создания заявки отсканируйте QR-код", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (cargoList.isEmpty()) {
-            Toast.makeText(context, "Для создания заявки добавьте хотя бы 1 груз", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!senderCountry.equals(getString(R.string.uzbekistan)) && !recipientCountry.equals(getString(R.string.uzbekistan))) {
-            Toast.makeText(context, "Страна отправителя или получателя должна быть Узбекистан", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!firstCardRadioBtn.isChecked() && !secondCardRadioBtn.isChecked()) {
-            Toast.makeText(context, "Для создания заявки выберите поставщика услуг", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void sendInvoice() {
+//        //sender data
+//        if (TextUtils.isEmpty(senderAddress)) {
+//            Log.i(TAG, "senderAddress empty");
+//            Toast.makeText(context, "Для создания заявки укажите адрес отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderCountry)) {
+//            Log.i(TAG, "senderCountry empty");
+//            Toast.makeText(context, "Для создания заявки укажите страну отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderRegion)) {
+//            Log.i(TAG, "senderRegion empty");
+//            Toast.makeText(context, "Для создания заявки укажите регион отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderCity)) {
+//            Log.i(TAG, "senderCity empty");
+//            Toast.makeText(context, "Для создания заявки укажите город отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderZip)) {
+//            Log.i(TAG, "senderZip empty");
+//            Toast.makeText(context, "Для создания заявки укажите почтовый индекс отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderFirstName)) {
+//            Log.i(TAG, "senderFirstName empty");
+//            Toast.makeText(context, "Для создания заявки укажите имя отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderMiddleName)) {
+//            Log.i(TAG, "senderMiddleName empty");
+//            Toast.makeText(context, "Для создания заявки укажите отчество отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderLastName)) {
+//            Log.i(TAG, "senderLastName empty");
+//            Toast.makeText(context, "Для создания заявки укажите фамилию отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderPhone)) {
+//            Toast.makeText(context, "Для создания заявки укажите номер телефона отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderEmail)) {
+//            Toast.makeText(context, "Для создания заявки укажите email отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderSignature)) {
+//            Toast.makeText(context, "Для создания заявки добавьте подпись отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(senderCargostar)) {
+//            Toast.makeText(context, "Для создания заявки укажите номер акканута CargoStar отправителя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        //recipient data
+//        if (TextUtils.isEmpty(recipientAddress)) {
+//            Toast.makeText(context, "Для создания заявки укажите адрес получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientCountry)) {
+//            Toast.makeText(context, "Для создания заявки укажите страну получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientRegion)) {
+//            Toast.makeText(context, "Для создания заявки укажите регион получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientCity)) {
+//            Toast.makeText(context, "Для создания заявки укажите город получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientZip)) {
+//            Toast.makeText(context, "Для создания заявки укажите почтовый индекс получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientFirstName)) {
+//            Toast.makeText(context, "Для создания заявки укажите имя получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientMiddleName)) {
+//            Toast.makeText(context, "Для создания заявки укажите отчество получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientLastName)) {
+//            Toast.makeText(context, "Для создания заявки укажите фамилию получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientPhone)) {
+//            Toast.makeText(context, "Для создания заявки укажите номер телефона получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(recipientEmail)) {
+//            Toast.makeText(context, "Для создания заявки укажите email получателя", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        //payer data
+//        if (TextUtils.isEmpty(payerAddress)) {
+//            Toast.makeText(context, "Для создания заявки укажите адрес плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerCountry)) {
+//            Toast.makeText(context, "Для создания заявки укажите страну плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerRegion)) {
+//            Toast.makeText(context, "Для создания заявки укажите регион плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerCity)) {
+//            Toast.makeText(context, "Для создания заявки укажите город плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerZip)) {
+//            Toast.makeText(context, "Для создания заявки укажите почтовый индекс плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerFirstName)) {
+//            Toast.makeText(context, "Для создания заявки укажите имя плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerMiddleName)) {
+//            Toast.makeText(context, "Для создания заявки укажите отчество плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerLastName)) {
+//            Toast.makeText(context, "Для создания заявки укажите фамилию плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerPhone)) {
+//            Toast.makeText(context, "Для создания заявки укажите номер телефона плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(payerEmail)) {
+//            Toast.makeText(context, "Для создания заявки укажите email плательщика", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        //parcel data
+//        if (TextUtils.isEmpty(qr)) {
+//            Toast.makeText(context, "Для создания заявки отсканируйте QR-код", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (cargoList.isEmpty()) {
+//            Toast.makeText(context, "Для создания заявки добавьте хотя бы 1 груз", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (!senderCountry.equals(getString(R.string.uzbekistan)) && !recipientCountry.equals(getString(R.string.uzbekistan))) {
+//            Toast.makeText(context, "Страна отправителя или получателя должна быть Узбекистан", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (!firstCardRadioBtn.isChecked() && !secondCardRadioBtn.isChecked()) {
+//            Toast.makeText(context, "Для создания заявки выберите поставщика услуг", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
-        final Address newSenderAddress = new Address(senderCountry, senderRegion, senderCity, senderAddress);
-        final Address newRecipientAddress = new Address(recipientCountry, recipientRegion, recipientCity, recipientAddress);
-        final Address newPayerAddress = new Address(payerCountry, payerRegion, payerCity, payerAddress);
-        newSenderAddress.setZip(senderZip);
-        newRecipientAddress.setZip(recipientZip);
-        newPayerAddress.setZip(payerZip);
+//        final Invoice newRequest = new Invoice(senderFirstName, senderMiddleName, senderLastName, newSenderAddress, senderPhone, TransportationStatus.IN_TRANSIT, PaymentStatus.WAITING_PAYMENT);
+//        newRequest.setCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID));
+//        newRequest.setServiceProvider(serviceProvider);
+//        newRequest.setSenderSignature(senderSignature);
+//        newRequest.setSenderEmail(senderEmail);
+//        newRequest.setSenderCargostarAccountNumber(senderCargostar);
+//        newRequest.setRecipientAddress(newRecipientAddress);
+//        newRequest.setRecipientFirstName(recipientFirstName);
+//        newRequest.setRecipientMiddleName(recipientMiddleName);
+//        newRequest.setRecipientLastName(recipientLastName);
+//        newRequest.setRecipientPhone(recipientPhone);
+//        newRequest.setRecipientEmail(recipientEmail);
+//        newRequest.setPayerAddress(newPayerAddress);
+//        newRequest.setPayerFirstName(payerFirstName);
+//        newRequest.setPayerMiddleName(payerMiddleName);
+//        newRequest.setPayerLastName(payerLastName);
+//        newRequest.setPayerPhone(payerPhone);
+//        newRequest.setPayerEmail(payerEmail);
+//        newRequest.setQr(qr);
+//        //sender data
+//        newRequest.setSenderLogin(senderLogin);
+//        newRequest.setSenderTntAccountNumber(senderTnt);
+//        newRequest.setSenderFedexAccountNumber(senderFedex);
+//        newRequest.setRecipientLogin(recipientLogin);
+//        newRequest.setRecipientCargostarAccountNumber(recipientCargo);
+//        newRequest.setRecipientTntAccountNumber(recipientTnt);
+//        newRequest.setRecipientFedexAccountNumber(recipientFedex);
+//        //payer data
+//        newRequest.setPayerLogin(payerLogin);
+//        newRequest.setPayerCargostarAccountNumber(payerCargostar);
+//        newRequest.setPayerTntAccountNumber(payerTnt);
+//        newRequest.setPayerFedexAccountNumber(payerFedex);
+//
+//        if (!TextUtils.isEmpty(discount)) {
+//            newRequest.setDiscount(Integer.parseInt(discount));
+//        }
+//        if (!TextUtils.isEmpty(recipientSignature)) {
+//            newRequest.setRecipientSignature(recipientSignature);
+//        }
+//
+//        newRequest.setCheckingAccount(checkingAccount);
+//        newRequest.setBank(bank);
+//        newRequest.setRegistrationCode(registrationCode);
+//        newRequest.setMfo(mfo);
+//        newRequest.setOked(oked);
+//        newRequest.setInstructions(instructions);
+//        newRequest.setPaymentStatus(PaymentStatus.WAITING_PAYMENT);
+//
+//        if (tariffRadioGroup.getCheckedRadioButtonId() == expressRadioBtn.getId()) {
+//            newRequest.setTariff(getString(R.string.express));
+//        }
+//        else if (tariffRadioGroup.getCheckedRadioButtonId() == economyRadioBtn.getId()) {
+//            newRequest.setTariff(getString(R.string.economy_express));
+//        }
+//        if (firstCardRadioBtn.isChecked()) {
+//            serviceProvider = firstCardValue;
+//        }
+//        else if (secondCardRadioBtn.isChecked()) {
+//            serviceProvider = secondCardValue;
+//        }
+//        newRequest.setServiceProvider(serviceProvider);
 
-        final Receipt newRequest = new Receipt(senderFirstName, senderMiddleName, senderLastName, newSenderAddress, senderPhone, TransportationStatus.IN_TRANSIT, PaymentStatus.WAITING_PAYMENT);
-        newRequest.setCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID));
-        newRequest.setServiceProvider(serviceProvider);
-        newRequest.setSenderSignature(senderSignature);
-        newRequest.setSenderEmail(senderEmail);
-        newRequest.setSenderCargostarAccountNumber(senderCargostar);
-        newRequest.setRecipientAddress(newRecipientAddress);
-        newRequest.setRecipientFirstName(recipientFirstName);
-        newRequest.setRecipientMiddleName(recipientMiddleName);
-        newRequest.setRecipientLastName(recipientLastName);
-        newRequest.setRecipientPhone(recipientPhone);
-        newRequest.setRecipientEmail(recipientEmail);
-        newRequest.setPayerAddress(newPayerAddress);
-        newRequest.setPayerFirstName(payerFirstName);
-        newRequest.setPayerMiddleName(payerMiddleName);
-        newRequest.setPayerLastName(payerLastName);
-        newRequest.setPayerPhone(payerPhone);
-        newRequest.setPayerEmail(payerEmail);
-        newRequest.setQr(qr);
-        //sender data
-        newRequest.setSenderLogin(senderLogin);
-        newRequest.setSenderTntAccountNumber(senderTnt);
-        newRequest.setSenderFedexAccountNumber(senderFedex);
-        newRequest.setRecipientLogin(recipientLogin);
-        newRequest.setRecipientCargostarAccountNumber(recipientCargo);
-        newRequest.setRecipientTntAccountNumber(recipientTnt);
-        newRequest.setRecipientFedexAccountNumber(recipientFedex);
-        //payer data
-        newRequest.setPayerLogin(payerLogin);
-        newRequest.setPayerCargostarAccountNumber(payerCargostar);
-        newRequest.setPayerTntAccountNumber(payerTnt);
-        newRequest.setPayerFedexAccountNumber(payerFedex);
+//        final CreateInvoiceParams createInvoiceParams = new CreateInvoiceParams(
+//                );
 
-        if (!TextUtils.isEmpty(discount)) {
-            newRequest.setDiscount(Integer.parseInt(discount));
-        }
-        if (!TextUtils.isEmpty(recipientSignature)) {
-            newRequest.setRecipientSignature(recipientSignature);
-        }
+        final List<Cargo> tempCargoList = new ArrayList<>();
+        tempCargoList.add(new Cargo("Cargo1", 4.5, 4, 4, 10));
+        tempCargoList.add(new Cargo("Cargo2", 4.5, 4, 4, 5));
+        tempCargoList.add(new Cargo("Cargo3", 4.5, 4, 4, 14));
 
-        newRequest.setCheckingAccount(checkingAccount);
-        newRequest.setBank(bank);
-        newRequest.setRegistrationCode(registrationCode);
-        newRequest.setMfo(mfo);
-        newRequest.setOked(oked);
-        newRequest.setInstructions(instructions);
-        newRequest.setPaymentStatus(PaymentStatus.WAITING_PAYMENT);
+        RetrofitClient.getInstance(
+                context,
+                SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN),
+                SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH))
+                .createInvoice(11L,
+                        null,
+                        null,
+                        ImageSerializer.fileToBase64(senderSignature),
+                        "android@gmail.com",
+                        "12345677890",
+                        "12345677890",
+                        "12345677890",
+                        "Uzbekistan",
+                        "",
+                        "Tashkent",
+                        "Yunusabad 8",
+                        "100170",
+                        "Android",
+                        "Valerevich",
+                        "Kim",
+                        "+998991231232",
+                        ImageSerializer.fileToBase64(recipientSignature),
+                        "sk@gmail.com",
+                        "12345677890",
+                        "12345677890",
+                        "12345677890",
+                        "Uzbekistan",
+                        "",
+                        "Tashkent",
+                        "Chilonzor 1",
+                        "100100",
+                        "Sergey",
+                        "",
+                        "Kadushkin",
+                        "+998901671213",
+                        "sergey.kim@mail.ru",
+                        "12345677890",
+                        "12345677890",
+                        "12345677890",
+                        "Uzbekistan",
+                        "",
+                        "Tashkent",
+                        "Yunusabad 8",
+                        "100190",
+                        "Sergey",
+                        "",
+                        "Kim",
+                        "+998990116824",
+                        "-10",
+                        "12345677890",
+                        "NBU bank",
+                        "12345677890",
+                        "12345677890",
+                        "12345677890",
+                        qr,
+                        "Инструкции для курьера",
+                        tempCargoList,
+                        2607500,
+                        6L,
+                        5L,
+                        1, new Callback<JsonElement>() {
+                            @Override
+                            public void onResponse(@NonNull final Call<JsonElement> call, @NonNull final Response<JsonElement> response) {
+                                Log.i(TAG, "body: " + response.body());
+                                Log.e(TAG, "errorBody: " + response.errorBody());
+                            }
 
-        if (tariffRadioGroup.getCheckedRadioButtonId() == expressRadioBtn.getId()) {
-            newRequest.setTariff(getString(R.string.express));
-        }
-        else if (tariffRadioGroup.getCheckedRadioButtonId() == economyRadioBtn.getId()) {
-            newRequest.setTariff(getString(R.string.economy_express));
-        }
-        if (firstCardRadioBtn.isChecked()) {
-            serviceProvider = firstCardValue;
-        }
-        else if (secondCardRadioBtn.isChecked()) {
-            serviceProvider = secondCardValue;
-        }
-        newRequest.setServiceProvider(serviceProvider);
+                            @Override
+                            public void onFailure(@NonNull final Call<JsonElement> call, @NonNull final Throwable t) {
+                                Log.e(TAG, "onFailure: ", t);
+                            }
+                        });
 
         Toast.makeText(context, "Накладная создана успешно!", Toast.LENGTH_SHORT).show();
 
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+//        startActivity(new Intent(this, MainActivity.class));
+//        finish();
     }
 
-    private static final String TAG = CreateParcelActivity.class.toString();
+    private static final String TAG = CreateInvoiceActivitiy.class.toString();
 
     @Override
     public void onAddBtnClicked() {
@@ -1066,21 +1100,21 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
     public void onCameraImageClicked(final int position) {
         final Intent scanQrIntent = new Intent(context, ScanQrActivity.class);
         if (position == 42) {
-            startActivityForResult(scanQrIntent, Constants.REQUEST_SCAN_QR_PARCEL);
+            startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_PARCEL);
         }
         else if (position == 48) {
-            startActivityForResult(scanQrIntent, Constants.REQUEST_SCAN_QR_CARGO);
+            startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_CARGO);
         }
     }
 
     @Override
     public void onSenderSignatureClicked() {
-        startActivityForResult(new Intent(context, SignatureActivity.class), Constants.REQUEST_SENDER_SIGNATURE);
+        startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_SENDER_SIGNATURE);
     }
 
     @Override
     public void onRecipientSignatureClicked() {
-        startActivityForResult(new Intent(context, SignatureActivity.class), Constants.REQUEST_RECIPIENT_SIGNATURE);
+        startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_RECIPIENT_SIGNATURE);
     }
 
     @Override
@@ -1517,7 +1551,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
             return;
         }
         if (resultCode == RESULT_OK && data != null) {
-            if (requestCode == Constants.REQUEST_UPLOAD_PHOTO) {
+            if (requestCode == IntentConstants.REQUEST_UPLOAD_PHOTO) {
                 final Uri selectedImage = data.getData();
                 if (selectedImage != null) {
 //                    photoResultImageView.setVisibility(View.VISIBLE);
@@ -1525,7 +1559,7 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
                     return;
                 }
             }
-            if (requestCode == Constants.REQUEST_UPLOAD_DOCUMENT) {
+            if (requestCode == IntentConstants.REQUEST_UPLOAD_DOCUMENT) {
                 final Uri selectedDoc = data.getData();
                 if (selectedDoc != null) {
 //                    contractResultImageView.setImageResource(R.drawable.ic_doc_green);
@@ -1534,28 +1568,28 @@ public class CreateParcelActivity extends AppCompatActivity implements CreatePar
                     return;
                 }
             }
-            if (requestCode == Constants.REQUEST_SCAN_QR_PARCEL) {
-                Log.i(TAG, "onActivityResult: " + data.getStringExtra(Constants.INTENT_RESULT_VALUE));
-                itemList.get(42).firstValue = data.getStringExtra(Constants.INTENT_RESULT_VALUE);
-                qr = data.getStringExtra(Constants.INTENT_RESULT_VALUE);
+            if (requestCode == IntentConstants.REQUEST_SCAN_QR_PARCEL) {
+                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+                itemList.get(42).firstValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                qr = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
                 adapter.notifyItemChanged(42);
                 return;
             }
-            if (requestCode == Constants.REQUEST_SCAN_QR_CARGO) {
-                Log.i(TAG, "onActivityResult: " + data.getStringExtra(Constants.INTENT_RESULT_VALUE));
-                itemList.get(48).firstValue = data.getStringExtra(Constants.INTENT_RESULT_VALUE);
+            if (requestCode == IntentConstants.REQUEST_SCAN_QR_CARGO) {
+                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+                itemList.get(48).firstValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
                 adapter.notifyItemChanged(48);
                 return;
             }
-            if (requestCode == Constants.REQUEST_SENDER_SIGNATURE) {
-                itemList.get(5).firstValue = data.getStringExtra(Constants.INTENT_RESULT_VALUE);
-                senderSignature = data.getStringExtra(Constants.INTENT_RESULT_VALUE);
+            if (requestCode == IntentConstants.REQUEST_SENDER_SIGNATURE) {
+                itemList.get(5).firstValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                senderSignature = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
                 adapter.notifyItemChanged(5);
                 return;
             }
-            if (requestCode == Constants.REQUEST_RECIPIENT_SIGNATURE) {
-                itemList.get(5).secondValue = data.getStringExtra(Constants.INTENT_RESULT_VALUE);
-                recipientSignature = data.getStringExtra(Constants.INTENT_RESULT_VALUE);
+            if (requestCode == IntentConstants.REQUEST_RECIPIENT_SIGNATURE) {
+                itemList.get(5).secondValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                recipientSignature = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
                 adapter.notifyItemChanged(5);
             }
         }

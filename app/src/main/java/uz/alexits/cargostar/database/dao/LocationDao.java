@@ -51,6 +51,9 @@ public interface LocationDao {
     @Query("SELECT * FROM region WHERE id == :regionId")
     LiveData<Region> selectRegionById(final long regionId);
 
+    @Query("SELECT * FROM region WHERE country_id == :countryId")
+    LiveData<List<Region>> selectRegionsByCountryId(final long countryId);
+
     /* cities */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long[] insertCities(final List<City> cityList);
@@ -72,6 +75,9 @@ public interface LocationDao {
 
     @Query("SELECT * FROM city WHERE id == :cityId")
     LiveData<City> selectCityById(final long cityId);
+
+    @Query("SELECT * FROM city WHERE region_id == :regionId")
+    LiveData<List<City>> selectCitiesByRegionId(final long regionId);
 
     /*branches*/
     @Insert(onConflict = OnConflictStrategy.IGNORE)
