@@ -75,7 +75,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         context = getContext();
         activity = getActivity();
 
-        SyncWorkRequest.fetchRequestData(getContext());
+        SyncWorkRequest.fetchRequestData(context);
     }
 
     @Override
@@ -186,15 +186,15 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         requestsViewModel.readReceipt(currentItem.getId());
         final PublicRequestsFragmentDirections.ActionPublicBidsFragmentToParcelDataFragment action = PublicRequestsFragmentDirections.actionPublicBidsFragmentToParcelDataFragment();
         action.setParcelId(currentItem.getId());
-//        action.setSenderCountryId(currentItem.getSenderCountryId());
-//        action.setSenderRegionId(currentItem.getSenderRegionId());
-//        action.setSenderCityId(currentItem.getSenderCityId());
-//        action.setRecipientCountryId(currentItem.getRecipientCountryId());
-//        action.setRecipientCityId(currentItem.getRecipientCityId());
-//        action.setProviderId(currentItem.getProviderId());
-//        action.setInvoiceId(currentItem.getInvoiceId());
-//        action.setUserId(currentItem.getUserId());
-//        action.setClientId(currentItem.getClientId());
+        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
+        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
+        action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : -1L);
+        action.setSenderCountryId(currentItem.getSenderCountryId() != null ? currentItem.getSenderCountryId() : -1L);
+        action.setSenderRegionId(currentItem.getSenderRegionId() != null ? currentItem.getSenderRegionId() : -1L);
+        action.setSenderCityId(currentItem.getSenderCityId() != null ? currentItem.getSenderCityId() : -1L);
+        action.setRecipientCountryId(currentItem.getRecipientCountryId() != null ? currentItem.getRecipientCountryId() : -1L);
+        action.setRecipientCityId(currentItem.getRecipientCityId() != null ? currentItem.getRecipientCityId() : -1L);
+        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
         action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
         NavHostFragment.findNavController(this).navigate(action);
 
@@ -203,11 +203,9 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
     @Override
     public void onPlusClicked(Request currentItem) {
         if (currentItem.getCourierId() == null) {
-            RetrofitClient.getInstance(
-                    context,
-                    SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH))
-            .bindRequest(currentItem.getId(), SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), new Callback<JsonElement>() {
+            RetrofitClient.getInstance(context).setServerData(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH));
+            RetrofitClient.getInstance(context).bindRequest(currentItem.getId(), SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), new Callback<JsonElement>() {
                 @Override
                 public void onResponse(@NonNull final Call<JsonElement> call, @NonNull final Response<JsonElement> response) {
                     Log.i(TAG, "body: " + response.body());

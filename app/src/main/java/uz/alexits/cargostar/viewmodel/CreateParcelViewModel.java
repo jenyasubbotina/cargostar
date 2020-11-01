@@ -19,10 +19,6 @@ public class CreateParcelViewModel extends AndroidViewModel {
         this.repository = Repository.getInstance(application);
     }
 
-    public LiveData<List<AddressBook>> selectAddressBookEntriesBySenderLogin(final String senderLogin) {
-        return repository.selectAddressBookEntriesBySenderLogin(senderLogin);
-    }
-
     public LiveData<AddressBook> selectAddressBookEntryById(final long id) {
         return repository.selectAddressBookEntryById(id);
     }

@@ -67,9 +67,6 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         context = getContext();
-
-        //todo: fetch countries, regions, cities
-//        SyncWorkRequest.fetchLocationData(getContext(), 20000);
     }
 
     @Override

@@ -30,4 +30,19 @@ public class Constants {
     public static final String KEY_VAT = "vat";
     public static final String KEY_PHOTO = "photo";
     public static final String KEY_SIGNATURE = "signature";
+
+    /* invoice constants */
+    public static final String KEY_INVOICE_ID = "invoice_id";
+    public static final String KEY_NUMBER = "number";
+    public static final String KEY_PROVIDER_ID = "provider_id";
+    public static final String KEY_REQUEST_ID = "request_id";
+    public static final String KEY_TARIFF_ID = "tariff_id";
+    public static final String KEY_PRICE = "price";
+    public static final String KEY_STATUS = "status";
+    public static final String KEY_CREATED_AT = "created_at";
+    public static final String KEY_UPDATED_AT = "updated_at";
+
+    public static final String KEY_SENDER_ID = "sender_id";
+    public static final String KEY_RECIPIENT_ID = "recipient_id";
+    public static final String KEY_PAYER_ID = "payer_id";
 }

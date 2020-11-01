@@ -1,6 +1,7 @@
 package uz.alexits.cargostar.workers.actor;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.utils.ImageSerializer;
 
 public class CreateUserWorker extends Worker {
     private final String email;
@@ -42,8 +44,8 @@ public class CreateUserWorker extends Worker {
     private final String oked;
     private final String checkingAccount;
     private final String vat;
-    private final String photoBytesStr;
-    private final String  signatureBytesStr;
+    private final String photoUrl;
+    private final String signatureUrl;
 
     public CreateUserWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -72,8 +74,8 @@ public class CreateUserWorker extends Worker {
         this.oked = getInputData().getString(Constants.KEY_OKED);
         this.checkingAccount = getInputData().getString(Constants.KEY_CHECKING_ACCOUNT);
         this.vat = getInputData().getString(Constants.KEY_VAT);
-        this.photoBytesStr = getInputData().getString(Constants.KEY_PHOTO);
-        this.signatureBytesStr = getInputData().getString(Constants.KEY_SIGNATURE);
+        this.photoUrl = getInputData().getString(Constants.KEY_PHOTO);
+        this.signatureUrl = getInputData().getString(Constants.KEY_SIGNATURE);
     }
 
     @NonNull
@@ -81,9 +83,22 @@ public class CreateUserWorker extends Worker {
     public Result doWork() {
 
         try {
-            final Response<Customer> response = RetrofitClient.getInstance(getApplicationContext(),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+
+            String photoBytesStr = null;
+
+            if (!TextUtils.isEmpty(photoUrl)) {
+                photoBytesStr = ImageSerializer.bitmapToBase64(getApplicationContext(), photoUrl);
+            }
+
+            String signatureBytesStr = null;
+
+            if (!TextUtils.isEmpty(signatureUrl)) {
+                signatureBytesStr = ImageSerializer.fileToBase64(signatureUrl);
+            }
+
+            final Response<Customer> response = RetrofitClient.getInstance(getApplicationContext())
                     .createClient(
                             email,
                             password,
@@ -121,9 +136,9 @@ public class CreateUserWorker extends Worker {
                         Log.e(TAG, "createUser(): customer is NULL");
                         return Result.failure();
                     }
-                    newCustomer.setLogin(email);
-                    newCustomer.setPassword(password);
                     newCustomer.setEmail(email);
+                    newCustomer.setSignatureUrl(signatureUrl);
+                    newCustomer.setPhotoUrl(photoUrl);
 
                     Log.i(TAG, "createUser(): " + newCustomer);
 

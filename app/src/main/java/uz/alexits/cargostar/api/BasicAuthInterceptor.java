@@ -1,5 +1,7 @@
 package uz.alexits.cargostar.api;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,4 +29,6 @@ public class BasicAuthInterceptor implements Interceptor {
                 .header(AUTHORIZATION_HEADER, Credentials.basic(apiLogin, apiPassword))
                 .build());
     }
+
+    private static final String TAG = BasicAuthInterceptor.class.toString();
 }

@@ -702,37 +702,37 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
             selectedType = type;
         });
 
-        calculatorViewModel.getProviderList().observe(getViewLifecycleOwner(), providers -> {
-            Log.i(TAG, "providerList=" + providers);
-        });
-
-        calculatorViewModel.getPackagingTypeList().observe(getViewLifecycleOwner(), packagingTypes -> {
-            Log.i(TAG, "packagingTypeList=" + packagingTypes);
-        });
-
-        calculatorViewModel.getPackagingTypesByProviderId(4, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
-            Log.i(TAG, "Fedex 1=" + packagingTypeList);
-        });
-
-        calculatorViewModel.getPackagingTypesByProviderId(4, 2).observe(getViewLifecycleOwner(), packagingTypes -> {
-            Log.i(TAG, "Fedex 2=" + packagingTypes);
-        });
-
-        calculatorViewModel.getPackagingTypesByProviderId(5, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
-            Log.i(TAG, "tnt 1=" + packagingTypeList);
-        });
-
-        calculatorViewModel.getPackagingTypesByProviderId(5, 2).observe(getViewLifecycleOwner(), packagingTypes -> {
-            Log.i(TAG, "tnt 2=" + packagingTypes);
-        });
-
-        calculatorViewModel.getPackagingTypesByProviderId(6, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
-            Log.i(TAG, "cargo 1=" + packagingTypeList);
-        });
-
-        calculatorViewModel.getPackagingTypesByProviderId(6, 2).observe(getViewLifecycleOwner(), packagingTypeList -> {
-            Log.i(TAG, "cargo 2=" + packagingTypeList);
-        });
+//        calculatorViewModel.getProviderList().observe(getViewLifecycleOwner(), providers -> {
+//            Log.i(TAG, "providerList=" + providers);
+//        });
+//
+//        calculatorViewModel.getPackagingTypeList().observe(getViewLifecycleOwner(), packagingTypes -> {
+//            Log.i(TAG, "packagingTypeList=" + packagingTypes);
+//        });
+//
+//        calculatorViewModel.getPackagingTypesByProviderId(4, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
+//            Log.i(TAG, "Fedex 1=" + packagingTypeList);
+//        });
+//
+//        calculatorViewModel.getPackagingTypesByProviderId(4, 2).observe(getViewLifecycleOwner(), packagingTypes -> {
+//            Log.i(TAG, "Fedex 2=" + packagingTypes);
+//        });
+//
+//        calculatorViewModel.getPackagingTypesByProviderId(5, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
+//            Log.i(TAG, "tnt 1=" + packagingTypeList);
+//        });
+//
+//        calculatorViewModel.getPackagingTypesByProviderId(5, 2).observe(getViewLifecycleOwner(), packagingTypes -> {
+//            Log.i(TAG, "tnt 2=" + packagingTypes);
+//        });
+//
+//        calculatorViewModel.getPackagingTypesByProviderId(6, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
+//            Log.i(TAG, "cargo 1=" + packagingTypeList);
+//        });
+//
+//        calculatorViewModel.getPackagingTypesByProviderId(6, 2).observe(getViewLifecycleOwner(), packagingTypeList -> {
+//            Log.i(TAG, "cargo 2=" + packagingTypeList);
+//        });
 
 //        if (packagingTypeList != null) {
 //            Log.i(TAG, "packagingTypeList: " + packagingTypeList);

@@ -104,9 +104,7 @@ public class Customer extends User {
                     @Nullable final String zip,
                     final int status,
                     @Nullable final Date createdAt,
-                    @Nullable final Date updatedAt,
-                    @NonNull final String login,
-                    @NonNull final String password) {
+                    @Nullable final Date updatedAt) {
         super(id,
                 countryId,
                 regionId,
@@ -121,8 +119,7 @@ public class Customer extends User {
                 zip,
                 status,
                 createdAt,
-                updatedAt,
-                login);
+                updatedAt);
     }
 
     public Customer(final long id,
@@ -140,8 +137,6 @@ public class Customer extends User {
                     final int status,
                     @Nullable final Date createdAt,
                     @Nullable final Date updatedAt,
-                    @NonNull final String login,
-                    @NonNull final String password,
                     @Nullable final String cargostarAccountNumber,
                     @Nullable final String tntAccountNumber,
                     @Nullable final String fedexAccountNumber,
@@ -158,7 +153,7 @@ public class Customer extends User {
                     @Nullable final String checkingAccount,
                     @Nullable final String registrationCode) {
         super(id, countryId, regionId, cityId, firstName, middleName,
-                lastName, phone, email, address, geo, zip, status, createdAt, updatedAt, login);
+                lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
         this.cargostarAccountNumber = cargostarAccountNumber;
         this.tntAccountNumber = tntAccountNumber;
         this.fedexAccountNumber = fedexAccountNumber;
@@ -309,6 +304,7 @@ public class Customer extends User {
         this.registrationCode = registrationCode;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Customer{" +
@@ -342,8 +338,6 @@ public class Customer extends User {
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", login=" + login +
-                ", password=" + password +
                 '}';
     }
 }

@@ -70,6 +70,9 @@ public class SignInActivity extends AppCompatActivity {
             }
 
             final UUID fetchBranchesAndSignInWorkerId = SyncWorkRequest.fetchBranchesAndSignIn(this, 10000, login, password, token);
+
+            Log.i(TAG, "login=" + login + " password=" + password);
+
             WorkManager.getInstance(this).getWorkInfoByIdLiveData(fetchBranchesAndSignInWorkerId).observe(this, workInfo -> {
                 if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                     progressBar.setVisibility(View.INVISIBLE);
@@ -93,6 +96,7 @@ public class SignInActivity extends AppCompatActivity {
 
                     startActivity(new Intent(this, MainActivity.class));
                     finish();
+                    return;
                 }
                 if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
                     Log.e(TAG, "insertLocationData(): failed to insert location data");

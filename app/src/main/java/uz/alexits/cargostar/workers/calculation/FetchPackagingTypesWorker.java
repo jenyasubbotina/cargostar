@@ -25,11 +25,9 @@ public class FetchPackagingTypesWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            final Response<List<PackagingType>> response = RetrofitClient.getInstance(
-                    getApplicationContext(),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
-                    .getPackagingTypes();
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            final Response<List<PackagingType>> response = RetrofitClient.getInstance(getApplicationContext()).getPackagingTypes();
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

@@ -25,9 +25,6 @@ import android.widget.Toast;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.location.City;
-import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
@@ -39,7 +36,8 @@ import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.ParcelData;
 import uz.alexits.cargostar.view.adapter.ParcelDataAdapter;
 import uz.alexits.cargostar.view.callback.ParcelDataCallback;
-import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
+import uz.alexits.cargostar.viewmodel.RequestsViewModel;
+import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -107,8 +105,17 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
     private ParcelDataAdapter adapter;
     private ImageView editParcelImageView;
 
-    private long requestId;
-    private int requestOrParcel;
+    private static long requestId;
+    private static int requestOrParcel;
+    private static long invoiceId;
+    private static long providerId;
+    private static long courierId;
+    private static long senderId;
+    private static long senderCountryId;
+    private static long senderRegionId;
+    private static long senderCityId;
+    private static long recipientCountryId;
+    private static long recipientCityId;
 
     public ParcelDataFragment() {
         // Required empty public constructor
@@ -133,11 +140,36 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
         documentsDataHeading = new ParcelData(getString(R.string.additional_documents), null, ParcelData.TYPE_HEADING);
 
         if (getArguments() != null) {
+            //parcelId can be requestId
             requestId = ParcelDataFragmentArgs.fromBundle(getArguments()).getParcelId();
             requestOrParcel = ParcelDataFragmentArgs.fromBundle(getArguments()).getRequestOrParcel();
+            invoiceId = ParcelDataFragmentArgs.fromBundle(getArguments()).getInvoiceId();
+            senderId = ParcelDataFragmentArgs.fromBundle(getArguments()).getClientId();
+            providerId = ParcelDataFragmentArgs.fromBundle(getArguments()).getProviderId();
+            senderCountryId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderCountryId();
+            senderRegionId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderRegionId();
+            senderCityId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderCityId();
+            recipientCountryId = ParcelDataFragmentArgs.fromBundle(getArguments()).getRecipientCountryId();
+            recipientCityId = ParcelDataFragmentArgs.fromBundle(getArguments()).getRecipientCityId();
 
-            Log.i(TAG, "requestId=" + requestId + " requestOrParcel=" + requestOrParcel);
+            Log.i(TAG, "invoice data: " +
+                    "\nrequestId=" + requestId +
+                    "\nrequestOrParcel=" + requestOrParcel +
+                    "\ninvoiceId=" + invoiceId +
+                    "\ncourierId=" + courierId +
+                    "\nclientId=" + senderId +
+                    "\nproviderId=" + providerId +
+                    "\nsenderCountryId=" + senderCountryId +
+                    "\nsenderRegionId=" + senderRegionId +
+                    "\nsenderCityId=" + senderCityId +
+                    "\nrecipientCountryId=" + recipientCountryId +
+                    "\nrecipientCityId=" + recipientCityId);
+
+            if (senderId > 0) {
+                SyncWorkRequest.fetchInvoiceData(context, invoiceId, senderId);
+            }
         }
+
     }
 
     @Override
@@ -160,6 +192,9 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
         dataRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         dataRecyclerView.setAdapter(adapter);
         editParcelImageView = root.findViewById(R.id.edit_parcel_image_view);
+
+        initItemList();
+
         return root;
     }
 
@@ -187,7 +222,33 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         final CourierViewModel courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
+        final RequestsViewModel requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
+
+        requestsViewModel.setProviderId(providerId);
+        requestsViewModel.setSenderId(senderId);
+        requestsViewModel.setInvoiceId(invoiceId);
+        requestsViewModel.setCourierId(courierId);
+        requestsViewModel.setSenderCountryId(senderCountryId);
+        requestsViewModel.setSenderRegionId(senderRegionId);
+        requestsViewModel.setSenderCityId(senderCityId);
+        requestsViewModel.setRecipientCountryId(recipientCountryId);
+        requestsViewModel.setRecipientCityId(recipientCityId);
+
+        //todo: request data
+        itemList.set(1, new ParcelData(getString(R.string.invoice_id), invoiceId > 0 ? String.valueOf(invoiceId) : null, ParcelData.TYPE_ITEM));
+        itemList.set(2, new ParcelData(getString(R.string.courier_id), courierId > 0 ? String.valueOf(courierId) : null, ParcelData.TYPE_ITEM));
+//                itemList.set(3, new ParcelData(getString(R.string.operator_id), request.getOperatorId() > 0 ? String.valueOf(request.getOperatorId()) : null, ParcelData.TYPE_ITEM));
+//                itemList.set(4, new ParcelData(getString(R.string.accountant_id), request.getAccountantId() > 0 ? String.valueOf(request.getAccountantId()) : null, ParcelData.TYPE_ITEM));
+        adapter.notifyItemRangeChanged(1, 2);
+
+        publicDataList.set(0, new ParcelData(getString(R.string.invoice_id), invoiceId > 0 ? String.valueOf(invoiceId) : null, ParcelData.TYPE_ITEM));
+        publicDataList.set(1, new ParcelData(getString(R.string.courier_id), courierId > 0 ? String.valueOf(courierId) : null, ParcelData.TYPE_ITEM));
+//                publicDataList.set(2, new ParcelData(getString(R.string.operator_id), request.getOperatorId() > 0 ? String.valueOf(request.getOperatorId()) : null, ParcelData.TYPE_ITEM));
+//                publicDataList.set(3, new ParcelData(getString(R.string.accountant_id), request.getAccountantId() > 0 ? String.valueOf(request.getAccountantId()) : null, ParcelData.TYPE_ITEM));
+
+
         //header views
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
@@ -203,6 +264,260 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
+        });
+
+        requestsViewModel.getProvider().observe(getViewLifecycleOwner(), provider -> {
+            Log.i(TAG, "getProvider(): " + provider);
+
+            if (provider != null) {
+                itemList.set(5, new ParcelData(getString(R.string.service_provider), provider.getNameEn(), ParcelData.TYPE_ITEM));
+                adapter.notifyItemChanged(5);
+
+                publicDataList.set(4, new ParcelData(getString(R.string.service_provider), null, ParcelData.TYPE_ITEM));
+            }
+        });
+
+
+        /* sender data */
+        requestsViewModel.getSender().observe(getViewLifecycleOwner(), sender -> {
+            Log.i(TAG, "getSender(): " + sender);
+
+            if (sender != null) {
+                requestsViewModel.setSenderCountryId(sender.getCountryId());
+                requestsViewModel.setSenderRegionId(sender.getRegionId());
+                requestsViewModel.setSenderCityId(sender.getCityId());
+
+                itemList.set(6, new ParcelData(getString(R.string.sender_signature), null, ParcelData.TYPE_ITEM));
+                adapter.notifyItemChanged(6);
+
+                publicDataList.set(5, new ParcelData(getString(R.string.sender_signature), null, ParcelData.TYPE_ITEM));
+
+                itemList.set(10, new ParcelData(getString(R.string.login_email), sender.getEmail(), ParcelData.TYPE_ITEM));
+                itemList.set(11, new ParcelData(getString(R.string.cargostar_account_number), sender.getCargostarAccountNumber(), ParcelData.TYPE_ITEM));
+                itemList.set(12, new ParcelData(getString(R.string.tnt_account_number), sender.getTntAccountNumber(), ParcelData.TYPE_ITEM));
+                itemList.set(13, new ParcelData(getString(R.string.fedex_account_number), sender.getFedexAccountNumber(), ParcelData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(10, 13);
+
+                itemList.set(17, new ParcelData(getString(R.string.take_address), sender.getAddress(), ParcelData.TYPE_ITEM));
+                itemList.set(18, new ParcelData(getString(R.string.post_index), sender.getZip(), ParcelData.TYPE_ITEM));
+                itemList.set(19, new ParcelData(getString(R.string.first_name), sender.getFirstName(), ParcelData.TYPE_ITEM));
+                itemList.set(20, new ParcelData(getString(R.string.middle_name), sender.getMiddleName(), ParcelData.TYPE_ITEM));
+                itemList.set(21, new ParcelData(getString(R.string.last_name), sender.getLastName(), ParcelData.TYPE_ITEM));
+                itemList.set(22, new ParcelData(getString(R.string.phone_number), sender.getPhone(), ParcelData.TYPE_ITEM));
+                itemList.set(23, new ParcelData(getString(R.string.email), sender.getEmail(), ParcelData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(17, 23);
+
+                senderDataList.set(0, new ParcelData(getString(R.string.login_email), sender.getEmail(), ParcelData.TYPE_ITEM));
+                senderDataList.set(1, new ParcelData(getString(R.string.cargostar_account_number), sender.getCargostarAccountNumber(), ParcelData.TYPE_ITEM));
+                senderDataList.set(2, new ParcelData(getString(R.string.tnt_account_number), sender.getTntAccountNumber(), ParcelData.TYPE_ITEM));
+                senderDataList.set(3, new ParcelData(getString(R.string.fedex_account_number), sender.getFedexAccountNumber(), ParcelData.TYPE_ITEM));
+                senderDataList.set(7, new ParcelData(getString(R.string.take_address), sender.getAddress(), ParcelData.TYPE_ITEM));
+                senderDataList.set(8, new ParcelData(getString(R.string.post_index), sender.getZip(), ParcelData.TYPE_ITEM));
+                senderDataList.set(9, new ParcelData(getString(R.string.first_name), sender.getFirstName(), ParcelData.TYPE_ITEM));
+                senderDataList.set(10, new ParcelData(getString(R.string.middle_name), sender.getMiddleName(), ParcelData.TYPE_ITEM));
+                senderDataList.set(11, new ParcelData(getString(R.string.last_name), sender.getLastName(), ParcelData.TYPE_ITEM));
+                senderDataList.set(12, new ParcelData(getString(R.string.phone_number), sender.getPhone(), ParcelData.TYPE_ITEM));
+                senderDataList.set(13, new ParcelData(getString(R.string.email), sender.getEmail(), ParcelData.TYPE_ITEM));
+            }
+        });
+
+        requestsViewModel.getSenderCountry().observe(getViewLifecycleOwner(), country -> {
+            Log.i(TAG, "getSenderCountry(): " + country);
+
+            itemList.set(14, new ParcelData(getString(R.string.country), country != null ? country.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(14);
+
+            senderDataList.set(4, new ParcelData(getString(R.string.country), country != null ? country.getName() : null, ParcelData.TYPE_ITEM));
+        });
+
+        requestsViewModel.getSenderRegion().observe(getViewLifecycleOwner(), region -> {
+            Log.i(TAG, "getSenderRegion(): " + region);
+
+            itemList.set(15, new ParcelData(getString(R.string.city), region != null ? region.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(15);
+
+            senderDataList.set(5, new ParcelData(getString(R.string.city), region != null ? region.getName() : null, ParcelData.TYPE_ITEM));
+        });
+
+        requestsViewModel.getSenderCity().observe(getViewLifecycleOwner(), city -> {
+            Log.i(TAG, "getSenderCity(): " + city);
+
+            itemList.set(16, new ParcelData(getString(R.string.region), city != null ? city.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(16);
+
+            senderDataList.set(6, new ParcelData(getString(R.string.region), city != null ? city.getName() : null, ParcelData.TYPE_ITEM));
+        });
+
+        /* invoice data */
+        requestsViewModel.getInvoice().observe(getViewLifecycleOwner(), invoice -> {
+            Log.i(TAG, "getInvoice(): " + invoice);
+
+            if (invoice != null) {
+                Log.i(TAG, "invoiceData(): " + "recipientId=" + invoice.getRecipientId() + " payerId=" + invoice.getPayerId());
+                requestsViewModel.setRecipientId(invoice.getRecipientId());
+                requestsViewModel.setPayerId(invoice.getPayerId());
+            }
+        });
+
+        /* recipient data */
+        requestsViewModel.getRecipient().observe(getViewLifecycleOwner(), recipient -> {
+            Log.i(TAG, "getRecipient(): " + recipient);
+
+            if (recipient != null) {
+                requestsViewModel.setRecipientCountryId(recipient.getCountryId());
+                requestsViewModel.setRecipientRegionId(recipient.getRegionId());
+                requestsViewModel.setRecipientCityId(recipient.getCityId());
+
+                itemList.set(7, new ParcelData(getString(R.string.receiver_signature), null, ParcelData.TYPE_ITEM));
+                adapter.notifyItemChanged(7);
+
+                publicDataList.set(6, new ParcelData(getString(R.string.receiver_signature), null, ParcelData.TYPE_ITEM));
+
+                itemList.set(26, new ParcelData(getString(R.string.login_email), recipient.getEmail(), ParcelData.TYPE_ITEM));
+                itemList.set(27, new ParcelData(getString(R.string.cargostar_account_number), recipient.getCargostarAccountNumber(), ParcelData.TYPE_ITEM));
+                itemList.set(28, new ParcelData(getString(R.string.tnt_account_number), recipient.getTntAccountNumber(), ParcelData.TYPE_ITEM));
+                itemList.set(29, new ParcelData(getString(R.string.fedex_account_number), recipient.getFedexAccountNumber(), ParcelData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(26, 29);
+
+                itemList.set(33, new ParcelData(getString(R.string.take_address), recipient.getAddress(), ParcelData.TYPE_ITEM));
+                itemList.set(34, new ParcelData(getString(R.string.post_index), recipient.getZip(), ParcelData.TYPE_ITEM));
+                itemList.set(35, new ParcelData(getString(R.string.first_name), recipient.getFirstName(), ParcelData.TYPE_ITEM));
+                itemList.set(36, new ParcelData(getString(R.string.middle_name), recipient.getMiddleName(), ParcelData.TYPE_ITEM));
+                itemList.set(37, new ParcelData(getString(R.string.last_name), recipient.getLastName(), ParcelData.TYPE_ITEM));
+                itemList.set(38, new ParcelData(getString(R.string.phone_number), recipient.getPhone(), ParcelData.TYPE_ITEM));
+                itemList.set(39, new ParcelData(getString(R.string.email), recipient.getEmail(), ParcelData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(33, 39);
+
+                recipientDataList.set(0, new ParcelData(getString(R.string.login_email), recipient.getEmail(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(1, new ParcelData(getString(R.string.cargostar_account_number), recipient.getCargostarAccountNumber(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(2, new ParcelData(getString(R.string.tnt_account_number), recipient.getTntAccountNumber(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(3, new ParcelData(getString(R.string.fedex_account_number), recipient.getFedexAccountNumber(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(7, new ParcelData(getString(R.string.take_address), recipient.getAddress(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(8, new ParcelData(getString(R.string.post_index), recipient.getZip(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(9, new ParcelData(getString(R.string.first_name), recipient.getFirstName(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(10, new ParcelData(getString(R.string.middle_name),  recipient.getMiddleName(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(11, new ParcelData(getString(R.string.last_name), recipient.getLastName(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(12, new ParcelData(getString(R.string.phone_number), recipient.getPhone(), ParcelData.TYPE_ITEM));
+                recipientDataList.set(13, new ParcelData(getString(R.string.email), recipient.getEmail(), ParcelData.TYPE_ITEM));
+            }
+        });
+
+        requestsViewModel.getRecipientCountry().observe(getViewLifecycleOwner(), country -> {
+            Log.i(TAG, "getRecipientCountry(): " + country);
+
+            itemList.set(30, new ParcelData(getString(R.string.country), country != null ? country.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(30);
+
+            recipientDataList.set(4, new ParcelData(getString(R.string.country), country != null ? country.getName() : null, ParcelData.TYPE_ITEM));
+        });
+
+        requestsViewModel.getRecipientRegion().observe(getViewLifecycleOwner(), region -> {
+            Log.i(TAG, "getRecipientRegion(): " + region);
+
+            itemList.set(31, new ParcelData(getString(R.string.region), region != null ? region.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(31);
+
+            recipientDataList.set(5, new ParcelData(getString(R.string.region), region != null ? region.getName() : null, ParcelData.TYPE_ITEM));
+
+        });
+
+        requestsViewModel.getRecipientCity().observe(getViewLifecycleOwner(), city -> {
+            Log.i(TAG, "getRecipientCity(): " + city);
+
+            itemList.set(32, new ParcelData(getString(R.string.city), city != null ? city.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(32);
+
+            recipientDataList.set(6, new ParcelData(getString(R.string.city), city != null ? city.getName() : null, ParcelData.TYPE_ITEM));
+        });
+
+        /* payer data */
+        requestsViewModel.getPayer().observe(getViewLifecycleOwner(), payer -> {
+            Log.i(TAG, "getPayer(): " + payer);
+
+            if (payer != null) {
+                requestsViewModel.setPayerCountryId(payer.getCountryId());
+                requestsViewModel.setPayerRegionId(payer.getRegionId());
+                requestsViewModel.setPayerCityId(payer.getCityId());
+
+                itemList.set(42, new ParcelData(getString(R.string.login_email), payer.getEmail(), ParcelData.TYPE_ITEM));
+                itemList.set(43, new ParcelData(getString(R.string.cargostar_account_number), payer.getCargostarAccountNumber(), ParcelData.TYPE_ITEM));
+                itemList.set(44, new ParcelData(getString(R.string.tnt_account_number), payer.getTntAccountNumber(), ParcelData.TYPE_ITEM));
+                itemList.set(45, new ParcelData(getString(R.string.fedex_account_number), payer.getFedexAccountNumber(), ParcelData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(42, 45);
+
+                itemList.set(49, new ParcelData(getString(R.string.take_address), payer.getAddress(), ParcelData.TYPE_ITEM));
+                itemList.set(50, new ParcelData(getString(R.string.post_index), payer.getZip(), ParcelData.TYPE_ITEM));
+                itemList.set(51, new ParcelData(getString(R.string.first_name), payer.getFirstName(), ParcelData.TYPE_ITEM));
+                itemList.set(52, new ParcelData(getString(R.string.middle_name), payer.getMiddleName(), ParcelData.TYPE_ITEM));
+                itemList.set(53, new ParcelData(getString(R.string.last_name), payer.getLastName(), ParcelData.TYPE_ITEM));
+                itemList.set(54, new ParcelData(getString(R.string.phone_number), payer.getPhone(), ParcelData.TYPE_ITEM));
+                itemList.set(55, new ParcelData(getString(R.string.email), payer.getEmail(), ParcelData.TYPE_ITEM));
+//                itemList.set(56, new ParcelData(getString(R.string.discount), payer.getDiscount() >= 0 ? String.valueOf(payer.getDiscount()) : null, ParcelData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(49, 56);
+
+                payerDataList.set(0, new ParcelData(getString(R.string.login_email), payer.getEmail(), ParcelData.TYPE_ITEM));
+                payerDataList.set(1, new ParcelData(getString(R.string.cargostar_account_number), payer.getCargostarAccountNumber(), ParcelData.TYPE_ITEM));
+                payerDataList.set(2, new ParcelData(getString(R.string.tnt_account_number), payer.getTntAccountNumber(), ParcelData.TYPE_ITEM));
+                payerDataList.set(3, new ParcelData(getString(R.string.fedex_account_number), payer.getFedexAccountNumber(), ParcelData.TYPE_ITEM));
+                payerDataList.set(7, new ParcelData(getString(R.string.take_address), payer.getAddress(), ParcelData.TYPE_ITEM));
+                payerDataList.set(8, new ParcelData(getString(R.string.post_index), payer.getZip(), ParcelData.TYPE_ITEM));
+                payerDataList.set(9, new ParcelData(getString(R.string.first_name), payer.getFirstName(), ParcelData.TYPE_ITEM));
+                payerDataList.set(10, new ParcelData(getString(R.string.middle_name), payer.getMiddleName(), ParcelData.TYPE_ITEM));
+                payerDataList.set(11, new ParcelData(getString(R.string.last_name), payer.getLastName(), ParcelData.TYPE_ITEM));
+                payerDataList.set(12, new ParcelData(getString(R.string.phone_number), payer.getPhone(), ParcelData.TYPE_ITEM));
+                payerDataList.set(13, new ParcelData(getString(R.string.email), payer.getEmail(), ParcelData.TYPE_ITEM));
+//                payerDataList.set(14, new ParcelData(getString(R.string.discount), payer.getDiscount() >= 0 ? String.valueOf(payer.getDiscount()) : null, ParcelData.TYPE_ITEM));
+
+                //account data
+                itemList.set(59, new ParcelData(getString(R.string.checking_account), payer.getCheckingAccount(), ParcelData.TYPE_ITEM));
+                itemList.set(60, new ParcelData(getString(R.string.bank), payer.getBank(), ParcelData.TYPE_ITEM));
+                itemList.set(61, new ParcelData(getString(R.string.payer_registration_code), payer.getRegistrationCode(), ParcelData.TYPE_ITEM));
+                itemList.set(62, new ParcelData(getString(R.string.mfo), payer.getMfo(), ParcelData.TYPE_ITEM));
+                itemList.set(63, new ParcelData(getString(R.string.oked), payer.getOked(), ParcelData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(59, 63);
+
+                accountDataList.set(0, new ParcelData(getString(R.string.checking_account), payer.getCheckingAccount(), ParcelData.TYPE_ITEM));
+                accountDataList.set(1, new ParcelData(getString(R.string.bank), payer.getBank(), ParcelData.TYPE_ITEM));
+                accountDataList.set(2, new ParcelData(getString(R.string.payer_registration_code), payer.getRegistrationCode(), ParcelData.TYPE_ITEM));
+                accountDataList.set(3, new ParcelData(getString(R.string.mfo), payer.getMfo(), ParcelData.TYPE_ITEM));
+                accountDataList.set(4, new ParcelData(getString(R.string.oked), payer.getOked(), ParcelData.TYPE_ITEM));
+            }
+        });
+
+        requestsViewModel.getPayerCountry().observe(getViewLifecycleOwner(), country -> {
+            Log.i(TAG, "getPayerCountry(): " + country);
+
+            itemList.set(46, new ParcelData(getString(R.string.country), country != null ? country.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(46);
+
+            payerDataList.set(4, new ParcelData(getString(R.string.country), country != null ? country.getName() : null, ParcelData.TYPE_ITEM));
+        });
+
+        requestsViewModel.getPayerRegion().observe(getViewLifecycleOwner(), region -> {
+            Log.i(TAG, "getPayerRegion(): " + region);
+
+            itemList.set(47, new ParcelData(getString(R.string.region), region != null ? region.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(47);
+
+            payerDataList.set(5, new ParcelData(getString(R.string.region), region != null ? region.getName() : null, ParcelData.TYPE_ITEM));
+
+        });
+
+        requestsViewModel.getPayerCity().observe(getViewLifecycleOwner(), city -> {
+            Log.i(TAG, "getPayerCity(): " + city);
+
+            itemList.set(48, new ParcelData(getString(R.string.city), city != null ? city.getName() : null, ParcelData.TYPE_ITEM));
+            adapter.notifyItemChanged(48);
+
+            payerDataList.set(6, new ParcelData(getString(R.string.city), city != null ? city.getName() : null, ParcelData.TYPE_ITEM));
+        });
+
+        editParcelImageView.setOnClickListener(v -> {
+            final Intent createParcelIntent = new Intent(getContext(), CreateInvoiceActivitiy.class);
+            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_PARCEL);
+            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
+            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
+            startActivity(createParcelIntent);
         });
 
         parcelSearchImageView.setOnClickListener(v -> {
@@ -229,200 +544,170 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
                 startActivity(mainIntent);
             });
         });
+    }
 
-        editParcelImageView.setOnClickListener(v -> {
-            final Intent createParcelIntent = new Intent(getContext(), CreateInvoiceActivitiy.class);
-            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_PARCEL);
-            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
-            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
-            startActivity(createParcelIntent);
-        });
+    private void initItemList() {
+        itemList.clear();
 
-        courierViewModel.selectRequest(requestId).observe(getViewLifecycleOwner(), request -> {
-            itemList.clear();
-            //public data
-            itemList.add(publicDataHeading);
-            itemList.add(new ParcelData(getString(R.string.parcel_id), String.valueOf(request.getId()), ParcelData.TYPE_ITEM));
-            //todo: get service provider through providerId in Provider table
-            itemList.add(new ParcelData(getString(R.string.service_provider), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.courier_id), request.getCourierId() != null ? String.valueOf(request.getCourierId()) : null, ParcelData.TYPE_ITEM));
-            //todo: get operatorId
-            itemList.add(new ParcelData(getString(R.string.operator_id), null, ParcelData.TYPE_ITEM));
-            //todo: get accountantId
-            itemList.add(new ParcelData(getString(R.string.accountant_id), null, ParcelData.TYPE_ITEM));
-            //todo: get senderSignature
-            itemList.add(new ParcelData(getString(R.string.sender_signature), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientSignature
-            itemList.add(new ParcelData(getString(R.string.receiver_signature), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            publicDataList.add(new ParcelData(getString(R.string.parcel_id), String.valueOf(request.getId()), ParcelData.TYPE_ITEM));
-            publicDataList.add(new ParcelData(getString(R.string.service_provider), null, ParcelData.TYPE_ITEM));
-            publicDataList.add(new ParcelData(getString(R.string.courier_id), request.getCourierId() != null ? String.valueOf(request.getCourierId()) : null, ParcelData.TYPE_ITEM));
-            publicDataList.add(new ParcelData(getString(R.string.operator_id), null, ParcelData.TYPE_ITEM));
-            publicDataList.add(new ParcelData(getString(R.string.accountant_id), null, ParcelData.TYPE_ITEM));
-            publicDataList.add(new ParcelData(getString(R.string.sender_signature), null, ParcelData.TYPE_ITEM));
-            publicDataList.add(new ParcelData(getString(R.string.receiver_signature), null, ParcelData.TYPE_ITEM));
-            //sender data
-            itemList.add(senderDataHeading);
-            //todo: get sender login through senderId in Sender table
-            itemList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
-            //todo: get sender cargostar number through senderId in Sender table
-            itemList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
-            //todo: get sender tnt number through senderId in Sender table
-            itemList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
-            //todo: get sender fedex number through senderId in Sender table
-            itemList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.take_address), request.getSenderAddress(), ParcelData.TYPE_ITEM));
-            //todo get zip from AddressBook
-            itemList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.first_name), request.getSenderFirstName(), ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.middle_name), request.getSenderMiddleName(), ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.last_name), request.getSenderLastName(), ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.phone_number), request.getSenderPhone(), ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.email), request.getSenderEmail(), ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            senderDataList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.take_address), request.getSenderAddress(), ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.first_name), request.getSenderFirstName(), ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.middle_name), request.getSenderMiddleName(), ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.last_name), request.getSenderLastName(), ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.phone_number), request.getSenderPhone(), ParcelData.TYPE_ITEM));
-            senderDataList.add(new ParcelData(getString(R.string.email), request.getSenderEmail(), ParcelData.TYPE_ITEM));
-            //recipient data
-            itemList.add(recipientDataHeading);
-            //todo: get recipient login through recipientId in Recipient table
-            itemList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
-            //todo: get recipient cargostar number through senderId in Recipient table
-            itemList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
-            //todo: get recipient tnt number through senderId in Recipient table
-            itemList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
-            //todo: get recipient fedex number senderId in Recipient table
-            itemList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientAddress from AddressBook
-            itemList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientCountry from AddressBook
-            itemList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientRegion from AddressBook
-            itemList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientCity from AddressBook
-            itemList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientZip from AddressBook
-            itemList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientFirstName from AddressBook
-            itemList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientMiddleName from AddressBook
-            itemList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientLastName from AddressBook
-            itemList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientPhone from AddressBook
-            itemList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
-            //todo: get recipientEmail from AddressBook
-            itemList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            recipientDataList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.middle_name),  null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
-            recipientDataList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
-            //payer data
-            itemList.add(payerDataHeading);
-            //todo: get payerLogin from AddressBook
-            itemList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
-            //todo: get payerCargo from AddressBook
-            itemList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
-            //todo: get payerTnt from AddressBook
-            itemList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
-            //todo: get payerFedex from AddressBook
-            itemList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
-            //todo: get payerAddress from AddressBook
-            itemList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
-            //todo: get payerCountry from AddressBook
-            itemList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
-            //todo: get payerRegion from AddressBook
-            itemList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
-            //todo: get payerCity from AddressBook
-            itemList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
-            //todo: get payerZip from AddressBook
-            itemList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
-            //todo: get payerFirstName from AddressBook
-            itemList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
-            //todo: get payerMiddleName from AddressBook
-            itemList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
-            //todo: get payerLastName from AddressBook
-            itemList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
-            //todo: get payerPhone from AddressBook
-            itemList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
-            //todo: get payerEmail from AddressBook
-            itemList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
-            //todo: get discount from AddressBook
-            itemList.add(new ParcelData(getString(R.string.discount), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            payerDataList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
-            payerDataList.add(new ParcelData(getString(R.string.discount), null, ParcelData.TYPE_ITEM));
-            //accounts data
-            itemList.add(accountDataHeading);
-            //todo: get checkingAccount from AddressBook
-            itemList.add(new ParcelData(getString(R.string.checking_account), null, ParcelData.TYPE_ITEM));
-            //todo: get bank from AddressBook
-            itemList.add(new ParcelData(getString(R.string.bank), null, ParcelData.TYPE_ITEM));
-            //todo: get registrationCode from AddressBook
-            itemList.add(new ParcelData(getString(R.string.payer_registration_code), null, ParcelData.TYPE_ITEM));
-            //todo: get mfo from AddressBook
-            itemList.add(new ParcelData(getString(R.string.mfo), null, ParcelData.TYPE_ITEM));
-            //todo: get oked from AddressBook
-            itemList.add(new ParcelData(getString(R.string.oked), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            accountDataList.add(new ParcelData(getString(R.string.checking_account), null, ParcelData.TYPE_ITEM));
-            accountDataList.add(new ParcelData(getString(R.string.bank), null, ParcelData.TYPE_ITEM));
-            accountDataList.add(new ParcelData(getString(R.string.payer_registration_code), null, ParcelData.TYPE_ITEM));
-            accountDataList.add(new ParcelData(getString(R.string.mfo), null, ParcelData.TYPE_ITEM));
-            accountDataList.add(new ParcelData(getString(R.string.oked), null, ParcelData.TYPE_ITEM));
-            //parcel data
-            itemList.add(parcelDataHeading);
-            //todo: get trackingCode from Parcel
-            itemList.add(new ParcelData(getString(R.string.tracking_code_main), null, ParcelData.TYPE_ITEM));
-            //todo: get qr from Parcel
-            itemList.add(new ParcelData(getString(R.string.qr_code), null, ParcelData.TYPE_ITEM));
-            //todo: get instructions from Parcel
-            itemList.add(new ParcelData(getString(R.string.courier_guidelines), null, ParcelData.TYPE_ITEM));
-            //todo: get tariff from Provider
-            itemList.add(new ParcelData(getString(R.string.tariff), null, ParcelData.TYPE_ITEM));
-            //todo: get destinationQuantity from size of CargoList
-            itemList.add(new ParcelData(getString(R.string.destination_quantity), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            parcelDataList.add(new ParcelData(getString(R.string.tracking_code_main), null, ParcelData.TYPE_ITEM));
-            parcelDataList.add(new ParcelData(getString(R.string.qr_code), null, ParcelData.TYPE_ITEM));
-            parcelDataList.add(new ParcelData(getString(R.string.courier_guidelines), null, ParcelData.TYPE_ITEM));
-            parcelDataList.add(new ParcelData(getString(R.string.tariff), null, ParcelData.TYPE_ITEM));
-            parcelDataList.add(new ParcelData(getString(R.string.destination_quantity), null, ParcelData.TYPE_ITEM));
-            //for each cargo
-            itemList.add(forEachCargoHeading);
+        //public data
+        itemList.add(publicDataHeading);
+        itemList.add(new ParcelData(getString(R.string.invoice_id), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.courier_id), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.operator_id), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.accountant_id), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.service_provider), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.sender_signature), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.receiver_signature), null, ParcelData.TYPE_ITEM));
+
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+        //public data
+        publicDataList.add(new ParcelData(getString(R.string.invoice_id), null, ParcelData.TYPE_ITEM));
+        publicDataList.add(new ParcelData(getString(R.string.courier_id), null, ParcelData.TYPE_ITEM));
+        publicDataList.add(new ParcelData(getString(R.string.operator_id), null, ParcelData.TYPE_ITEM));
+        publicDataList.add(new ParcelData(getString(R.string.accountant_id), null, ParcelData.TYPE_ITEM));
+        publicDataList.add(new ParcelData(getString(R.string.service_provider), null, ParcelData.TYPE_ITEM));
+        publicDataList.add(new ParcelData(getString(R.string.sender_signature), null, ParcelData.TYPE_ITEM));
+        publicDataList.add(new ParcelData(getString(R.string.receiver_signature), null, ParcelData.TYPE_ITEM));
+
+        //sender data
+        itemList.add(senderDataHeading);
+        itemList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
+
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+        //sender data
+        senderDataList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
+        senderDataList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
+        //recipient data
+        itemList.add(recipientDataHeading);
+        itemList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+
+        //recipient data
+        recipientDataList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
+        recipientDataList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
+
+        //payer data
+        itemList.add(payerDataHeading);
+        itemList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.discount), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+
+        //payer data
+        payerDataList.add(new ParcelData(getString(R.string.login_email), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.cargostar_account_number), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.tnt_account_number), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.fedex_account_number), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.country), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.region), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.city), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.take_address), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.post_index), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.first_name), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.middle_name), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.last_name), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.phone_number), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.email), null, ParcelData.TYPE_ITEM));
+        payerDataList.add(new ParcelData(getString(R.string.discount), null, ParcelData.TYPE_ITEM));
+
+        //accounts data
+        itemList.add(accountDataHeading);
+        itemList.add(new ParcelData(getString(R.string.checking_account), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.bank), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.payer_registration_code), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.mfo), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.oked), null, ParcelData.TYPE_ITEM));
+
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+        //account data
+        accountDataList.add(new ParcelData(getString(R.string.checking_account), null, ParcelData.TYPE_ITEM));
+        accountDataList.add(new ParcelData(getString(R.string.bank), null, ParcelData.TYPE_ITEM));
+        accountDataList.add(new ParcelData(getString(R.string.payer_registration_code), null, ParcelData.TYPE_ITEM));
+        accountDataList.add(new ParcelData(getString(R.string.mfo), null, ParcelData.TYPE_ITEM));
+        accountDataList.add(new ParcelData(getString(R.string.oked), null, ParcelData.TYPE_ITEM));
+
+        //parcel data
+        itemList.add(parcelDataHeading);
+        //todo: get trackingCode from Parcel
+        itemList.add(new ParcelData(getString(R.string.tracking_code_main), null, ParcelData.TYPE_ITEM));
+        //todo: get qr from Parcel
+        itemList.add(new ParcelData(getString(R.string.qr_code), null, ParcelData.TYPE_ITEM));
+        //todo: get instructions from Parcel
+        itemList.add(new ParcelData(getString(R.string.courier_guidelines), null, ParcelData.TYPE_ITEM));
+        //todo: get tariff from Provider
+        itemList.add(new ParcelData(getString(R.string.tariff), null, ParcelData.TYPE_ITEM));
+        //todo: get destinationQuantity from size of CargoList
+        itemList.add(new ParcelData(getString(R.string.destination_quantity), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+        parcelDataList.add(new ParcelData(getString(R.string.tracking_code_main), null, ParcelData.TYPE_ITEM));
+        parcelDataList.add(new ParcelData(getString(R.string.qr_code), null, ParcelData.TYPE_ITEM));
+        parcelDataList.add(new ParcelData(getString(R.string.courier_guidelines), null, ParcelData.TYPE_ITEM));
+        parcelDataList.add(new ParcelData(getString(R.string.tariff), null, ParcelData.TYPE_ITEM));
+        parcelDataList.add(new ParcelData(getString(R.string.destination_quantity), null, ParcelData.TYPE_ITEM));
+        //for each cargo
+        itemList.add(forEachCargoHeading);
 //            cargoListSize = request.getCargoList().size();
 //            for (final Cargo cargo : request.getCargoList()) {
 //                itemList.add(new ParcelData(getString(R.string.cargo_description), cargo.getDescription(), ParcelData.TYPE_ITEM));
@@ -443,23 +728,23 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
 //                forEachCargoList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
 //            }
 //            forEachCargoList.remove(forEachCargoList.size() - 1);
-            //payment data
-            itemList.add(paymentDataHeading);
-            //todo: get overall cost from Invoice
-            itemList.add(new ParcelData(getString(R.string.cost), null, ParcelData.TYPE_ITEM));
-            //todo: get fuel from Provider
-            itemList.add(new ParcelData(getString(R.string.fuel_tax), null, ParcelData.TYPE_ITEM));
-            //todo: get vat from ZoneSettings
-            itemList.add(new ParcelData(getString(R.string.NDC), null, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            paymentDataList.add(new ParcelData(getString(R.string.cost), null, ParcelData.TYPE_ITEM));
-            paymentDataList.add(new ParcelData(getString(R.string.fuel_tax), null, ParcelData.TYPE_ITEM));
-            paymentDataList.add(new ParcelData(getString(R.string.NDC), null, ParcelData.TYPE_ITEM));
-            //transportation data
-            itemList.add(logisticsDataHeading);
+        //payment data
+        itemList.add(paymentDataHeading);
+        //todo: get overall cost from Invoice
+        itemList.add(new ParcelData(getString(R.string.cost), null, ParcelData.TYPE_ITEM));
+        //todo: get fuel from Provider
+        itemList.add(new ParcelData(getString(R.string.fuel_tax), null, ParcelData.TYPE_ITEM));
+        //todo: get vat from ZoneSettings
+        itemList.add(new ParcelData(getString(R.string.NDC), null, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+        paymentDataList.add(new ParcelData(getString(R.string.cost), null, ParcelData.TYPE_ITEM));
+        paymentDataList.add(new ParcelData(getString(R.string.fuel_tax), null, ParcelData.TYPE_ITEM));
+        paymentDataList.add(new ParcelData(getString(R.string.NDC), null, ParcelData.TYPE_ITEM));
+        //transportation data
+        itemList.add(logisticsDataHeading);
 
-            String dispatchDate = null;
-            String arrivalDate = null;
+        String dispatchDate = null;
+        String arrivalDate = null;
 
 //            if (request.getDispatchDate() != null) {
 //                dispatchDate = dateFormatter.format(request.getDispatchDate());
@@ -467,81 +752,35 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
 //            if (request.getArrivalDate() != null) {
 //                arrivalDate = dateFormatter.format(request.getArrivalDate());
 //            }
-            itemList.add(new ParcelData(getString(R.string.dispatch_date), dispatchDate, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(getString(R.string.arrival_date), arrivalDate, ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            logisticsDataList.add(new ParcelData(getString(R.string.dispatch_date), dispatchDate, ParcelData.TYPE_ITEM));
-            logisticsDataList.add(new ParcelData(getString(R.string.arrival_date), arrivalDate, ParcelData.TYPE_ITEM));
-            //documents data
-            itemList.add(documentsDataHeading);
-            //todo: requestDoc from ???
-            itemList.add(new ParcelData(getString(R.string.e_bid), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            //todo: receiptDoc from ???
-            itemList.add(new ParcelData(getString(R.string.e_waybill), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            //todo: guaranteeLetterDoc from ???
-            itemList.add(new ParcelData(getString(R.string.payer_guarantee_letter), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            //todo: paybillDoc from ???
-            itemList.add(new ParcelData(getString(R.string.pay_bill), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            //todo: invoiceDoc from ???
-            itemList.add(new ParcelData(getString(R.string.invoice_document), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            //todo: invoiceDoc from ???
-            itemList.add(new ParcelData(getString(R.string.invoice), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-            documentsDataList.add(new ParcelData(getString(R.string.e_bid), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            documentsDataList.add(new ParcelData(getString(R.string.e_waybill), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            documentsDataList.add(new ParcelData(getString(R.string.payer_guarantee_letter), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            documentsDataList.add(new ParcelData(getString(R.string.pay_bill), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            documentsDataList.add(new ParcelData(getString(R.string.invoice_document), getString(R.string.absent), ParcelData.TYPE_ITEM));
-            documentsDataList.add(new ParcelData(getString(R.string.invoice), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.dispatch_date), dispatchDate, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(getString(R.string.arrival_date), arrivalDate, ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+        logisticsDataList.add(new ParcelData(getString(R.string.dispatch_date), dispatchDate, ParcelData.TYPE_ITEM));
+        logisticsDataList.add(new ParcelData(getString(R.string.arrival_date), arrivalDate, ParcelData.TYPE_ITEM));
+        //documents data
+        itemList.add(documentsDataHeading);
+        //todo: requestDoc from ???
+        itemList.add(new ParcelData(getString(R.string.e_bid), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        //todo: receiptDoc from ???
+        itemList.add(new ParcelData(getString(R.string.e_waybill), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        //todo: guaranteeLetterDoc from ???
+        itemList.add(new ParcelData(getString(R.string.payer_guarantee_letter), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        //todo: paybillDoc from ???
+        itemList.add(new ParcelData(getString(R.string.pay_bill), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        //todo: invoiceDoc from ???
+        itemList.add(new ParcelData(getString(R.string.invoice_document), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        //todo: invoiceDoc from ???
+        itemList.add(new ParcelData(getString(R.string.invoice), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
+        documentsDataList.add(new ParcelData(getString(R.string.e_bid), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        documentsDataList.add(new ParcelData(getString(R.string.e_waybill), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        documentsDataList.add(new ParcelData(getString(R.string.payer_guarantee_letter), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        documentsDataList.add(new ParcelData(getString(R.string.pay_bill), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        documentsDataList.add(new ParcelData(getString(R.string.invoice_document), getString(R.string.absent), ParcelData.TYPE_ITEM));
+        documentsDataList.add(new ParcelData(getString(R.string.invoice), getString(R.string.absent), ParcelData.TYPE_ITEM));
 
-            adapter.setItemList(itemList);
-            adapter.notifyDataSetChanged();
-        });
-
-        /* init Location Data */
-        final LocationDataViewModel locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
-
-//        locationDataViewModel.getCountryById(countryId).observe(getViewLifecycleOwner(), country -> {
-//            initCountryData(country);
-//        });
-//
-//        locationDataViewModel.getRegionById(regionId).observe(getViewLifecycleOwner(), region ->  {
-//            initRegionData(region);
-//        });
-//
-//        locationDataViewModel.getCityById(cityId).observe(getViewLifecycleOwner(), city -> {
-//            initCityData(city);
-//        });
-    }
-
-    private void initCountryData(final Country country) {
-        //get country through senderCountryId in Country table
-        itemList.add(new ParcelData(getString(R.string.country), country.getName(), ParcelData.TYPE_ITEM));
-        senderDataList.add(new ParcelData(getString(R.string.country), country.getName(), ParcelData.TYPE_ITEM));
-    }
-
-    private void initRegionData(final Region region) {
-        //get region through senderRegionId in Region table
-        itemList.add(new ParcelData(getString(R.string.region), region.getName(), ParcelData.TYPE_ITEM));
-        senderDataList.add(new ParcelData(getString(R.string.region), region.getName(), ParcelData.TYPE_ITEM));
-    }
-
-    private void initCityData(final City city) {
-        //get city through senderCityId in City table
-        itemList.add(new ParcelData(getString(R.string.city), city.getName(), ParcelData.TYPE_ITEM));
-        senderDataList.add(new ParcelData(getString(R.string.city), city.getName(), ParcelData.TYPE_ITEM));
-    }
-
-    private void initRequestData() {
-
-    }
-
-    private void initAddressBookData() {
-
-    }
-
-    private void initClientData() {
-
+        adapter.setItemList(itemList);
+        adapter.notifyDataSetChanged();
     }
 
     @Override

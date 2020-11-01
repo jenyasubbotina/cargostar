@@ -1,6 +1,7 @@
 package uz.alexits.cargostar.workers.actor;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.utils.ImageSerializer;
 
 public class UpdateCourierWorker extends Worker {
     private final long courierId;
@@ -25,7 +27,7 @@ public class UpdateCourierWorker extends Worker {
     private final String middleName;
     private final String lastName;
     private final String phone;
-    private final String photo;
+    private final String photoUrl;
 
     public UpdateCourierWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -37,7 +39,7 @@ public class UpdateCourierWorker extends Worker {
         this.middleName = getInputData().getString(Constants.KEY_MIDDLE_NAME);
         this.lastName = getInputData().getString(Constants.KEY_LAST_NAME);
         this.phone = getInputData().getString(Constants.KEY_PHONE);
-        this.photo = getInputData().getString(Constants.KEY_PHOTO);
+        this.photoUrl = getInputData().getString(Constants.KEY_PHOTO);
     }
 
     @NonNull
@@ -48,11 +50,17 @@ public class UpdateCourierWorker extends Worker {
             return Result.failure();
         }
 
+        String serializedPhoto = null;
+
         try {
-            final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext(),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
-                    .updateCourierData(courierId, login, email, password, firstName, middleName, lastName, phone, photo);
+            if (!TextUtils.isEmpty(photoUrl)) {
+                serializedPhoto = ImageSerializer.bitmapToBase64(getApplicationContext(), photoUrl);
+            }
+
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext())
+                    .updateCourierData(courierId, password, firstName, middleName, lastName, phone, serializedPhoto);
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final Courier updatedCourier = response.body();
@@ -61,6 +69,10 @@ public class UpdateCourierWorker extends Worker {
                         Log.e(TAG, "updateCourierData(): customer is NULL");
                         return Result.failure();
                     }
+
+                    updatedCourier.setLogin(login);
+                    updatedCourier.setEmail(email);
+                    updatedCourier.setPhotoUrl(photoUrl);
 
                     Log.i(TAG, "updateCourierData(): " + updatedCourier);
 

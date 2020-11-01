@@ -14,7 +14,7 @@
         android:textSize="16sp"
         android:textColor="@color/colorBlack"
         android:fontFamily="@font/geometria_medium"
-        android:text="@string/parcel_id"/>
+        android:text="@string/invoice_id"/>
 
     <TextView
         android:id="@+id/item_value_text_view"

@@ -36,11 +36,10 @@ public class PopulateViewModel extends AndroidViewModel {
     }
 
     public void initAddressBook() {
-        RetrofitClient.getInstance(
-                getApplication().getApplicationContext(),
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).setServerData(
                 SharedPrefs.getInstance(getApplication().getApplicationContext()).getString(SharedPrefs.LOGIN),
-                SharedPrefs.getInstance(getApplication().getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
-                .getAddressBook(new Callback<JsonElement>() {
+                SharedPrefs.getInstance(getApplication().getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+        RetrofitClient.getInstance(getApplication().getApplicationContext()).getAddressBook(new Callback<JsonElement>() {
             @Override
             public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
                 Log.i(TAG, "getAddressBook(): code=" + response.code());
@@ -67,59 +66,59 @@ public class PopulateViewModel extends AndroidViewModel {
 //        repository.createRequests(newRequestList);
 //    }
 
-    public long createParcelTransitPointCrossRef(final ReceiptTransitPointCrossRef receiptTransitPointCrossRef) {
-        return repository.createParcelTransitPointCrossRef(receiptTransitPointCrossRef);
-    }
-
-    public LiveData<Invoice> selectReceipt(final long receiptId) {
-        return repository.selectReceipt(receiptId);
-    }
-
-    public LiveData<List<Parcel>> selectAllParcels() {
-        return repository.selectAllParcels();
-    }
-
-    public LiveData<List<Invoice>> selectAllReceipts() {
-        return repository.selectAllReceipts();
-    }
-
-    /*Cargo queries*/
-    public void createCargo(final List<Cargo> cargoList) {
-        repository.createCargo(cargoList);
-    }
-
-    public void createCargo(final Cargo cargo) {
-        repository.createCargo(cargo);
-    }
-
-    public void updateCargo(final Cargo updatedCargo) {
-        repository.updateCargo(updatedCargo);
-    }
-
-    public long createAddressBookEntry(final AddressBook addressBook) {
-        return repository.createAddressBookEntry(addressBook);
-    }
-
-    /*Consolidation queries*/
-    public long[] createConsolidation(final List<Consolidation> consolidationList) {
-        return repository.createConsolidation(consolidationList);
-    }
-
-    public long createConsolidation(final Consolidation consolidation) {
-        return repository.createConsolidation(consolidation);
-    }
-
-    public void updateConsolidation(final Consolidation updatedConsolidation) {
-        repository.updateConsolidation(updatedConsolidation);
-    }
-
-    public LiveData<List<Parcel>> selectParcelsByConsolidationNumber(final long consolidationNumber) {
-        return repository.selectParcelsByConsolidationNumber(consolidationNumber);
-    }
-
-    public LiveData<Parcel> selectParcelByConsolidationNumber(final long consolidationNumber, final long parcelId) {
-        return repository.selectParcelByConsolidationNumber(consolidationNumber, parcelId);
-    }
+//    public long createParcelTransitPointCrossRef(final ReceiptTransitPointCrossRef receiptTransitPointCrossRef) {
+//        return repository.createParcelTransitPointCrossRef(receiptTransitPointCrossRef);
+//    }
+//
+//    public LiveData<Invoice> selectReceipt(final long receiptId) {
+//        return repository.selectReceipt(receiptId);
+//    }
+//
+//    public LiveData<List<Parcel>> selectAllParcels() {
+//        return repository.selectAllParcels();
+//    }
+//
+//    public LiveData<List<Invoice>> selectAllReceipts() {
+//        return repository.selectAllReceipts();
+//    }
+//
+//    /*Cargo queries*/
+//    public void createCargo(final List<Cargo> cargoList) {
+//        repository.createCargo(cargoList);
+//    }
+//
+//    public void createCargo(final Cargo cargo) {
+//        repository.createCargo(cargo);
+//    }
+//
+//    public void updateCargo(final Cargo updatedCargo) {
+//        repository.updateCargo(updatedCargo);
+//    }
+//
+//    public long createAddressBookEntry(final AddressBook addressBook) {
+//        return repository.createAddressBookEntry(addressBook);
+//    }
+//
+//    /*Consolidation queries*/
+//    public long[] createConsolidation(final List<Consolidation> consolidationList) {
+//        return repository.createConsolidation(consolidationList);
+//    }
+//
+//    public long createConsolidation(final Consolidation consolidation) {
+//        return repository.createConsolidation(consolidation);
+//    }
+//
+//    public void updateConsolidation(final Consolidation updatedConsolidation) {
+//        repository.updateConsolidation(updatedConsolidation);
+//    }
+//
+//    public LiveData<List<Parcel>> selectParcelsByConsolidationNumber(final long consolidationNumber) {
+//        return repository.selectParcelsByConsolidationNumber(consolidationNumber);
+//    }
+//
+//    public LiveData<Parcel> selectParcelByConsolidationNumber(final long consolidationNumber, final long parcelId) {
+//        return repository.selectParcelByConsolidationNumber(consolidationNumber, parcelId);
+//    }
 
     //Notification queries
     public void createNotification(final List<Notification> notificationList) {

@@ -117,38 +117,39 @@ public class ParcelStatusFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         final ParcelStatusViewModel parcelStatusViewModel = new ViewModelProvider(this).get(ParcelStatusViewModel.class);
 
-        parcelStatusViewModel.selectParcel(requestId).observe(getViewLifecycleOwner(), parcel -> {
-            currentLocationId = parcel.getInvoice().getCurrentLocation();
+//        parcelStatusViewModel.selectParcel(requestId).observe(getViewLifecycleOwner(), parcel -> {
+//            currentLocationId = parcel.getInvoice().getCurrentLocation();
+//
+//            parcelIdTextView.setText(String.valueOf(parcel.getInvoice().getId()));
+//            parcelIdItemTextView.setText(String.valueOf(parcel.getInvoice().getId()));
+//            fromTextView.setText(parcel.getInvoice().getSenderAddress().getCity());
+//            toTextView.setText(parcel.getInvoice().getRecipientAddress().getCity());
+//            sourceTextView.setText(parcel.getRoute().get(0).getName());
+//            destinationTextView.setText(parcel.getRoute().get(parcel.getRoute().size() - 1).getName());
+//
+//            final TransportationStatus currentStatus = parcel.getInvoice().getTransportationStatus();
 
-            parcelIdTextView.setText(String.valueOf(parcel.getInvoice().getId()));
-            parcelIdItemTextView.setText(String.valueOf(parcel.getInvoice().getId()));
-            fromTextView.setText(parcel.getInvoice().getSenderAddress().getCity());
-            toTextView.setText(parcel.getInvoice().getRecipientAddress().getCity());
-            sourceTextView.setText(parcel.getRoute().get(0).getName());
-            destinationTextView.setText(parcel.getRoute().get(parcel.getRoute().size() - 1).getName());
-
-            final TransportationStatus currentStatus = parcel.getInvoice().getTransportationStatus();
-            if (currentStatus == null) {
-                submitStatusBtn.setText(TransportationStatus.IN_TRANSIT.toString());
-                return;
-            }
-            if (currentStatus == TransportationStatus.IN_TRANSIT) {
-                submitStatusBtn.setText(TransportationStatus.ON_THE_WAY.toString());
-                return;
-            }
-            if (currentStatus == TransportationStatus.ON_THE_WAY) {
-                submitStatusBtn.setText(TransportationStatus.DELIVERED.toString());
-                return;
-            }
-            if (currentStatus == TransportationStatus.DELIVERED || currentStatus == TransportationStatus.LOST) {
-                submitStatusBtn.setVisibility(View.INVISIBLE);
-            }
-        });
-
-        parcelStatusViewModel.selectTransitPoint(currentLocationId).observe(getViewLifecycleOwner(), transitPoint -> {
-           if (transitPoint != null) {
-               currentPointTextView.setText(transitPoint.getName());
-           }
-        });
+//            if (currentStatus == null) {
+//                submitStatusBtn.setText(TransportationStatus.IN_TRANSIT.toString());
+//                return;
+//            }
+//            if (currentStatus == TransportationStatus.IN_TRANSIT) {
+//                submitStatusBtn.setText(TransportationStatus.ON_THE_WAY.toString());
+//                return;
+//            }
+//            if (currentStatus == TransportationStatus.ON_THE_WAY) {
+//                submitStatusBtn.setText(TransportationStatus.DELIVERED.toString());
+//                return;
+//            }
+//            if (currentStatus == TransportationStatus.DELIVERED || currentStatus == TransportationStatus.LOST) {
+//                submitStatusBtn.setVisibility(View.INVISIBLE);
+//            }
+//        });
+//
+//        parcelStatusViewModel.selectTransitPoint(currentLocationId).observe(getViewLifecycleOwner(), transitPoint -> {
+//           if (transitPoint != null) {
+//               currentPointTextView.setText(transitPoint.getName());
+//           }
+//        });
     }
 }

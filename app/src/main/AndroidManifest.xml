@@ -15,43 +15,54 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".view.activity.InitializationActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.GenerateQrActivity" />
+        <activity android:name=".view.activity.GenerateQrActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
         <activity
             android:name=".view.activity.ProfileActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
         <activity
             android:name=".view.activity.NotificationsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
         <activity
             android:name=".view.activity.CalculatorActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
         <activity
             android:name=".view.activity.CreateUserActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".view.activity.SignatureActivity" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
+        <activity android:name=".view.activity.SignatureActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
         <activity
             android:name=".view.activity.CreateInvoiceActivitiy"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
         <activity
             android:name=".view.activity.ScanQrActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing" />
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="portrait"
-            tools:replace="screenOrientation" />
+            tools:replace="screenOrientation"/>
         <activity
             android:name=".view.activity.SignInActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing">
         </activity>
         <activity
             android:name=".view.activity.MainActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
 
         <service
             android:name=".push.FcmMessagingService"

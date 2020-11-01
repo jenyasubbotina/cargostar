@@ -258,7 +258,7 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
-            android:name="user_id"
+            android:name="courier_id"
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
@@ -269,6 +269,30 @@
             android:name="request_or_parcel"
             app:argType="integer"
             android:defaultValue="-1"/>
+        <argument
+            android:name="sender_country_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="sender_region_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="sender_city_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_country_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_region_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_city_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
     </fragment>
     <fragment
         android:id="@+id/partyFragment"

@@ -102,16 +102,6 @@ public abstract class User {
     @ColumnInfo(name = "updated_at")
     @Nullable protected Date updatedAt;
 
-    @Expose
-    @SerializedName("username")
-    @ColumnInfo(name = "login")
-    @NonNull protected String login;
-
-    @Expose
-    @SerializedName("password")
-    @ColumnInfo(name = "password")
-    @Nullable protected String password;
-
     public User(final long id,
                 final Long countryId,
                 final Long regionId,
@@ -126,8 +116,7 @@ public abstract class User {
                 @Nullable final String zip,
                 final int status,
                 @Nullable final Date createdAt,
-                @Nullable final Date updatedAt,
-                @NonNull final String login) {
+                @Nullable final Date updatedAt) {
         this.id = id;
         this.countryId = countryId;
         this.regionId = regionId;
@@ -143,16 +132,8 @@ public abstract class User {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.login = login;
     }
 
-    public void setPassword(@Nullable String password) {
-        this.password = password;
-    }
-
-    public void setLogin(@NonNull String login) {
-        this.login = login;
-    }
 
     @NonNull
     public String getEmail() {
@@ -248,18 +229,8 @@ public abstract class User {
         this.updatedAt = updatedAt;
     }
 
-    @NonNull
-    public String getLogin() {
-        return login;
-    }
-
     public void setEmail(@NonNull String email) {
         this.email = email;
-    }
-
-    @Nullable
-    public String getPassword() {
-        return password;
     }
 
     @NonNull
@@ -281,8 +252,6 @@ public abstract class User {
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
                 '}';
     }
 }

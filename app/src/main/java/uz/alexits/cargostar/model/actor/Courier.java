@@ -20,6 +20,16 @@ import uz.alexits.cargostar.model.location.Branche;
         indices = {@Index(value = "branche_id")})
 public class Courier extends User {
     @Expose
+    @SerializedName("username")
+    @ColumnInfo(name = "login")
+    @NonNull protected String login;
+
+    @Expose
+    @SerializedName("password")
+    @ColumnInfo(name = "password")
+    @Nullable protected String password;
+
+    @Expose
     @SerializedName("branche_id")
     @ColumnInfo(name = "branche_id")
     private Long brancheId;
@@ -27,8 +37,8 @@ public class Courier extends User {
     @ColumnInfo(name = "position")
     @NonNull private String position;
 
-    @Expose
-    @SerializedName("photo")
+//    @Expose
+//    @SerializedName("photo")
     @ColumnInfo(name = "photo_url")
     @Nullable private String photoUrl;
 
@@ -64,11 +74,11 @@ public class Courier extends User {
                 zip,
                 status,
                 createdAt,
-                updatedAt,
-                login);
+                updatedAt);
         this.brancheId = brancheId;
         this.position = "Курьер";
         this.photoUrl = photoUrl;
+        this.login = login;
     }
 
     public void setPhotoUrl(@Nullable String photoUrl) {
@@ -97,6 +107,24 @@ public class Courier extends User {
         this.position = position;
     }
 
+    public void setPassword(@Nullable String password) {
+        this.password = password;
+    }
+
+    public void setLogin(@NonNull String login) {
+        this.login = login;
+    }
+
+    @NonNull
+    public String getLogin() {
+        return login;
+    }
+
+    @Nullable
+    public String getPassword() {
+        return password;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -120,6 +148,7 @@ public class Courier extends User {
                 ", updatedAt=" + updatedAt +
                 ", login=" + login +
                 ", password=" + password +
+                ", photoUrl=" + photoUrl +
                 '}';
     }
 }

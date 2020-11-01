@@ -1,6 +1,7 @@
 package uz.alexits.cargostar.workers;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.BackoffPolicy;
@@ -8,6 +9,7 @@ import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.OverwritingInputMerger;
 import androidx.work.WorkManager;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
@@ -16,6 +18,11 @@ import uz.alexits.cargostar.workers.actor.UpdateCourierWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZoneSettingsWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZonesWorker;
 import uz.alexits.cargostar.workers.actor.CreateUserWorker;
+import uz.alexits.cargostar.workers.invoice.FetchInvoiceWorker;
+import uz.alexits.cargostar.workers.invoice.FetchPayerDataWorker;
+import uz.alexits.cargostar.workers.invoice.FetchRecipientDataWorker;
+import uz.alexits.cargostar.workers.invoice.FetchSenderDataWorker;
+import uz.alexits.cargostar.workers.invoice.InsertInvoiceWorker;
 import uz.alexits.cargostar.workers.location.FetchBranchesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingTypesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingWorker;
@@ -43,8 +50,8 @@ public class SyncWorkRequest {
 
         final Data inputData = new Data.Builder()
                 .putInt(KEY_PER_PAGE, perPage)
-                .putString(SharedPrefs.LOGIN, login)
-                .putString(SharedPrefs.PASSWORD_HASH, password)
+                .putString(Constants.KEY_LOGIN, login)
+                .putString(Constants.KEY_PASSWORD, password)
                 .putString(SharedPrefs.TOKEN, token)
                 .build();
 
@@ -190,8 +197,8 @@ public class SyncWorkRequest {
                                   final String oked,
                                   final String checkingAccount,
                                   final String vat,
-                                  final String photoBytesStr,
-                                  final String signatureBytesStr) {
+                                  final String photoUrl,
+                                  final String signatureUrl) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .setRequiresCharging(false)
@@ -225,8 +232,8 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_OKED, oked)
                 .putString(Constants.KEY_CHECKING_ACCOUNT, checkingAccount)
                 .putString(Constants.KEY_VAT, vat)
-                .putString(Constants.KEY_PHOTO, photoBytesStr)
-                .putString(Constants.KEY_SIGNATURE, signatureBytesStr)
+                .putString(Constants.KEY_PHOTO, photoUrl)
+                .putString(Constants.KEY_SIGNATURE, signatureUrl)
                 .build();
 
         final OneTimeWorkRequest createUserWorker = new OneTimeWorkRequest.Builder(CreateUserWorker.class)
@@ -251,6 +258,9 @@ public class SyncWorkRequest {
                                          final String lastName,
                                          final String phone,
                                          final String photoUrl) {
+
+        Log.i(TAG, "password= " + password);
+
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .setRequiresCharging(false)
@@ -281,7 +291,60 @@ public class SyncWorkRequest {
         return updateCourierRequest.getId();
     }
 
+    /* Invoice */
+    public static UUID fetchInvoiceData(@NonNull final Context context, final long invoiceId, final long senderId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
+                .putLong(Constants.KEY_SENDER_ID, senderId)
+                .build();
+
+        final OneTimeWorkRequest fetchSenderDataRequest = new OneTimeWorkRequest.Builder(FetchSenderDataWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchInvoiceRequest = new OneTimeWorkRequest.Builder(FetchInvoiceWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchRecipientDataRequest = new OneTimeWorkRequest.Builder(FetchRecipientDataWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchPayerDataRequest = new OneTimeWorkRequest.Builder(FetchPayerDataWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest insertInvoiceRequest = new OneTimeWorkRequest.Builder(InsertInvoiceWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
+        WorkManager.getInstance(context)
+                .beginWith(fetchSenderDataRequest)
+                .then(fetchInvoiceRequest)
+                .then(fetchRecipientDataRequest)
+                .then(fetchPayerDataRequest)
+                .then(insertInvoiceRequest)
+                .enqueue();
+
+        return insertInvoiceRequest.getId();
+    }
+
     public static final String KEY_PER_PAGE = "per-page";
     private static final int DEFAULT_PER_PAGE = 100000;
     private static final int DEFAULT_DELAY = 60000;
+
+    private static final String TAG = SyncWorkRequest.class.toString();
 }

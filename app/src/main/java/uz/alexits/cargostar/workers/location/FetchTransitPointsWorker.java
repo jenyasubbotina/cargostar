@@ -30,11 +30,9 @@ public class FetchTransitPointsWorker extends Worker {
     @Override
     public Result doWork() {
         try {
-            final Response<List<TransitPoint>> response = RetrofitClient.getInstance(
-                    getApplicationContext(),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
-                    .getTransitPoints(perPage);
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            final Response<List<TransitPoint>> response = RetrofitClient.getInstance(getApplicationContext()).getTransitPoints(perPage);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

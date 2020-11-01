@@ -31,17 +31,15 @@ public class FetchMyRequestsWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            final Response<List<Request>> response = RetrofitClient.getInstance(
-                    getApplicationContext(),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
-                    .getMyRequests(courierId);
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            final Response<List<Request>> response = RetrofitClient.getInstance(getApplicationContext()).getMyRequests(courierId);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchMyRequests(): response=" + response.body());
                     final List<Request> myRequestsList = response.body();
-//                  LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+                  LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(myRequestsList);
                     return ListenableWorker.Result.success();
                 }
             }

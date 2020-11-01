@@ -382,17 +382,6 @@ public class CreateUserActivity extends AppCompatActivity {
 //
 //            }
 
-            String photoBytesStr = null;
-
-            if (!TextUtils.isEmpty(photo)) {
-                photoBytesStr = ImageSerializer.bitmapToBase64(context, photo);
-            }
-
-            String signatureBytesStr = null;
-
-            if (!TextUtils.isEmpty(signature)) {
-                signatureBytesStr = ImageSerializer.fileToBase64(signature);
-            }
             if (!TextUtils.isEmpty(geolocation)) {
                 if (!Regex.isGeolocation(geolocation)) {
                     Toast.makeText(context, "Геолокация должна быть указана в формате ХХ.ХХ", Toast.LENGTH_SHORT).show();
@@ -435,8 +424,8 @@ public class CreateUserActivity extends AppCompatActivity {
                     oked,
                     checkingAccount,
                     vat,
-                    photoBytesStr,
-                    signatureBytesStr);
+                    !TextUtils.isEmpty(photo) ? photo : null,
+                    !TextUtils.isEmpty(signature) ? signature : null);
             WorkManager.getInstance(this).getWorkInfoByIdLiveData(createUserWorkerId).observe(this, workInfo -> {
                 if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                     progressBar.setVisibility(View.INVISIBLE);

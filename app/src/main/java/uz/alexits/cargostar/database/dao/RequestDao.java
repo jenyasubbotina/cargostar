@@ -21,7 +21,7 @@ public interface RequestDao {
     @Query("SELECT * FROM request ORDER BY created_at DESC")
     LiveData<List<Request>> selectAllRequests();
 
-    @Query("SELECT * FROM request WHERE employee_id == :courierId ORDER BY created_at DESC")
+    @Query("SELECT * FROM request WHERE courier_id == :courierId ORDER BY created_at DESC")
     LiveData<List<Request>> selectRequestsByCourierId(final long courierId);
 
     @Query("SELECT * FROM request WHERE id == :requestId")

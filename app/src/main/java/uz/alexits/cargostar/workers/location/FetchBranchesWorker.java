@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import retrofit2.Response;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchBranchesWorker extends Worker {
@@ -31,8 +32,8 @@ public class FetchBranchesWorker extends Worker {
     public FetchBranchesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, -1);
-        this.login = getInputData().getString(SharedPrefs.LOGIN);
-        this.password = getInputData().getString(SharedPrefs.PASSWORD_HASH);
+        this.login = getInputData().getString(Constants.KEY_LOGIN);
+        this.password = getInputData().getString(Constants.KEY_PASSWORD);
     }
 
     @NonNull
@@ -45,9 +46,10 @@ public class FetchBranchesWorker extends Worker {
         }
 
         try {
-            final Response<List<Branche>> response = RetrofitClient.getInstance(
-                    getApplicationContext(), login, password)
-                    .getBranches(perPage);
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
+            final Response<List<Branche>> response = RetrofitClient.getInstance(getApplicationContext()).getBranches(perPage);
+
+            Log.i(TAG, "headers=" + response.headers());
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

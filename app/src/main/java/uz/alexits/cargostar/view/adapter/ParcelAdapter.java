@@ -58,22 +58,22 @@ public class ParcelAdapter extends RecyclerView.Adapter<ParcelViewHolder> {
             holder.toTextView.setText(currentParcel.getRoute().get(currentParcel.getRoute().size() - 1).getName());
             holder.parcelTypeTextView.setText(R.string.parcel);
 
-            if (currentInvoice.getTransportationStatus() == TransportationStatus.IN_TRANSIT) {
-                holder.statusTextView.setText(context.getString(R.string.in_transit));
-                holder.statusTextView.setBackgroundResource(R.drawable.bg_purple);
-            }
-            else if (currentInvoice.getTransportationStatus() == TransportationStatus.ON_THE_WAY) {
-                holder.statusTextView.setText(context.getString(R.string.on_the_way));
-                holder.statusTextView.setBackgroundResource(R.drawable.bg_blue);
-            }
-            else if (currentInvoice.getTransportationStatus() == TransportationStatus.DELIVERED) {
-                holder.statusTextView.setText(context.getString(R.string.delivered));
-                holder.statusTextView.setBackgroundResource(R.drawable.bg_green);
-            }
-            else if (currentInvoice.getTransportationStatus() == TransportationStatus.LOST) {
-                holder.statusTextView.setText(context.getString(R.string.lost));
-                holder.statusTextView.setBackgroundResource(R.drawable.bg_red);
-            }
+//            if (currentInvoice.getTransportationStatus() == TransportationStatus.IN_TRANSIT) {
+//                holder.statusTextView.setText(context.getString(R.string.in_transit));
+//                holder.statusTextView.setBackgroundResource(R.drawable.bg_purple);
+//            }
+//            else if (currentInvoice.getTransportationStatus() == TransportationStatus.ON_THE_WAY) {
+//                holder.statusTextView.setText(context.getString(R.string.on_the_way));
+//                holder.statusTextView.setBackgroundResource(R.drawable.bg_blue);
+//            }
+//            else if (currentInvoice.getTransportationStatus() == TransportationStatus.DELIVERED) {
+//                holder.statusTextView.setText(context.getString(R.string.delivered));
+//                holder.statusTextView.setBackgroundResource(R.drawable.bg_green);
+//            }
+//            else if (currentInvoice.getTransportationStatus() == TransportationStatus.LOST) {
+//                holder.statusTextView.setText(context.getString(R.string.lost));
+//                holder.statusTextView.setBackgroundResource(R.drawable.bg_red);
+//            }
 
             holder.bind(currentParcel, callback);
         }

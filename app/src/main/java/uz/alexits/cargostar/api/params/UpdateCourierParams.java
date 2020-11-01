@@ -7,51 +7,39 @@ import com.google.gson.annotations.SerializedName;
 
 public class UpdateCourierParams {
     @Expose
-    @SerializedName("username")
-    private final String login;
-
-    @Expose
-    @SerializedName("email")
-    private final String email;
+    @SerializedName("password")
+    private final String password;
 
     @Expose
     @SerializedName("password_repeat")
     private final String passwordRepeat;
 
     @Expose
-    @SerializedName("password")
-    private final String password;
-
-    @Expose
-    @SerializedName("first_name")
+    @SerializedName("firstname")
     private final String firstName;
 
     @Expose
-    @SerializedName("middle_name")
+    @SerializedName("middlename")
     private final String middleName;
 
     @Expose
-    @SerializedName("last_name")
+    @SerializedName("lastname")
     private final String lastName;
 
     @Expose
-    @SerializedName("phone")
+    @SerializedName("telephone")
     private final String phone;
 
     @Expose
     @SerializedName("photo")
     private final String photo;
 
-    public UpdateCourierParams(final String login,
-                               final String email,
-                               final String password,
+    public UpdateCourierParams(final String password,
                                final String firstName,
                                final String middleName,
                                final String lastName,
                                final String phone,
                                final String photo) {
-        this.login = login;
-        this.email = email;
         this.password = password;
         this.passwordRepeat = password;
         this.firstName = firstName;
@@ -81,14 +69,6 @@ public class UpdateCourierParams {
         return phone;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
     public String getPasswordRepeat() {
         return passwordRepeat;
     }
@@ -97,8 +77,6 @@ public class UpdateCourierParams {
     @Override
     public String toString() {
         return "UpdateCourierParams{" +
-                "login='" + login + '\'' +
-                ", email='" + email + '\'' +
                 ", passwordRepeat='" + passwordRepeat + '\'' +
                 ", password='" + password + '\'' +
                 ", firstName='" + firstName + '\'' +

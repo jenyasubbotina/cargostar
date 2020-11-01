@@ -22,7 +22,7 @@ public class ParcelStatusViewModel extends AndroidViewModel {
         return repository.selectTransitPoint(pointId);
     }
 
-    public LiveData<Parcel> selectParcel(final long receiptId) {
-        return repository.selectParcel(receiptId);
-    }
+//    public LiveData<Parcel> selectParcel(final long receiptId) {
+//        return repository.selectParcel(receiptId);
+//    }
 }

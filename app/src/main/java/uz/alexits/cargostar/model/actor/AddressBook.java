@@ -1,205 +1,323 @@
 package uz.alexits.cargostar.model.actor;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
-import androidx.room.Embedded;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import uz.alexits.cargostar.model.location.Address;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Date;
+
+import uz.alexits.cargostar.model.location.City;
+import uz.alexits.cargostar.model.location.Country;
+import uz.alexits.cargostar.model.location.Region;
 
 @Entity(tableName = "address_book",
-        indices = {@Index(value = {"sender_login"}, unique = false)})
+        foreignKeys = {
+                @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {@Index(value = {"country_id"}), @Index(value = "region_id"), @Index(value = "city_id")})
 public class AddressBook {
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") private long id;
-    @ColumnInfo(name = "sender_login") private String senderLogin;
-    @ColumnInfo(name = "payer_login") private String payerLogin;
-    @ColumnInfo(name = "payer_first_name") @NonNull private String payerFirstName;
-    @ColumnInfo(name = "payer_middle_name") @NonNull private String payerMiddleName;
-    @ColumnInfo(name = "payer_last_name") @NonNull private String payerLastName;
-    @ColumnInfo(name = "payer_phone") @NonNull private String payerPhone;
-    @ColumnInfo(name = "payer_email") @NonNull private String payerEmail;
-    @Embedded @NonNull private Address payerAddress;
-    @ColumnInfo(name = "payer_cargo_acc_num") @Nullable private String cargostarAccountNumber;
-    @ColumnInfo(name = "payer_fedex_acc_num") @Nullable private String fedexAccountNumber;
-    @ColumnInfo(name = "payer_tnt_acc_num") @Nullable private String tntAccountNumber;
-    @ColumnInfo(name = "payer_checking_account") @Nullable private String payerCheckingAccount;
-    @ColumnInfo(name = "payer_bank") @Nullable private String payerBank;
-    @ColumnInfo(name = "payer_registration_code") @Nullable private String payerRegistrationCode;
-    @ColumnInfo(name = "payer_mfo") @Nullable private String payerMfo;
-    @ColumnInfo(name = "payer_oked") @Nullable private String payerOked;
+    @Expose
+    @SerializedName("id")
+    @PrimaryKey
+    @ColumnInfo(name = "id") private final long id;
 
-    public AddressBook(final String senderLogin,
-                       final @NonNull String payerFirstName,
-                       final @NonNull String payerMiddleName,
-                       final @NonNull String payerLastName,
-                       final @NonNull String payerPhone,
-                       final @NonNull String payerEmail,
-                       final @NonNull Address payerAddress) {
-        this.senderLogin = senderLogin;
-        this.payerFirstName = payerFirstName;
-        this.payerMiddleName = payerMiddleName;
-        this.payerLastName = payerLastName;
-        this.payerPhone = payerPhone;
-        this.payerEmail = payerEmail;
-        this.payerAddress = payerAddress;
+    @Expose
+    @SerializedName("country_id")
+    @ColumnInfo(name = "country_id") private final Long countryId;
+
+    @Expose
+    @SerializedName("region_id")
+    @ColumnInfo(name = "region_id") private final Long regionId;
+
+    @Expose
+    @SerializedName("city_id")
+    @ColumnInfo(name = "city_id") private final Long cityId;
+
+    @Expose
+    @SerializedName("address")
+    @ColumnInfo(name = "address") private final String address;
+
+    @Expose
+    @SerializedName("zip")
+    @ColumnInfo(name = "zip") private final String zip;
+
+    @Expose
+    @SerializedName("firstname")
+    @ColumnInfo(name = "first_name") private final String firstName;
+
+    @Expose
+    @SerializedName("middlename")
+    @ColumnInfo(name = "middle_name") private final String middleName;
+
+    @Expose
+    @SerializedName("lastname")
+    @ColumnInfo(name = "last_name") private final String lastName;
+
+    @Expose
+    @SerializedName("email")
+    @ColumnInfo(name = "email") private final String email;
+
+    @Expose
+    @SerializedName("telephone")
+    @ColumnInfo(name = "phone") private final String phone;
+
+    @Expose
+    @SerializedName("cargo")
+    @ColumnInfo(name = "cargostar_account_number") private final String cargostarAccountNumber;
+
+    @Expose
+    @SerializedName("fedex")
+    @ColumnInfo(name = "fedex_account_number") private final String tntAccountNumber;
+
+    @Expose
+    @SerializedName("tnt")
+    @ColumnInfo(name = "tnt_account_number") private final String fedexAccountNumber;
+
+    @Expose
+    @SerializedName("company")
+    @ColumnInfo(name = "company") private final String company;
+
+    @Expose
+    @SerializedName("inn")
+    @ColumnInfo(name = "inn") private final String inn;
+
+    @Expose
+    @SerializedName("account")
+    @ColumnInfo(name = "checking_account") private final String checkingAccount;
+
+    @Expose
+    @SerializedName("bank")
+    @ColumnInfo(name = "bank") private final String bank;
+
+    @Expose
+    @SerializedName("code")
+    @ColumnInfo(name = "registration_code") private final String registrationCode;
+
+    @Expose
+    @SerializedName("mfo")
+    @ColumnInfo(name = "mfo") private final String mfo;
+
+    @Expose
+    @SerializedName("oked")
+    @ColumnInfo(name = "oked") private final String oked;
+
+    @Expose
+    @SerializedName("passport")
+    @ColumnInfo(name = "passport_serial") private final String passportSerial;
+
+    @Expose
+    @SerializedName("type")
+    @ColumnInfo(name = "type") private final int type;
+
+    @Expose
+    @SerializedName("status")
+    @ColumnInfo(name = "status") private final int status;
+
+    @Expose
+    @SerializedName("created_at")
+    @ColumnInfo(name = "created_at") private final Date createdAt;
+
+    @Expose
+    @SerializedName("updated_at")
+    @ColumnInfo(name = "updated_at") private final Date updatedAt;
+
+    public AddressBook(final long id,
+                       final Long countryId,
+                       final Long regionId,
+                       final Long cityId,
+                       final String address,
+                       final String zip,
+                       final String firstName,
+                       final String middleName,
+                       final String lastName,
+                       final String email,
+                       final String phone,
+                       final String cargostarAccountNumber,
+                       final String tntAccountNumber,
+                       final String fedexAccountNumber,
+                       final String company,
+                       final String inn,
+                       final String checkingAccount,
+                       final String bank,
+                       final String registrationCode,
+                       final String mfo,
+                       final String oked,
+                       final String passportSerial,
+                       final int type,
+                       final int status,
+                       final Date createdAt,
+                       final Date updatedAt) {
+        this.id = id;
+        this.countryId = countryId;
+        this.regionId = regionId;
+        this.cityId = cityId;
+        this.address = address;
+        this.zip = zip;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.cargostarAccountNumber = cargostarAccountNumber;
+        this.tntAccountNumber = tntAccountNumber;
+        this.fedexAccountNumber = fedexAccountNumber;
+        this.company = company;
+        this.inn = inn;
+        this.checkingAccount = checkingAccount;
+        this.bank = bank;
+        this.registrationCode = registrationCode;
+        this.mfo = mfo;
+        this.oked = oked;
+        this.passportSerial = passportSerial;
+        this.type = type;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public Long getCountryId() {
+        return countryId;
     }
 
-    public String getSenderLogin() {
-        return senderLogin;
+    public Long getRegionId() {
+        return regionId;
     }
 
-    public void setSenderLogin(String senderLogin) {
-        this.senderLogin = senderLogin;
+    public Long getCityId() {
+        return cityId;
     }
 
-    public String getPayerLogin() {
-        return payerLogin;
+    public String getAddress() {
+        return address;
     }
 
-    public void setPayerLogin(String payerLogin) {
-        this.payerLogin = payerLogin;
+    public String getZip() {
+        return zip;
     }
 
-    @NonNull
-    public String getPayerFirstName() {
-        return payerFirstName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setPayerFirstName(@NonNull String payerFirstName) {
-        this.payerFirstName = payerFirstName;
+    public String getMiddleName() {
+        return middleName;
     }
 
-    @NonNull
-    public String getPayerMiddleName() {
-        return payerMiddleName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setPayerMiddleName(@NonNull String payerMiddleName) {
-        this.payerMiddleName = payerMiddleName;
+    public String getEmail() {
+        return email;
     }
 
-    @NonNull
-    public String getPayerLastName() {
-        return payerLastName;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPayerLastName(@NonNull String payerLastName) {
-        this.payerLastName = payerLastName;
-    }
-
-    @NonNull
-    public String getPayerPhone() {
-        return payerPhone;
-    }
-
-    public void setPayerPhone(@NonNull String payerPhone) {
-        this.payerPhone = payerPhone;
-    }
-
-    @NonNull
-    public String getPayerEmail() {
-        return payerEmail;
-    }
-
-    public void setPayerEmail(@NonNull String payerEmail) {
-        this.payerEmail = payerEmail;
-    }
-
-    @NonNull
-    public Address getPayerAddress() {
-        return payerAddress;
-    }
-
-    public void setPayerAddress(@NonNull Address payerAddress) {
-        this.payerAddress = payerAddress;
-    }
-
-    @Nullable
     public String getCargostarAccountNumber() {
         return cargostarAccountNumber;
     }
 
-    public void setCargostarAccountNumber(@Nullable String cargostarAccountNumber) {
-        this.cargostarAccountNumber = cargostarAccountNumber;
-    }
-
-    @Nullable
-    public String getFedexAccountNumber() {
-        return fedexAccountNumber;
-    }
-
-    public void setFedexAccountNumber(@Nullable String fedexAccountNumber) {
-        this.fedexAccountNumber = fedexAccountNumber;
-    }
-
-    @Nullable
     public String getTntAccountNumber() {
         return tntAccountNumber;
     }
 
-    public void setTntAccountNumber(@Nullable String tntAccountNumber) {
-        this.tntAccountNumber = tntAccountNumber;
+    public String getFedexAccountNumber() {
+        return fedexAccountNumber;
     }
 
-    @Nullable
-    public String getPayerCheckingAccount() {
-        return payerCheckingAccount;
+    public String getCompany() {
+        return company;
     }
 
-    public void setPayerCheckingAccount(@Nullable String payerCheckingAccount) {
-        this.payerCheckingAccount = payerCheckingAccount;
+    public String getInn() {
+        return inn;
     }
 
-    @Nullable
-    public String getPayerBank() {
-        return payerBank;
+    public String getCheckingAccount() {
+        return checkingAccount;
     }
 
-    public void setPayerBank(@Nullable String payerBank) {
-        this.payerBank = payerBank;
+    public String getBank() {
+        return bank;
     }
 
-    @Nullable
-    public String getPayerRegistrationCode() {
-        return payerRegistrationCode;
+    public String getRegistrationCode() {
+        return registrationCode;
     }
 
-    public void setPayerRegistrationCode(@Nullable String payerRegistrationCode) {
-        this.payerRegistrationCode = payerRegistrationCode;
+    public String getMfo() {
+        return mfo;
     }
 
-    @Nullable
-    public String getPayerMfo() {
-        return payerMfo;
+    public String getOked() {
+        return oked;
     }
 
-    public void setPayerMfo(@Nullable String payerMfo) {
-        this.payerMfo = payerMfo;
+    public String getPassportSerial() {
+        return passportSerial;
     }
 
-    @Nullable
-    public String getPayerOked() {
-        return payerOked;
+    public int getType() {
+        return type;
     }
 
-    public void setPayerOked(@Nullable String payerOked) {
-        this.payerOked = payerOked;
+    public int getStatus() {
+        return status;
     }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+
 
     @NonNull
     @Override
     public String toString() {
-        return payerFirstName + ' ' + payerLastName + ' ' + ", " + payerAddress.getAddress();
+        return "AddressBook{" +
+                "id=" + id +
+                ", countryId=" + countryId +
+                ", regionId=" + regionId +
+                ", cityId=" + cityId +
+                ", address='" + address + '\'' +
+                ", zip='" + zip + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", cargostarAccountNumber='" + cargostarAccountNumber + '\'' +
+                ", tntAccountNumber='" + tntAccountNumber + '\'' +
+                ", fedexAccountNumber='" + fedexAccountNumber + '\'' +
+                ", company='" + company + '\'' +
+                ", inn='" + inn + '\'' +
+                ", checkingAccount='" + checkingAccount + '\'' +
+                ", bank='" + bank + '\'' +
+                ", registrataionCode='" + registrationCode + '\'' +
+                ", mfo='" + mfo + '\'' +
+                ", oked='" + oked + '\'' +
+                ", passportSerial='" + passportSerial + '\'' +
+                ", type=" + type +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

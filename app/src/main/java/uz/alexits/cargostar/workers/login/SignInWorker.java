@@ -21,6 +21,7 @@ import uz.alexits.cargostar.api.params.SignInParams;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.Courier;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.SignInActivity;
 
@@ -31,8 +32,8 @@ public class SignInWorker extends Worker {
 
     public SignInWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.login = getInputData().getString(SharedPrefs.LOGIN);
-        this.password = getInputData().getString(SharedPrefs.PASSWORD_HASH);
+        this.login = getInputData().getString(Constants.KEY_LOGIN);
+        this.password = getInputData().getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(SharedPrefs.TOKEN);
     }
 
@@ -40,7 +41,8 @@ public class SignInWorker extends Worker {
     @Override
     public Result doWork() {
         try {
-            final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext(), login, password).signIn(token);
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
+            final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext()).signIn(token);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
@@ -51,6 +53,8 @@ public class SignInWorker extends Worker {
                         return Result.failure();
                     }
                     courier.setPassword(password);
+                    //todo: get local path for photo / signature
+//                    courier.setPhotoUrl(null);
 
                     Log.i(TAG, "signIn(): " + courier);
 

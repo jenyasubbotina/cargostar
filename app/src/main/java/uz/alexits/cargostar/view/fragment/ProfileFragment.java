@@ -198,30 +198,26 @@ public class ProfileFragment extends Fragment {
                 return;
             }
 
-            String serializedPhoto = null;
-
-            if (!TextUtils.isEmpty(photo)) {
-                serializedPhoto = ImageSerializer.bitmapToBase64(context, photo);
-            }
+            final String pwd = !TextUtils.isEmpty(password) ? password : currentCourier.getPassword();
 
             final UUID updateCourierRequestId = SyncWorkRequest.updateCourierData(
                     context,
                     currentCourier.getId(),
                     currentCourier.getLogin(),
                     currentCourier.getEmail(),
-                    !TextUtils.isEmpty(password) ? password : currentCourier.getPassword(),
+                    pwd,
                     !TextUtils.isEmpty(firstName) ? firstName : currentCourier.getFirstName(),
                     !TextUtils.isEmpty(middleName) ? middleName : currentCourier.getMiddleName(),
                     !TextUtils.isEmpty(lastName) ? lastName : currentCourier.getLastName(),
                     !TextUtils.isEmpty(phone) ? phone : currentCourier.getPhone(),
-                    !TextUtils.isEmpty(serializedPhoto) ? serializedPhoto : currentCourier.getPhotoUrl());
+                    !TextUtils.isEmpty(photo) ? photo : currentCourier.getPhotoUrl());
 
             WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateCourierRequestId).observe(getViewLifecycleOwner(), workInfo -> {
                 if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                     progressBar.setVisibility(View.INVISIBLE);
                     saveBtn.setEnabled(true);
 
-                    SharedPrefs.getInstance(context).putString(SharedPrefs.PASSWORD_HASH, password);
+                    SharedPrefs.getInstance(context).putString(SharedPrefs.PASSWORD_HASH, pwd);
 
                     startActivity(new Intent(context, MainActivity.class));
                     activity.finish();

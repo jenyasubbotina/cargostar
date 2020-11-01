@@ -32,7 +32,7 @@
     <string name="find_user">Найти пользователя</string>
     <string name="choose">Выбрать</string>
     <string name="public_data">Общие данные</string>
-    <string name="parcel_id">ID перевозки</string>
+    <string name="invoice_id">ID накладной</string>
     <string name="invoice_number">Номер накладной</string>
     <string name="service_provider">Поставщик услуг</string>
     <string name="courier_id">ID курьера</string>

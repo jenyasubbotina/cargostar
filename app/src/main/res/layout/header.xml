@@ -28,7 +28,7 @@
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
             android:textColorHint="#A5ABC0"
-            android:hint="@string/parcel_id"
+            android:hint="@string/invoice_id"
             android:inputType="text"
             android:maxLines="1"
             android:paddingHorizontal="24dp"

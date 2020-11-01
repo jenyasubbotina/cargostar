@@ -8,6 +8,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.api.RetrofitClient;
+import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.calculation.Provider;
 
@@ -26,17 +27,15 @@ public class FetchProvidersWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            final Response<List<Provider>> response = RetrofitClient.getInstance(
-                    getApplicationContext(),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH))
-                    .getProviders();
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            final Response<List<Provider>> response = RetrofitClient.getInstance(getApplicationContext()).getProviders();
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllProviders(): response=" + response.body());
                     final List<Provider> providerList = response.body();
-//                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertProviders(providerList);
+                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertProviders(providerList);
                     return ListenableWorker.Result.success();
                 }
             }

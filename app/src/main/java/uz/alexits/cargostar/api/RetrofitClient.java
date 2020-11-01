@@ -2,17 +2,15 @@ package uz.alexits.cargostar.api;
 
 import android.content.Context;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import uz.alexits.cargostar.R;
-
 import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceParams;
 import uz.alexits.cargostar.api.params.SignInParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
+import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.location.Branche;
@@ -25,13 +23,12 @@ import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.shipping.Cargo;
+import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.calculation.Provider;
-
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -45,41 +42,43 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private final ApiService apiService;
+    private static Retrofit.Builder retrofitBuilder;
+    private static OkHttpClient.Builder httpBuilder;
+    private static BasicAuthInterceptor basicAuthInterceptor;
+    private ApiService apiService;
     private static RetrofitClient INSTANCE;
 
-    private RetrofitClient(@NonNull final Context context, @NonNull final String login, @NonNull final String password) {
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+    private RetrofitClient(@NonNull final Context context) {
+        httpBuilder = new OkHttpClient.Builder()
                 .connectTimeout(60L, TimeUnit.SECONDS)
                 .readTimeout(60L, TimeUnit.SECONDS)
                 .writeTimeout(60L, TimeUnit.SECONDS)
                 .callTimeout(60L, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true)
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .addInterceptor(new BasicAuthInterceptor(login, password))
-                .build();
-        final Retrofit retrofit = new Retrofit.Builder()
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
+        retrofitBuilder = new Retrofit.Builder()
                 .baseUrl(context.getString(R.string.default_server_url))
                 .addConverterFactory(GsonConverterFactory.create(
                         new GsonBuilder()
                                 .setLenient()
-                                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) ->
-                                        new Date(json.getAsJsonPrimitive().getAsLong()))
-                                .create()))
-                .client(okHttpClient)
-                .build();
-        apiService = retrofit.create(ApiService.class);
+                                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context1) -> new Date(json.getAsJsonPrimitive().getAsLong()))
+                                .create()));
     }
 
-    public static RetrofitClient getInstance(@NonNull final Context context, @NonNull final String login, @NonNull final String password) {
+    public static RetrofitClient getInstance(@NonNull final Context context) {
         if (INSTANCE == null) {
             synchronized (RetrofitClient.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new RetrofitClient(context, login, password);
+                    INSTANCE = new RetrofitClient(context);
                 }
             }
         }
         return INSTANCE;
+    }
+
+    public void setServerData(@NonNull final String login, @NonNull final String password) {
+        basicAuthInterceptor = new BasicAuthInterceptor(login, password);
+        apiService = retrofitBuilder.client(httpBuilder.addInterceptor(basicAuthInterceptor).build()).build().create(ApiService.class);
     }
 
     /* Location data */
@@ -199,7 +198,9 @@ public class RetrofitClient {
         return apiService.createClient(clientParams).execute();
     }
 
-    //http://cargo.alex-its.uz/api/client/view/?id=51
+    public Response<Customer> getCustomer(final long clientId) throws IOException {
+        return apiService.getClient(clientId).execute();
+    }
 
     /* Courier */
     public Response<Courier> signIn(@NonNull final String fcmToken) throws IOException {
@@ -212,8 +213,6 @@ public class RetrofitClient {
     }
 
     public Response<Courier> updateCourierData(final long courierId,
-                                               @NonNull final String login,
-                                               @NonNull final String email,
                                                @NonNull final String password,
                                                @Nullable final String firstName,
                                                @Nullable final String middleName,
@@ -221,8 +220,14 @@ public class RetrofitClient {
                                                @Nullable final String phone,
                                                @Nullable final String photo) throws IOException {
         final UpdateCourierParams updateCourierParams = new UpdateCourierParams(
-                login, email, password, firstName, middleName, lastName, phone, photo);
+                password, firstName, middleName, lastName, phone, photo);
+        Log.i(TAG, "updateCourierData(): " + updateCourierParams);
         return apiService.updateCourierData(courierId, updateCourierParams).execute();
+    }
+
+    /* Address Book */
+    public Response<AddressBook> getAddressBookEntry(final long entryId) throws IOException {
+        return apiService.getAddressBookData(entryId).execute();
     }
 
     /* Invoice */
@@ -348,10 +353,14 @@ public class RetrofitClient {
         apiService.createInvoice(createInvoiceParams).enqueue(callback);
     }
 
-    //    public void updateRequest(final long requestId, final Callback<JsonElement> callback) {
+    public Response<Invoice> getInvoice(final long invoiceId) throws IOException {
+        return apiService.getInvoice(invoiceId).execute();
+    }
+
+    public void updateRequest(final long requestId, final Callback<JsonElement> callback) {
 //        final Call<JsonElement> call = apiService.updateRequest(requestId);
 //        call.enqueue(callback);
-//    }
+    }
 
     /* Transportation */
     public Response<List<JsonElement>> getCurrentTransportations() throws IOException {

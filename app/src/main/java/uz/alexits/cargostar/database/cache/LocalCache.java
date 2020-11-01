@@ -18,6 +18,7 @@ import uz.alexits.cargostar.database.converters.PaymentStatusConverter;
 import uz.alexits.cargostar.database.converters.PointConverter;
 import uz.alexits.cargostar.database.converters.TransportationStatusConverter;
 import uz.alexits.cargostar.database.dao.ActorDao;
+import uz.alexits.cargostar.database.dao.InvoiceDao;
 import uz.alexits.cargostar.database.dao.LocationDao;
 import uz.alexits.cargostar.database.dao.PackagingDao;
 import uz.alexits.cargostar.database.dao.ParcelDao;
@@ -71,7 +72,7 @@ import java.util.List;
         Packaging.class,
         PackagingType.class,
         Zone.class,
-        ZoneSettings.class}, version = 58, exportSchema = false)
+        ZoneSettings.class}, version = 61, exportSchema = false)
 @TypeConverters({ PointConverter.class, TransportationStatusConverter.class, PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";
@@ -80,8 +81,10 @@ public abstract class LocalCache extends RoomDatabase {
     public abstract LocationDao locationDao();
     public abstract PackagingDao packagingDao();
     public abstract ActorDao actorDao();
-    public abstract ParcelDao parcelDao();
+
     public abstract RequestDao requestDao();
+    public abstract ParcelDao parcelDao();
+    public abstract InvoiceDao invoiceDao();
 
     public static LocalCache getInstance(final Context context) {
         if (instance == null) {
@@ -161,27 +164,6 @@ public abstract class LocalCache extends RoomDatabase {
         providerList.add(cargostar);
         getInstance(context).packagingDao().insertProviders(providerList);
     }
-
-//    private static void populateDefaultCourier(@NonNull final Context context) {
-//        getInstance(context).actorDao().createCourier(new Courier(
-//                8,
-//                191,
-//                0,
-//                1,
-//                "Sergey",
-//                "",
-//                "Kadushkin",
-//                "+998935977577",
-//                "android.kim@gmail.com",
-//                "Chilonzor 24",
-//                "",
-//                "111111",
-//                1,
-//                null,
-//                null,
-//                new Account("android", "12345"),
-//                1));
-//    }
 
     private static final String TAG = LocalCache.class.toString();
 }

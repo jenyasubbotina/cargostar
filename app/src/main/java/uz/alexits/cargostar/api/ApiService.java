@@ -6,6 +6,7 @@ import uz.alexits.cargostar.api.params.CreateClientParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceParams;
 import uz.alexits.cargostar.api.params.SignInParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
+import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.location.Branche;
@@ -17,6 +18,7 @@ import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
+import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.calculation.Provider;
 
@@ -92,8 +94,8 @@ public interface ApiService {
     Call<Customer> createClient(@Body CreateClientParams createClientParams);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("address-book")
-    Call<JsonElement> getAddressBook();
+    @GET("client/view")
+    Call<Customer> getClient(@Query("id") final long clientId);
 
     /* Courier */
     @Headers("Content-type: application/json; charset=utf-8;")
@@ -114,6 +116,19 @@ public interface ApiService {
     @Headers("Content-type: application/json; charset=utf-8;")
     @POST("invoice/full-create")
     Call<JsonElement> createInvoice(@Body CreateInvoiceParams createInvoiceParams);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("invoice/view")
+    Call<Invoice> getInvoice(@Query("id") final long invoiceId);
+
+    /* Address Book */
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("address-book/view")
+    Call<AddressBook> getAddressBookData(@Query("id") final long recipientPayerId);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("address-book")
+    Call<JsonElement> getAddressBook();
 
     /* Transportation */
 //    https://cargo.alex-its.uz/api/transportation-status/transportation?id=10

@@ -38,60 +38,9 @@ public interface ActorDao {
     void dropCouriers();
 
     /*Customer data*/
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long createCustomer(final Customer newCustomer);
-//
-//    @Query("SELECT * FROM customer WHERE login == :senderLogin")
-//    LiveData<Customer> selectCustomerByLogin(final String senderLogin);
-//
-//    @Query("SELECT * FROM customer WHERE id == :userId")
-//    LiveData<Customer> selectCustomer(final String userId);
-//
-//    @Query("SELECT * FROM customer ORDER BY id DESC")
-//    LiveData<List<Customer>> selectAllCustomers();
-//
-//    @Query("DELETE FROM customer")
-//    void dropCustomers();
-//
-//    /*Passport data*/
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    void createPassportData(final PassportData passportData);
-//
-//    @Query("SELECT * FROM passport_data WHERE user_id == :userId")
-//    LiveData<PassportData> selectPassportData(final String userId);
-//
-//    @Query("SELECT * FROM passport_data ORDER BY user_id DESC")
-//    LiveData<List<PassportData>> selectAllPassportData();
-//
-//    @Query("DELETE FROM passport_data")
-//    void dropPassportData();
-//
-//    /*Payment data*/
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    void createPaymentData(final PaymentData paymentData);
-//
-//    @Query("SELECT * FROM payment_data WHERE user_id == :userId")
-//    LiveData<PaymentData> selectPaymentData(final String userId);
-//
-//    @Query("SELECT * FROM payment_data ORDER BY user_id DESC")
-//    LiveData<List<PaymentData>> selectAllPaymentData();
-//
-//    @Query("DELETE FROM payment_data")
-//    void dropPaymentData();
 
-    /*address book*/
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    long createAddressBookEntry(final AddressBook addressBook);
-
-    @Update
-    void updateAddressBookEntry(final AddressBook updatedAddressBook);
-
-    @Query("SELECT * FROM address_book WHERE sender_login LIKE :senderLogin")
-    LiveData<List<AddressBook>> selectAddressBookEntriesBySenderLogin(final String senderLogin);
-
-    @Query("SELECT * FROM address_book WHERE id == :id")
-    LiveData<AddressBook> selectAddressBookEntryById(final long id);
-
-    @Query("SELECT * FROM address_book ORDER BY id DESC")
-    LiveData<List<AddressBook>> selectAddressBookEntries();
+    @Query("SELECT * FROM customer WHERE id == :userId")
+    LiveData<Customer> selectCustomer(final long userId);
 }

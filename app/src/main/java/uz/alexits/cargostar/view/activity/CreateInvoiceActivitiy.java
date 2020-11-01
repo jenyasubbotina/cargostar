@@ -290,11 +290,11 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         createReceiptBtn.setOnClickListener(v -> {
             sendInvoice();
         });
-        createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
-            Log.i(TAG, "entries=" + addressBookEntries);
-            adapter.setAddressBookEntries(addressBookEntries);
-            adapter.notifyDataSetChanged();
-        });
+//        createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
+//            Log.i(TAG, "entries=" + addressBookEntries);
+//            adapter.setAddressBookEntries(addressBookEntries);
+//            adapter.notifyDataSetChanged();
+//        });
     }
 
     @Override
@@ -478,138 +478,138 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
 
     private void updateUI(final ReceiptWithCargoList receipt) {
         //public data
-        itemList.get(1).firstValue = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
-        itemList.get(1).secondValue = receipt != null ? receipt.getInvoice().getOperatorId() : null;
-        itemList.get(2).firstValue = receipt != null ? receipt.getInvoice().getAccountantId() : null;
-        itemList.get(2).secondValue = receipt != null ? receipt.getInvoice().getServiceProvider() : null;
-        courierId = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
-        operatorId = receipt != null ? receipt.getInvoice().getOperatorId() : null;
-        accountantId = receipt != null ? receipt.getInvoice().getAccountantId() : null;
-        serviceProvider = receipt != null ? receipt.getInvoice().getServiceProvider() : null;
-        //sender data
-        itemList.get(5).firstValue = receipt != null ? receipt.getInvoice().getSenderSignature() : null;
-        itemList.get(5).secondValue = receipt != null ? receipt.getInvoice().getRecipientSignature() : null;
-        itemList.get(6).firstValue = receipt != null ? receipt.getInvoice().getSenderLogin() : null;
-        itemList.get(6).secondValue = receipt != null ? receipt.getInvoice().getSenderCargostarAccountNumber() : null;
-        itemList.get(7).firstValue = receipt != null ? receipt.getInvoice().getSenderTntAccountNumber() : null;
-        itemList.get(7).secondValue = receipt != null ? receipt.getInvoice().getSenderFedexAccountNumber(): null;
-        itemList.get(8).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getAddress() : null;
-        itemList.get(8).secondValue = receipt != null ? receipt.getInvoice().getSenderAddress().getCountry() : null;
-        itemList.get(9).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getCity() : null;
-        itemList.get(9).secondValue = receipt != null ? receipt.getInvoice().getSenderAddress().getRegion() : null;
-        itemList.get(10).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getZip() : null;
-        itemList.get(10).secondValue = receipt != null ? receipt.getInvoice().getSenderFirstName() : null;
-        itemList.get(11).firstValue = receipt != null ? receipt.getInvoice().getSenderMiddleName() : null;
-        itemList.get(11).secondValue = receipt != null ? receipt.getInvoice().getSenderLastName() : null;
-        itemList.get(12).firstValue = receipt != null ? receipt.getInvoice().getSenderPhone() : null;
-        itemList.get(12).secondValue = receipt != null ? receipt.getInvoice().getSenderEmail() : null;
-        senderSignature = receipt != null ? receipt.getInvoice().getSenderSignature() : null;
-        recipientSignature = receipt != null ? receipt.getInvoice().getRecipientSignature() : null;
-        senderLogin = receipt != null ? receipt.getInvoice().getSenderLogin() : null;
-        senderCargostar = receipt != null ? receipt.getInvoice().getSenderCargostarAccountNumber() : null;
-        senderTnt = receipt != null ? receipt.getInvoice().getSenderTntAccountNumber() : null;
-        senderFedex = receipt != null ? receipt.getInvoice().getSenderFedexAccountNumber(): null;
-        senderAddress = receipt != null ? receipt.getInvoice().getSenderAddress().getAddress() : null;
-        senderCountry = receipt != null ? receipt.getInvoice().getSenderAddress().getCountry() : null;
-        senderCity = receipt != null ? receipt.getInvoice().getSenderAddress().getCity() : null;
-        senderRegion = receipt != null ? receipt.getInvoice().getSenderAddress().getRegion() : null;
-        senderZip = receipt != null ? receipt.getInvoice().getSenderAddress().getZip() : null;
-        senderFirstName = receipt != null ? receipt.getInvoice().getSenderFirstName() : null;
-        senderMiddleName = receipt != null ? receipt.getInvoice().getSenderMiddleName() : null;
-        senderLastName = receipt != null ? receipt.getInvoice().getSenderLastName() : null;
-        senderPhone = receipt != null ? receipt.getInvoice().getSenderPhone() : null;
-        senderEmail = receipt != null ? receipt.getInvoice().getSenderEmail() : null;
-        //recipient data
-        itemList.get(15).firstValue = receipt != null ? receipt.getInvoice().getRecipientLogin() : null;
-        itemList.get(15).secondValue = receipt != null ? receipt.getInvoice().getRecipientCargostarAccountNumber() : null;
-        itemList.get(16).firstValue = receipt != null ? receipt.getInvoice().getRecipientTntAccountNumber() : null;
-        itemList.get(16).secondValue = receipt != null ? receipt.getInvoice().getRecipientFedexAccountNumber() : null;
-        itemList.get(17).firstValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getAddress() : null;
-        itemList.get(17).secondValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCountry() : null;
-        itemList.get(18).firstValue = receipt != null  && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCity() : null;
-        itemList.get(18).secondValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getRegion(): null;
-        itemList.get(19).firstValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getZip() : null;
-        itemList.get(19).secondValue = receipt != null ? receipt.getInvoice().getRecipientFirstName() : null;
-        itemList.get(20).firstValue = receipt != null ? receipt.getInvoice().getRecipientMiddleName() : null;
-        itemList.get(20).secondValue = receipt != null ? receipt.getInvoice().getRecipientLastName() : null;
-        itemList.get(21).firstValue = receipt != null ? receipt.getInvoice().getRecipientPhone() : null;
-        itemList.get(21).secondValue = receipt != null ? receipt.getInvoice().getRecipientEmail() : null;
-        recipientLogin = receipt != null ? receipt.getInvoice().getRecipientLogin() : null;
-        recipientCargo = receipt != null ? receipt.getInvoice().getRecipientCargostarAccountNumber() : null;
-        recipientTnt = receipt != null ? receipt.getInvoice().getRecipientTntAccountNumber() : null;
-        recipientFedex = receipt != null ? receipt.getInvoice().getRecipientFedexAccountNumber() : null;
-        recipientAddress = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getAddress() : null;
-        recipientCountry = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCountry() : null;
-        recipientCity = receipt != null  && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCity() : null;
-        recipientRegion = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getRegion(): null;
-        recipientZip = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getZip() : null;
-        recipientFirstName = receipt != null ? receipt.getInvoice().getRecipientFirstName() : null;
-        recipientMiddleName = receipt != null ? receipt.getInvoice().getRecipientMiddleName() : null;
-        recipientLastName = receipt != null ? receipt.getInvoice().getRecipientLastName() : null;
-        recipientPhone = receipt != null ? receipt.getInvoice().getRecipientPhone() : null;
-        recipientEmail = receipt != null ? receipt.getInvoice().getRecipientEmail() : null;
-        //payer data
-        itemList.get(25).firstValue = receipt != null ? receipt.getInvoice().getPayerLogin() : null;
-        itemList.get(25).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getAddress() : null;
-        itemList.get(26).firstValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCountry() : null;
-        itemList.get(26).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCity() : null;
-        itemList.get(27).firstValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getRegion() : null;
-        itemList.get(27).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getZip() : null;
-        itemList.get(28).firstValue = receipt != null ? receipt.getInvoice().getPayerFirstName() : null;
-        itemList.get(28).secondValue = receipt != null ? receipt.getInvoice().getPayerMiddleName() : null;
-        itemList.get(29).firstValue = receipt != null ? receipt.getInvoice().getPayerLastName() : null;
-        itemList.get(29).secondValue = receipt != null ? receipt.getInvoice().getPayerPhone() : null;
-        itemList.get(30).firstValue = receipt != null ? receipt.getInvoice().getPayerEmail() : null;
-        itemList.get(30).secondValue = receipt != null && receipt.getInvoice().getDiscount() > 0 ? String.valueOf(receipt.getInvoice().getDiscount()) : null;
-        payerLogin = receipt != null ? receipt.getInvoice().getPayerLogin() : null;
-        payerAddress = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getAddress() : null;
-        payerCountry = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCountry() : null;
-        payerCity = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCity() : null;
-        payerRegion = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getRegion() : null;
-        payerZip = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getZip() : null;
-        payerFirstName = receipt != null ? receipt.getInvoice().getPayerFirstName() : null;
-        payerMiddleName = receipt != null ? receipt.getInvoice().getPayerMiddleName() : null;
-        payerLastName = receipt != null ? receipt.getInvoice().getPayerLastName() : null;
-        payerPhone = receipt != null ? receipt.getInvoice().getPayerPhone() : null;
-        payerEmail = receipt != null ? receipt.getInvoice().getPayerEmail() : null;
-        discount = receipt != null && receipt.getInvoice().getDiscount() > 0 ? String.valueOf(receipt.getInvoice().getDiscount()) : null;
-        //account numbers
-        itemList.get(33).firstValue = receipt != null ? receipt.getInvoice().getPayerTntAccountNumber() : null;
-        itemList.get(34).firstValue = receipt != null ? receipt.getInvoice().getPayerFedexAccountNumber() : null;
-        payerTnt = receipt != null ? receipt.getInvoice().getPayerTntAccountNumber() : null;
-        payerFedex = receipt != null ? receipt.getInvoice().getPayerFedexAccountNumber() : null;
-        //payment data
-        itemList.get(37).firstValue = receipt != null ? receipt.getInvoice().getCheckingAccount() : null;
-        itemList.get(37).secondValue = receipt != null ? receipt.getInvoice().getBank() : null;
-        itemList.get(38).firstValue = receipt != null ? receipt.getInvoice().getRegistrationCode() : null;
-        itemList.get(38).secondValue = receipt != null ? receipt.getInvoice().getMfo() : null;
-        itemList.get(39).firstValue = receipt != null ? receipt.getInvoice().getOked() : null;
-        checkingAccount = receipt != null ? receipt.getInvoice().getCheckingAccount() : null;
-        bank = receipt != null ? receipt.getInvoice().getBank() : null;
-        registrationCode = receipt != null ? receipt.getInvoice().getRegistrationCode() : null;
-        mfo = receipt != null ? receipt.getInvoice().getMfo() : null;
-        oked = receipt != null ? receipt.getInvoice().getOked() : null;
-        //parcel data
-        itemList.get(42).firstValue = receipt != null ? receipt.getInvoice().getQr() : null;
-        itemList.get(42).secondValue = receipt != null ? receipt.getInvoice().getInstructions() : null;
-        qr = receipt != null ? receipt.getInvoice().getQr() : null;
-        instructions = receipt != null ? receipt.getInvoice().getInstructions() : null;
-        //cargo data 50
-        int i = 1;
-
-        if (receipt != null) {
-            cargoList = receipt.getCargoList();
-            for (final Cargo cargo : receipt.getCargoList()) {
-                final CreateParcelData cargoData = new CreateParcelData(CreateParcelData.TYPE_CALCULATOR_ITEM);
-                cargoData.index = String.valueOf(i++);
-                cargoData.packageType = cargo.getPackageType();
-                cargoData.source = receipt.getInvoice().getSenderAddress().getCity();
-                cargoData.weight = String.valueOf(cargo.getWeight());
-                cargoData.dimensions = cargo.getLength() + "x" + cargo.getWidth() + "x" + cargo.getHeight();
-                itemList.add(cargoData);
-            }
-        }
-        adapter.notifyDataSetChanged();
+//        itemList.get(1).firstValue = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
+//        itemList.get(1).secondValue = receipt != null ? receipt.getInvoice().getOperatorId() : null;
+//        itemList.get(2).firstValue = receipt != null ? receipt.getInvoice().getAccountantId() : null;
+//        itemList.get(2).secondValue = receipt != null ? receipt.getInvoice().getServiceProvider() : null;
+//        courierId = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
+//        operatorId = receipt != null ? receipt.getInvoice().getOperatorId() : null;
+//        accountantId = receipt != null ? receipt.getInvoice().getAccountantId() : null;
+//        serviceProvider = receipt != null ? receipt.getInvoice().getServiceProvider() : null;
+//        //sender data
+//        itemList.get(5).firstValue = receipt != null ? receipt.getInvoice().getSenderSignature() : null;
+//        itemList.get(5).secondValue = receipt != null ? receipt.getInvoice().getRecipientSignature() : null;
+//        itemList.get(6).firstValue = receipt != null ? receipt.getInvoice().getSenderLogin() : null;
+//        itemList.get(6).secondValue = receipt != null ? receipt.getInvoice().getSenderCargostarAccountNumber() : null;
+//        itemList.get(7).firstValue = receipt != null ? receipt.getInvoice().getSenderTntAccountNumber() : null;
+//        itemList.get(7).secondValue = receipt != null ? receipt.getInvoice().getSenderFedexAccountNumber(): null;
+//        itemList.get(8).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getAddress() : null;
+//        itemList.get(8).secondValue = receipt != null ? receipt.getInvoice().getSenderAddress().getCountry() : null;
+//        itemList.get(9).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getCity() : null;
+//        itemList.get(9).secondValue = receipt != null ? receipt.getInvoice().getSenderAddress().getRegion() : null;
+//        itemList.get(10).firstValue = receipt != null ? receipt.getInvoice().getSenderAddress().getZip() : null;
+//        itemList.get(10).secondValue = receipt != null ? receipt.getInvoice().getSenderFirstName() : null;
+//        itemList.get(11).firstValue = receipt != null ? receipt.getInvoice().getSenderMiddleName() : null;
+//        itemList.get(11).secondValue = receipt != null ? receipt.getInvoice().getSenderLastName() : null;
+//        itemList.get(12).firstValue = receipt != null ? receipt.getInvoice().getSenderPhone() : null;
+//        itemList.get(12).secondValue = receipt != null ? receipt.getInvoice().getSenderEmail() : null;
+//        senderSignature = receipt != null ? receipt.getInvoice().getSenderSignature() : null;
+//        recipientSignature = receipt != null ? receipt.getInvoice().getRecipientSignature() : null;
+//        senderLogin = receipt != null ? receipt.getInvoice().getSenderLogin() : null;
+//        senderCargostar = receipt != null ? receipt.getInvoice().getSenderCargostarAccountNumber() : null;
+//        senderTnt = receipt != null ? receipt.getInvoice().getSenderTntAccountNumber() : null;
+//        senderFedex = receipt != null ? receipt.getInvoice().getSenderFedexAccountNumber(): null;
+//        senderAddress = receipt != null ? receipt.getInvoice().getSenderAddress().getAddress() : null;
+//        senderCountry = receipt != null ? receipt.getInvoice().getSenderAddress().getCountry() : null;
+//        senderCity = receipt != null ? receipt.getInvoice().getSenderAddress().getCity() : null;
+//        senderRegion = receipt != null ? receipt.getInvoice().getSenderAddress().getRegion() : null;
+//        senderZip = receipt != null ? receipt.getInvoice().getSenderAddress().getZip() : null;
+//        senderFirstName = receipt != null ? receipt.getInvoice().getSenderFirstName() : null;
+//        senderMiddleName = receipt != null ? receipt.getInvoice().getSenderMiddleName() : null;
+//        senderLastName = receipt != null ? receipt.getInvoice().getSenderLastName() : null;
+//        senderPhone = receipt != null ? receipt.getInvoice().getSenderPhone() : null;
+//        senderEmail = receipt != null ? receipt.getInvoice().getSenderEmail() : null;
+//        //recipient data
+//        itemList.get(15).firstValue = receipt != null ? receipt.getInvoice().getRecipientLogin() : null;
+//        itemList.get(15).secondValue = receipt != null ? receipt.getInvoice().getRecipientCargostarAccountNumber() : null;
+//        itemList.get(16).firstValue = receipt != null ? receipt.getInvoice().getRecipientTntAccountNumber() : null;
+//        itemList.get(16).secondValue = receipt != null ? receipt.getInvoice().getRecipientFedexAccountNumber() : null;
+//        itemList.get(17).firstValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getAddress() : null;
+//        itemList.get(17).secondValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCountry() : null;
+//        itemList.get(18).firstValue = receipt != null  && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCity() : null;
+//        itemList.get(18).secondValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getRegion(): null;
+//        itemList.get(19).firstValue = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getZip() : null;
+//        itemList.get(19).secondValue = receipt != null ? receipt.getInvoice().getRecipientFirstName() : null;
+//        itemList.get(20).firstValue = receipt != null ? receipt.getInvoice().getRecipientMiddleName() : null;
+//        itemList.get(20).secondValue = receipt != null ? receipt.getInvoice().getRecipientLastName() : null;
+//        itemList.get(21).firstValue = receipt != null ? receipt.getInvoice().getRecipientPhone() : null;
+//        itemList.get(21).secondValue = receipt != null ? receipt.getInvoice().getRecipientEmail() : null;
+//        recipientLogin = receipt != null ? receipt.getInvoice().getRecipientLogin() : null;
+//        recipientCargo = receipt != null ? receipt.getInvoice().getRecipientCargostarAccountNumber() : null;
+//        recipientTnt = receipt != null ? receipt.getInvoice().getRecipientTntAccountNumber() : null;
+//        recipientFedex = receipt != null ? receipt.getInvoice().getRecipientFedexAccountNumber() : null;
+//        recipientAddress = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getAddress() : null;
+//        recipientCountry = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCountry() : null;
+//        recipientCity = receipt != null  && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getCity() : null;
+//        recipientRegion = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getRegion(): null;
+//        recipientZip = receipt != null && receipt.getInvoice().getRecipientAddress() != null ? receipt.getInvoice().getRecipientAddress().getZip() : null;
+//        recipientFirstName = receipt != null ? receipt.getInvoice().getRecipientFirstName() : null;
+//        recipientMiddleName = receipt != null ? receipt.getInvoice().getRecipientMiddleName() : null;
+//        recipientLastName = receipt != null ? receipt.getInvoice().getRecipientLastName() : null;
+//        recipientPhone = receipt != null ? receipt.getInvoice().getRecipientPhone() : null;
+//        recipientEmail = receipt != null ? receipt.getInvoice().getRecipientEmail() : null;
+//        //payer data
+//        itemList.get(25).firstValue = receipt != null ? receipt.getInvoice().getPayerLogin() : null;
+//        itemList.get(25).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getAddress() : null;
+//        itemList.get(26).firstValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCountry() : null;
+//        itemList.get(26).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCity() : null;
+//        itemList.get(27).firstValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getRegion() : null;
+//        itemList.get(27).secondValue = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getZip() : null;
+//        itemList.get(28).firstValue = receipt != null ? receipt.getInvoice().getPayerFirstName() : null;
+//        itemList.get(28).secondValue = receipt != null ? receipt.getInvoice().getPayerMiddleName() : null;
+//        itemList.get(29).firstValue = receipt != null ? receipt.getInvoice().getPayerLastName() : null;
+//        itemList.get(29).secondValue = receipt != null ? receipt.getInvoice().getPayerPhone() : null;
+//        itemList.get(30).firstValue = receipt != null ? receipt.getInvoice().getPayerEmail() : null;
+//        itemList.get(30).secondValue = receipt != null && receipt.getInvoice().getDiscount() > 0 ? String.valueOf(receipt.getInvoice().getDiscount()) : null;
+//        payerLogin = receipt != null ? receipt.getInvoice().getPayerLogin() : null;
+//        payerAddress = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getAddress() : null;
+//        payerCountry = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCountry() : null;
+//        payerCity = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getCity() : null;
+//        payerRegion = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getRegion() : null;
+//        payerZip = receipt != null && receipt.getInvoice().getPayerAddress() != null ? receipt.getInvoice().getPayerAddress().getZip() : null;
+//        payerFirstName = receipt != null ? receipt.getInvoice().getPayerFirstName() : null;
+//        payerMiddleName = receipt != null ? receipt.getInvoice().getPayerMiddleName() : null;
+//        payerLastName = receipt != null ? receipt.getInvoice().getPayerLastName() : null;
+//        payerPhone = receipt != null ? receipt.getInvoice().getPayerPhone() : null;
+//        payerEmail = receipt != null ? receipt.getInvoice().getPayerEmail() : null;
+//        discount = receipt != null && receipt.getInvoice().getDiscount() > 0 ? String.valueOf(receipt.getInvoice().getDiscount()) : null;
+//        //account numbers
+//        itemList.get(33).firstValue = receipt != null ? receipt.getInvoice().getPayerTntAccountNumber() : null;
+//        itemList.get(34).firstValue = receipt != null ? receipt.getInvoice().getPayerFedexAccountNumber() : null;
+//        payerTnt = receipt != null ? receipt.getInvoice().getPayerTntAccountNumber() : null;
+//        payerFedex = receipt != null ? receipt.getInvoice().getPayerFedexAccountNumber() : null;
+//        //payment data
+//        itemList.get(37).firstValue = receipt != null ? receipt.getInvoice().getCheckingAccount() : null;
+//        itemList.get(37).secondValue = receipt != null ? receipt.getInvoice().getBank() : null;
+//        itemList.get(38).firstValue = receipt != null ? receipt.getInvoice().getRegistrationCode() : null;
+//        itemList.get(38).secondValue = receipt != null ? receipt.getInvoice().getMfo() : null;
+//        itemList.get(39).firstValue = receipt != null ? receipt.getInvoice().getOked() : null;
+//        checkingAccount = receipt != null ? receipt.getInvoice().getCheckingAccount() : null;
+//        bank = receipt != null ? receipt.getInvoice().getBank() : null;
+//        registrationCode = receipt != null ? receipt.getInvoice().getRegistrationCode() : null;
+//        mfo = receipt != null ? receipt.getInvoice().getMfo() : null;
+//        oked = receipt != null ? receipt.getInvoice().getOked() : null;
+//        //parcel data
+//        itemList.get(42).firstValue = receipt != null ? receipt.getInvoice().getQr() : null;
+//        itemList.get(42).secondValue = receipt != null ? receipt.getInvoice().getInstructions() : null;
+//        qr = receipt != null ? receipt.getInvoice().getQr() : null;
+//        instructions = receipt != null ? receipt.getInvoice().getInstructions() : null;
+//        //cargo data 50
+//        int i = 1;
+//
+//        if (receipt != null) {
+//            cargoList = receipt.getCargoList();
+//            for (final Cargo cargo : receipt.getCargoList()) {
+//                final CreateParcelData cargoData = new CreateParcelData(CreateParcelData.TYPE_CALCULATOR_ITEM);
+//                cargoData.index = String.valueOf(i++);
+//                cargoData.packageType = cargo.getPackageType();
+//                cargoData.source = receipt.getInvoice().getSenderAddress().getCity();
+//                cargoData.weight = String.valueOf(cargo.getWeight());
+//                cargoData.dimensions = cargo.getLength() + "x" + cargo.getWidth() + "x" + cargo.getHeight();
+//                itemList.add(cargoData);
+//            }
+//        }
+//        adapter.notifyDataSetChanged();
     }
 
     private void addItem() {
@@ -712,42 +712,42 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         else if (secondCardRadioBtn.isChecked()) {
             serviceProvider = secondCardValue;
         }
-        currentReceipt.getInvoice().setServiceProvider(serviceProvider);
-        currentReceipt.getInvoice().setSenderSignature(senderSignature);
-        currentReceipt.getInvoice().setSenderEmail(senderEmail);
-        currentReceipt.getInvoice().setSenderCargostarAccountNumber(senderCargostar);
-        currentReceipt.getInvoice().setRecipientFirstName(recipientFirstName);
-        currentReceipt.getInvoice().setRecipientMiddleName(recipientMiddleName);
-        currentReceipt.getInvoice().setRecipientLastName(recipientLastName);
-        currentReceipt.getInvoice().setRecipientPhone(recipientPhone);
-        currentReceipt.getInvoice().setRecipientEmail(recipientEmail);
-        currentReceipt.getInvoice().setRecipientSignature(recipientSignature);
-        currentReceipt.getInvoice().setPayerFirstName(payerFirstName);
-        currentReceipt.getInvoice().setPayerMiddleName(payerMiddleName);
-        currentReceipt.getInvoice().setPayerLastName(payerLastName);
-        currentReceipt.getInvoice().setPayerPhone(payerPhone);
-        currentReceipt.getInvoice().setPayerEmail(payerEmail);
-        currentReceipt.getInvoice().setQr(qr);
-        //sender data
-        currentReceipt.getInvoice().setSenderLogin(senderLogin);
-        currentReceipt.getInvoice().setSenderTntAccountNumber(senderTnt);
-        currentReceipt.getInvoice().setSenderFedexAccountNumber(senderFedex);
-        currentReceipt.getInvoice().setRecipientLogin(recipientLogin);
-        currentReceipt.getInvoice().setRecipientCargostarAccountNumber(recipientCargo);
-        currentReceipt.getInvoice().setRecipientTntAccountNumber(recipientTnt);
-        currentReceipt.getInvoice().setRecipientFedexAccountNumber(recipientFedex);
-        //payer data
-        currentReceipt.getInvoice().setPayerLogin(payerLogin);
-        currentReceipt.getInvoice().setPayerCargostarAccountNumber(payerCargostar);
-        currentReceipt.getInvoice().setPayerTntAccountNumber(payerTnt);
-        currentReceipt.getInvoice().setPayerFedexAccountNumber(payerFedex);
-        currentReceipt.getInvoice().setCheckingAccount(checkingAccount);
-        currentReceipt.getInvoice().setBank(bank);
-        currentReceipt.getInvoice().setRegistrationCode(registrationCode);
-        currentReceipt.getInvoice().setMfo(mfo);
-        currentReceipt.getInvoice().setOked(oked);
-        currentReceipt.getInvoice().setInstructions(instructions);
-        currentReceipt.getInvoice().setPaymentStatus(PaymentStatus.WAITING_PAYMENT);
+//        currentReceipt.getInvoice().setServiceProvider(serviceProvider);
+//        currentReceipt.getInvoice().setSenderSignature(senderSignature);
+//        currentReceipt.getInvoice().setSenderEmail(senderEmail);
+//        currentReceipt.getInvoice().setSenderCargostarAccountNumber(senderCargostar);
+//        currentReceipt.getInvoice().setRecipientFirstName(recipientFirstName);
+//        currentReceipt.getInvoice().setRecipientMiddleName(recipientMiddleName);
+//        currentReceipt.getInvoice().setRecipientLastName(recipientLastName);
+//        currentReceipt.getInvoice().setRecipientPhone(recipientPhone);
+//        currentReceipt.getInvoice().setRecipientEmail(recipientEmail);
+//        currentReceipt.getInvoice().setRecipientSignature(recipientSignature);
+//        currentReceipt.getInvoice().setPayerFirstName(payerFirstName);
+//        currentReceipt.getInvoice().setPayerMiddleName(payerMiddleName);
+//        currentReceipt.getInvoice().setPayerLastName(payerLastName);
+//        currentReceipt.getInvoice().setPayerPhone(payerPhone);
+//        currentReceipt.getInvoice().setPayerEmail(payerEmail);
+//        currentReceipt.getInvoice().setQr(qr);
+//        //sender data
+//        currentReceipt.getInvoice().setSenderLogin(senderLogin);
+//        currentReceipt.getInvoice().setSenderTntAccountNumber(senderTnt);
+//        currentReceipt.getInvoice().setSenderFedexAccountNumber(senderFedex);
+//        currentReceipt.getInvoice().setRecipientLogin(recipientLogin);
+//        currentReceipt.getInvoice().setRecipientCargostarAccountNumber(recipientCargo);
+//        currentReceipt.getInvoice().setRecipientTntAccountNumber(recipientTnt);
+//        currentReceipt.getInvoice().setRecipientFedexAccountNumber(recipientFedex);
+//        //payer data
+//        currentReceipt.getInvoice().setPayerLogin(payerLogin);
+//        currentReceipt.getInvoice().setPayerCargostarAccountNumber(payerCargostar);
+//        currentReceipt.getInvoice().setPayerTntAccountNumber(payerTnt);
+//        currentReceipt.getInvoice().setPayerFedexAccountNumber(payerFedex);
+//        currentReceipt.getInvoice().setCheckingAccount(checkingAccount);
+//        currentReceipt.getInvoice().setBank(bank);
+//        currentReceipt.getInvoice().setRegistrationCode(registrationCode);
+//        currentReceipt.getInvoice().setMfo(mfo);
+//        currentReceipt.getInvoice().setOked(oked);
+//        currentReceipt.getInvoice().setInstructions(instructions);
+//        currentReceipt.getInvoice().setPaymentStatus(PaymentStatus.WAITING_PAYMENT);
 
         Address newSenderAddress = null;
         Address newRecipientAddress = null;
@@ -762,21 +762,21 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         if (!TextUtils.isEmpty(payerCountry) && !TextUtils.isEmpty(payerRegion) && !TextUtils.isEmpty(payerCity) && !TextUtils.isEmpty(payerAddress)) {
             newPayerAddress = new Address(payerCountry, payerRegion, payerCity, payerAddress);
         }
-        if (!TextUtils.isEmpty(discount)) {
-            currentReceipt.getInvoice().setDiscount(Integer.parseInt(discount));
-        }
-        if (newSenderAddress != null) {
-            newSenderAddress.setZip(senderZip);
-            currentReceipt.getInvoice().setSenderAddress(newSenderAddress);
-        }
-        if (newRecipientAddress != null) {
-            newRecipientAddress.setZip(recipientZip);
-            currentReceipt.getInvoice().setRecipientAddress(newRecipientAddress);
-        }
-        if (newPayerAddress != null) {
-            newPayerAddress.setZip(payerZip);
-            currentReceipt.getInvoice().setPayerAddress(newPayerAddress);
-        }
+//        if (!TextUtils.isEmpty(discount)) {
+//            currentReceipt.getInvoice().setDiscount(Integer.parseInt(discount));
+//        }
+//        if (newSenderAddress != null) {
+//            newSenderAddress.setZip(senderZip);
+//            currentReceipt.getInvoice().setSenderAddress(newSenderAddress);
+//        }
+//        if (newRecipientAddress != null) {
+//            newRecipientAddress.setZip(recipientZip);
+//            currentReceipt.getInvoice().setRecipientAddress(newRecipientAddress);
+//        }
+//        if (newPayerAddress != null) {
+//            newPayerAddress.setZip(payerZip);
+//            currentReceipt.getInvoice().setPayerAddress(newPayerAddress);
+//        }
 //        createParcelViewModel.updateReceipt(currentReceipt.getReceipt());
         Toast.makeText(context, "Данные сохранены успешно", Toast.LENGTH_SHORT).show();
         finish();
@@ -1010,10 +1010,9 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         tempCargoList.add(new Cargo("Cargo2", 4.5, 4, 4, 5));
         tempCargoList.add(new Cargo("Cargo3", 4.5, 4, 4, 14));
 
-        RetrofitClient.getInstance(
-                context,
-                SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN),
-                SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH))
+        RetrofitClient.getInstance(context).setServerData(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN),
+                SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH));
+        RetrofitClient.getInstance(context)
                 .createInvoice(11L,
                         null,
                         null,
@@ -1138,7 +1137,7 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
             case 6: {
                 //senderLogin
                 senderLogin = editable.toString();
-                createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, this::initPayerAddressBook);
+//                createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, this::initPayerAddressBook);
 
                 //todo: fill in Spinner through AddressBook
 //                createParcelViewModel.selectCustomerByLogin(senderLogin).observe(this, customer -> {
@@ -1608,21 +1607,21 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         Log.i(TAG, "onSpinnerItemChanged(): " + addressBook);
 
         if (addressBook != null && addressBook.get(i) != null) {
-            payerFirstName = addressBook.get(i).getPayerFirstName();
-            payerMiddleName = addressBook.get(i).getPayerMiddleName();
-            payerLastName = addressBook.get(i).getPayerLastName();
-            payerCountry = addressBook.get(i).getPayerAddress().getCountry();
-            payerRegion = addressBook.get(i).getPayerAddress().getRegion();
-            payerCity = addressBook.get(i).getPayerAddress().getCity();
-            payerAddress = addressBook.get(i).getPayerAddress().getAddress();
-            payerEmail = addressBook.get(i).getPayerEmail();
-            payerPhone = addressBook.get(i).getPayerPhone();
-            payerLogin = addressBook.get(i).getPayerLogin();
-            checkingAccount = addressBook.get(i).getPayerCheckingAccount();
-            bank = addressBook.get(i).getPayerBank();
-            mfo = addressBook.get(i).getPayerMfo();
-            oked = addressBook.get(i).getPayerOked();
-            registrationCode = addressBook.get(i).getPayerRegistrationCode();
+//            payerFirstName = addressBook.get(i).getPayerFirstName();
+//            payerMiddleName = addressBook.get(i).getPayerMiddleName();
+//            payerLastName = addressBook.get(i).getPayerLastName();
+//            payerCountry = addressBook.get(i).getPayerAddress().getCountry();
+//            payerRegion = addressBook.get(i).getPayerAddress().getRegion();
+//            payerCity = addressBook.get(i).getPayerAddress().getCity();
+//            payerAddress = addressBook.get(i).getPayerAddress().getAddress();
+//            payerEmail = addressBook.get(i).getPayerEmail();
+//            payerPhone = addressBook.get(i).getPayerPhone();
+//            payerLogin = addressBook.get(i).getPayerLogin();
+//            checkingAccount = addressBook.get(i).getPayerCheckingAccount();
+//            bank = addressBook.get(i).getPayerBank();
+//            mfo = addressBook.get(i).getPayerMfo();
+//            oked = addressBook.get(i).getPayerOked();
+//            registrationCode = addressBook.get(i).getPayerRegistrationCode();
             payerCargostar = addressBook.get(i).getCargostarAccountNumber();
             payerTnt = addressBook.get(i).getTntAccountNumber();
             payerFedex = addressBook.get(i).getFedexAccountNumber();

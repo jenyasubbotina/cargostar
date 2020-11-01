@@ -17,13 +17,21 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
+//todo: foreign keys: invoiceId, clientId, userId
 @Entity(tableName = "request",
         foreignKeys = {
-        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "country_id"), @Index(value = "region_id"), @Index(value = "city_id"), @Index(value = "provider_id")})
+        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "sender_country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+        @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "sender_region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+        @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "sender_city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+        @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "recipient_country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+        @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "recipient_city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {@Index(value = "sender_country_id"),
+                @Index(value = "sender_region_id"),
+                @Index(value = "sender_city_id"),
+                @Index(value = "recipient_country_id"),
+                @Index(value = "recipient_city_id"),
+                @Index(value = "provider_id")})
 public class Request {
     @Expose
     @SerializedName("id")
@@ -33,17 +41,17 @@ public class Request {
 
     @Expose
     @SerializedName("country_id")
-    @ColumnInfo(name = "country_id")
+    @ColumnInfo(name = "sender_country_id")
     private Long senderCountryId;
 
     @Expose
     @SerializedName("region_id")
-    @ColumnInfo(name = "region_id")
+    @ColumnInfo(name = "sender_region_id")
     private Long senderRegionId;
 
     @Expose
     @SerializedName("city_id")
-    @ColumnInfo(name = "city_id")
+    @ColumnInfo(name = "sender_city_id")
     private Long senderCityId;
 
     @Expose
@@ -58,7 +66,7 @@ public class Request {
 
     @Expose
     @SerializedName("employee_id")
-    @ColumnInfo(name = "employee_id")
+    @ColumnInfo(name = "courier_id")
     private Long courierId;
 
     @Expose
@@ -103,13 +111,13 @@ public class Request {
 
     @Expose
     @SerializedName("country_to")
-    @ColumnInfo(name = "country_to")
-    private long recipientCountryId;
+    @ColumnInfo(name = "recipient_country_id")
+    private Long recipientCountryId;
 
     @Expose
     @SerializedName("city_to")
-    @ColumnInfo(name = "city_to")
-    private long recipientCityId;
+    @ColumnInfo(name = "recipient_city_id")
+    private Long recipientCityId;
 
     @Expose
     @SerializedName("comment")
@@ -308,7 +316,7 @@ public class Request {
         this.recipientCountryId = recipientCountryId;
     }
 
-    public long getRecipientCityId() {
+    public Long getRecipientCityId() {
         return recipientCityId;
     }
 

@@ -25,6 +25,9 @@ public interface PackagingDao {
     @Query("SELECT * FROM provider ORDER BY id ASC")
     LiveData<List<Provider>> selectAllProviders();
 
+    @Query("SELECT * FROM provider WHERE id == :providerId ORDER BY id ASC")
+    LiveData<Provider> selectProviderById(final long providerId);
+
     /* packaging */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long[] insertPackaging(final List<Packaging> packagingTypeList);

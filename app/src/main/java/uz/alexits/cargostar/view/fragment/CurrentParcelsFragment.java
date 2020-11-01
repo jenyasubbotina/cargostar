@@ -257,13 +257,13 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
                     }
                 }
                 if (inTransitCheckBox.isChecked()) {
-                    parcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getId()).observe(getViewLifecycleOwner(), parcelList -> {
-                        Log.i(TAG, "parcelList: " + parcelList);
-                        if (parcelList != null) {
-                            parcelAdapter.setParcelList(parcelList);
-                            parcelAdapter.notifyDataSetChanged();
-                        }
-                    });
+//                    parcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getId()).observe(getViewLifecycleOwner(), parcelList -> {
+//                        Log.i(TAG, "parcelList: " + parcelList);
+//                        if (parcelList != null) {
+//                            parcelAdapter.setParcelList(parcelList);
+//                            parcelAdapter.notifyDataSetChanged();
+//                        }
+//                    });
                 }
             }
 
@@ -371,10 +371,10 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
             statusArray = new TransportationStatus[] {};
             initCitySpinner(null);
         }
-        parcelsViewModel.selectParcelsByStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray).observe(getViewLifecycleOwner(), parcelList -> {
-            parcelAdapter.setParcelList(parcelList);
-            parcelAdapter.notifyDataSetChanged();
-        });
+//        parcelsViewModel.selectParcelsByStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray).observe(getViewLifecycleOwner(), parcelList -> {
+//            parcelAdapter.setParcelList(parcelList);
+//            parcelAdapter.notifyDataSetChanged();
+//        });
     }
 
     @Override
