@@ -27,13 +27,91 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/first_card"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/second_card"
+                android:layout_marginEnd="8dp"
+                android:elevation="8dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioButton
+                        android:id="@+id/first_card_radio_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:buttonTint="@color/colorBlue"/>
+
+                    <ImageView
+                        android:id="@+id/first_card_logo"
+                        android:layout_width="76dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/first_card_radio_btn"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:src="@drawable/logo_cargo_calc"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/second_card"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                app:layout_constraintTop_toTopOf="@id/first_card"
+                app:layout_constraintStart_toEndOf="@id/first_card"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="8dp"
+                android:elevation="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioButton
+                        android:id="@+id/second_card_radio_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:buttonTint="@color/colorBlue"/>
+
+                    <ImageView
+                        android:id="@+id/second_card_logo"
+                        android:layout_width="76dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/second_card_radio_btn"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:src="@drawable/logo_tnt_cacl"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <View
+                android:id="@+id/payment_stroke"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintTop_toBottomOf="@id/first_card"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="41dp"
+                android:background="@color/colorGrey" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/content_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/payment_stroke"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="32dp"/>
 
             <TextView
                 android:id="@+id/total_quantity_text_view"
@@ -197,89 +275,11 @@
                 android:fontFamily="@font/geometria_medium"
                 android:text="@string/sum_example"/>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/first_card"
-                android:layout_width="0dp"
-                android:layout_height="66dp"
-                app:layout_constraintTop_toBottomOf="@id/tariff_radio_group"
-                app:layout_constraintStart_toStartOf="@id/tariff_radio_group"
-                app:layout_constraintEnd_toStartOf="@id/second_card"
-                android:layout_marginTop="35dp"
-                android:layout_marginEnd="8dp"
-                android:elevation="8dp">
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <RadioButton
-                        android:id="@+id/first_card_radio_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:buttonTint="@color/colorBlue"/>
-
-                    <ImageView
-                        android:id="@+id/first_card_logo"
-                        android:layout_width="76dp"
-                        android:layout_height="28dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/first_card_radio_btn"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:src="@drawable/logo_cargo_calc"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/second_card"
-                android:layout_width="0dp"
-                android:layout_height="66dp"
-                app:layout_constraintTop_toTopOf="@id/first_card"
-                app:layout_constraintStart_toEndOf="@id/first_card"
-                app:layout_constraintEnd_toEndOf="@id/economy_express_sum_text_view"
-                android:layout_marginStart="8dp"
-                android:elevation="8dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <RadioButton
-                        android:id="@+id/second_card_radio_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:buttonTint="@color/colorBlue"/>
-
-                    <ImageView
-                        android:id="@+id/second_card_logo"
-                        android:layout_width="76dp"
-                        android:layout_height="28dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/second_card_radio_btn"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:src="@drawable/logo_tnt_cacl"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
-
-            <View
-                android:id="@+id/payment_stroke"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                app:layout_constraintTop_toBottomOf="@id/tariff_radio_group"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="41dp"
-                android:background="@color/colorGrey" />
-
             <TextView
                 android:id="@+id/payment_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/payment_stroke"
+                app:layout_constraintTop_toBottomOf="@+id/tariff_radio_group"
                 app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
                 android:layout_marginTop="37dp"
                 android:textSize="19sp"
