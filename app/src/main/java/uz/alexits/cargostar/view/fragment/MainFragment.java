@@ -51,12 +51,14 @@ public class MainFragment extends Fragment {
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
     //main content views
-    private ImageView publicBidsImageView;
-    private ImageView myBidsImageView;
+    private ImageView publicRequestsImageView;
+    private ImageView myRequestsImageView;
     private ImageView createParcelImageView;
     private ImageView currentParcelsImageView;
     private ImageView scanParcelsImageView;
     private ImageView parcelDeliveryImageView;
+
+    private static long courierId = -1;
 
     public MainFragment() {
         // Required empty public constructor
@@ -67,6 +69,8 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         context = getContext();
+
+        courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
     }
 
     @Override
@@ -84,8 +88,8 @@ public class MainFragment extends Fragment {
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
-        publicBidsImageView = root.findViewById(R.id.public_bids_image_view);
-        myBidsImageView = root.findViewById(R.id.my_bids_image_view);
+        publicRequestsImageView = root.findViewById(R.id.public_bids_image_view);
+        myRequestsImageView = root.findViewById(R.id.my_bids_image_view);
         createParcelImageView = root.findViewById(R.id.create_parcel_image_view);
         currentParcelsImageView = root.findViewById(R.id.current_parcels_image_view);
         scanParcelsImageView = root.findViewById(R.id.scan_parcels_image_view);
@@ -100,7 +104,6 @@ public class MainFragment extends Fragment {
         //header views
         editImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, ProfileActivity.class));
-
         });
         createUserImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, CreateUserActivity.class));
@@ -112,12 +115,15 @@ public class MainFragment extends Fragment {
             startActivity(new Intent(context, CalculatorActivity.class));
         });
         //main content views
-        publicBidsImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(MainFragment.this).navigate(R.id.action_mainFragment_to_publicBidsFragment);
+        publicRequestsImageView.setOnClickListener(v -> {
+            final MainFragmentDirections.ActionMainFragmentToPublicBidsFragment action = MainFragmentDirections.actionMainFragmentToPublicBidsFragment();
+            action.setCourierId(courierId);
+            NavHostFragment.findNavController(this).navigate(action);
         });
-
-        myBidsImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(MainFragment.this).navigate(R.id.action_mainFragment_to_myBidsFragment);
+        myRequestsImageView.setOnClickListener(v -> {
+            final MainFragmentDirections.ActionMainFragmentToMyBidsFragment action = MainFragmentDirections.actionMainFragmentToMyBidsFragment();
+            action.setCourierId(courierId);
+            NavHostFragment.findNavController(this).navigate(action);
         });
 
         createParcelImageView.setOnClickListener(v -> {

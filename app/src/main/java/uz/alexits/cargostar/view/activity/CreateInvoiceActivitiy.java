@@ -33,7 +33,6 @@ import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.PaymentStatus;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.location.Address;
 import uz.alexits.cargostar.model.shipping.Cargo;
@@ -178,7 +177,7 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_parcel);
+        setContentView(R.layout.activity_create_invoice);
         context = this;
 
         itemList = new ArrayList<>();

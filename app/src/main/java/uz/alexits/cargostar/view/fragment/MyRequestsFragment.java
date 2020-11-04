@@ -60,7 +60,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     private RecyclerView myRequestsRecyclerView;
     private MyRequestAdapter adapter;
 
-    private long currentCourierId;
+    private static long courierId = -1;
 
     public MyRequestsFragment() {
         // Required empty public constructor
@@ -71,9 +71,11 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         super.onCreate(savedInstanceState);
         context = getContext();
         activity = getActivity();
-        currentCourierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
 
-        SyncWorkRequest.fetchRequestData(getContext(), 9);
+        if (getArguments() != null) {
+            courierId = MyRequestsFragmentArgs.fromBundle(getArguments()).getCourierId();
+        }
+        SyncWorkRequest.fetchRequestData(getContext());
     }
 
     @Override
@@ -169,8 +171,9 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
             });
         });
 
-        requestsViewModel.getMyRequests(currentCourierId).observe(getViewLifecycleOwner(), myRequests -> {
-            Log.i(TAG, "courierId=" + currentCourierId);
+        requestsViewModel.getMyRequests(courierId).observe(getViewLifecycleOwner(), myRequests -> {
+            Log.i(TAG, "onActivityCreated: " + myRequests);
+
             adapter.setMyRequestList(myRequests);
             adapter.notifyDataSetChanged();
         });
@@ -179,11 +182,21 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
 
     @Override
     public void onRequestSelected(Request currentItem, RecyclerView.ViewHolder holder) {
-//        currentItem.setRead(true);
+        currentItem.setNew(false);
         requestsViewModel.readReceipt(currentItem.getId());
 
         final MyRequestsFragmentDirections.ActionMyBidsFragmentToParcelDataFragment action = MyRequestsFragmentDirections.actionMyBidsFragmentToParcelDataFragment();
-        action.setParcelId(currentItem.getId());
+        action.setRequestId(currentItem.getId());
+        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
+        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
+        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
+        action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : -1L);
+        action.setSenderCountryId(currentItem.getSenderCountryId() != null ? currentItem.getSenderCountryId() : -1L);
+        action.setSenderRegionId(currentItem.getSenderRegionId() != null ? currentItem.getSenderRegionId() : -1L);
+        action.setSenderCityId(currentItem.getSenderCityId() != null ? currentItem.getSenderCityId() : -1L);
+        action.setRecipientCountryId(currentItem.getRecipientCountryId() != null ? currentItem.getRecipientCountryId() : -1L);
+        action.setRecipientCityId(currentItem.getRecipientCityId() != null ? currentItem.getRecipientCityId() : -1L);
+        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
         action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
         NavHostFragment.findNavController(this).navigate(action);
     }

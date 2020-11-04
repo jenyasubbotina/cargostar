@@ -91,7 +91,7 @@ public class ParcelStatusFragment extends Fragment {
         parcelItem.setOnClickListener(v -> {
             final ParcelStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action =
                     ParcelStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
-            action.setParcelId(requestId);
+            action.setRequestId(requestId);
             action.setRequestOrParcel(IntentConstants.INTENT_PARCEL);
             NavHostFragment.findNavController(this).navigate(action);
         });

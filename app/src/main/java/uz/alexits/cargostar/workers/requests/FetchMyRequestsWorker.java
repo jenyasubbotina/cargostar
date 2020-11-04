@@ -20,10 +20,12 @@ import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchMyRequestsWorker extends Worker {
+    private final int perPage;
     private final long courierId;
 
     public FetchMyRequestsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
+        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1);
     }
 
@@ -33,7 +35,7 @@ public class FetchMyRequestsWorker extends Worker {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
-            final Response<List<Request>> response = RetrofitClient.getInstance(getApplicationContext()).getMyRequests(courierId);
+            final Response<List<Request>> response = RetrofitClient.getInstance(getApplicationContext()).getMyRequests(perPage, courierId);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

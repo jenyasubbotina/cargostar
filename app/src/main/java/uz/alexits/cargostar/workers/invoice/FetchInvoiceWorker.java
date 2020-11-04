@@ -52,13 +52,13 @@ public class FetchInvoiceWorker extends Worker {
 
                     outputDataBuilder.putLong(Constants.KEY_INVOICE_ID, invoice.getId());
                     outputDataBuilder.putString(Constants.KEY_NUMBER, invoice.getNumber());
-                    outputDataBuilder.putLong(Constants.KEY_PROVIDER_ID, invoice.getProviderId());
-                    outputDataBuilder.putLong(Constants.KEY_REQUEST_ID, invoice.getRequestId());
-                    outputDataBuilder.putLong(Constants.KEY_TARIFF_ID, invoice.getTariffId());
+                    outputDataBuilder.putLong(Constants.KEY_PROVIDER_ID, invoice.getProviderId() != null ? invoice.getProviderId() : -1L);
+                    outputDataBuilder.putLong(Constants.KEY_REQUEST_ID, invoice.getRequestId() != null ? invoice.getRequestId() : -1L);
+                    outputDataBuilder.putLong(Constants.KEY_TARIFF_ID, invoice.getTariffId() != null ? invoice.getTariffId() : -1L);
 
-                    outputDataBuilder.putLong(Constants.KEY_SENDER_ID, invoice.getSenderId());
-                    outputDataBuilder.putLong(Constants.KEY_RECIPIENT_ID, invoice.getRecipientId());
-                    outputDataBuilder.putLong(Constants.KEY_PAYER_ID, invoice.getPayerId());
+                    outputDataBuilder.putLong(Constants.KEY_SENDER_ID, invoice.getSenderId() != null ? invoice.getSenderId() : -1L);
+                    outputDataBuilder.putLong(Constants.KEY_RECIPIENT_ID, invoice.getRecipientId() != null ? invoice.getRecipientId() : -1L);
+                    outputDataBuilder.putLong(Constants.KEY_PAYER_ID, invoice.getPayerId() != null ? invoice.getPayerId() : -1L);
 
                     outputDataBuilder.putDouble(Constants.KEY_PRICE, invoice.getPrice());
 

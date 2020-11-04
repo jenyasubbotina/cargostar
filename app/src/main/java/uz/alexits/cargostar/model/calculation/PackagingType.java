@@ -135,26 +135,9 @@ public class PackagingType {
         return type;
     }
 
-//    @NonNull
-//    @Override
-//    public String toString() {
-//        return name;
-//    }
-
-
+    @NonNull
     @Override
     public String toString() {
-        return "PackagingType{" +
-                "id=" + id +
-                ", packagingId=" + packagingId +
-                ", name='" + name + '\'' +
-                ", nameEn='" + nameEn + '\'' +
-                ", nameUz='" + nameUz + '\'' +
-                ", description='" + description + '\'' +
-                ", type=" + type +
-                ", status=" + status +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return name;
     }
 }

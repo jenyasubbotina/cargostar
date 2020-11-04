@@ -34,6 +34,10 @@ import android.widget.Toast;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.calculation.Packaging;
+import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.calculation.PackagingType;
@@ -111,9 +115,6 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
     private ImageView firstCardImageView;
     private ImageView secondCardImageView;
 
-    private static long selectedProviderId = 0;
-    private static int selectedType = 0;
-
     /* cargo list */
     private EditText weightEditText;
     private EditText lengthEditText;
@@ -131,8 +132,15 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
 
     /* show current cargoList */
     private CalculatorAdapter calculatorAdapter;
-    private List<Cargo> itemList;
     private RecyclerView itemRecyclerView;
+
+    private static Long selectedCountryId = null;
+    private static Provider selectedProvider = null;
+    private static Packaging selectedPackaging = null;
+    private static List<Long> selectedPackagingIdList = null;
+    private static List<ZoneSettings> selectedZoneSettingsList = null;
+
+    private static final List<Cargo> itemList = new ArrayList<>();
 
     public CalculatorFragment() {
         // Required empty public constructor
@@ -143,7 +151,6 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
         super.onCreate(savedInstanceState);
         context = getContext();
         activity = getActivity();
-        itemList = new ArrayList<>();
 
         SyncWorkRequest.fetchPackagingData(getContext(), 100000);
     }
@@ -151,7 +158,6 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_calculator, container, false);
-
         //header views
         fullNameTextView = activity.findViewById(R.id.full_name_text_view);
         branchTextView = activity.findViewById(R.id.branch_text_view);
@@ -267,11 +273,14 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
             UiUtils.onFocusChanged(heightEditText, hasFocus);
         });
 
+        /* spinner items */
         srcCountrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 final TextView itemTextView = (TextView) view;
                 final Country srcCountry = (Country) adapterView.getSelectedItem();
+
+                calculatorViewModel.setSrcCountryId(srcCountry.getId());
 
                 if (itemTextView != null) {
                     if (i < adapterView.getCount()) {
@@ -279,10 +288,12 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                         srcCountryField.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
-                populateCityAdapter(srcCityArrayAdapter, srcCountry.getId());
 
                 //country & null = hide all
                 if (destCountrySpinner.getSelectedItem() == null) {
+                    selectedCountryId = null;
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                     firstCardRadioBtn.setChecked(false);
                     secondCardRadioBtn.setChecked(false);
 
@@ -305,6 +316,9 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                 if (!TextUtils.isEmpty(srcCountry.getNameEn()) && srcCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
                     //uzbekistan -> uzbekistan = cargo only
                     if (!TextUtils.isEmpty(destCountry.getNameEn()) && destCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        selectedCountryId = srcCountry.getId();
+                        calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                         firstCardRadioBtn.setChecked(false);
 
                         firstCardImageView.setImageResource(R.drawable.logo_cargo_calc);
@@ -322,6 +336,9 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                         return;
                     }
                     //uzbekistan -> other = fedex & tnt (export)
+                    selectedCountryId = destCountry.getId();
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                     firstCardRadioBtn.setChecked(false);
                     secondCardRadioBtn.setChecked(false);
 
@@ -341,6 +358,9 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                 }
                 //other -> uzbekistan = tnt only
                 if (!TextUtils.isEmpty(destCountry.getNameEn()) && destCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                    selectedCountryId = srcCountry.getId();
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                     firstCardRadioBtn.setChecked(false);
                     firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
 
@@ -356,6 +376,9 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                     secondCard.setVisibility(View.INVISIBLE);
                     return;
                 }
+                selectedCountryId = null;
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                 firstCardRadioBtn.setChecked(false);
                 secondCardRadioBtn.setChecked(false);
 
@@ -383,16 +406,20 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                 final TextView itemTextView = (TextView) view;
                 final Country destCountry = (Country) adapterView.getSelectedItem();
 
+                calculatorViewModel.setDestCountryId(destCountry.getId());
+
                 if (itemTextView != null) {
                     if (i < adapterView.getCount()) {
                         itemTextView.setTextColor(context.getColor(R.color.colorBlack));
                         destCountryField.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
-                populateCityAdapter(destCityArrayAdapter, destCountry.getId());
 
                 //country & null = hide all
                 if (srcCitySpinner.getSelectedItem() == null) {
+                    selectedCountryId = null;
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                     firstCardRadioBtn.setChecked(false);
                     secondCardRadioBtn.setChecked(false);
 
@@ -414,6 +441,9 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                 if (!TextUtils.isEmpty(srcCountry.getNameEn()) && srcCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
                     //uzbekistan -> uzbekistan = cargo only
                     if (!TextUtils.isEmpty(destCountry.getNameEn()) && destCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        selectedCountryId = destCountry.getId();
+                        calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                         firstCardRadioBtn.setChecked(false);
 
                         firstCardImageView.setImageResource(R.drawable.logo_cargo_calc);
@@ -431,6 +461,9 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                         return;
                     }
                     //uzbekistan -> other = fedex & tnt (export)
+                    selectedCountryId = destCountry.getId();
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                     firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
                     firstCardRadioBtn.setChecked(false);
                     secondCardRadioBtn.setChecked(false);
@@ -451,6 +484,9 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                 }
                 //other -> uzbekistan = tnt only
                 if (!TextUtils.isEmpty(destCountry.getNameEn()) && destCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                    selectedCountryId = srcCountry.getId();
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                     firstCardRadioBtn.setChecked(false);
 
                     firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
@@ -467,6 +503,9 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
                     secondCard.setVisibility(View.INVISIBLE);
                     return;
                 }
+                selectedCountryId = null;
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
+
                 firstCardRadioBtn.setChecked(false);
                 secondCardRadioBtn.setChecked(false);
 
@@ -526,6 +565,7 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
             }
         });
 
+        /* providers */
         firstCard.setOnClickListener(v -> {
             firstCardRadioBtn.setChecked(true);
         });
@@ -539,77 +579,61 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
             if (b) {
                 secondCardRadioBtn.setChecked(false);
 
-                showPackageTypeRadioBtns();
-
-                docTypeRadioBtn.setChecked(false);
-                boxTypeRadioBtn.setChecked(false);
-
                 if (firstCardRadioBtn.getText().equals(getString(R.string.cargostar))) {
-                    calculatorViewModel.setSelectedProviderId(6);
+                    calculatorViewModel.setProviderId(6L);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, 6L);
                     return;
                 }
                 if (firstCardRadioBtn.getText().equals(getString(R.string.tnt))) {
-                    calculatorViewModel.setSelectedProviderId(5);
+                    calculatorViewModel.setProviderId(5L);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, 5L);
                 }
                 return;
             }
-            if (!b && !secondCardRadioBtn.isChecked()) {
-                hidePackageTypeRadioBtns();
-
-                docTypeRadioBtn.setChecked(false);
-                boxTypeRadioBtn.setChecked(false);
-
-                calculatorViewModel.setSelectedProviderId(0);
+            if (!secondCardRadioBtn.isChecked()) {
+                selectedProvider = null;
+                calculatorViewModel.setProviderId(null);
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, null);
             }
         });
 
         secondCardRadioBtn.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
                 firstCardRadioBtn.setChecked(false);
-
-                showPackageTypeRadioBtns();
-
-                docTypeRadioBtn.setChecked(false);
-                boxTypeRadioBtn.setChecked(false);
                 //only fedex case
-                calculatorViewModel.setSelectedProviderId(4);
+                calculatorViewModel.setProviderId(4L);
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, 4L);
                 return;
             }
-            if (!b && !firstCardRadioBtn.isChecked()) {
-                hidePackageTypeRadioBtns();
-
-                docTypeRadioBtn.setChecked(false);
-                boxTypeRadioBtn.setChecked(false);
-
-                calculatorViewModel.setSelectedProviderId(0);
+            if (!firstCardRadioBtn.isChecked()) {
+                selectedProvider = null;
+                calculatorViewModel.setProviderId(null);
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, null);
             }
         });
 
         /* choose packaging type (1 / 2) */
         packageTypeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            int selectedType = 0;
-
             if (checkedId == docTypeRadioBtn.getId()) {
                 //docs
-                selectedType = 1;
-                showInputFields();
+                calculatorViewModel.setType(1);
             }
             else if (checkedId == boxTypeRadioBtn.getId()) {
                 //boxes
-                selectedType = 2;
-                showInputFields();
+                calculatorViewModel.setType(2);
             }
             else {
-                hideInputFields();
+                calculatorViewModel.setType(null);
             }
-            calculatorViewModel.setSelectedType(selectedType);
         });
 
-        //todo: populate this spinner from data Table
         packagingTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 final TextView itemTextView = (TextView) view;
+                final PackagingType selectedPackagingType = (PackagingType) adapterView.getSelectedItem();
+
+                calculatorViewModel.setPackagingId(selectedPackagingType.getPackagingId());
 
                 if (itemTextView != null) {
                     if (i < adapterView.getCount()) {
@@ -681,78 +705,81 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
             });
         });
 
-        //country/city spinners
-       locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
-
-       locationDataViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
-           for (final Country country : countryList) {
-               countryArrayAdapter.add(country);
-           }
-           countryArrayAdapter.notifyDataSetChanged();
-       });
-
-        //providers / packaging
+        locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
         calculatorViewModel = new ViewModelProvider(this).get(CalculatorViewModel.class);
 
-        calculatorViewModel.getSelectedProviderId().observe(getViewLifecycleOwner(), providerId -> {
-            selectedProviderId = providerId;
-        });
-
-        calculatorViewModel.getSelectedType().observe(getViewLifecycleOwner(), type -> {
-            selectedType = type;
-        });
-
-//        calculatorViewModel.getProviderList().observe(getViewLifecycleOwner(), providers -> {
-//            Log.i(TAG, "providerList=" + providers);
-//        });
-//
-//        calculatorViewModel.getPackagingTypeList().observe(getViewLifecycleOwner(), packagingTypes -> {
-//            Log.i(TAG, "packagingTypeList=" + packagingTypes);
-//        });
-//
-//        calculatorViewModel.getPackagingTypesByProviderId(4, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
-//            Log.i(TAG, "Fedex 1=" + packagingTypeList);
-//        });
-//
-//        calculatorViewModel.getPackagingTypesByProviderId(4, 2).observe(getViewLifecycleOwner(), packagingTypes -> {
-//            Log.i(TAG, "Fedex 2=" + packagingTypes);
-//        });
-//
-//        calculatorViewModel.getPackagingTypesByProviderId(5, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
-//            Log.i(TAG, "tnt 1=" + packagingTypeList);
-//        });
-//
-//        calculatorViewModel.getPackagingTypesByProviderId(5, 2).observe(getViewLifecycleOwner(), packagingTypes -> {
-//            Log.i(TAG, "tnt 2=" + packagingTypes);
-//        });
-//
-//        calculatorViewModel.getPackagingTypesByProviderId(6, 1).observe(getViewLifecycleOwner(), packagingTypeList -> {
-//            Log.i(TAG, "cargo 1=" + packagingTypeList);
-//        });
-//
-//        calculatorViewModel.getPackagingTypesByProviderId(6, 2).observe(getViewLifecycleOwner(), packagingTypeList -> {
-//            Log.i(TAG, "cargo 2=" + packagingTypeList);
-//        });
-
-//        if (packagingTypeList != null) {
-//            Log.i(TAG, "packagingTypeList: " + packagingTypeList);
-//
-//            for (final PackagingType packagingType : packagingTypeList) {
-//                packagingTypeArrayAdapter.add(packagingType);
-//            }
-//            packagingTypeArrayAdapter.notifyDataSetChanged();
-//        }
-    }
-
-    private void populateCityAdapter(final ArrayAdapter<City> arrayAdapter, final long countryId) {
-        arrayAdapter.clear();
-
-        locationDataViewModel.getCitiesByCountryId(countryId).observe(getViewLifecycleOwner(), cityList -> {
-            Log.i(TAG, "country selected cities by id " + countryId + " :" + cityList);
-            for (final City city : cityList) {
-                arrayAdapter.add(city);
+        /* countries */
+        locationDataViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
+            countryArrayAdapter.clear();
+            for (final Country country : countryList) {
+                countryArrayAdapter.add(country);
             }
-            arrayAdapter.notifyDataSetChanged();
+            countryArrayAdapter.notifyDataSetChanged();
+        });
+
+        /* cities */
+        calculatorViewModel.getSrcCities().observe(getViewLifecycleOwner(), srcCityList -> {
+            srcCityArrayAdapter.clear();
+            for (final City city : srcCityList) {
+                srcCityArrayAdapter.add(city);
+            }
+            srcCityArrayAdapter.notifyDataSetChanged();
+        });
+
+        calculatorViewModel.getDestCities().observe(getViewLifecycleOwner(), destCityList -> {
+            destCityArrayAdapter.clear();
+            for (final City city : destCityList) {
+                destCityArrayAdapter.add(city);
+            }
+            destCityArrayAdapter.notifyDataSetChanged();
+        });
+
+        /* calculation */
+        calculatorViewModel.getProvider().observe(getViewLifecycleOwner(), provider -> {
+            selectedProvider = provider;
+        });
+
+        calculatorViewModel.getType().observe(getViewLifecycleOwner(), type -> {
+            calculatorViewModel.setTypePackageIdList(type, selectedPackagingIdList);
+        });
+
+        calculatorViewModel.getPackagingIds().observe(getViewLifecycleOwner(), packagingIds -> {
+            selectedPackagingIdList = packagingIds;
+            if (packageTypeRadioGroup.getCheckedRadioButtonId() == docTypeRadioBtn.getId()) {
+                calculatorViewModel.setTypePackageIdList(1, packagingIds);
+            }
+            else if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+                calculatorViewModel.setTypePackageIdList(2, packagingIds);
+            }
+        });
+
+        calculatorViewModel.getPackagingTypeList().observe(getViewLifecycleOwner(), packagingTypeList -> {
+            packagingTypeArrayAdapter.clear();
+            for (final PackagingType packagingType : packagingTypeList) {
+                packagingTypeArrayAdapter.add(packagingType);
+            }
+            packagingTypeArrayAdapter.notifyDataSetChanged();
+        });
+
+        calculatorViewModel.getPackaging().observe(getViewLifecycleOwner(), packaging -> {
+            selectedPackaging = packaging;
+        });
+
+        calculatorViewModel.getZoneList().observe(getViewLifecycleOwner(), zoneList -> {
+            if (zoneList != null && !zoneList.isEmpty()) {
+
+                final List<Long> zoneIds = new ArrayList<>();
+
+                for (final Zone zone : zoneList) {
+                    zoneIds.add(zone.getId());
+                }
+                calculatorViewModel.setZoneIds(zoneIds);
+            }
+        });
+
+        calculatorViewModel.getZoneSettingsList().observe(getViewLifecycleOwner(), zoneSettingsList -> {
+            Log.i(TAG, "zoneSettingsList: " + zoneSettingsList);
+            selectedZoneSettingsList = zoneSettingsList;
         });
     }
 
@@ -798,12 +825,17 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
     }
 
     private void addCargoToInvoice() {
+        final PackagingType packagingType = (PackagingType) packagingTypeSpinner.getSelectedItem();
         final String weight = weightEditText.getText().toString();
         final String length = lengthEditText.getText().toString();
         final String width = widthEditText.getText().toString();
         final String height = heightEditText.getText().toString();
 
         /* check for empty fields */
+        if (packagingType == null) {
+            Toast.makeText(context, "Выберите упаковку", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (TextUtils.isEmpty(weight)) {
             Toast.makeText(context, "Укажите вес", Toast.LENGTH_SHORT).show();
             return;
@@ -837,16 +869,43 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
             Toast.makeText(context, "Высота указана неверно", Toast.LENGTH_SHORT).show();
             return;
         }
-        itemList.add(new Cargo(Double.parseDouble(length), Double.parseDouble(width), Double.parseDouble(height), Double.parseDouble(weight)));
+        itemList.add(new Cargo("", packagingType.getName(), Double.parseDouble(length), Double.parseDouble(width), Double.parseDouble(height), Double.parseDouble(weight), ""));
         calculatorAdapter.notifyItemInserted(itemList.size() - 1);
     }
 
     private void calculateTotalPrice() {
-        int totalQuantity = itemList.size() + 1;
-        int totalWeight = 0;
-        int totalLength = 0;
-        int totalWidth = 0;
-        int totalHeight = 0;
+        if (srcCountrySpinner.getSelectedItem() == null) {
+            Toast.makeText(context, "Укажите страну отправки", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (destCountrySpinner.getSelectedItem() == null) {
+            Toast.makeText(context, "Укажите страну прибытия", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (packagingTypeSpinner.getSelectedItem() == null) {
+            Toast.makeText(context, "Выберите упаковку", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!firstCardRadioBtn.isChecked() && !secondCardRadioBtn.isChecked()) {
+            Toast.makeText(context, "Укажите поставщика услуг", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (packageTypeRadioGroup.getCheckedRadioButtonId() != docTypeRadioBtn.getId() && packageTypeRadioGroup.getCheckedRadioButtonId() != boxTypeRadioBtn.getId()) {
+            Toast.makeText(context, "Укажите тип упаковки", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (itemList.isEmpty()) {
+            Toast.makeText(context, "Добавьте хотя бы одну позицию", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int totalQuantity = itemList.size();
+        double totalVolume = 0.0;
+        double totalWeight = 0.0;
+        double totalLength = 0.0;
+        double totalWidth = 0.0;
+        double totalHeight = 0.0;
+        
+        double totalPrice = 0.0;
 
         for (final Cargo item : itemList) {
             totalWeight += item.getWeight();
@@ -854,43 +913,51 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
             totalWidth += item.getWidth();
             totalHeight += item.getHeight();
         }
-        final String totalDimensions = totalLength + "x" + totalWidth + "x" + totalHeight;
+        totalVolume = totalLength * totalWidth * totalHeight;
+
+        if (selectedPackaging != null) {
+            final int volumex = selectedPackaging.getVolumex();
+
+            if (volumex > 0) {
+                final double volumexWeight = totalVolume / volumex;
+
+                if (volumexWeight > totalWeight) {
+                    totalWeight = volumexWeight;
+                }
+            }
+        }
+        ZoneSettings actualZoneSettings = null;
+
+        for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
+            if (totalWeight >= zoneSettings.getWeightFrom() && totalWeight < zoneSettings.getWeightTo()) {
+                actualZoneSettings = zoneSettings;
+                Log.i(TAG, "selectedZoneSettings=" + actualZoneSettings);
+                break;
+            }
+        }
+        if (actualZoneSettings != null) {
+            totalPrice = actualZoneSettings.getPriceFrom();
+            Log.i(TAG, "calculating: from " + actualZoneSettings.getWeightFrom() + " to " + actualZoneSettings.getWeightTo() + " with " + actualZoneSettings.getWeightStep());
+            for (double i = actualZoneSettings.getWeightFrom(); i < totalWeight; i += actualZoneSettings.getWeightStep()) {
+                totalPrice += actualZoneSettings.getPriceStep();
+            }
+        }
+        if (selectedPackaging != null) {
+            if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+                totalPrice += selectedPackaging.getParcelFee();
+            }
+        }
+        if (selectedProvider != null) {
+            totalPrice = totalPrice * (selectedProvider.getFuel() + 100) / 100;
+
+        }
+        totalPrice *= 1.15;
+
         totalQuantityTextView.setText(String.valueOf(totalQuantity));
         totalWeightTextView.setText(String.valueOf(totalWeight));
-        totalDimensionsTextView.setText(totalDimensions);
-
-//            if (firstCardRadioBtn) {
-//                //todo: providerId -> packaging -> get all packagings with providerId
-//            }
-//            else if (secondCardRadioBtn) {
-//                //todo: providerId -> packaging -> get all packagings with providerId
-//            }
-//
-//            switch (packageTypeRadioGroup.getCheckedRadioButtonId()) {
-//                case docTypeRadioBtn.getId(): {
-//                    //todo: select type 1 -> packaging-type
-//                    break;
-//                }
-//                case boxTypeRadioBtn.getId(): {
-//                    //todo: select type 2 -> packaging-type
-//                    break;
-//                }
-//            }
-
-        //todo: total weight (for each cargo -> sum up weights / length x width x height and sum up)
-
-        //todo: before calculating compare my overall Volume with volumx from Packaging table. If overall volume / volumx > total weight -> total weight = overall volume / volumx. Else -> weight is weight.
-
-        //todo: get packaging_id and look for tariff name in Packaging
-
-        //todo: start with weight -> check between from & to values. With each step price rises according to priceStep.
-
-        //todo: add constants such that:  1) fuel (in Provider table in percent), 2) ndc (in table Settings in percent),
-
-        //todo: add parcel_fee in Packaging table (only for type=2)
-
-//            expressCost.setText();
-//            economyExpressCost.setText();
+        totalDimensionsTextView.setText(String.valueOf(totalVolume));
+        expressCost.setText(String.valueOf(totalPrice));
+        economyExpressCost.setText(String.valueOf(totalPrice));
     }
 
     private void hidePackageTypeRadioBtns() {

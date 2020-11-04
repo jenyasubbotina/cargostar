@@ -105,17 +105,17 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
     private ParcelDataAdapter adapter;
     private ImageView editParcelImageView;
 
-    private static long requestId;
-    private static int requestOrParcel;
-    private static long invoiceId;
-    private static long providerId;
-    private static long courierId;
-    private static long senderId;
-    private static long senderCountryId;
-    private static long senderRegionId;
-    private static long senderCityId;
-    private static long recipientCountryId;
-    private static long recipientCityId;
+    private static long requestId = -1L;
+    private static int requestOrParcel = -1;
+    private static long invoiceId = -1L;
+    private static long providerId = -1L;
+    private static long courierId = -1L;
+    private static long senderId = -1L;
+    private static long senderCountryId = -1L;
+    private static long senderRegionId = -1L;
+    private static long senderCityId = -1L;
+    private static long recipientCountryId = -1L;
+    private static long recipientCityId = -1L;
 
     public ParcelDataFragment() {
         // Required empty public constructor
@@ -141,29 +141,17 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
 
         if (getArguments() != null) {
             //parcelId can be requestId
-            requestId = ParcelDataFragmentArgs.fromBundle(getArguments()).getParcelId();
+            requestId = ParcelDataFragmentArgs.fromBundle(getArguments()).getRequestId();
             requestOrParcel = ParcelDataFragmentArgs.fromBundle(getArguments()).getRequestOrParcel();
             invoiceId = ParcelDataFragmentArgs.fromBundle(getArguments()).getInvoiceId();
             senderId = ParcelDataFragmentArgs.fromBundle(getArguments()).getClientId();
+            courierId = ParcelDataFragmentArgs.fromBundle(getArguments()).getCourierId();
             providerId = ParcelDataFragmentArgs.fromBundle(getArguments()).getProviderId();
             senderCountryId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderCountryId();
             senderRegionId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderRegionId();
             senderCityId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderCityId();
             recipientCountryId = ParcelDataFragmentArgs.fromBundle(getArguments()).getRecipientCountryId();
             recipientCityId = ParcelDataFragmentArgs.fromBundle(getArguments()).getRecipientCityId();
-
-            Log.i(TAG, "invoice data: " +
-                    "\nrequestId=" + requestId +
-                    "\nrequestOrParcel=" + requestOrParcel +
-                    "\ninvoiceId=" + invoiceId +
-                    "\ncourierId=" + courierId +
-                    "\nclientId=" + senderId +
-                    "\nproviderId=" + providerId +
-                    "\nsenderCountryId=" + senderCountryId +
-                    "\nsenderRegionId=" + senderRegionId +
-                    "\nsenderCityId=" + senderCityId +
-                    "\nrecipientCountryId=" + recipientCountryId +
-                    "\nrecipientCityId=" + recipientCityId);
 
             if (senderId > 0) {
                 SyncWorkRequest.fetchInvoiceData(context, invoiceId, senderId);
@@ -205,9 +193,6 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
         profileImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, MainActivity.class));
         });
-        editImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, ProfileActivity.class));
-        });
         createUserImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, CreateUserActivity.class));
         });
@@ -216,6 +201,9 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
         });
         calculatorImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, CalculatorActivity.class));
+        });
+        editImageView.setOnClickListener(v -> {
+            startActivity(new Intent(context, ProfileActivity.class));
         });
     }
 
@@ -512,13 +500,23 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
             payerDataList.set(6, new ParcelData(getString(R.string.city), city != null ? city.getName() : null, ParcelData.TYPE_ITEM));
         });
 
-        editParcelImageView.setOnClickListener(v -> {
-            final Intent createParcelIntent = new Intent(getContext(), CreateInvoiceActivitiy.class);
-            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_PARCEL);
-            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
-            createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
-            startActivity(createParcelIntent);
-        });
+        if (invoiceId <= 0) {
+            editParcelImageView.setVisibility(View.GONE);
+            editParcelImageView.setOnClickListener(null);
+        }
+        else {
+            editParcelImageView.setVisibility(View.VISIBLE);
+            editParcelImageView.setOnClickListener(v -> {
+                //todo: pass all data here
+                final Intent createParcelIntent = new Intent(getContext(), CreateInvoiceActivitiy.class);
+                createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_PARCEL);
+                createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
+                createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
+                startActivity(createParcelIntent);
+            });
+        }
+
+
 
         parcelSearchImageView.setOnClickListener(v -> {
             final String parcelIdStr = parcelSearchEditText.getText().toString();

@@ -55,15 +55,14 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
             holder.parcelIdTextView.setText(requestId);
             holder.fromTextView.setText(String.valueOf(currentRequest.getSenderCityId()));
 
-            //todo: get payment status from Invoice via invoiceId
-//            final PaymentStatus paymentStatus = currentRequest.getPaymentStatus();
-            //todo: add isRead parameter for Request
             if (currentRequest.isNew()) {
                 holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
             }
             else {
                 holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
             }
+            //todo: get payment status from Invoice via invoiceId
+//            final PaymentStatus paymentStatus = currentRequest.getPaymentStatus();
 //            if (paymentStatus == PaymentStatus.PAID || paymentStatus == PaymentStatus.PAID_PARTIALLY || paymentStatus == PaymentStatus.PAID_MORE) {
 //                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
 //            }

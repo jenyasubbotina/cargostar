@@ -41,15 +41,15 @@ public class Cargo {
 
     @SerializedName("qr")
     @ColumnInfo(name = "qr")
-    private String qr;
+    @Nullable private String qr;
 
-    public Cargo(@NonNull final String description,
+    public Cargo(@Nullable final String description,
                  @NonNull final String packageType,
                  final double length,
                  final double width,
                  final double height,
                  final double weight,
-                 final String qr) {
+                 @Nullable final String qr) {
         this.description = description;
         this.packageType = packageType;
         this.length = length;
@@ -60,7 +60,7 @@ public class Cargo {
     }
 
     @Ignore
-    public Cargo(@NonNull final String description,
+    public Cargo(@Nullable final String description,
                  final double length,
                  final double width,
                  final double height,

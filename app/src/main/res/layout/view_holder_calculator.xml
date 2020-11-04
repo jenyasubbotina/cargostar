@@ -92,42 +92,6 @@
         android:textColor="#0052A6"
         android:text="@string/dimensions"/>
 
-    <TextView
-        android:id="@+id/source_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/package_type_text_view"
-        app:layout_constraintStart_toStartOf="@id/package_type_text_view"
-        android:layout_marginTop="12dp"
-        android:textSize="16sp"
-        android:textColor="#A5ABC0"
-        android:fontFamily="@font/geometria_bold"
-        android:text="@string/tas"/>
-
-    <ImageView
-        android:id="@+id/path_image_view"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/source_text_view"
-        app:layout_constraintBottom_toBottomOf="@id/source_text_view"
-        app:layout_constraintStart_toEndOf="@id/source_text_view"
-        android:layout_marginStart="10dp"
-        android:contentDescription="@string/new_bid"
-        android:src="@drawable/ic_path"/>
-
-    <TextView
-        android:id="@+id/destination_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/source_text_view"
-        app:layout_constraintBottom_toBottomOf="@id/source_text_view"
-        app:layout_constraintStart_toEndOf="@id/path_image_view"
-        android:layout_marginStart="10dp"
-        android:textSize="16sp"
-        android:textColor="#A5ABC0"
-        android:fontFamily="@font/geometria_bold"
-        android:text="@string/sam"/>
-
     <ImageView
         android:id="@+id/delete_item_image_view"
         android:layout_width="wrap_content"

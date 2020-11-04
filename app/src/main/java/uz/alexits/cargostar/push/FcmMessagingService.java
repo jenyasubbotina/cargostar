@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 public class FcmMessagingService extends FirebaseMessagingService {
     @Override
     public void onCreate() {
@@ -36,6 +38,13 @@ public class FcmMessagingService extends FirebaseMessagingService {
         }
         if (!remoteMessage.getData().isEmpty()) {
             Log.i(TAG, "dataPayload: " + remoteMessage.getData());
+
+            final Map<String, String> dataPayload = remoteMessage.getData();
+            final String clientId = dataPayload.get("client_id");
+            final String id = dataPayload.get("id");
+            final String countryId = dataPayload.get("country_id");
+
+            Log.i(TAG, "clientId=" + clientId + " id=" + id + " countryId=" + countryId);
         }
     }
 

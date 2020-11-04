@@ -2,6 +2,9 @@ package uz.alexits.cargostar.database.cache;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
 
 import uz.alexits.cargostar.database.dao.ActorDao;
 import uz.alexits.cargostar.database.dao.InvoiceDao;
@@ -10,19 +13,17 @@ import uz.alexits.cargostar.database.dao.PackagingDao;
 import uz.alexits.cargostar.database.dao.ParcelDao;
 import uz.alexits.cargostar.database.dao.RequestDao;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneCountry;
+import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.shipping.Cargo;
-import uz.alexits.cargostar.model.shipping.Consolidation;
 import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.model.shipping.Parcel;
-import uz.alexits.cargostar.model.shipping.ReceiptTransitPointCrossRef;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.Notification;
-import uz.alexits.cargostar.model.TransportationStatus;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.calculation.Packaging;
@@ -78,7 +79,7 @@ public class Repository {
         this.packagingList = packagingDao.selectAllPackaging();
         this.packagingTypeList = packagingDao.selectAllPackagingTypes();
         /* shipping data */
-        this.requestList = requestDao.selectAllRequests();
+        this.requestList = requestDao.selectPublicRequests();
     }
 
     public static Repository getInstance(final Application application) {
@@ -178,16 +179,33 @@ public class Repository {
         return packagingDao.selectPackagingsByProviderId(providerId);
     }
 
-    public LiveData<List<PackagingType>> selectPackagingTypesByTypeAndPackagingIds(final long type, final long[] packagingIds) {
+    public LiveData<List<PackagingType>> selectPackagingTypesByTypeAndPackagingIds(final long type, final List<Long> packagingIds) {
         return packagingDao.selectPackagingTypesByTypeAndPackagingIds(type, packagingIds);
     }
 
-    public LiveData<List<Long>> selectPackagingIdsByProviderId(final long providerId) {
+    public LiveData<List<Long>> selectPackagingIdsByProviderId(final Long providerId) {
         return packagingDao.selectPackagingIdsByProviderId(providerId);
+    }
+
+    public LiveData<Packaging> selectPackagingById(final Long packagingId) {
+        return packagingDao.selectPackagingById(packagingId);
     }
 
     public LiveData<List<PackagingType>> selectPackagingTypesByProviderId(final long providerId, final long type) {
         return packagingDao.selectPackagingTypesByProviderId(providerId, type);
+    }
+
+    public LiveData<List<ZoneSettings>> selectZoneSettingsByZoneIds(final List<Long> zoneIds) {
+        return packagingDao.selectZoneSettingsByZoneIds(zoneIds);
+    }
+
+    public LiveData<List<Zone>> selectZoneListByCountryIdAndProviderId(final Long countryId, final Long providerId) {
+        return packagingDao.selectZoneListByCountryIdAndProviderId(countryId, providerId);
+    }
+
+    /* zone countries */
+    public LiveData<List<ZoneCountry>> selectAllZoneCountries() {
+        return packagingDao.selectAllZoneCountries();
     }
 
     /* Courier queries */
@@ -217,60 +235,9 @@ public class Repository {
     }
 
     /* Customer queries */
-//    public long createCustomer(final Customer newCustomer) {
-//        return actorDao.createCustomer(newCustomer);
-//    }
-
     public LiveData<Customer> selectCustomerById(final long clientId) {
         return actorDao.selectCustomer(clientId);
     }
-
-//    public LiveData<List<Customer>> selectAllCustomers() {
-//        return actorDao.selectAllCustomers();
-//    }
-//
-//    public void dropCustomers() {
-//        actorDao.dropCustomers();
-//    }
-//
-//    public LiveData<Customer> selectCustomerByLogin(final String senderLogin) {
-//        return actorDao.selectCustomerByLogin(senderLogin);
-//    }
-
-    /* Passport data queries */
-    //todo: fill in passport data
-//    public void createPassportData(final PassportData passportData) {
-//        actorDao.createPassportData(passportData);
-//    }
-//
-//    public LiveData<PassportData> selectPassportData(final String userId) {
-//        return actorDao.selectPassportData(userId);
-//    }
-//
-//    public LiveData<List<PassportData>> selectAllPassportData() {
-//        return actorDao.selectAllPassportData();
-//    }
-//
-//    public void dropPassportData() {
-//        actorDao.dropPassportData();
-//    }
-//
-//    /* Payment data queries */
-//    public void createPaymentData(final PaymentData paymentData) {
-//        actorDao.createPaymentData(paymentData);
-//    }
-//
-//    public LiveData<PaymentData> selectPaymentData(final String userId) {
-//        return actorDao.selectPaymentData(userId);
-//    }
-//
-//    public LiveData<List<PaymentData>> selectAllPaymentData() {
-//        return actorDao.selectAllPaymentData();
-//    }
-
-//    public void dropPaymentData() {
-//        actorDao.dropPaymentData();
-//    }
 
     /* request data*/
     public LiveData<Request> selectRequest(final long requestId) {
@@ -278,7 +245,7 @@ public class Repository {
     }
 
     public LiveData<List<Request>> selectAllRequests() {
-        return requestDao.selectAllRequests();
+        return requestDao.selectPublicRequests();
     }
 
     public LiveData<List<Request>> selectRequestsByCourierId(final long courierId) {
@@ -289,21 +256,9 @@ public class Repository {
     public LiveData<Invoice> selectInvoiceById(final long invoiceId) {
         return invoiceDao.selectInvoiceById(invoiceId);
     }
-//
-//    public LiveData<Invoice> selectReceipt(final long receiptId) {
-//        return parcelDao.selectReceipt(receiptId);
-//    }
-//
-//    public LiveData<List<Parcel>> selectAllParcels() {
-//        return parcelDao.selectAllParcels();
-//    }
-//
-//    public LiveData<List<Invoice>> selectAllReceipts() {
-//        return parcelDao.selectAllReceipts();
-//    }
 
-    public void updateRequest(final Request updatedRequest) {
-        parcelDao.updateRequest(updatedRequest);
+    public void updateRequest(final Request updateRequest) {
+        requestDao.updateRequest(updateRequest);
     }
 
 //    public long createParcelTransitPointCrossRef(final ReceiptTransitPointCrossRef receiptTransitPointCrossRef) {

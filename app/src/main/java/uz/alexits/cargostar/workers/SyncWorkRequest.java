@@ -15,6 +15,7 @@ import androidx.work.WorkManager;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.actor.UpdateCourierWorker;
+import uz.alexits.cargostar.workers.calculation.FetchZoneCountriesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZoneSettingsWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZonesWorker;
 import uz.alexits.cargostar.workers.actor.CreateUserWorker;
@@ -28,6 +29,7 @@ import uz.alexits.cargostar.workers.calculation.FetchPackagingTypesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingWorker;
 import uz.alexits.cargostar.workers.location.FetchLocationDataWorker;
 import uz.alexits.cargostar.workers.login.SignInWorker;
+import uz.alexits.cargostar.workers.requests.BindRequestWorker;
 import uz.alexits.cargostar.workers.requests.FetchMyRequestsWorker;
 import uz.alexits.cargostar.workers.requests.FetchRequestsWorker;
 
@@ -118,6 +120,12 @@ public class SyncWorkRequest {
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
 
+        final OneTimeWorkRequest fetchZoneCountriesRequest = new OneTimeWorkRequest.Builder(FetchZoneCountriesWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
         final OneTimeWorkRequest fetchZoneSettingsRequest = new OneTimeWorkRequest.Builder(FetchZoneSettingsWorker.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
@@ -128,6 +136,7 @@ public class SyncWorkRequest {
                 .beginWith(fetchPackagingRequest)
                 .then(fetchPackagingTypesRequest)
                 .then(fetchZonesRequest)
+                .then(fetchZoneCountriesRequest)
                 .then(fetchZoneSettingsRequest)
                 .enqueue();
     }
@@ -141,8 +150,13 @@ public class SyncWorkRequest {
                 .setRequiresDeviceIdle(false)
                 .build();
 
+        final Data inputData = new Data.Builder()
+                .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
+                .build();
+
         final OneTimeWorkRequest fetchRequestsRequest = new OneTimeWorkRequest.Builder(FetchRequestsWorker.class)
                 .setConstraints(constraints)
+                .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
 
@@ -158,6 +172,7 @@ public class SyncWorkRequest {
                 .build();
 
         final Data inputData = new Data.Builder()
+                .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
                 .putLong(Constants.KEY_COURIER_ID, courierId)
                 .build();
 
@@ -168,6 +183,29 @@ public class SyncWorkRequest {
                 .build();
 
         WorkManager.getInstance(context).enqueue(fetchRequestsRequest);
+    }
+
+    public static UUID bindRequest(@NonNull final Context context, final long requestId, final long courierId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_REQUEST_ID, requestId)
+                .putLong(Constants.KEY_COURIER_ID, courierId)
+                .build();
+
+        final OneTimeWorkRequest bindRequest = new OneTimeWorkRequest.Builder(BindRequestWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context).enqueue(bindRequest);
+
+        return bindRequest.getId();
     }
 
     /* Client */
@@ -343,7 +381,7 @@ public class SyncWorkRequest {
     }
 
     public static final String KEY_PER_PAGE = "per-page";
-    private static final int DEFAULT_PER_PAGE = 100000;
+    public static final int DEFAULT_PER_PAGE = 100000;
     private static final int DEFAULT_DELAY = 60000;
 
     private static final String TAG = SyncWorkRequest.class.toString();

@@ -21,14 +21,14 @@ import java.util.Date;
                 @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
         indices = {@Index(value = "zone_id"), @Index(value = "packaging_type_id"), @Index(value = "packaging_id"), @Index(value = "provider_id")})
 public class ZoneSettings {
-    @SerializedName("id")
     @Expose
+    @SerializedName("id")
     @PrimaryKey
     @ColumnInfo(name = "id")
     private final long id;
 
-    @SerializedName("zone_id")
     @Expose
+    @SerializedName("zone_id")
     @ColumnInfo(name = "zone_id")
     private final Long zoneId;
 

@@ -13,8 +13,6 @@ public class CalcItemViewHolder extends RecyclerView.ViewHolder {
     public TextView packageTypeTextView;
     public TextView weightTextView;
     public TextView dimensionsTextView;
-    public TextView sourceTextView;
-    public TextView destinationTextView;
     public ImageView deleteItemImageView;
 
     public CalcItemViewHolder(@NonNull View itemView) {
@@ -23,8 +21,6 @@ public class CalcItemViewHolder extends RecyclerView.ViewHolder {
         packageTypeTextView = itemView.findViewById(R.id.package_type_text_view);
         weightTextView = itemView.findViewById(R.id.weight_value_text_view);
         dimensionsTextView = itemView.findViewById(R.id.dimensions_value_text_view);
-        sourceTextView = itemView.findViewById(R.id.source_text_view);
-        destinationTextView = itemView.findViewById(R.id.destination_text_view);
         deleteItemImageView = itemView.findViewById(R.id.delete_item_image_view);
     }
 

@@ -13,6 +13,7 @@ import uz.alexits.cargostar.api.params.UpdateCourierParams;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
@@ -44,7 +45,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitClient {
     private static Retrofit.Builder retrofitBuilder;
     private static OkHttpClient.Builder httpBuilder;
-    private static BasicAuthInterceptor basicAuthInterceptor;
     private ApiService apiService;
     private static RetrofitClient INSTANCE;
 
@@ -77,7 +77,7 @@ public class RetrofitClient {
     }
 
     public void setServerData(@NonNull final String login, @NonNull final String password) {
-        basicAuthInterceptor = new BasicAuthInterceptor(login, password);
+        final BasicAuthInterceptor basicAuthInterceptor = new BasicAuthInterceptor(login, password);
         apiService = retrofitBuilder.client(httpBuilder.addInterceptor(basicAuthInterceptor).build()).build().create(ApiService.class);
     }
 
@@ -108,12 +108,12 @@ public class RetrofitClient {
     }
 
     /*Requests requests */
-    public Response<List<Request>> getPublicRequests() throws IOException {
-        return apiService.getPublicRequests().execute();
+    public Response<List<Request>> getPublicRequests(final int perPage) throws IOException {
+        return apiService.getPublicRequests(perPage).execute();
     }
 
-    public Response<List<Request>> getMyRequests(final long courierId) throws IOException {
-        return apiService.getMyRequests(courierId).execute();
+    public Response<List<Request>> getMyRequests(final int perPage, final long courierId) throws IOException {
+        return apiService.getMyRequests(perPage, courierId).execute();
     }
 
     /* Provider / packaging for calculations */
@@ -131,6 +131,10 @@ public class RetrofitClient {
 
     public Response<List<Zone>> getZones(final int perPage) throws IOException {
         return apiService.getZones(perPage).execute();
+    }
+
+    public Response<List<ZoneCountry>> getZoneCountries(final int perPage) throws IOException {
+        return apiService.getZoneCountries(perPage).execute();
     }
 
     public Response<List<ZoneSettings>> getZoneSettings(final int perPage) throws IOException {
@@ -207,9 +211,8 @@ public class RetrofitClient {
         return apiService.signIn(new SignInParams(fcmToken)).execute();
     }
 
-    public void bindRequest(final long requestId, final long courierId, final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.bindRequest(requestId, new BindRequestParams(courierId));
-        call.enqueue(callback);
+    public Response<Request> bindRequest(final long requestId, final long courierId) throws IOException {
+        return apiService.bindRequest(requestId, new BindRequestParams(courierId)).execute();
     }
 
     public Response<Courier> updateCourierData(final long courierId,

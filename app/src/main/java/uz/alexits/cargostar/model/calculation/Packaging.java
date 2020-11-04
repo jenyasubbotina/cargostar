@@ -33,12 +33,12 @@ public class Packaging {
     @SerializedName("parcel_fee")
     @Expose
     @ColumnInfo(name = "parcel_fee")
-    private final long parcelFree;
+    private final long parcelFee;
 
     @SerializedName("volumex")
     @Expose
     @ColumnInfo(name = "volumex")
-    private final long volumex;
+    private final int volumex;
 
     @SerializedName("status")
     @Expose
@@ -60,15 +60,15 @@ public class Packaging {
     public Packaging(final long id,
                      final long providerId,
                      @NonNull final String name,
-                     final long parcelFree,
-                     final long volumex,
+                     final long parcelFee,
+                     final int volumex,
                      final int status,
                      @Nullable final Date createdAt,
                      @Nullable final Date updatedAt) {
         this.id = id;
         this.providerId = providerId;
         this.name = name;
-        this.parcelFree = parcelFree;
+        this.parcelFee = parcelFee;
         this.volumex = volumex;
         this.status = status;
         this.createdAt = createdAt;
@@ -79,12 +79,12 @@ public class Packaging {
     public Packaging(final long id,
                      final long providerId,
                      @NonNull final String name,
-                     final long volumex,
+                     final int volumex,
                      final int status) {
         this.id = id;
         this.providerId = providerId;
         this.name = name;
-        this.parcelFree = 0;
+        this.parcelFee = 0;
         this.volumex = volumex;
         this.status = status;
     }
@@ -111,10 +111,10 @@ public class Packaging {
     }
 
     public long isParcelFree() {
-        return parcelFree;
+        return parcelFee;
     }
 
-    public long getVolumex() {
+    public int getVolumex() {
         return volumex;
     }
 
@@ -140,8 +140,8 @@ public class Packaging {
         this.updatedAt = updatedAt;
     }
 
-    public long getParcelFree() {
-        return parcelFree;
+    public long getParcelFee() {
+        return parcelFee;
     }
 
     @NonNull
@@ -151,7 +151,7 @@ public class Packaging {
                 "id=" + id +
                 ", providerId=" + providerId +
                 ", name='" + name + '\'' +
-                ", parcelFree=" + parcelFree +
+                ", parcelFee=" + parcelFee +
                 ", volumex='" + volumex + '\'' +
                 ", status=" + status +
                 ", createdAt=" + createdAt +

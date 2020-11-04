@@ -1,28 +1,30 @@
-package uz.alexits.cargostar.workers.requests;
+package uz.alexits.cargostar.workers.calculation;
 
 import android.content.Context;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.io.IOException;
+import java.util.List;
+
+import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.shipping.Request;
-
-import java.io.IOException;
-import java.util.List;
-import retrofit2.Response;
+import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
-public class FetchRequestsWorker extends Worker {
+public class FetchZoneCountriesWorker extends Worker {
     private final int perPage;
 
-    public FetchRequestsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
+    public FetchZoneCountriesWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
+        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, -1);
     }
 
     @NonNull
@@ -31,13 +33,13 @@ public class FetchRequestsWorker extends Worker {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
-            final Response<List<Request>> response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(perPage);
+            final Response<List<ZoneCountry>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneCountries(perPage);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllRequests(): response=" + response.body());
-                    final List<Request> publicRequestList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+                    Log.i(TAG, "fetchZoneCountries(): response=" + response.body());
+                    final List<ZoneCountry> zoneCountryList = response.body();
+                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZoneCountries(zoneCountryList);
                     return ListenableWorker.Result.success();
                 }
             }
@@ -52,5 +54,5 @@ public class FetchRequestsWorker extends Worker {
         }
     }
 
-    private static final String TAG = FetchRequestsWorker.class.toString();
+    private static final String TAG = FetchZoneCountriesWorker.class.toString();
 }

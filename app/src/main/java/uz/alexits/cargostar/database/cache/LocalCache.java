@@ -25,6 +25,7 @@ import uz.alexits.cargostar.database.dao.ParcelDao;
 import uz.alexits.cargostar.database.dao.RequestDao;
 import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
@@ -72,7 +73,7 @@ import java.util.List;
         Packaging.class,
         PackagingType.class,
         Zone.class,
-        ZoneSettings.class}, version = 61, exportSchema = false)
+        ZoneSettings.class, ZoneCountry.class}, version = 62, exportSchema = false)
 @TypeConverters({ PointConverter.class, TransportationStatusConverter.class, PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";

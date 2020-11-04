@@ -356,8 +356,6 @@ public class CreateParcelAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             final CalcItemViewHolder viewHolder = (CalcItemViewHolder) holder;
             viewHolder.indexTextView.setText(itemList.get(position).index);
             viewHolder.packageTypeTextView.setText(itemList.get(position).packageType);
-            viewHolder.sourceTextView.setText(itemList.get(position).source);
-            viewHolder.destinationTextView.setText(itemList.get(position).destination);
             viewHolder.weightTextView.setText(itemList.get(position).weight);
             viewHolder.dimensionsTextView.setText(itemList.get(position).dimensions);
             Log.i(CreateParcelAdapter.class.toString(), "position=" + position);

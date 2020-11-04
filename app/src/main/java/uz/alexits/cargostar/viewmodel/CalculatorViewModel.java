@@ -7,85 +7,144 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import uz.alexits.cargostar.database.cache.Repository;
+import uz.alexits.cargostar.model.calculation.CountryIdProviderId;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.model.calculation.TypePackageIdList;
+import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneSettings;
+import uz.alexits.cargostar.model.location.City;
+
 import java.util.List;
 
 public class CalculatorViewModel extends AndroidViewModel {
     private final Repository repository;
-    private final LiveData<List<Provider>> providerList;
-    private final LiveData<List<Packaging>> packagingList;
-    private final LiveData<List<PackagingType>> packagingTypeList;
 
-//    private final MutableLiveData<List<Long>> selectedPackagingList;
-    private final MutableLiveData<Long> selectedProviderId;
-    private final MutableLiveData<Integer> selectedType;
+    private final MutableLiveData<Long> srcCountryId;
+    private final MutableLiveData<Long> destCountryId;
+
+    private final MutableLiveData<Long> providerId;
+    private final MutableLiveData<Long> packagingId;
+    private final MutableLiveData<Integer> type;
+
+    private final MutableLiveData<TypePackageIdList> typePackageIdList;
+    private final MutableLiveData<CountryIdProviderId> countryIdProviderId;
+
+    private final MutableLiveData<List<Long>> zoneIds;
 
     public CalculatorViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
-        this.providerList = repository.selectAllProviders();
-        this.packagingList = repository.selectAllPackaging();
-        this.packagingTypeList = repository.selectAllPackagingTypes();
 
-//        this.selectedPackagingList = new MutableLiveData<>();
-        this.selectedProviderId = new MutableLiveData<>();
-        this.selectedType = new MutableLiveData<>();
-        this.selectedProviderId.setValue(0L);
-        this.selectedType.setValue(0);
+//        this.countryId = new MutableLiveData<>();
+        this.srcCountryId = new MutableLiveData<>();
+        this.destCountryId = new MutableLiveData<>();
+
+        this.providerId = new MutableLiveData<>();
+        this.packagingId = new MutableLiveData<>();
+        this.type = new MutableLiveData<>();
+
+        this.typePackageIdList = new MutableLiveData<>();
+        this.countryIdProviderId = new MutableLiveData<>();
+
+        this.zoneIds = new MutableLiveData<>();
     }
 
-    public LiveData<List<Provider>> getProviderList() {
-        return providerList;
+    /* setters */
+    public void setSrcCountryId(final Long srcCountryId) {
+        if (srcCountryId == null) {
+            this.srcCountryId.setValue(-1L);
+            return;
+        }
+        this.srcCountryId.setValue(srcCountryId);
     }
 
-    public LiveData<List<Packaging>> getPackagingList() {
-        return packagingList;
+    public void setDestCountryId(final Long destCountryId) {
+        if (destCountryId == null) {
+            this.destCountryId.setValue(-1L);
+            return;
+        }
+        this.destCountryId.setValue(destCountryId);
+    }
+
+    public void setProviderId(final Long providerId) {
+        if (providerId == null) {
+            this.setProviderId(-1L);
+            return;
+        }
+        this.providerId.setValue(providerId);
+    }
+
+    public void setType(final Integer type) {
+        if (type == null) {
+            this.type.setValue(-1);
+            return;
+        }
+        this.type.setValue(type);
+    }
+
+    public void setPackagingId(final Long packagingId) {
+        if (packagingId == null) {
+            this.packagingId.setValue(-1L);
+            return;
+        }
+        this.packagingId.setValue(packagingId);
+    }
+
+    public void setTypePackageIdList(final Integer type, final List<Long> packagingIds) {
+        this.typePackageIdList.setValue(new TypePackageIdList(type, packagingIds));
+    }
+
+    public void setCountryIdProviderId(final Long countryId, final Long providerId) {
+        this.countryIdProviderId.setValue(new CountryIdProviderId(countryId, providerId));
+        Log.i(TAG, "countryId=" + countryId + " providerId=" + providerId);
+    }
+
+    public void setZoneIds(final List<Long> zoneIds) {
+        this.zoneIds.setValue(zoneIds);
+    }
+
+    /* getters */
+    public LiveData<List<City>> getSrcCities() {
+        return Transformations.switchMap(srcCountryId, repository::selectCitiesByCountryId);
+    }
+
+    public LiveData<List<City>> getDestCities() {
+        return Transformations.switchMap(destCountryId, repository::selectCitiesByCountryId);
+    }
+
+    public LiveData<Provider> getProvider() {
+        return Transformations.switchMap(providerId, repository::selectProviderById);
+    }
+
+    public LiveData<Integer> getType() {
+        return type;
+    }
+
+    public LiveData<List<Long>> getPackagingIds() {
+        return Transformations.switchMap(providerId, repository::selectPackagingIdsByProviderId);
     }
 
     public LiveData<List<PackagingType>> getPackagingTypeList() {
-        return packagingTypeList;
+        return Transformations.switchMap(typePackageIdList, input ->
+                repository.selectPackagingTypesByTypeAndPackagingIds(input.getType(), input.getPackagingIdList()));
     }
 
-    public LiveData<List<Packaging>> getPackagingsByProviderId(final long providerId) {
-        return repository.selectPackagingsByProviderId(providerId);
+    public LiveData<Packaging> getPackaging() {
+        return Transformations.switchMap(packagingId, repository::selectPackagingById);
     }
 
-    public LiveData<List<Long>> getPackagingIdsByProviderId(final long providerId) {
-        return repository.selectPackagingIdsByProviderId(providerId);
+    public LiveData<List<ZoneSettings>> getZoneSettingsList() {
+        return Transformations.switchMap(zoneIds, repository::selectZoneSettingsByZoneIds);
     }
 
-    public LiveData<List<PackagingType>> getPackagingTypesByTypeAndPackagingIds(final long type, final long[] packagingIds) {
-        return repository.selectPackagingTypesByTypeAndPackagingIds(type, packagingIds);
-    }
-
-    public LiveData<List<PackagingType>> getPackagingTypesByProviderId(final long providerId, final long type) {
-        return repository.selectPackagingTypesByProviderId(providerId, type);
-    }
-
-    public LiveData<List<PackagingType>> getPackagingTypesByProviderId() {
-        return repository.selectPackagingTypesByProviderId(getSelectedProviderId().getValue(), getSelectedType().getValue());
-    }
-
-    /* getters & setters */
-
-    public void setSelectedProviderId(final long selectedProviderId) {
-        this.selectedProviderId.setValue(selectedProviderId);
-    }
-
-    public void setSelectedType(final int selectedType) {
-        this.selectedType.setValue(selectedType);
-    }
-
-    public LiveData<Long> getSelectedProviderId() {
-        return selectedProviderId;
-    }
-
-    public LiveData<Integer> getSelectedType() {
-        return selectedType;
+    public LiveData<List<Zone>> getZoneList() {
+        return Transformations.switchMap(countryIdProviderId, input ->
+                repository.selectZoneListByCountryIdAndProviderId(input.getCountryId(), input.getProviderId()));
     }
 
     private static final String TAG = CalculatorViewModel.class.toString();

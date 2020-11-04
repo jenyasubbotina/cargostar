@@ -112,4 +112,15 @@ public class Zone {
     public void setUpdatedAt(@Nullable Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Zone{" +
+                "id=" + id +
+                ", countryId=" + countryId +
+                ", providerId=" + providerId +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

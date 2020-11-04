@@ -34,9 +34,6 @@ public interface ParcelDao {
     @Query("DELETE FROM invoice WHERE id == :requestId")
     void deleteReceipt(final long requestId);
 
-    @Update
-    void updateRequest(final Request updatedRequest);
-
 //    @Transaction
 //    @Query("SELECT * FROM " +
 //            "(SELECT * FROM invoice WHERE " +

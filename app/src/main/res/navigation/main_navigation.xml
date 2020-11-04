@@ -20,7 +20,7 @@
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
             android:id="@+id/action_mainFragment_to_myBidsFragment"
-            app:destination="@id/myBidsFragment"
+            app:destination="@id/myRequestsFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -31,7 +31,7 @@
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"></action>
+            app:popExitAnim="@anim/fragment_open_exit"/>
         <action
             android:id="@+id/action_mainFragment_to_currentParcelsFragment"
             app:destination="@id/currentParcelsFragment"
@@ -130,9 +130,13 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
+        <argument
+            android:name="courier_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
     </fragment>
     <fragment
-        android:id="@+id/myBidsFragment"
+        android:id="@+id/myRequestsFragment"
         android:name="uz.alexits.cargostar.view.fragment.MyRequestsFragment"
         android:label="fragment_my_bids"
         tools:layout="@layout/fragment_my_requests" >
@@ -143,14 +147,6 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit">
-            <argument
-                android:name="party_id"
-                app:argType="long"
-                android:defaultValue="-1L"/>
-            <argument
-                android:name="parcel_quantity"
-                app:argType="integer"
-                android:defaultValue="-1"/>
         </action>
         <action
             android:id="@+id/action_myBidsFragment_to_calculatorFragment"
@@ -166,10 +162,6 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit">
-            <argument
-                android:name="parcel_id"
-                app:argType="long"
-                android:defaultValue="-1L"/>
         </action>
         <action
             android:id="@+id/action_myBidsFragment_to_profileFragment"
@@ -178,6 +170,22 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
+<!--        <argument-->
+<!--            android:name="party_id"-->
+<!--            app:argType="long"-->
+<!--            android:defaultValue="-1L"/>-->
+        <argument
+            android:name="courier_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+<!--        <argument-->
+<!--            android:name="parcel_quantity"-->
+<!--            app:argType="integer"-->
+<!--            android:defaultValue="-1"/>-->
+<!--        <argument-->
+<!--            android:name="parcel_id"-->
+<!--            app:argType="long"-->
+<!--            android:defaultValue="-1L"/>-->
     </fragment>
     <fragment
         android:id="@+id/currentParcelsFragment"
@@ -246,7 +254,7 @@
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
         <argument
-            android:name="parcel_id"
+            android:name="request_id"
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument

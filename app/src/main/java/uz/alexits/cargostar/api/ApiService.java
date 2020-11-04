@@ -9,6 +9,7 @@ import uz.alexits.cargostar.api.params.UpdateCourierParams;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
@@ -59,13 +60,17 @@ public interface ApiService {
     Call<List<Zone>> getZones(@Query("per-page") final int perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("zone-country")
+    Call<List<ZoneCountry>> getZoneCountries(@Query("per-page") final int perPage);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("zone-setting")
     Call<List<ZoneSettings>> getZoneSettings(@Query("per-page") final int perPage);
 
     /*Requests requests */
     @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("request/empty-employee")
-    Call<List<Request>> getPublicRequests();
+    @GET("request")
+    Call<List<Request>> getPublicRequests(@Query("per-page") final int perPage);
 
 //    @Headers("Content-Type: application/json; charset=utf-8;")
 //    @PUT("request/update")
@@ -73,7 +78,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request/employee")
-    Call<List<Request>> getMyRequests(@Query("id") final long courierId);
+    Call<List<Request>> getMyRequests(@Query("per-page") final int perPage, @Query("id") final long courierId);
 
     /* Providers / packaging */
     @Headers("Content-Type: application/json; charset=utf-8;")
@@ -106,7 +111,7 @@ public interface ApiService {
 
     @Headers("Content-type: application/json; charset=utf-8;")
     @PUT("request/update")
-    Call<JsonElement> bindRequest(@Query("id") final long requestId, @Body BindRequestParams bindRequestParams);
+    Call<Request> bindRequest(@Query("id") final long requestId, @Body BindRequestParams bindRequestParams);
 
     @Headers("Content-type: application/json; charset=utf-8;")
     @PUT("employee/update")

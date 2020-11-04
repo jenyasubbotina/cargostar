@@ -19,6 +19,26 @@
         android:background="@drawable/card_bottom_radius_white"
         android:elevation="8dp">
 
+        <LinearLayout
+            android:id="@+id/lock_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+
         <TextView
             android:id="@+id/public_bids_text_view"
             android:layout_width="wrap_content"

@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,10 +21,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonElement;
+
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,6 +38,7 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
@@ -45,7 +52,6 @@ import uz.alexits.cargostar.view.callback.RequestCallback;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class PublicRequestsFragment extends Fragment implements RequestCallback {
-    private static final String TAG = PublicRequestsFragment.class.toString();
     private Context context;
     private FragmentActivity activity;
     private CourierViewModel courierViewModel;
@@ -65,6 +71,12 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
     private PublicRequestAdapter adapter;
     private RecyclerView publicBidsRecyclerView;
 
+    private LinearLayout lockLayout;
+    private ProgressBar progressBar;
+
+    private static long courierId = -1;
+    private static UUID bindRequestUUID = null;
+
     public PublicRequestsFragment() {
         // Required empty public constructor
     }
@@ -74,6 +86,10 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         super.onCreate(savedInstanceState);
         context = getContext();
         activity = getActivity();
+
+        if (getArguments() != null) {
+            courierId = PublicRequestsFragmentArgs.fromBundle(getArguments()).getCourierId();
+        }
 
         SyncWorkRequest.fetchRequestData(context);
     }
@@ -94,6 +110,9 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         publicBidsRecyclerView = root.findViewById(R.id.public_bids_recycler_view);
+
+        lockLayout = root.findViewById(R.id.lock_layout);
+        progressBar = root.findViewById(R.id.progress_bar);
 
         adapter = new PublicRequestAdapter(context, this);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
@@ -133,7 +152,6 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
 
         requestsViewModel.getPublicRequests().observe(getViewLifecycleOwner(), requestList -> {
-            Log.i(TAG, "requestList: " + requestList.size());
             adapter.setRequestList(requestList);
             adapter.notifyDataSetChanged();
         });
@@ -178,6 +196,10 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                 startActivity(mainIntent);
             });
         });
+
+        if (bindRequestUUID != null) {
+
+        }
     }
 
     @Override
@@ -185,7 +207,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         currentItem.setNew(false);
         requestsViewModel.readReceipt(currentItem.getId());
         final PublicRequestsFragmentDirections.ActionPublicBidsFragmentToParcelDataFragment action = PublicRequestsFragmentDirections.actionPublicBidsFragmentToParcelDataFragment();
-        action.setParcelId(currentItem.getId());
+        action.setRequestId(currentItem.getId());
         action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
         action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
         action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : -1L);
@@ -197,33 +219,42 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
         action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
         NavHostFragment.findNavController(this).navigate(action);
-
     }
 
     @Override
     public void onPlusClicked(Request currentItem) {
         if (currentItem.getCourierId() == null) {
-            RetrofitClient.getInstance(context).setServerData(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH));
-            RetrofitClient.getInstance(context).bindRequest(currentItem.getId(), SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), new Callback<JsonElement>() {
-                @Override
-                public void onResponse(@NonNull final Call<JsonElement> call, @NonNull final Response<JsonElement> response) {
-                    Log.i(TAG, "body: " + response.body());
-                    Log.e(TAG, "errorBody: " + response.errorBody());
+            Log.i(TAG, "requestId=" + currentItem.getId() + " courierId=" + courierId);
+            bindRequestUUID = SyncWorkRequest.bindRequest(context, currentItem.getId(), courierId);
 
-                    //todo: sync public requests once again
+            WorkManager.getInstance(context).getWorkInfoByIdLiveData(bindRequestUUID).observe(getViewLifecycleOwner(), workInfo -> {
+                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
 
-                    currentItem.setCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID));
-                    requestsViewModel.updateReceipt(currentItem);
-                    adapter.notifyDataSetChanged();
-                    Toast.makeText(context, "Заявка " + currentItem.getId() + " успешно добавлена в Мои Заявки", Toast.LENGTH_SHORT).show();
+                    if (workInfo.getOutputData() != null) {
+                        final long requestId = workInfo.getOutputData().getLong(Constants.KEY_REQUEST_ID, -1L);
+
+                        Log.i(TAG, "bindRequest: successfully bound request" + requestId);
+                        Toast.makeText(context, "Заявка " + requestId + " успешно добавлена в Мои Заявки", Toast.LENGTH_SHORT).show();
+                        lockLayout.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE);
+                        adapter.notifyDataSetChanged();
+                    }
+                    return;
                 }
+                if (workInfo.getState() == WorkInfo.State.CANCELLED || workInfo.getState() == WorkInfo.State.FAILED) {
+                    Log.e(TAG, "bindRequest(): couldn't bind request");
+                    Toast.makeText(context, "Ошибка. Не удалось привязать заявку к курьеру", Toast.LENGTH_SHORT).show();
 
-                @Override
-                public void onFailure(@NonNull final Call<JsonElement> call, @NonNull final Throwable t) {
-                    Log.e(TAG, "onFailure: ", t);
+                    lockLayout.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);
+
+                    return;
                 }
+                lockLayout.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
             });
         }
     }
+
+    private static final String TAG = PublicRequestsFragment.class.toString();
 }

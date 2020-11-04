@@ -402,8 +402,8 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
                 final CurrentParcelsFragmentDirections.ActionCurrentParcelsFragmentToParcelDataFragment action =
                         CurrentParcelsFragmentDirections.actionCurrentParcelsFragmentToParcelDataFragment();
-                action.setParcelId(1);
-                action.setParcelId(IntentConstants.INTENT_PARCEL);
+                action.setRequestId(1);
+                action.setRequestOrParcel(IntentConstants.INTENT_PARCEL);
                 NavHostFragment.findNavController(this).navigate(action);
             }
         }

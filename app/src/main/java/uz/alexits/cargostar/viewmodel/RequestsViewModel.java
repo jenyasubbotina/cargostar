@@ -84,10 +84,6 @@ public class RequestsViewModel extends AndroidViewModel {
         repository.readReceipt(requestId);
     }
 
-    public void updateReceipt(final Request updatedRequest) {
-        repository.updateRequest(updatedRequest);
-    }
-
     /* invoice data */
     public void setInvoiceId(final Long invoiceId) {
         if (invoiceId == null) {

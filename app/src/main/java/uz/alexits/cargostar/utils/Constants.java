@@ -45,4 +45,7 @@ public class Constants {
     public static final String KEY_SENDER_ID = "sender_id";
     public static final String KEY_RECIPIENT_ID = "recipient_id";
     public static final String KEY_PAYER_ID = "payer_id";
+
+    /* calculation */
+    public static final String KEY_COUNTRY_ID = "country_id";
 }
