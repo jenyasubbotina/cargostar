@@ -40,7 +40,6 @@ public class CalculatorViewModel extends AndroidViewModel {
         super(application);
         this.repository = Repository.getInstance(application);
 
-//        this.countryId = new MutableLiveData<>();
         this.srcCountryId = new MutableLiveData<>();
         this.destCountryId = new MutableLiveData<>();
 

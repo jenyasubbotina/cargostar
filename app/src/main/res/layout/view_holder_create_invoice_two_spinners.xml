@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/first_text_view"
@@ -16,51 +15,58 @@
         android:textSize="16sp"
         android:textColor="#A5ABC0"
         android:fontFamily="@font/geometria_actual"
-        android:text="@string/courier_id"/>
+        android:text="@string/region"/>
 
-    <EditText
-        android:id="@+id/edit_text"
+    <RelativeLayout
+        android:id="@+id/first_field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/first_text_view"
         app:layout_constraintTop_toBottomOf="@id/first_text_view"
-        app:layout_constraintEnd_toStartOf="@id/spinner_field"
-        android:layout_marginEnd="12dp"
+        app:layout_constraintStart_toStartOf="@id/first_text_view"
+        app:layout_constraintEnd_toStartOf="@id/second_field"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="4dp"
-        android:inputType="text"
-        android:background="@drawable/edit_text_locked"
-        android:textSize="16sp"
-        android:fontFamily="@font/geometria_actual"
-        android:padding="17dp"
-        android:textColor="@color/colorBlack"/>
+        app:layout_constraintHorizontal_weight="1"
+        android:background="@drawable/edit_text_locked">
+
+        <Spinner
+            android:id="@+id/first_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="8dp" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/second_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/first_text_view"
-        app:layout_constraintStart_toStartOf="@id/spinner_field"
+        app:layout_constraintStart_toStartOf="@id/second_field"
         android:textSize="16sp"
         android:textColor="#A5ABC0"
         android:fontFamily="@font/geometria_actual"
-        android:text="@string/operator_id"/>
+        android:text="@string/city"/>
 
     <RelativeLayout
-        android:id="@+id/spinner_field"
+        android:id="@+id/second_field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/edit_text"
-        app:layout_constraintStart_toEndOf="@id/edit_text"
+        app:layout_constraintTop_toTopOf="@id/first_field"
+        app:layout_constraintBottom_toBottomOf="@id/first_field"
+        app:layout_constraintStart_toEndOf="@id/first_field"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/edit_text"
-        android:layout_marginEnd="35dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="39dp"
+        app:layout_constraintHorizontal_weight="1"
         android:background="@drawable/edit_text_locked">
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/second_spinner"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:paddingHorizontal="4dp"
-            android:paddingVertical="4dp"/>
+            android:paddingVertical="8dp" />
     </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

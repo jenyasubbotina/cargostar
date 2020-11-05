@@ -8,13 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
-public class CreateParcelSearchFieldViewHolder extends RecyclerView.ViewHolder {
+public class CreateInvoiceSearchFieldViewHolder extends RecyclerView.ViewHolder {
     public TextView headingTextView;
     public TextView searchCustomerTextView;
     public EditText searchCustomerEditText;
     public Button searchCustomerBtn;
 
-    public CreateParcelSearchFieldViewHolder(@NonNull View itemView) {
+    public CreateInvoiceSearchFieldViewHolder(@NonNull View itemView) {
         super(itemView);
         headingTextView = itemView.findViewById(R.id.create_parcel_text_view);
         searchCustomerTextView = itemView.findViewById(R.id.find_user_text_view);

@@ -41,6 +41,7 @@ import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.calculation.PackagingType;
+import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
@@ -53,14 +54,14 @@ import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.CalculatorAdapter;
-import uz.alexits.cargostar.view.callback.CreateParcelCallback;
+import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalculatorFragment extends Fragment implements CreateParcelCallback {
+public class CalculatorFragment extends Fragment implements CreateInvoiceCallback {
     private Context context;
     private FragmentActivity activity;
     //header views
@@ -76,17 +77,14 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
     private TextView badgeCounterTextView;
     //main content views
 
-    //location view model
-    private LocationDataViewModel locationDataViewModel;
-
-    //country spinner items
+    /* country spinner items */
     private ArrayAdapter<Country> countryArrayAdapter;
     private Spinner srcCountrySpinner;
     private Spinner destCountrySpinner;
     private RelativeLayout srcCountryField;
     private RelativeLayout destCountryField;
 
-    //city spinner items
+    /* city spinner items */
     private ArrayAdapter<City> srcCityArrayAdapter;
     private ArrayAdapter<City> destCityArrayAdapter;
     private RelativeLayout srcCityField;
@@ -94,6 +92,8 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
     private Spinner srcCitySpinner;
     private Spinner destCitySpinner;
 
+    /* location view model */
+    private LocationDataViewModel locationDataViewModel;
     /* packaging view model */
     private CalculatorViewModel calculatorViewModel;
 
@@ -134,6 +134,7 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
     private CalculatorAdapter calculatorAdapter;
     private RecyclerView itemRecyclerView;
 
+    /* selected items */
     private static Long selectedCountryId = null;
     private static Provider selectedProvider = null;
     private static Packaging selectedPackaging = null;
@@ -711,26 +712,20 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
         /* countries */
         locationDataViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
             countryArrayAdapter.clear();
-            for (final Country country : countryList) {
-                countryArrayAdapter.add(country);
-            }
+            countryArrayAdapter.addAll(countryList);
             countryArrayAdapter.notifyDataSetChanged();
         });
 
         /* cities */
         calculatorViewModel.getSrcCities().observe(getViewLifecycleOwner(), srcCityList -> {
             srcCityArrayAdapter.clear();
-            for (final City city : srcCityList) {
-                srcCityArrayAdapter.add(city);
-            }
+            srcCityArrayAdapter.addAll(srcCityList);
             srcCityArrayAdapter.notifyDataSetChanged();
         });
 
         calculatorViewModel.getDestCities().observe(getViewLifecycleOwner(), destCityList -> {
             destCityArrayAdapter.clear();
-            for (final City city : destCityList) {
-                destCityArrayAdapter.add(city);
-            }
+            destCityArrayAdapter.addAll(destCityList);
             destCityArrayAdapter.notifyDataSetChanged();
         });
 
@@ -819,9 +814,34 @@ public class CalculatorFragment extends Fragment implements CreateParcelCallback
     }
 
     @Override
+    public void onSpinnerEditTextItemSelected(int position, Object selectedObject) {
+        //do nothing
+    }
+
+    @Override
+    public void onFirstSpinnerItemSelected(final int position, final Region region) {
+        //do nothing
+    }
+
+    @Override
+    public void onSecondSpinnerItemSelected(final int position, final City city) {
+        //do nothing
+    }
+
+    @Override
     public void onDeleteItemClicked(final int position) {
         itemList.remove(position);
         calculatorAdapter.notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onRadioBtnsSelected(final View checkView, boolean checkedBtn) {
+        //do nothing
+    }
+
+    @Override
+    public void onRadioGroupSelected(RadioGroup group, int docTypeId, int boxTypeId) {
+        //do nothing
     }
 
     private void addCargoToInvoice() {

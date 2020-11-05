@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
 
-public class CreateParcelHeadingViewHolder extends RecyclerView.ViewHolder {
+public class CreateInvoiceHeadingViewHolder extends RecyclerView.ViewHolder {
     public TextView headingTextView;
 
-    public CreateParcelHeadingViewHolder(@NonNull View itemView) {
+    public CreateInvoiceHeadingViewHolder(@NonNull View itemView) {
         super(itemView);
         headingTextView = itemView.findViewById(R.id.heading_text_view);
     }

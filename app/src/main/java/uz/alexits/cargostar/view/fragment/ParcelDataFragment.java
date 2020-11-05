@@ -28,7 +28,7 @@ import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
-import uz.alexits.cargostar.view.activity.CreateInvoiceActivitiy;
+import uz.alexits.cargostar.view.activity.CreateInvoiceActivity;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
@@ -508,7 +508,7 @@ public class ParcelDataFragment extends Fragment implements ParcelDataCallback {
             editParcelImageView.setVisibility(View.VISIBLE);
             editParcelImageView.setOnClickListener(v -> {
                 //todo: pass all data here
-                final Intent createParcelIntent = new Intent(getContext(), CreateInvoiceActivitiy.class);
+                final Intent createParcelIntent = new Intent(getContext(), CreateInvoiceActivity.class);
                 createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_PARCEL);
                 createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                 createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);

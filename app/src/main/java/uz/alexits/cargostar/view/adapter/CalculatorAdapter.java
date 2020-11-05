@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.model.shipping.Cargo;
-import uz.alexits.cargostar.view.callback.CreateParcelCallback;
+import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.view.viewholder.CalcItemViewHolder;
 
 import java.util.List;
@@ -17,9 +17,9 @@ import java.util.List;
 public class CalculatorAdapter extends RecyclerView.Adapter<CalcItemViewHolder> {
     private final Context context;
     private List<Cargo> itemList;
-    private final CreateParcelCallback callback;
+    private final CreateInvoiceCallback callback;
 
-    public CalculatorAdapter(Context context, List<Cargo> itemList, CreateParcelCallback callback) {
+    public CalculatorAdapter(Context context, List<Cargo> itemList, CreateInvoiceCallback callback) {
         this.context = context;
         this.itemList = itemList;
         this.callback = callback;

@@ -8,15 +8,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.view.callback.CreateParcelCallback;
+import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 
-public class CreateParcelTwoEditTextsViewHolder extends RecyclerView.ViewHolder {
+public class CreateInvoiceTwoEditTextsViewHolder extends RecyclerView.ViewHolder {
     public TextView firstTextView;
     public TextView secondTextView;
     public EditText firstEditText;
     public EditText secondEditText;
 
-    public CreateParcelTwoEditTextsViewHolder(@NonNull View itemView) {
+    private TextWatcher textWatcher;
+
+    public CreateInvoiceTwoEditTextsViewHolder(@NonNull View itemView) {
         super(itemView);
         firstTextView = itemView.findViewById(R.id.first_text_view);
         secondTextView = itemView.findViewById(R.id.second_text_view);
@@ -24,8 +26,8 @@ public class CreateParcelTwoEditTextsViewHolder extends RecyclerView.ViewHolder 
         secondEditText = itemView.findViewById(R.id.second_edit_text);
     }
 
-    public void bindWatchers(final int position, final CreateParcelCallback callback) {
-        firstEditText.addTextChangedListener(new TextWatcher() {
+    public void bindWatchers(final int position, final CreateInvoiceCallback callback) {
+        textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -40,23 +42,13 @@ public class CreateParcelTwoEditTextsViewHolder extends RecyclerView.ViewHolder 
             public void afterTextChanged(Editable editable) {
                 callback.afterFirstEditTextChanged(position, editable);
             }
-        });
+        };
+        firstEditText.addTextChangedListener(textWatcher);
+        secondEditText.addTextChangedListener(textWatcher);
+    }
 
-        secondEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                callback.afterSecondEditTextChanged(position, editable);
-            }
-        });
+    public void unbindWatchers() {
+        firstEditText.removeTextChangedListener(textWatcher);
+        secondEditText.removeTextChangedListener(textWatcher);
     }
 }

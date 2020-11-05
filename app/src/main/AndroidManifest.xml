@@ -43,7 +43,7 @@
         <activity android:name=".view.activity.SignatureActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
         <activity
-            android:name=".view.activity.CreateInvoiceActivitiy"
+            android:name=".view.activity.CreateInvoiceActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"/>
         <activity

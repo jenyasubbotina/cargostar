@@ -6,7 +6,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.view.callback.CreateParcelCallback;
+import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 
 public class CalcItemViewHolder extends RecyclerView.ViewHolder {
     public TextView indexTextView;
@@ -24,9 +24,13 @@ public class CalcItemViewHolder extends RecyclerView.ViewHolder {
         deleteItemImageView = itemView.findViewById(R.id.delete_item_image_view);
     }
 
-    public void bind(final int position, final CreateParcelCallback callback) {
+    public void bind(final int position, final CreateInvoiceCallback callback) {
         deleteItemImageView.setOnClickListener(v -> {
             callback.onDeleteItemClicked(position);
         });
+    }
+
+    public void unbind() {
+        deleteItemImageView.setOnClickListener(null);
     }
 }

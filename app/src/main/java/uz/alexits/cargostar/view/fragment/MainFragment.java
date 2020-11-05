@@ -27,7 +27,7 @@ import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
-import uz.alexits.cargostar.view.activity.CreateInvoiceActivitiy;
+import uz.alexits.cargostar.view.activity.CreateInvoiceActivity;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
@@ -127,7 +127,7 @@ public class MainFragment extends Fragment {
         });
 
         createParcelImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CreateInvoiceActivitiy.class));
+            startActivity(new Intent(context, CreateInvoiceActivity.class));
         });
 
         currentParcelsImageView.setOnClickListener(v -> {

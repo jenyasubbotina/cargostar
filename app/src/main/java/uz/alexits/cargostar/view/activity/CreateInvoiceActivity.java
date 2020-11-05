@@ -3,7 +3,6 @@ package uz.alexits.cargostar.view.activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,36 +33,47 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.AddressBook;
-import uz.alexits.cargostar.model.location.Address;
+import uz.alexits.cargostar.model.calculation.Packaging;
+import uz.alexits.cargostar.model.calculation.PackagingType;
+import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.model.calculation.ZoneSettings;
+import uz.alexits.cargostar.model.location.City;
+import uz.alexits.cargostar.model.location.Country;
+import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.ReceiptWithCargoList;
 import uz.alexits.cargostar.utils.ImageSerializer;
-import uz.alexits.cargostar.view.callback.CreateParcelCallback;
-import uz.alexits.cargostar.viewmodel.CreateParcelViewModel;
+import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
+import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
+import uz.alexits.cargostar.viewmodel.CreateInvoiceViewModel;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.view.adapter.CreateParcelAdapter;
-import uz.alexits.cargostar.view.adapter.CreateParcelData;
-
+import uz.alexits.cargostar.view.adapter.CreateInvoiceAdapter;
+import uz.alexits.cargostar.view.adapter.CreateInvoiceData;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_BUTTON;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_CALCULATOR_ITEM;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_HEADING;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_ONE_IMAGE_EDIT_TEXT;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_SINGLE_IMAGE_EDIT_TEXT;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_SINGLE_SPINNER;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_TWO_EDIT_TEXTS;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_SINGLE_EDIT_TEXT;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_STROKE;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.TYPE_TWO_IMAGE_EDIT_TEXTS;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.INPUT_TYPE_NUMBER;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.INPUT_TYPE_TEXT;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.INPUT_TYPE_EMAIL;
-import static uz.alexits.cargostar.view.adapter.CreateParcelData.INPUT_TYPE_PHONE;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_PHONE;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_BUTTON;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_CALCULATOR_ITEM;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_HEADING;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_ONE_IMAGE_EDIT_TEXT;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_SINGLE_IMAGE_EDIT_TEXT;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_SINGLE_SPINNER;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_CARD_VIEWS;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_EDIT_TEXTS;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_STROKE;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_NUMBER;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_TEXT;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_EMAIL;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_RADIO_BTNS;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_SPINNERS;
 
-public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateParcelCallback {
+public class CreateInvoiceActivity extends AppCompatActivity implements CreateInvoiceCallback {
     private Context context;
     //header views
     private TextView fullNameTextView;
@@ -77,11 +87,8 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
 
-    private CourierViewModel courierViewModel;
-    private CreateParcelViewModel createParcelViewModel;
     private ReceiptWithCargoList currentReceipt;
-    private List<CreateParcelData> itemList;
-    private List<Cargo> cargoList = new ArrayList<>();
+    private List<CreateInvoiceData> itemList;
     private RecyclerView contentRecyclerView;
 
     private TextView totalQuantityTextView;
@@ -96,22 +103,12 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
     private RadioButton economyRadioBtn;
     private Button saveReceiptBtn;
     private Button createReceiptBtn;
-    private CreateParcelAdapter adapter;
-    //service provider
-    private CardView firstCard;
-    private CardView secondCard;
-    private RadioButton firstCardRadioBtn;
-    private RadioButton secondCardRadioBtn;
-    private ImageView firstCardImageView;
-    private ImageView secondCardImageView;
-    private String firstCardValue;
-    private String secondCardValue;
+    private CreateInvoiceAdapter adapter;
 
     //EditText watcher values
     private String courierId;
     private String operatorId;
     private String accountantId;
-    private String serviceProvider;
     private String senderSignature;
     private String recipientSignature;
     private String senderLogin;
@@ -119,9 +116,13 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
     private String senderTnt;
     private String senderFedex;
     private String senderAddress;
-    private String senderCountry;
-    private String senderCity;
-    private String senderRegion;
+
+    private Country senderCountry;
+    private Region senderRegion;
+    private City senderCity;
+
+    private Provider serviceProvider;
+
     private String senderZip;
     private String senderFirstName;
     private String senderMiddleName;
@@ -133,9 +134,11 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
     private String recipientTnt;
     private String recipientFedex;
     private String recipientAddress;
-    private String recipientCountry;
-    private String recipientCity;
-    private String recipientRegion;
+
+    private Country recipientCountry;
+    private Region recipientRegion;
+    private City recipientCity;
+
     private String recipientZip;
     private String recipientFirstName;
     private String recipientMiddleName;
@@ -144,9 +147,11 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
     private String recipientEmail;
     private String payerLogin;
     private String payerAddress;
-    private String payerCountry;
-    private String payerCity;
-    private String payerRegion;
+
+    private Country payerCountry;
+    private Region payerRegion;
+    private City payerCity;
+
     private String payerZip;
     private String payerFirstName;
     private String payerMiddleName;
@@ -174,6 +179,20 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
     private String height;
     private String cargoQr;
 
+    /* view model */
+    private CourierViewModel courierViewModel;
+    private CreateInvoiceViewModel createInvoiceViewModel;
+    private CalculatorViewModel calculatorViewModel;
+
+    /* selected items for calculations */
+    private static Long selectedCountryId = null;
+    private static Integer selectedPackageType = null;
+    private static Packaging selectedPackaging = null;
+    private static List<Long> selectedPackagingIdList = null;
+    private static List<ZoneSettings> selectedZoneSettingsList = null;
+
+    private static final List<Cargo> cargoList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -181,8 +200,10 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         context = this;
 
         itemList = new ArrayList<>();
+
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
-        createParcelViewModel = new ViewModelProvider(this).get(CreateParcelViewModel.class);
+        createInvoiceViewModel = new ViewModelProvider(this).get(CreateInvoiceViewModel.class);
+        calculatorViewModel = new ViewModelProvider(this).get(CalculatorViewModel.class);
 
         if (getIntent() != null) {
             final int requestKey = getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1);
@@ -191,6 +212,7 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
 
             initUI();
 
+            /* header data view model */
             courierViewModel.selectRequest(requestId).observe(this, receipt -> {
                 if (receipt != null) {
                     if (requestOrParcel == IntentConstants.INTENT_REQUEST) {
@@ -201,6 +223,7 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
                         saveReceiptBtn.setVisibility(View.VISIBLE);
                         createReceiptBtn.setVisibility(View.INVISIBLE);
                     }
+                    //todo: handle payment status
 //                    if (receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID ||
 //                            receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_MORE ||
 //                            receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_PARTIALLY) {
@@ -257,6 +280,86 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
             }
         });
 
+        /* location data view model */
+        createInvoiceViewModel.getCountryList().observe(this, countryList -> {
+            adapter.setCountryList(countryList);
+            Log.i(TAG, "countryList: " + countryList);
+            adapter.notifyItemChanged(8);
+            adapter.notifyItemChanged(17);
+            adapter.notifyItemChanged(25);
+        });
+
+        createInvoiceViewModel.getSenderRegionList().observe(this, senderRegionList ->  {
+            adapter.setSenderRegionList(senderRegionList);
+        });
+
+        createInvoiceViewModel.getRecipientRegionList().observe(this, recipientRegionList -> {
+            adapter.setRecipientRegionList(recipientRegionList);
+        });
+
+        createInvoiceViewModel.getPayerRegionList().observe(this, payerRegionList -> {
+            adapter.setPayerRegionList(payerRegionList);
+        });
+
+        createInvoiceViewModel.getSenderCityList().observe(this, senderCityList ->  {
+            adapter.setSenderCityList(senderCityList);
+        });
+
+        createInvoiceViewModel.getRecipientCityList().observe(this, recipientCityList -> {
+            adapter.setRecipientCityList(recipientCityList);
+        });
+
+        createInvoiceViewModel.getPayerCityList().observe(this, payerCityList -> {
+            adapter.setPayerCityList(payerCityList);
+        });
+
+        /* address book data view model */
+        //todo: handle addressBook population
+//        createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
+//            Log.i(TAG, "entries=" + addressBookEntries);
+//            adapter.setAddressBookEntries(addressBookEntries);
+//            adapter.notifyDataSetChanged();
+//        });
+
+        /* calculator data view model */
+        calculatorViewModel.getProvider().observe(this, provider -> {
+            serviceProvider = provider;
+        });
+
+        calculatorViewModel.getType().observe(this, type -> {
+            calculatorViewModel.setTypePackageIdList(type, selectedPackagingIdList);
+        });
+
+        calculatorViewModel.getPackagingIds().observe(this, packagingIds -> {
+            selectedPackagingIdList = packagingIds;
+            calculatorViewModel.setTypePackageIdList(selectedPackageType, packagingIds);
+        });
+
+        calculatorViewModel.getPackagingTypeList().observe(this, packagingTypeList -> {
+            adapter.setPackagingTypeList(packagingTypeList);
+        });
+
+        calculatorViewModel.getPackaging().observe(this, packaging -> {
+            selectedPackaging = packaging;
+        });
+
+        calculatorViewModel.getZoneList().observe(this, zoneList -> {
+            if (zoneList != null && !zoneList.isEmpty()) {
+
+                final List<Long> zoneIds = new ArrayList<>();
+
+                for (final Zone zone : zoneList) {
+                    zoneIds.add(zone.getId());
+                }
+                calculatorViewModel.setZoneIds(zoneIds);
+            }
+        });
+
+        calculatorViewModel.getZoneSettingsList().observe(this, zoneSettingsList -> {
+            Log.i(TAG, "zoneSettingsList: " + zoneSettingsList);
+            selectedZoneSettingsList = zoneSettingsList;
+        });
+
         parcelSearchImageView.setOnClickListener(v -> {
             final String parcelIdStr = parcelSearchEditText.getText().toString();
             if (TextUtils.isEmpty(parcelIdStr)) {
@@ -266,11 +369,13 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
 
             final long parcelId = Long.parseLong(parcelIdStr);
 
+            //todo: refactor this
             courierViewModel.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
                 if (receiptWithCargoList == null) {
                     Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                //todo: handle invoice by request
 //                if (receiptWithCargoList.getReceipt() == null) {
 //                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
 //                    return;
@@ -289,20 +394,7 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         createReceiptBtn.setOnClickListener(v -> {
             sendInvoice();
         });
-//        createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
-//            Log.i(TAG, "entries=" + addressBookEntries);
-//            adapter.setAddressBookEntries(addressBookEntries);
-//            adapter.notifyDataSetChanged();
-//        });
     }
-
-    @Override
-    public void onDeleteItemClicked(final int position) {
-        cargoList.remove(position - 51);
-        itemList.remove(position);
-        adapter.notifyDataSetChanged();
-    }
-
 
     private void initUI() {
         //header views
@@ -316,34 +408,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         calculatorImageView = findViewById(R.id.calculator_image_view);
         notificationsImageView = findViewById(R.id.notifications_image_view);
         badgeCounterTextView = findViewById(R.id.badge_counter_text_view);
-        //service provider
-        firstCard = findViewById(R.id.first_card);
-        secondCard = findViewById(R.id.second_card);
-        firstCardImageView = findViewById(R.id.first_card_logo);
-        secondCardImageView = findViewById(R.id.second_card_logo);
-        firstCardRadioBtn = findViewById(R.id.first_card_radio_btn);
-        secondCardRadioBtn = findViewById(R.id.second_card_radio_btn);
-
-        firstCard.setOnClickListener(v -> {
-            firstCardRadioBtn.setChecked(true);
-        });
-
-        secondCard.setOnClickListener(v -> {
-            secondCardRadioBtn.setChecked(true);
-        });
-
-        firstCardRadioBtn.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b) {
-                secondCardRadioBtn.setChecked(false);
-            }
-        });
-
-        secondCardRadioBtn.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b) {
-                firstCardRadioBtn.setChecked(false);
-            }
-        });
-
         //content views
         profileImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, MainActivity.class));
@@ -360,101 +424,114 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
         calculatorImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, CalculatorActivity.class));
         });
-        //public data
-        itemList.add(new CreateParcelData(getString(R.string.public_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateParcelData(getString(R.string.courier_id), getString(R.string.operator_id), String.valueOf(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)), null,
+
+        /* public data */
+        itemList.add(new CreateInvoiceData(getString(R.string.public_data), null, null, null, TYPE_HEADING));
+        itemList.add(new CreateInvoiceData(getString(R.string.courier_id), getString(R.string.operator_id), String.valueOf(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)), null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, false, false));
-        itemList.add(new CreateParcelData(getString(R.string.accountant_id), null, null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.accountant_id), null, null, null,
                 TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_TEXT, -1, false, false));
-        itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
-        //sender data
-        itemList.add(new CreateParcelData(getString(R.string.sender_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateParcelData(getString(R.string.sender_signature), getString(R.string.receiver_signature), null, null,
+        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
+
+        /* sender data */
+        itemList.add(new CreateInvoiceData(getString(R.string.sender_data), null, null, null, TYPE_HEADING));
+        itemList.add(new CreateInvoiceData(getString(R.string.sender_signature), getString(R.string.receiver_signature), null, null,
                 TYPE_TWO_IMAGE_EDIT_TEXTS));
-        itemList.add(new CreateParcelData(getString(R.string.login_email), getString(R.string.cargostar_account_number), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.login_email), getString(R.string.cargostar_account_number), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.tnt_account_number), getString(R.string.fedex_account_number), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.tnt_account_number), getString(R.string.fedex_account_number), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.take_address), getString(R.string.country), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.city), getString(R.string.region), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.post_index), getString(R.string.first_name), null, null,
+
+        itemList.add(new CreateInvoiceData(getString(R.string.take_address), getString(R.string.country), null, null,
+                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.region), getString(R.string.city), null, null,
+                TYPE_TWO_SPINNERS, -1, -1, true, true));
+
+        itemList.add(new CreateInvoiceData(getString(R.string.post_index), getString(R.string.first_name), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.middle_name), getString(R.string.last_name), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.middle_name), getString(R.string.last_name), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.phone_number), getString(R.string.email), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.phone_number), getString(R.string.email), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_PHONE, INPUT_TYPE_EMAIL, true, true));
-        itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
-        //recipient data
-        itemList.add(new CreateParcelData(getString(R.string.receiver_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateParcelData(getString(R.string.login_email), getString(R.string.cargostar_account_number), null, null,
+        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
+
+        /* recipient data */
+        itemList.add(new CreateInvoiceData(getString(R.string.receiver_data), null, null, null, TYPE_HEADING));
+        itemList.add(new CreateInvoiceData(getString(R.string.login_email), getString(R.string.cargostar_account_number), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.tnt_account_number), getString(R.string.fedex_account_number), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.tnt_account_number), getString(R.string.fedex_account_number), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.delivery_address), getString(R.string.country), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.city), getString(R.string.region), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.post_index), getString(R.string.first_name), null, null,
+
+        itemList.add(new CreateInvoiceData(getString(R.string.delivery_address), getString(R.string.country), null, null,
+                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.region), getString(R.string.city), null, null,
+                TYPE_TWO_SPINNERS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
+
+        itemList.add(new CreateInvoiceData(getString(R.string.post_index), getString(R.string.first_name), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.middle_name), getString(R.string.last_name), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.middle_name), getString(R.string.last_name), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.phone_number), getString(R.string.email), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.phone_number), getString(R.string.email), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_PHONE, INPUT_TYPE_EMAIL, true, true));
-        itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
-        //payer data
-        itemList.add(new CreateParcelData(getString(R.string.payer_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateParcelData(getString(R.string.address_book), null, null, null, TYPE_SINGLE_SPINNER));
-        itemList.add(new CreateParcelData(getString(R.string.login_email), getString(R.string.delivery_address), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.country), getString(R.string.city), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.region), getString(R.string.post_index), null, null,
+        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
+
+        /* payer data */
+        itemList.add(new CreateInvoiceData(getString(R.string.payer_data), null, null, null, TYPE_HEADING));
+        itemList.add(new CreateInvoiceData(getString(R.string.address_book), null, null, null, TYPE_SINGLE_SPINNER));
+        itemList.add(new CreateInvoiceData(getString(R.string.login_email), getString(R.string.country), null, null,
+                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_EMAIL, INPUT_TYPE_TEXT, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.region), getString(R.string.city), null, null,
+                TYPE_TWO_SPINNERS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.delivery_address), getString(R.string.post_index), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.first_name), getString(R.string.middle_name), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.first_name), getString(R.string.middle_name), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.last_name), getString(R.string.phone_number), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.last_name), getString(R.string.phone_number), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_PHONE, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.email), getString(R.string.discount), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.email), getString(R.string.discount), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, false));
-        itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
-        //account numbers
-        itemList.add(new CreateParcelData(getString(R.string.cargostar_account_number), null, null, null,
+        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
+
+        /* account numbers */
+        itemList.add(new CreateInvoiceData(getString(R.string.cargostar_account_number), null, null, null,
                 TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_NUMBER, -1, true, false));
-        itemList.add(new CreateParcelData(getString(R.string.tnt_account_number), getString(R.string.tax_id),null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.tnt_account_number), getString(R.string.tax_id),null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.fedex_account_number), getString(R.string.tax_id), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.fedex_account_number), getString(R.string.tax_id), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
-        //payment data
-        itemList.add(new CreateParcelData(getString(R.string.payment_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateParcelData(getString(R.string.checking_account), getString(R.string.bank),null,null,
+        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
+
+        /* payment data */
+        itemList.add(new CreateInvoiceData(getString(R.string.payment_data), null, null, null, TYPE_HEADING));
+        itemList.add(new CreateInvoiceData(getString(R.string.checking_account), getString(R.string.bank),null,null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.payer_registration_code), getString(R.string.mfo), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.payer_registration_code), getString(R.string.mfo), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.oked), null, null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.oked), null, null, null,
                 TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_NUMBER, -1, true, false));
-        itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
-        //parcel data
-        itemList.add(new CreateParcelData(getString(R.string.parcel_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateParcelData(getString(R.string.qr_code), getString(R.string.courier_guidelines),null, null,
+        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
+
+        /* parcel data */
+        itemList.add(new CreateInvoiceData(getString(R.string.parcel_data), null, null, null, TYPE_HEADING));
+        itemList.add(new CreateInvoiceData(getString(R.string.qr_code), getString(R.string.courier_guidelines),null, null,
                 TYPE_ONE_IMAGE_EDIT_TEXT, -1, INPUT_TYPE_TEXT, false, true));
-        itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
-        //for each cargo
-        itemList.add(new CreateParcelData(getString(R.string.for_each_cargo), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateParcelData(getString(R.string.cargo_description), getString(R.string.package_type), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.weight), getString(R.string.length), null, null,
+        itemList.add(new CreateInvoiceData(null, null,null, null,
+                TYPE_TWO_CARD_VIEWS, -1, -1, false, true));
+        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_TWO_RADIO_BTNS));
+        /* for each cargo */
+        itemList.add(new CreateInvoiceData(getString(R.string.for_each_cargo), null, null, null, TYPE_HEADING));
+        itemList.add(new CreateInvoiceData(getString(R.string.cargo_description), getString(R.string.package_type), null, null,
+                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, -1, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.weight), getString(R.string.length), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.width), getString(R.string.height), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.width), getString(R.string.height), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateParcelData(getString(R.string.qr_code), null, null, null, TYPE_SINGLE_IMAGE_EDIT_TEXT));
-        itemList.add(new CreateParcelData(getString(R.string.add), null, null, null, TYPE_BUTTON));
-        itemList.add(new CreateParcelData(null, null, null, null, TYPE_STROKE));
+        itemList.add(new CreateInvoiceData(getString(R.string.qr_code), null, null, null, TYPE_SINGLE_IMAGE_EDIT_TEXT));
+        itemList.add(new CreateInvoiceData(getString(R.string.add), null, null, null, TYPE_BUTTON));
+        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
 
         contentRecyclerView = findViewById(R.id.content_recycler_view);
-        adapter = new CreateParcelAdapter(context, this);
+        adapter = new CreateInvoiceAdapter(context, this);
         contentRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         contentRecyclerView.setAdapter(adapter);
         adapter.setItemList(itemList);
@@ -477,7 +554,7 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
 
     private void updateUI(final ReceiptWithCargoList receipt) {
         //public data
-//        itemList.get(1).firstValue = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
+//        (1).firstValue = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
 //        itemList.get(1).secondValue = receipt != null ? receipt.getInvoice().getOperatorId() : null;
 //        itemList.get(2).firstValue = receipt != null ? receipt.getInvoice().getAccountantId() : null;
 //        itemList.get(2).secondValue = receipt != null ? receipt.getInvoice().getServiceProvider() : null;
@@ -639,11 +716,9 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
 
         final Cargo newItem = new Cargo(description, packageType,
                 Integer.parseInt(length), Integer.parseInt(width), Integer.parseInt(height), Integer.parseInt(weight), cargoQr);
-        final CreateParcelData calcItem = new CreateParcelData(TYPE_CALCULATOR_ITEM);
+        final CreateInvoiceData calcItem = new CreateInvoiceData(TYPE_CALCULATOR_ITEM);
         calcItem.packageType = packageType;
         calcItem.index = String.valueOf(cargoList.size());
-        calcItem.destination = recipientCity;
-        calcItem.source = senderCity;
         calcItem.dimensions = length + "x" + width + "x" + height;
         calcItem.weight = weight;
 
@@ -659,17 +734,17 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
             Toast.makeText(context, "Для создания заявки укажите адрес отправителя", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(senderCountry)) {
+        if (senderCountry == null) {
             Log.i(TAG, "senderCountry empty");
             Toast.makeText(context, "Для создания заявки укажите страну отправителя", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(senderRegion)) {
+        if (senderRegion == null) {
             Log.i(TAG, "senderRegion empty");
             Toast.makeText(context, "Для создания заявки укажите регион отправителя", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(senderCity)) {
+        if (senderCity == null) {
             Log.i(TAG, "senderCity empty");
             Toast.makeText(context, "Для создания заявки укажите город отправителя", Toast.LENGTH_SHORT).show();
             return;
@@ -701,16 +776,18 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
             Toast.makeText(context, "Страна отправителя или получателя должна быть Узбекистан", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!firstCardRadioBtn.isChecked() && !secondCardRadioBtn.isChecked()) {
-            Toast.makeText(context, "Для создания заявки выберите поставщика услуг", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (firstCardRadioBtn.isChecked()) {
-            serviceProvider = firstCardValue;
-        }
-        else if (secondCardRadioBtn.isChecked()) {
-            serviceProvider = secondCardValue;
-        }
+        //todo: handle service provider
+//        if (!firstCardRadioBtn.isChecked() && !secondCardRadioBtn.isChecked()) {
+//            Toast.makeText(context, "Для создания заявки выберите поставщика услуг", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (firstCardRadioBtn.isChecked()) {
+//            serviceProvider = firstCardValue;
+//        }
+//        else if (secondCardRadioBtn.isChecked()) {
+//            serviceProvider = secondCardValue;
+//        }
+
 //        currentReceipt.getInvoice().setServiceProvider(serviceProvider);
 //        currentReceipt.getInvoice().setSenderSignature(senderSignature);
 //        currentReceipt.getInvoice().setSenderEmail(senderEmail);
@@ -748,19 +825,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
 //        currentReceipt.getInvoice().setInstructions(instructions);
 //        currentReceipt.getInvoice().setPaymentStatus(PaymentStatus.WAITING_PAYMENT);
 
-        Address newSenderAddress = null;
-        Address newRecipientAddress = null;
-        Address newPayerAddress = null;
-
-        if (!TextUtils.isEmpty(senderCountry) && !TextUtils.isEmpty(senderRegion) && !TextUtils.isEmpty(senderCity) && !TextUtils.isEmpty(senderAddress)) {
-            newSenderAddress = new Address(senderCountry, senderRegion, senderCity, senderAddress);
-        }
-        if (!TextUtils.isEmpty(recipientCountry) && !TextUtils.isEmpty(recipientRegion) && !TextUtils.isEmpty(recipientCity) && !TextUtils.isEmpty(recipientAddress)) {
-            newRecipientAddress = new Address(recipientCountry, recipientRegion, recipientCity, recipientAddress);
-        }
-        if (!TextUtils.isEmpty(payerCountry) && !TextUtils.isEmpty(payerRegion) && !TextUtils.isEmpty(payerCity) && !TextUtils.isEmpty(payerAddress)) {
-            newPayerAddress = new Address(payerCountry, payerRegion, payerCity, payerAddress);
-        }
 //        if (!TextUtils.isEmpty(discount)) {
 //            currentReceipt.getInvoice().setDiscount(Integer.parseInt(discount));
 //        }
@@ -1087,7 +1151,7 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
 //        finish();
     }
 
-    private static final String TAG = CreateInvoiceActivitiy.class.toString();
+    private static final String TAG = CreateInvoiceActivity.class.toString();
 
     @Override
     public void onAddBtnClicked() {
@@ -1095,7 +1159,16 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
     }
 
     @Override
+    public void onDeleteItemClicked(final int position) {
+        //todo: refactor
+        cargoList.remove(position - 51);
+        itemList.remove(position);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onCameraImageClicked(final int position) {
+        //todo: refactor
         final Intent scanQrIntent = new Intent(context, ScanQrActivity.class);
         if (position == 42) {
             startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_PARCEL);
@@ -1180,11 +1253,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
                 senderAddress = editable.toString();
                 break;
             }
-            case 9: {
-                //senderCity
-                senderCity = editable.toString();
-                break;
-            }
             case 10: {
                 //senderZip
                 senderZip = editable.toString();
@@ -1215,11 +1283,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
                 recipientAddress = editable.toString();
                 break;
             }
-            case 18: {
-                //recipientCity
-                recipientCity = editable.toString();
-                break;
-            }
             case 19: {
                 //recipientZip
                 recipientZip = editable.toString();
@@ -1238,16 +1301,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
             case 25: {
                 //payerLogin
                 payerLogin = editable.toString();
-                break;
-            }
-            case 26: {
-                //payerCountry
-                payerCountry = editable.toString();
-                break;
-            }
-            case 27: {
-                //payerRegion
-                payerRegion = editable.toString();
                 break;
             }
             case 28: {
@@ -1331,11 +1384,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
                 operatorId = editable.toString();
                 break;
             }
-            case 2: {
-                //serviceProvider
-                serviceProvider = editable.toString();
-                break;
-            }
             case 5: {
                 //recipientSignature
                 recipientSignature = editable.toString();
@@ -1349,46 +1397,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
             case 7: {
                 //senderFedex
                 senderFedex = editable.toString();
-                break;
-            }
-            case 8: {
-                //senderCountry
-                senderCountry = editable.toString();
-
-                if (!TextUtils.isEmpty(recipientCountry)) {
-                    if (senderCountry.equals(getString(R.string.uzbekistan)) && recipientCountry.equals(getString(R.string.uzbekistan))) {
-                        firstCardRadioBtn.setChecked(true);
-                        firstCardImageView.setImageResource(R.drawable.logo_cargo_calc);
-                        firstCardValue = getString(R.string.cargostar);
-                        secondCardRadioBtn.setVisibility(View.INVISIBLE);
-                        secondCardImageView.setVisibility(View.INVISIBLE);
-                        secondCard.setVisibility(View.INVISIBLE);
-                        return;
-                    }
-                    else if (senderCountry.equals(getString(R.string.uzbekistan)) && !recipientCountry.equals(getString(R.string.uzbekistan))) {
-                        firstCardRadioBtn.setChecked(true);
-                        firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
-                        firstCardValue = getString(R.string.tnt);
-                        secondCardImageView.setImageResource(R.drawable.logo_fedex_calc);
-                        secondCardRadioBtn.setVisibility(View.VISIBLE);
-                        secondCardImageView.setVisibility(View.VISIBLE);
-                        secondCard.setVisibility(View.VISIBLE);
-                        secondCardValue = getString(R.string.fedex);
-                    }
-                    else if (!senderCountry.equals(getString(R.string.uzbekistan)) && recipientCountry.equals(getString(R.string.uzbekistan))) {
-                        firstCardRadioBtn.setChecked(true);
-                        firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
-                        firstCardValue = getString(R.string.tnt);
-                        secondCardRadioBtn.setVisibility(View.INVISIBLE);
-                        secondCardImageView.setVisibility(View.INVISIBLE);
-                        secondCard.setVisibility(View.INVISIBLE);
-                    }
-                }
-                break;
-            }
-            case 9: {
-                //senderRegion
-                senderRegion = editable.toString();
                 break;
             }
             case 10: {
@@ -1416,44 +1424,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
                 recipientFedex = editable.toString();
                 break;
             }
-            case 17: {
-                //recipientCountry
-                recipientCountry = editable.toString();
-
-                if (!TextUtils.isEmpty(senderCountry)) {
-                    if (senderCountry.equals(getString(R.string.uzbekistan)) && recipientCountry.equals(getString(R.string.uzbekistan))) {
-                        firstCardRadioBtn.setChecked(true);
-                        firstCardImageView.setImageResource(R.drawable.logo_cargo_calc);
-                        firstCardValue = getString(R.string.cargostar);
-                        secondCardRadioBtn.setVisibility(View.INVISIBLE);
-                        secondCardImageView.setVisibility(View.INVISIBLE);
-                        secondCard.setVisibility(View.INVISIBLE);
-                        return;
-                    } else if (senderCountry.equals(getString(R.string.uzbekistan)) && !recipientCountry.equals(getString(R.string.uzbekistan))) {
-                        firstCardRadioBtn.setChecked(true);
-                        firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
-                        firstCardValue = getString(R.string.tnt);
-                        secondCardImageView.setImageResource(R.drawable.logo_fedex_calc);
-                        secondCardRadioBtn.setVisibility(View.VISIBLE);
-                        secondCardImageView.setVisibility(View.VISIBLE);
-                        secondCard.setVisibility(View.VISIBLE);
-                        secondCardValue = getString(R.string.fedex);
-                    } else if (!senderCountry.equals(getString(R.string.uzbekistan)) && recipientCountry.equals(getString(R.string.uzbekistan))) {
-                        firstCardRadioBtn.setChecked(true);
-                        firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
-                        firstCardValue = getString(R.string.tnt);
-                        secondCardRadioBtn.setVisibility(View.INVISIBLE);
-                        secondCardImageView.setVisibility(View.INVISIBLE);
-                        secondCard.setVisibility(View.INVISIBLE);
-                    }
-                }
-                break;
-            }
-            case 18: {
-                //recipientRegion
-                recipientRegion = editable.toString();
-                break;
-            }
             case 19: {
                 //recipientFirstName
                 recipientFirstName = editable.toString();
@@ -1472,11 +1442,6 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
             case 25: {
                 //payerAddress
                 payerAddress = editable.toString();
-                break;
-            }
-            case 26: {
-                //payerCity
-                payerCity = editable.toString();
                 break;
             }
             case 27: {
@@ -1621,52 +1586,358 @@ public class CreateInvoiceActivitiy extends AppCompatActivity implements CreateP
 //            mfo = addressBook.get(i).getPayerMfo();
 //            oked = addressBook.get(i).getPayerOked();
 //            registrationCode = addressBook.get(i).getPayerRegistrationCode();
-            payerCargostar = addressBook.get(i).getCargostarAccountNumber();
-            payerTnt = addressBook.get(i).getTntAccountNumber();
-            payerFedex = addressBook.get(i).getFedexAccountNumber();
-            //25 payerLogin 25 payerAddress
-            itemList.get(25).firstValue = payerLogin;
-            itemList.get(25).secondValue = payerAddress;
-            adapter.notifyItemChanged(25);
-            //26 payerCountry 26 payerCity
-            itemList.get(26).firstValue = payerCountry;
-            itemList.get(26).secondValue = payerCity;
-            adapter.notifyItemChanged(26);
-            //27 payerRegion 27 payerZip
-            itemList.get(27).firstValue = payerRegion;
-            itemList.get(27).secondValue = payerZip;
-            adapter.notifyItemChanged(27);
-            //28 payerFirstName 28 payerMiddleName
-            itemList.get(28).firstValue = payerFirstName;
-            itemList.get(28).secondValue = payerMiddleName;
-            adapter.notifyItemChanged(28);
-            //29 payerLastName 29 payerPhone
-            itemList.get(29).firstValue = payerLastName;
-            itemList.get(29).secondValue = payerPhone;
-            adapter.notifyItemChanged(29);
-            //30 payerEmail
-            itemList.get(30).firstValue = payerEmail;
-            adapter.notifyItemChanged(30);
-            //31 payerCargo
-            itemList.get(31).firstValue = payerCargostar;
-            adapter.notifyItemChanged(31);
-            //32 payerTnt
-            itemList.get(32).firstValue = payerTnt;
-            adapter.notifyItemChanged(32);
-            //33 payerFedex
-            itemList.get(33).firstValue = payerFedex;
-            adapter.notifyItemChanged(33);
-            //34 checkingAccount 34 bank
-            itemList.get(34).firstValue = checkingAccount;
-            itemList.get(34).secondValue = bank;
-            adapter.notifyItemChanged(34);
-            //35 registrationCode 35 mfo
-            itemList.get(35).firstValue = registrationCode;
-            itemList.get(35).secondValue = mfo;
-            adapter.notifyItemChanged(35);
-            //36 oked
-            itemList.get(36).firstValue = oked;
-            adapter.notifyItemChanged(36);
+//            payerCargostar = addressBook.get(i).getCargostarAccountNumber();
+//            payerTnt = addressBook.get(i).getTntAccountNumber();
+//            payerFedex = addressBook.get(i).getFedexAccountNumber();
+//            itemList.get(25).firstValue = payerLogin;
+//            adapter.notifyItemChanged(25);
+//            itemList.get(26).firstValue = payerAddress;
+//            adapter.notifyItemChanged(26);
+//            itemList.get(28).firstValue = payerFirstName;
+//            itemList.get(28).secondValue = payerMiddleName;
+//            adapter.notifyItemChanged(28);
+//            itemList.get(29).firstValue = payerLastName;
+//            itemList.get(29).secondValue = payerPhone;
+//            adapter.notifyItemChanged(29);
+//            itemList.get(30).firstValue = payerEmail;
+//            adapter.notifyItemChanged(30);
+//            itemList.get(31).firstValue = payerCargostar;
+//            adapter.notifyItemChanged(31);
+//            itemList.get(32).firstValue = payerTnt;
+//            adapter.notifyItemChanged(32);
+//            itemList.get(33).firstValue = payerFedex;
+//            adapter.notifyItemChanged(33);
+//            itemList.get(34).firstValue = checkingAccount;
+//            itemList.get(34).secondValue = bank;
+//            adapter.notifyItemChanged(34);
+//            itemList.get(35).firstValue = registrationCode;
+//            itemList.get(35).secondValue = mfo;
+//            adapter.notifyItemChanged(35);
+//            itemList.get(36).firstValue = oked;
+//            adapter.notifyItemChanged(36);
         }
+    }
+
+    @Override
+    public void onSpinnerEditTextItemSelected(final int position, final Object selectedObject) {
+        switch (position) {
+            case 8: {
+                //sender country
+                senderCountry = (Country) selectedObject;
+                Log.i(TAG, "selected sender country: " + senderCountry);
+                createInvoiceViewModel.setSenderCountryId(senderCountry.getId());
+                calculatorViewModel.setSrcCountryId(senderCountry.getId());
+
+                //country & null = hide all
+                if (recipientCountry == null) {
+                    selectedCountryId = null;
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                    firstCardRadioBtn.setChecked(false);
+//                    secondCardRadioBtn.setChecked(false);
+//
+//                    firstCardRadioBtn.setText(null);
+//                    secondCardRadioBtn.setText(null);
+//
+//                    firstCardRadioBtn.setVisibility(View.INVISIBLE);
+//                    firstCardImageView.setVisibility(View.INVISIBLE);
+//                    firstCard.setVisibility(View.INVISIBLE);
+//
+//                    secondCardRadioBtn.setVisibility(View.INVISIBLE);
+//                    secondCardImageView.setVisibility(View.INVISIBLE);
+//                    secondCard.setVisibility(View.INVISIBLE);
+
+                    return;
+                }
+                if (!TextUtils.isEmpty(senderCountry.getNameEn()) && senderCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                    //uzbekistan -> uzbekistan = cargo only
+                    if (!TextUtils.isEmpty(recipientCountry.getNameEn()) && recipientCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        selectedCountryId = senderCountry.getId();
+                        calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                        firstCardRadioBtn.setChecked(false);
+//
+//                        firstCardImageView.setImageResource(R.drawable.logo_cargo_calc);
+//                        firstCardRadioBtn.setText(R.string.cargostar);
+//                        secondCardRadioBtn.setText(null);
+//
+//                        firstCardRadioBtn.setVisibility(View.VISIBLE);
+//                        firstCardImageView.setVisibility(View.VISIBLE);
+//                        firstCard.setVisibility(View.VISIBLE);
+//
+//                        secondCardRadioBtn.setVisibility(View.INVISIBLE);
+//                        secondCardImageView.setVisibility(View.INVISIBLE);
+//                        secondCard.setVisibility(View.INVISIBLE);
+
+                        return;
+                    }
+                    //uzbekistan -> other = fedex & tnt (export)
+                    selectedCountryId = recipientCountry.getId();
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                    firstCardRadioBtn.setChecked(false);
+//                    secondCardRadioBtn.setChecked(false);
+//
+//                    firstCardRadioBtn.setText(R.string.tnt);
+//                    secondCardRadioBtn.setText(R.string.fedex);
+//
+//                    firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
+//                    firstCardRadioBtn.setVisibility(View.VISIBLE);
+//                    firstCardImageView.setVisibility(View.VISIBLE);
+//                    firstCard.setVisibility(View.VISIBLE);
+//
+//                    secondCardImageView.setImageResource(R.drawable.logo_fedex_calc);
+//                    secondCardRadioBtn.setVisibility(View.VISIBLE);
+//                    secondCardImageView.setVisibility(View.VISIBLE);
+//                    secondCard.setVisibility(View.VISIBLE);
+                    return;
+                }
+                //other -> uzbekistan = tnt only
+                if (!TextUtils.isEmpty(recipientCountry.getNameEn()) && recipientCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                    selectedCountryId = senderCountry.getId();
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                    firstCardRadioBtn.setChecked(false);
+//                    firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
+//
+//                    firstCardRadioBtn.setText(R.string.tnt);
+//                    secondCardRadioBtn.setText(null);
+//
+//                    firstCardRadioBtn.setVisibility(View.VISIBLE);
+//                    firstCardImageView.setVisibility(View.VISIBLE);
+//                    firstCard.setVisibility(View.VISIBLE);
+//
+//                    secondCardRadioBtn.setVisibility(View.INVISIBLE);
+//                    secondCardImageView.setVisibility(View.INVISIBLE);
+//                    secondCard.setVisibility(View.INVISIBLE);
+                    return;
+                }
+                selectedCountryId = null;
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                firstCardRadioBtn.setChecked(false);
+//                secondCardRadioBtn.setChecked(false);
+//
+//                firstCardRadioBtn.setText(null);
+//                secondCardRadioBtn.setText(null);
+//
+//                firstCardRadioBtn.setVisibility(View.INVISIBLE);
+//                firstCardImageView.setVisibility(View.INVISIBLE);
+//                firstCard.setVisibility(View.INVISIBLE);
+//
+//                secondCardRadioBtn.setVisibility(View.INVISIBLE);
+//                secondCardImageView.setVisibility(View.INVISIBLE);
+//                secondCard.setVisibility(View.INVISIBLE);
+            }
+                break;
+            case 17: {
+                //recipient country
+                recipientCountry = (Country) selectedObject;
+                createInvoiceViewModel.setRecipientCountryId(recipientCountry.getId());
+                calculatorViewModel.setDestCountryId(recipientCountry.getId());
+
+                //country & null = hide all
+                if (senderCountry == null) {
+                    selectedCountryId = null;
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                    firstCardRadioBtn.setChecked(false);
+//                    secondCardRadioBtn.setChecked(false);
+//
+//                    firstCardRadioBtn.setText(null);
+//                    secondCardRadioBtn.setText(null);
+//
+//                    firstCardRadioBtn.setVisibility(View.INVISIBLE);
+//                    firstCardImageView.setVisibility(View.INVISIBLE);
+//                    firstCard.setVisibility(View.INVISIBLE);
+//
+//                    secondCardRadioBtn.setVisibility(View.INVISIBLE);
+//                    secondCardImageView.setVisibility(View.INVISIBLE);
+//                    secondCard.setVisibility(View.INVISIBLE);
+                    return;
+                }
+
+                if (!TextUtils.isEmpty(senderCountry.getNameEn()) && senderCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                    //uzbekistan -> uzbekistan = cargo only
+                    if (!TextUtils.isEmpty(recipientCountry.getNameEn()) && recipientCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        selectedCountryId = recipientCountry.getId();
+                        calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                        firstCardRadioBtn.setChecked(false);
+//
+//                        firstCardImageView.setImageResource(R.drawable.logo_cargo_calc);
+//
+//                        firstCardRadioBtn.setText(R.string.cargostar);
+//                        secondCardRadioBtn.setText(null);
+//
+//                        firstCardRadioBtn.setVisibility(View.VISIBLE);
+//                        firstCardImageView.setVisibility(View.VISIBLE);
+//                        firstCard.setVisibility(View.VISIBLE);
+//
+//                        secondCardRadioBtn.setVisibility(View.INVISIBLE);
+//                        secondCardImageView.setVisibility(View.INVISIBLE);
+//                        secondCard.setVisibility(View.INVISIBLE);
+                        return;
+                    }
+                    //uzbekistan -> other = fedex & tnt (export)
+                    selectedCountryId = recipientCountry.getId();
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                    firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
+//                    firstCardRadioBtn.setChecked(false);
+//                    secondCardRadioBtn.setChecked(false);
+//
+//                    firstCardRadioBtn.setText(R.string.tnt);
+//                    secondCardRadioBtn.setText(R.string.fedex);
+//
+//                    firstCardRadioBtn.setVisibility(View.VISIBLE);
+//                    firstCard.setVisibility(View.VISIBLE);
+//                    firstCardImageView.setVisibility(View.VISIBLE);
+//
+//                    secondCardImageView.setImageResource(R.drawable.logo_fedex_calc);
+//                    secondCardRadioBtn.setVisibility(View.VISIBLE);
+//                    secondCardImageView.setVisibility(View.VISIBLE);
+//                    secondCard.setVisibility(View.VISIBLE);
+
+                    return;
+                }
+                //other -> uzbekistan = tnt only
+                if (!TextUtils.isEmpty(recipientCountry.getNameEn()) && recipientCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                    selectedCountryId = senderCountry.getId();
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                    firstCardRadioBtn.setChecked(false);
+//
+//                    firstCardImageView.setImageResource(R.drawable.logo_tnt_cacl);
+//
+//                    firstCardRadioBtn.setText(R.string.tnt);
+//                    secondCardRadioBtn.setText(null);
+//
+//                    firstCardRadioBtn.setVisibility(View.VISIBLE);
+//                    firstCardImageView.setVisibility(View.VISIBLE);
+//                    firstCard.setVisibility(View.VISIBLE);
+//
+//                    secondCardRadioBtn.setVisibility(View.INVISIBLE);
+//                    secondCardImageView.setVisibility(View.INVISIBLE);
+//                    secondCard.setVisibility(View.INVISIBLE);
+                    return;
+                }
+                selectedCountryId = null;
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+
+//                firstCardRadioBtn.setChecked(false);
+//                secondCardRadioBtn.setChecked(false);
+//
+//                firstCardRadioBtn.setText(null);
+//                secondCardRadioBtn.setText(null);
+//
+//                firstCardRadioBtn.setVisibility(View.INVISIBLE);
+//                firstCardImageView.setVisibility(View.INVISIBLE);
+//                firstCard.setVisibility(View.INVISIBLE);
+//
+//                secondCardRadioBtn.setVisibility(View.INVISIBLE);
+//                secondCardImageView.setVisibility(View.INVISIBLE);
+//                secondCard.setVisibility(View.INVISIBLE);
+                break;
+            }
+            case 25: {
+                //payer country
+                payerCountry = (Country) selectedObject;
+                Log.i(TAG, "selected payer country: " + payerCountry);
+                createInvoiceViewModel.setPayerCountryId(payerCountry.getId());
+                break;
+            }
+            case 46: {
+                //packaging type
+//                packagingType = (PackagingType) selectedObject;
+//                Log.i(TAG, "selected packaging type: " + packagingType);
+//                calculatorViewModel.setPackagingId();
+            }
+        }
+    }
+
+    @Override
+    public void onFirstSpinnerItemSelected(final int position, final Region region) {
+        switch (position) {
+            case 9: {
+                //sender region
+                senderRegion = region;
+                Log.i(TAG, "selected sender region: " + senderRegion);
+                createInvoiceViewModel.setSenderRegionId(region.getId());
+                break;
+            }
+            case 18: {
+                //recipient region
+                recipientRegion = region;
+                createInvoiceViewModel.setRecipientRegionId(region.getId());
+                break;
+            }
+            case 26: {
+                //payer region
+                payerRegion = region;
+                createInvoiceViewModel.setPayerRegionId(region.getId());
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onSecondSpinnerItemSelected(final int position, final City city) {
+        switch (position) {
+            case 9: {
+                //sender city
+                senderCity = city;
+                Log.i(TAG, "selected senderCity: " + senderCity);
+                createInvoiceViewModel.setSenderCityId(city.getId());
+                break;
+            }
+            case 18: {
+                //recipient city
+                recipientCity = city;
+                createInvoiceViewModel.setRecipientCityId(city.getId());
+                break;
+            }
+            case 27: {
+                //payer city
+                payerCity = city;
+                createInvoiceViewModel.setPayerCityId(city.getId());
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onRadioBtnsSelected(View checkView, boolean checkedBtn) {
+        //todo: service provider
+        if (checkView instanceof RadioButton) {
+            if (checkedBtn) {
+                if (((RadioButton) checkView).getText().equals(getString(R.string.cargostar))) {
+                    calculatorViewModel.setProviderId(6L);
+                    return;
+                }
+                if (((RadioButton) checkView).getText().equals(getString(R.string.tnt))) {
+                    calculatorViewModel.setProviderId(5L);
+                    return;
+                }
+                if (((RadioButton) checkView).getText().equals(getString(R.string.fedex))) {
+                    calculatorViewModel.setProviderId(4L);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRadioGroupSelected(final RadioGroup group, final int docTypeId, final int boxTypeId) {
+        if (group.getCheckedRadioButtonId() == docTypeId) {
+            selectedPackageType = 1;
+            return;
+        }
+        if (group.getCheckedRadioButtonId() == boxTypeId) {
+            selectedPackageType = 2;
+        }
+    }
+
+    private void initCitySpinner() {
+
     }
 }

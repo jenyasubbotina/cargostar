@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.location.Branche;
@@ -17,9 +18,11 @@ import java.util.List;
 
 public class LocationDataViewModel extends AndroidViewModel {
     private final Repository repository;
+
     private final LiveData<List<Country>> countryList;
     private final LiveData<List<Region>> regionList;
     private final LiveData<List<City>> cityList;
+
     private final LiveData<List<Branche>> brancheList;
     private final LiveData<List<TransitPoint>> transitPointList;
 

@@ -7,20 +7,24 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.view.callback.CreateParcelCallback;
+import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 
-public class CreateParcelButtonViewHolder extends RecyclerView.ViewHolder {
+public class CreateInvoiceButtonViewHolder extends RecyclerView.ViewHolder {
     public Button button;
 
-    public CreateParcelButtonViewHolder(@NonNull View itemView) {
+    public CreateInvoiceButtonViewHolder(@NonNull View itemView) {
         super(itemView);
         button = itemView.findViewById(R.id.button);
 
     }
 
-    public void bindBtn(final CreateParcelCallback callback) {
+    public void bindBtn(final CreateInvoiceCallback callback) {
         button.setOnClickListener(v -> {
             callback.onAddBtnClicked();
         });
+    }
+
+    public void unbindBtn() {
+        button.setOnClickListener(null);
     }
 }
