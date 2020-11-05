@@ -135,11 +135,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private RecyclerView itemRecyclerView;
 
     /* selected items */
-    private static Long selectedCountryId = null;
-    private static Provider selectedProvider = null;
-    private static Packaging selectedPackaging = null;
-    private static List<Long> selectedPackagingIdList = null;
-    private static List<ZoneSettings> selectedZoneSettingsList = null;
+    private Long selectedCountryId = null;
+    private Provider selectedProvider = null;
+    private Packaging selectedPackaging = null;
+    private List<Long> selectedPackagingIdList = null;
+    private List<ZoneSettings> selectedZoneSettingsList = null;
 
     private static final List<Cargo> itemList = new ArrayList<>();
 
@@ -253,9 +253,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         });
         notificationsImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, NotificationsActivity.class));
-        });
-        calculatorImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CalculatorActivity.class));
         });
 
         weightEditText.setOnFocusChangeListener((v, hasFocus) -> {
@@ -830,8 +827,14 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
     @Override
     public void onDeleteItemClicked(final int position) {
+        if (itemList.size() <= 0) {
+            return;
+        }
+        Log.i(TAG, "position=" + position + " size" + itemList.size());
         itemList.remove(position);
-        calculatorAdapter.notifyItemRemoved(position);
+        calculatorAdapter.notifyDataSetChanged();
+
+        Log.i(TAG, "itemCount=" + calculatorAdapter.getItemCount());
     }
 
     @Override

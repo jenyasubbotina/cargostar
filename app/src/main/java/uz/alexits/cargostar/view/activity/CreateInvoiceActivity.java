@@ -283,10 +283,9 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         /* location data view model */
         createInvoiceViewModel.getCountryList().observe(this, countryList -> {
             adapter.setCountryList(countryList);
-            Log.i(TAG, "countryList: " + countryList);
-            adapter.notifyItemChanged(8);
-            adapter.notifyItemChanged(17);
-            adapter.notifyItemChanged(25);
+//            adapter.notifyItemChanged(8);
+//            adapter.notifyItemChanged(17);
+//            adapter.notifyItemChanged(25);
         });
 
         createInvoiceViewModel.getSenderRegionList().observe(this, senderRegionList ->  {
@@ -323,23 +322,28 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         /* calculator data view model */
         calculatorViewModel.getProvider().observe(this, provider -> {
+            Log.i(TAG, "provider: " + provider);
             serviceProvider = provider;
         });
 
         calculatorViewModel.getType().observe(this, type -> {
+            Log.i(TAG, "type: " + type);
             calculatorViewModel.setTypePackageIdList(type, selectedPackagingIdList);
         });
 
         calculatorViewModel.getPackagingIds().observe(this, packagingIds -> {
+            Log.i(TAG, "packagingIds: " + packagingIds);
             selectedPackagingIdList = packagingIds;
             calculatorViewModel.setTypePackageIdList(selectedPackageType, packagingIds);
         });
 
         calculatorViewModel.getPackagingTypeList().observe(this, packagingTypeList -> {
+            Log.i(TAG, "packagingTypeList: " + packagingTypeList);
             adapter.setPackagingTypeList(packagingTypeList);
         });
 
         calculatorViewModel.getPackaging().observe(this, packaging -> {
+            Log.i(TAG, "packaging: " + packaging);
             selectedPackaging = packaging;
         });
 
@@ -1733,6 +1737,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             case 17: {
                 //recipient country
                 recipientCountry = (Country) selectedObject;
+                Log.i(TAG, "selected recipient country: " + recipientCountry);
                 createInvoiceViewModel.setRecipientCountryId(recipientCountry.getId());
                 calculatorViewModel.setDestCountryId(recipientCountry.getId());
 
@@ -1843,7 +1848,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             case 25: {
                 //payer country
                 payerCountry = (Country) selectedObject;
-                Log.i(TAG, "selected payer country: " + payerCountry);
                 createInvoiceViewModel.setPayerCountryId(payerCountry.getId());
                 break;
             }
@@ -1862,7 +1866,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             case 9: {
                 //sender region
                 senderRegion = region;
-                Log.i(TAG, "selected sender region: " + senderRegion);
                 createInvoiceViewModel.setSenderRegionId(region.getId());
                 break;
             }
@@ -1908,19 +1911,21 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
     @Override
     public void onRadioBtnsSelected(View checkView, boolean checkedBtn) {
-        //todo: service provider
         if (checkView instanceof RadioButton) {
             if (checkedBtn) {
                 if (((RadioButton) checkView).getText().equals(getString(R.string.cargostar))) {
                     calculatorViewModel.setProviderId(6L);
+                    Log.i(TAG, "onRadioBtnsSelected: ");
                     return;
                 }
                 if (((RadioButton) checkView).getText().equals(getString(R.string.tnt))) {
                     calculatorViewModel.setProviderId(5L);
+                    Log.i(TAG, "onRadioBtnsSelected: ");
                     return;
                 }
                 if (((RadioButton) checkView).getText().equals(getString(R.string.fedex))) {
                     calculatorViewModel.setProviderId(4L);
+                    Log.i(TAG, "onRadioBtnsSelected: ");
                 }
             }
         }
@@ -1930,10 +1935,12 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     public void onRadioGroupSelected(final RadioGroup group, final int docTypeId, final int boxTypeId) {
         if (group.getCheckedRadioButtonId() == docTypeId) {
             selectedPackageType = 1;
+            Log.i(TAG, "onRadioGroupSelected: ");
             return;
         }
         if (group.getCheckedRadioButtonId() == boxTypeId) {
             selectedPackageType = 2;
+            Log.i(TAG, "onRadioGroupSelected: ");
         }
     }
 

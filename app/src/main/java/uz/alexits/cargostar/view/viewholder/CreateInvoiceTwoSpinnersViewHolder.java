@@ -34,7 +34,6 @@ public class CreateInvoiceTwoSpinnersViewHolder extends RecyclerView.ViewHolder 
 
     public void bindFirstSpinner(@NonNull final Context context, final int position, @NonNull final CreateInvoiceCallback callback) {
         /* firstSpinner -> regionSpinner */
-        Log.i(TAG, "bindFirstSpinner(): " + position);
         regionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -59,7 +58,6 @@ public class CreateInvoiceTwoSpinnersViewHolder extends RecyclerView.ViewHolder 
 
     public void bindSecondSpinner(@NonNull final Context context, final int position, @NonNull final CreateInvoiceCallback callback) {
         /* secondSpinner -> citySpinner */
-        Log.i(TAG, "bindSecondSpinner(): " + position);
         citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
