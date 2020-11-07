@@ -48,4 +48,7 @@ public class Constants {
 
     /* calculation */
     public static final String KEY_COUNTRY_ID = "country_id";
+
+    /* transportation data */
+    public static final String KEY_TRANSPORTATION_ID = "transportation_id";
 }

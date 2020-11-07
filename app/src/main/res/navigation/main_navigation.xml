@@ -189,7 +189,7 @@
     </fragment>
     <fragment
         android:id="@+id/currentParcelsFragment"
-        android:name="uz.alexits.cargostar.view.fragment.CurrentParcelsFragment"
+        android:name="uz.alexits.cargostar.view.fragment.CurrentTransportationsFragment"
         android:label="fragment_current_parcels"
         tools:layout="@layout/fragment_current_parcels" >
         <action
@@ -236,7 +236,7 @@
         tools:layout="@layout/activity_scan_qr" />
     <fragment
         android:id="@+id/parcelDataFragment"
-        android:name="uz.alexits.cargostar.view.fragment.ParcelDataFragment"
+        android:name="uz.alexits.cargostar.view.fragment.InvoiceDataFragment"
         android:label="fragment_parcel_data"
         tools:layout="@layout/fragment_parcel_data" >
         <action
@@ -331,7 +331,7 @@
     </fragment>
     <fragment
         android:id="@+id/parcelStatusFragment"
-        android:name="uz.alexits.cargostar.view.fragment.ParcelStatusFragment"
+        android:name="uz.alexits.cargostar.view.fragment.TransportationStatusFragment"
         android:label="fragment_parcel_status"
         tools:layout="@layout/fragment_parcel_status" >
         <action

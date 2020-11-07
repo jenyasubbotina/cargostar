@@ -30,4 +30,7 @@ public interface RequestDao {
 
     @Update
     int updateRequest(final Request updatedRequest);
+
+    @Query("UPDATE request SET is_new = :isNew WHERE id == :requestId")
+    void readNewRequest(final long requestId, final boolean isNew);
 }

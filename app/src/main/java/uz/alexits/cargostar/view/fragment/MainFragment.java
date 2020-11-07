@@ -33,6 +33,7 @@ import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
+import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -71,6 +72,9 @@ public class MainFragment extends Fragment {
         context = getContext();
 
         courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
+
+        SyncWorkRequest.fetchTransitPoints(context);
+        SyncWorkRequest.fetchTransportationStatuses(context);
     }
 
     @Override

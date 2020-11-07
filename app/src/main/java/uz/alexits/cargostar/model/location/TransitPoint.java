@@ -14,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-@Entity(tableName = "transit_point",
+@Entity(tableName = "transitPoint",
         foreignKeys = {
         @ForeignKey(entity = Branche.class, parentColumns = "id", childColumns = "branche_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
@@ -31,22 +31,22 @@ public class TransitPoint {
     @SerializedName("country_id")
     @Expose
     @ColumnInfo(name = "country_id")
-    private long countryId;
+    private final Long countryId;
 
     @SerializedName("region_id")
     @Expose
     @ColumnInfo(name = "region_id")
-    private long regionId;
+    private final Long regionId;
 
     @SerializedName("city_id")
     @Expose
     @ColumnInfo(name = "city_id")
-    private long cityId;
+    private final Long cityId;
 
     @SerializedName("branche_id")
     @Expose
     @ColumnInfo(name = "branche_id")
-    private long brancheId;
+    private final Long brancheId;
 
     @SerializedName("name")
     @Expose
@@ -80,30 +80,11 @@ public class TransitPoint {
     @Nullable
     private Date updatedAt;
 
-    @Ignore
     public TransitPoint(final long id,
-                        final long countryId,
-                        final long regionId,
-                        final long cityId,
-                        final long brancheId,
-                        @NonNull final String name,
-                        @NonNull final String address,
-                        final int status) {
-        this.id = id;
-        this.countryId = countryId;
-        this.regionId = regionId;
-        this.cityId = cityId;
-        this.brancheId = brancheId;
-        this.name = name;
-        this.address = address;
-        this.status = status;
-    }
-
-    public TransitPoint(final long id,
-                        final long countryId,
-                        final long regionId,
-                        final long cityId,
-                        final long brancheId,
+                        final Long countryId,
+                        final Long regionId,
+                        final Long cityId,
+                        final Long brancheId,
                         @NonNull final String name,
                         @NonNull final String address,
                         @Nullable final String geolocation,
@@ -131,36 +112,23 @@ public class TransitPoint {
         this.id = id;
     }
 
-    public long getCountryId() {
+    public Long getCountryId() {
         return countryId;
     }
 
-    public void setCountryId(long countryId) {
-        this.countryId = countryId;
-    }
 
-    public long getRegionId() {
+    public Long getRegionId() {
         return regionId;
     }
 
-    public void setRegionId(long regionId) {
-        this.regionId = regionId;
-    }
 
-    public long getCityId() {
+    public Long getCityId() {
         return cityId;
     }
 
-    public void setCityId(long cityId) {
-        this.cityId = cityId;
-    }
 
-    public long getBrancheId() {
+    public Long getBrancheId() {
         return brancheId;
-    }
-
-    public void setBrancheId(long brancheId) {
-        this.brancheId = brancheId;
     }
 
     @NonNull
@@ -203,18 +171,6 @@ public class TransitPoint {
     @NonNull
     @Override
     public String toString() {
-        return "TransitPoint{" +
-                "id=" + id +
-                ", countryId=" + countryId +
-                ", regionId=" + regionId +
-                ", cityId=" + cityId +
-                ", brancheId=" + brancheId +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", geolocation='" + geolocation + '\'' +
-                ", status=" + status +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return name;
     }
 }

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.shipping.Parcel;
+import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.view.callback.ParcelCallback;
 
 public class ParcelViewHolder extends RecyclerView.ViewHolder {
@@ -35,7 +35,7 @@ public class ParcelViewHolder extends RecyclerView.ViewHolder {
         statusTextView = itemView.findViewById(R.id.status_text_view);
     }
 
-    public void bind(final Parcel currentItem, final ParcelCallback callback) {
+    public void bind(final Transportation currentItem, final ParcelCallback callback) {
         itemView.setOnClickListener(v -> {
             callback.onParcelSelected(currentItem);
         });

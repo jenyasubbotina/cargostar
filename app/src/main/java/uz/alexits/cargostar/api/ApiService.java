@@ -33,6 +33,9 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
+import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.model.transportation.TransportationData;
+import uz.alexits.cargostar.model.transportation.TransportationStatus;
 
 public interface ApiService {
     /* Location data */
@@ -105,8 +108,6 @@ public interface ApiService {
     /* Courier */
     @Headers("Content-type: application/json; charset=utf-8;")
     @POST("employee/auth")
-    //login: testc1
-    //password: qweqwe
     Call<Courier> signIn(@Body SignInParams signInParams);
 
     @Headers("Content-type: application/json; charset=utf-8;")
@@ -136,8 +137,15 @@ public interface ApiService {
     Call<JsonElement> getAddressBook();
 
     /* Transportation */
-//    https://cargo.alex-its.uz/api/transportation-status/transportation?id=10
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation")
-    Call<List<JsonElement>> getCurrentTransportations();
+    Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("transportation-status/transportation")
+    Call<List<TransportationData>> getTransportationData(@Query("id") final Long transportationId);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("status-transport")
+    Call<List<TransportationStatus>> getTransportationStatusList(@Query("id") final int perPage);
 }

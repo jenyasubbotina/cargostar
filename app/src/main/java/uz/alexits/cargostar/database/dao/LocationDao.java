@@ -96,29 +96,29 @@ public interface LocationDao {
     void dropBranches();
 
     /*transit points*/
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertTransitPoints(final List<TransitPoint> transitPointList);
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     long insertTransitPoint(final TransitPoint transitPoint);
 
-    @Query("SELECT * FROM transit_point ORDER BY id")
+    @Query("SELECT * FROM transitPoint ORDER BY id")
     LiveData<List<TransitPoint>> selectAllTransitPoints();
 
-    @Query("SELECT * FROM transit_point WHERE id == :transitPointId ORDER BY id")
+    @Query("SELECT * FROM transitPoint WHERE id == :transitPointId ORDER BY id")
     LiveData<TransitPoint> selectTransitPoint(final long transitPointId);
 
-    @Query("SELECT * FROM transit_point WHERE branche_id == :branchId ORDER BY branche_id")
+    @Query("SELECT * FROM transitPoint WHERE branche_id == :branchId ORDER BY branche_id")
     LiveData<TransitPoint> selectTransitPointByBranch(final long branchId);
 
-    @Query("SELECT * FROM transit_point WHERE branche_id IN (SELECT id FROM Branche WHERE city_id == :cityId) ORDER BY id")
+    @Query("SELECT * FROM transitPoint WHERE branche_id IN (SELECT id FROM Branche WHERE city_id == :cityId) ORDER BY id")
     LiveData<List<TransitPoint>> selectAllTransitPointsByCity(final long cityId);
 
-    @Query("SELECT * FROM transit_point WHERE branche_id IN (SELECT id FROM Branche WHERE city_id IN " +
+    @Query("SELECT * FROM transitPoint WHERE branche_id IN (SELECT id FROM Branche WHERE city_id IN " +
             "(SELECT id FROM city WHERE region_id IN (SELECT id FROM region WHERE country_id == :countryId))) ORDER BY id")
     LiveData<List<TransitPoint>> selectAllTransitPointsByCountry(final long countryId);
 
-    @Query("SELECT COUNT(id) FROM transit_point")
+    @Query("SELECT COUNT(id) FROM transitPoint")
     int getTransitPointsCount();
 
 //    /* zones */

@@ -9,7 +9,6 @@ import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import uz.alexits.cargostar.model.location.Address;
 import uz.alexits.cargostar.model.shipping.Invoice;
 
 import java.text.SimpleDateFormat;
@@ -24,8 +23,6 @@ public class Notification {
 
     @PrimaryKey @ColumnInfo(name = "receipt_id") private long receiptId;
     @ColumnInfo(name = "courier_id", defaultValue = "-1") private long courierId;
-    @Embedded(prefix = "sender_")  @NonNull private final Address senderAddress;
-    @Embedded(prefix = "recipient_") @Nullable private Address recipientAddress;
     @ColumnInfo(name = "is_read", defaultValue = "false") private boolean isRead;
     @ColumnInfo(name = "title") @NonNull private String title;
     @ColumnInfo(name = "link") @NonNull private String link;
@@ -34,14 +31,10 @@ public class Notification {
 
     public Notification(final long receiptId,
                         final long courierId,
-                        @NonNull final Address senderAddress,
-                        @Nullable final Address recipientAddress,
                         @NonNull final Date receiveDate,
                         final boolean isRead) {
         this.receiptId = receiptId;
         this.courierId = courierId;
-        this.senderAddress = senderAddress;
-        this.recipientAddress = recipientAddress;
         this.receiveDate = receiveDate;
         this.isRead = isRead;
         this.title = "Новая заявка в ";
@@ -51,10 +44,6 @@ public class Notification {
         else {
             this.link = "Общие заявки";
         }
-    }
-
-    public void setRecipientAddress(@Nullable Address recipientAddress) {
-        this.recipientAddress = recipientAddress;
     }
 
     public void setTitle(@NonNull String title) {
@@ -71,16 +60,6 @@ public class Notification {
 
     public void setReceiptId(long receiptId) {
         this.receiptId = receiptId;
-    }
-
-    @NonNull
-    public Address getSenderAddress() {
-        return senderAddress;
-    }
-
-    @Nullable
-    public Address getRecipientAddress() {
-        return recipientAddress;
     }
 
     public boolean isRead() {

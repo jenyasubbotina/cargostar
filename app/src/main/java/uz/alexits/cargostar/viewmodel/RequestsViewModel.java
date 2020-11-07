@@ -81,7 +81,7 @@ public class RequestsViewModel extends AndroidViewModel {
     }
 
     public void readReceipt(final long requestId) {
-        repository.readReceipt(requestId);
+        repository.readRequest(requestId);
     }
 
     /* invoice data */

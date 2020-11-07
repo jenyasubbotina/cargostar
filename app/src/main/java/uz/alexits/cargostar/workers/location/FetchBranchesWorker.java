@@ -49,14 +49,10 @@ public class FetchBranchesWorker extends Worker {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
             final Response<List<Branche>> response = RetrofitClient.getInstance(getApplicationContext()).getBranches(perPage);
 
-            Log.i(TAG, "headers=" + response.headers());
-
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllBranches(): response=" + response.body());
                     final List<Branche> brancheList = response.body();
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertBranches(brancheList);
-
                     return ListenableWorker.Result.success();
                 }
             }

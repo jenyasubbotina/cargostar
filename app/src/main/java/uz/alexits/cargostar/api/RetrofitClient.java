@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
@@ -41,6 +42,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.model.transportation.TransportationData;
+import uz.alexits.cargostar.model.transportation.TransportationStatus;
 
 public class RetrofitClient {
     private static Retrofit.Builder retrofitBuilder;
@@ -366,9 +370,18 @@ public class RetrofitClient {
     }
 
     /* Transportation */
-    public Response<List<JsonElement>> getCurrentTransportations() throws IOException {
-        return apiService.getCurrentTransportations().execute();
+    public Response<List<Transportation>> getCurrentTransportations(final int perPage) throws IOException {
+        return apiService.getCurrentTransportations(perPage).execute();
     }
+
+    public Response<List<TransportationStatus>> getTransportationStatusList(final int perPage) throws IOException {
+        return apiService.getTransportationStatusList(perPage).execute();
+    }
+
+    public Response<List<TransportationData>> getTransportationData(final Long transportationId) throws IOException {
+        return apiService.getTransportationData(transportationId).execute();
+    }
+
 
     private static final String TAG = RetrofitClient.class.toString();
 }

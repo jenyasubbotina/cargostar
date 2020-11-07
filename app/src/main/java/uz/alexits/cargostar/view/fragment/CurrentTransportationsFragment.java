@@ -29,10 +29,9 @@ import android.widget.Toast;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.TransportationStatus;
 import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.shipping.Parcel;
-import uz.alexits.cargostar.viewmodel.ParcelsViewModel;
+import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.viewmodel.TransportationViewModel;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
@@ -41,23 +40,24 @@ import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
-import uz.alexits.cargostar.view.adapter.ParcelAdapter;
+import uz.alexits.cargostar.view.adapter.TransportationAdapter;
 import uz.alexits.cargostar.view.adapter.SpinnerAdapter;
 import uz.alexits.cargostar.view.callback.ParcelCallback;
+import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
+public class CurrentTransportationsFragment extends Fragment implements ParcelCallback {
     private Context context;
     private FragmentActivity activity;
     //viewModel
     private CourierViewModel courierViewModel;
-    private ParcelsViewModel parcelsViewModel;
+    private TransportationViewModel transportationViewModel;
     //transportation statuses -> all
-    private static TransportationStatus[] statusArray;
+//    private static TransportationStatus[] statusArray;
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
@@ -78,17 +78,17 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
     private CheckBox lostCheckBox;
     private CheckBox allCheckBox;
 
-    private RelativeLayout cityField;
-    private Spinner citySpinner;
+    private RelativeLayout transitPointField;
+    private Spinner transitPointSpinner;
     private List<TransitPoint> transitPointList;
 
     private EditText qrCodeEditText;
     private ImageView scanQrImageView;
 
     private RecyclerView currentParcelsRecyclerView;
-    private ParcelAdapter parcelAdapter;
+    private TransportationAdapter transportationAdapter;
 
-    public CurrentParcelsFragment() {
+    public CurrentTransportationsFragment() {
         // Required empty public constructor
     }
 
@@ -101,6 +101,8 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
         if (getArguments() != null) {
             statusFlag = getArguments().getInt(IntentConstants.STATUS_FLAG);
         }
+
+        SyncWorkRequest.fetchTransportationList(context);
     }
 
     @Override
@@ -127,14 +129,14 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
 
         qrCodeEditText = root.findViewById(R.id.qr_code_edit_text);
         scanQrImageView = root.findViewById(R.id.camera_image_view);
-        cityField = root.findViewById(R.id.city_field);
-        citySpinner = root.findViewById(R.id.city_spinner);
+        transitPointField = root.findViewById(R.id.city_field);
+        transitPointSpinner = root.findViewById(R.id.city_spinner);
         currentParcelsRecyclerView = root.findViewById(R.id.current_parcels_recycler_view);
 
-        parcelAdapter = new ParcelAdapter(context, this);
+        transportationAdapter = new TransportationAdapter(context, this);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         currentParcelsRecyclerView.setLayoutManager(layoutManager);
-        currentParcelsRecyclerView.setAdapter(parcelAdapter);
+        currentParcelsRecyclerView.setAdapter(transportationAdapter);
 
         return root;
     }
@@ -159,6 +161,61 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
             startActivity(new Intent(context, CalculatorActivity.class));
         });
 
+        /* main content views */
+        inTransitCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            initParcels(b, onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), allCheckBox.isChecked());
+        });
+
+        onTheWayCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            initParcels(inTransitCheckBox.isChecked(), b, deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), allCheckBox.isChecked());
+        });
+
+        deliveredCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            initParcels(inTransitCheckBox.isChecked(), onTheWayCheckBox.isChecked(), b, lostCheckBox.isChecked(), allCheckBox.isChecked());
+        });
+
+        lostCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            initParcels(inTransitCheckBox.isChecked(), onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), b, allCheckBox.isChecked());
+        });
+
+        allCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
+            initParcels(inTransitCheckBox.isChecked(), onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), b);
+        });
+
+        //default checkBox values
+        inTransitCheckBox.setChecked(true);
+        onTheWayCheckBox.setChecked(true);
+
+        //main content views
+        transitPointSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                final TextView itemTextView = (TextView) view;
+                final TransitPoint currentItem = (TransitPoint) adapterView.getItemAtPosition(i);
+
+                if (itemTextView != null) {
+                    if (i < adapterView.getCount()) {
+                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
+                        transitPointField.setBackgroundResource(R.drawable.edit_text_active);
+                    }
+                }
+                if (inTransitCheckBox.isChecked()) {
+//                    parcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getId()).observe(getViewLifecycleOwner(), parcelList -> {
+//                        Log.i(TAG, "parcelList: " + parcelList);
+//                        if (parcelList != null) {
+//                            parcelAdapter.setParcelList(parcelList);
+//                            parcelAdapter.notifyDataSetChanged();
+//                        }
+//                    });
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         scanQrImageView.setOnClickListener(v -> {
             final Intent scanQrIntent = new Intent(context, ScanQrActivity.class);
             startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_MENU);
@@ -169,7 +226,7 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
-        parcelsViewModel = new ViewModelProvider(this).get(ParcelsViewModel.class);
+        transportationViewModel = new ViewModelProvider(this).get(TransportationViewModel.class);
 
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
@@ -211,166 +268,113 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
                 startActivity(mainIntent);
             });
         });
-        parcelsViewModel.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
+
+        transportationViewModel.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
             Log.i(TAG, "onActivityCreated(): " + transitPointList);
             if (transitPointList != null) {
                 this.transitPointList = transitPointList;
                 initCitySpinner(transitPointList);
             }
         });
-
-        inTransitCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-            initParcels(b, onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), allCheckBox.isChecked());
-        });
-
-        onTheWayCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-            initParcels(inTransitCheckBox.isChecked(), b, deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), allCheckBox.isChecked());
-        });
-
-        deliveredCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-            initParcels(inTransitCheckBox.isChecked(), onTheWayCheckBox.isChecked(), b, lostCheckBox.isChecked(), allCheckBox.isChecked());
-        });
-
-        lostCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-            initParcels(inTransitCheckBox.isChecked(), onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), b, allCheckBox.isChecked());
-        });
-
-        allCheckBox.setOnCheckedChangeListener((compoundButton, b) -> {
-            initParcels(inTransitCheckBox.isChecked(), onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), b);
-        });
-
-        //default checkBox values
-        inTransitCheckBox.setChecked(true);
-        onTheWayCheckBox.setChecked(true);
-
-        //main content views
-        citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                final TextView itemTextView = (TextView) view;
-                final TransitPoint currentItem = (TransitPoint) adapterView.getItemAtPosition(i);
-
-                if (itemTextView != null) {
-                    if (i < adapterView.getCount()) {
-                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
-                        cityField.setBackgroundResource(R.drawable.edit_text_active);
-                    }
-                }
-                if (inTransitCheckBox.isChecked()) {
-//                    parcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getId()).observe(getViewLifecycleOwner(), parcelList -> {
-//                        Log.i(TAG, "parcelList: " + parcelList);
-//                        if (parcelList != null) {
-//                            parcelAdapter.setParcelList(parcelList);
-//                            parcelAdapter.notifyDataSetChanged();
-//                        }
-//                    });
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
     }
 
     private void initParcels(final boolean inTransit, final boolean onTheWay, final boolean delivered, final boolean lost, final boolean all) {
-        if (all || (inTransit && onTheWay && delivered && lost)) {
-            //in transit + on the way + delivered + lost
-            Log.i(TAG, "statusList: in transit + on the way + delivered + lost");
-            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
-            initCitySpinner(transitPointList);
-        }
-        else if (inTransit && !onTheWay && !delivered && !lost) {
-            //in transit
-            Log.i(TAG, "statusList: in transit");
-            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT};
-            initCitySpinner(transitPointList);
-        }
-        else if (inTransit && onTheWay && !delivered && !lost) {
-            //in transit + on the way
-            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY};
-            Log.i(TAG, "statusList: in transit + on the way, transitPointList=" + transitPointList);
-            initCitySpinner(transitPointList);
-        }
-        else if (inTransit && onTheWay && delivered) {
-            //in transit + on the way + delivered
-            Log.i(TAG, "statusList: in transit + on the way + delivered");
-            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED};
-            initCitySpinner(transitPointList);
-        }
-        else if (inTransit && onTheWay) {
-            //in transit + on the way + lost
-            Log.i(TAG, "statusList: in transit + on the way + lost");
-            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.LOST};
-            initCitySpinner(transitPointList);
-        }
-        else if (inTransit && delivered && !lost) {
-            //in transit + delivered
-            Log.i(TAG, "statusList: in transit + delivered");
-            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.DELIVERED};
-            initCitySpinner(transitPointList);
-        }
-        else if (inTransit && !delivered) {
-            //in transit + lost
-            Log.i(TAG, "statusList: in transit + lost");
-            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.LOST};
-            initCitySpinner(transitPointList);
-        }
-        else if (inTransit) {
-            //in transit + delivered + lost
-            Log.i(TAG, "statusList: in transit + delivered + lost");
-            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.DELIVERED, TransportationStatus.LOST};
-            initCitySpinner(transitPointList);
-        }
-        else if (onTheWay && !delivered && !lost) {
-            //on the way
-            Log.i(TAG, "statusList: on the way");
-            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY};
-            initCitySpinner(null);
-        }
-        else if (onTheWay && delivered && !lost) {
-            //on the way + delivered
-            Log.i(TAG, "statusList: on the way + delivered");
-            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED};
-            initCitySpinner(null);
-        }
-        else if (onTheWay && delivered) {
-            //on the way + delivered + lost
-            Log.i(TAG, "statusList: on the way + delivered + lost");
-            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
-            initCitySpinner(null);
-        }
-        else if (onTheWay) {
-            //on the way + lost
-            Log.i(TAG, "statusList: on the way + lost");
-            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.LOST};
-            initCitySpinner(null);
-        }
-        else if (delivered && !lost) {
-            //delivered
-            Log.i(TAG, "statusList: delivered");
-            statusArray = new TransportationStatus[] {TransportationStatus.DELIVERED};
-            initCitySpinner(null);
-        }
-        else if (delivered) {
-            //delivered + lost
-            Log.i(TAG, "statusList: delivered + lost");
-            statusArray = new TransportationStatus[] {TransportationStatus.DELIVERED, TransportationStatus.LOST};
-            initCitySpinner(null);
-        }
-        else if (lost) {
-            //lost
-            Log.i(TAG, "statusList: lost");
-            statusArray = new TransportationStatus[] {TransportationStatus.LOST};
-            initCitySpinner(null);
-        }
-        else {
-            //nothing
-            Log.i(TAG, "statusList: nothing");
-            statusArray = new TransportationStatus[] {};
-            initCitySpinner(null);
-        }
+//        if (all || (inTransit && onTheWay && delivered && lost)) {
+//            //in transit + on the way + delivered + lost
+//            Log.i(TAG, "statusList: in transit + on the way + delivered + lost");
+//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
+//            initCitySpinner(transitPointList);
+//        }
+//        else if (inTransit && !onTheWay && !delivered && !lost) {
+//            //in transit
+//            Log.i(TAG, "statusList: in transit");
+//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT};
+//            initCitySpinner(transitPointList);
+//        }
+//        else if (inTransit && onTheWay && !delivered && !lost) {
+//            //in transit + on the way
+//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY};
+//            Log.i(TAG, "statusList: in transit + on the way, transitPointList=" + transitPointList);
+//            initCitySpinner(transitPointList);
+//        }
+//        else if (inTransit && onTheWay && delivered) {
+//            //in transit + on the way + delivered
+//            Log.i(TAG, "statusList: in transit + on the way + delivered");
+//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED};
+//            initCitySpinner(transitPointList);
+//        }
+//        else if (inTransit && onTheWay) {
+//            //in transit + on the way + lost
+//            Log.i(TAG, "statusList: in transit + on the way + lost");
+//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.LOST};
+//            initCitySpinner(transitPointList);
+//        }
+//        else if (inTransit && delivered && !lost) {
+//            //in transit + delivered
+//            Log.i(TAG, "statusList: in transit + delivered");
+//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.DELIVERED};
+//            initCitySpinner(transitPointList);
+//        }
+//        else if (inTransit && !delivered) {
+//            //in transit + lost
+//            Log.i(TAG, "statusList: in transit + lost");
+//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.LOST};
+//            initCitySpinner(transitPointList);
+//        }
+//        else if (inTransit) {
+//            //in transit + delivered + lost
+//            Log.i(TAG, "statusList: in transit + delivered + lost");
+//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.DELIVERED, TransportationStatus.LOST};
+//            initCitySpinner(transitPointList);
+//        }
+//        else if (onTheWay && !delivered && !lost) {
+//            //on the way
+//            Log.i(TAG, "statusList: on the way");
+//            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY};
+//            initCitySpinner(null);
+//        }
+//        else if (onTheWay && delivered && !lost) {
+//            //on the way + delivered
+//            Log.i(TAG, "statusList: on the way + delivered");
+//            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED};
+//            initCitySpinner(null);
+//        }
+//        else if (onTheWay && delivered) {
+//            //on the way + delivered + lost
+//            Log.i(TAG, "statusList: on the way + delivered + lost");
+//            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
+//            initCitySpinner(null);
+//        }
+//        else if (onTheWay) {
+//            //on the way + lost
+//            Log.i(TAG, "statusList: on the way + lost");
+//            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.LOST};
+//            initCitySpinner(null);
+//        }
+//        else if (delivered && !lost) {
+//            //delivered
+//            Log.i(TAG, "statusList: delivered");
+//            statusArray = new TransportationStatus[] {TransportationStatus.DELIVERED};
+//            initCitySpinner(null);
+//        }
+//        else if (delivered) {
+//            //delivered + lost
+//            Log.i(TAG, "statusList: delivered + lost");
+//            statusArray = new TransportationStatus[] {TransportationStatus.DELIVERED, TransportationStatus.LOST};
+//            initCitySpinner(null);
+//        }
+//        else if (lost) {
+//            //lost
+//            Log.i(TAG, "statusList: lost");
+//            statusArray = new TransportationStatus[] {TransportationStatus.LOST};
+//            initCitySpinner(null);
+//        }
+//        else {
+//            //nothing
+//            Log.i(TAG, "statusList: nothing");
+//            statusArray = new TransportationStatus[] {};
+//            initCitySpinner(null);
+//        }
 //        parcelsViewModel.selectParcelsByStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray).observe(getViewLifecycleOwner(), parcelList -> {
 //            parcelAdapter.setParcelList(parcelList);
 //            parcelAdapter.notifyDataSetChanged();
@@ -378,17 +382,17 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
     }
 
     @Override
-    public void onParcelSelected(Parcel currentItem) {
-        final CurrentParcelsFragmentDirections.ActionCurrentParcelsFragmentToParcelStatusFragment action =
-                CurrentParcelsFragmentDirections.actionCurrentParcelsFragmentToParcelStatusFragment();
-        action.setParcelId(currentItem.getInvoice().getId());
-        NavHostFragment.findNavController(this).navigate(action);
+    public void onParcelSelected(Transportation currentItem) {
+//        final CurrentParcelsFragmentDirections.ActionCurrentParcelsFragmentToParcelStatusFragment action =
+//                CurrentParcelsFragmentDirections.actionCurrentParcelsFragmentToParcelStatusFragment();
+//        action.setParcelId(currentItem.getInvoice().getId());
+//        NavHostFragment.findNavController(this).navigate(action);
     }
 
     private void initCitySpinner(final List<TransitPoint> transitPointList) {
         final SpinnerAdapter<TransitPoint> cityAdapter = new SpinnerAdapter<>(context, R.layout.spinner_item, transitPointList);
         cityAdapter.setDropDownViewResource(R.layout.spinner_item);
-        citySpinner.setAdapter(cityAdapter);
+        transitPointSpinner.setAdapter(cityAdapter);
         cityAdapter.notifyDataSetChanged();
     }
 
@@ -409,5 +413,5 @@ public class CurrentParcelsFragment extends Fragment implements ParcelCallback {
         }
     }
 
-    private static final String TAG = CurrentParcelsFragment.class.toString();
+    private static final String TAG = CurrentTransportationsFragment.class.toString();
 }

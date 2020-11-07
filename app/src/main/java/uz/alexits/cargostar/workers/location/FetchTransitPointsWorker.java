@@ -2,8 +2,10 @@ package uz.alexits.cargostar.workers.location;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -11,6 +13,7 @@ import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.location.TransitPoint;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import java.io.IOException;
@@ -36,7 +39,6 @@ public class FetchTransitPointsWorker extends Worker {
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllTransitPoints(): response=" + response.body());
                     final List<TransitPoint> transitPointList = response.body();
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertTransitPoints(transitPointList);
                     return Result.success();

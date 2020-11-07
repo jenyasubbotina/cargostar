@@ -46,8 +46,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
         if (currentNot != null) {
             holder.titleTextView.setText(currentNot.getTitle());
             holder.linkTextView.setText(currentNot.getLink());
-            holder.fromTextView.setText(currentNot.getSenderAddress().getCity());
-            holder.toTextView.setText(currentNot.getRecipientAddress() != null && !TextUtils.isEmpty(currentNot.getRecipientAddress().getCity()) ? currentNot.getRecipientAddress().getCity() : null);
+//            holder.fromTextView.setText(currentNot.getSenderAddress().getCity());
+//            holder.toTextView.setText(currentNot.getRecipientAddress() != null && !TextUtils.isEmpty(currentNot.getRecipientAddress().getCity()) ? currentNot.getRecipientAddress().getCity() : null);
 //            holder.dateTextView.setText(currentNot.getReceiveDate());
 
             if (currentNot.isRead()) {

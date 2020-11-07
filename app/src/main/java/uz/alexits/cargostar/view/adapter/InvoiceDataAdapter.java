@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.view.callback.ParcelDataCallback;
@@ -14,23 +17,22 @@ import uz.alexits.cargostar.view.viewholder.ParcelDataHeadingViewHolder;
 import uz.alexits.cargostar.view.viewholder.ParcelDataItemViewHolder;
 import uz.alexits.cargostar.view.viewholder.ParcelDataStrokeViewHolder;
 
-import java.util.List;
+import static uz.alexits.cargostar.view.adapter.InvoiceData.TYPE_HEADING;
+import static uz.alexits.cargostar.view.adapter.InvoiceData.TYPE_ITEM;
+import static uz.alexits.cargostar.view.adapter.InvoiceData.TYPE_STROKE;
 
-import static uz.alexits.cargostar.view.adapter.ParcelData.TYPE_HEADING;
-import static uz.alexits.cargostar.view.adapter.ParcelData.TYPE_ITEM;
-import static uz.alexits.cargostar.view.adapter.ParcelData.TYPE_STROKE;
 
-public class ParcelDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class InvoiceDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Context context;
     private final ParcelDataCallback callback;
-    private List<ParcelData> itemList;
+    private List<InvoiceData> itemList;
 
-    public ParcelDataAdapter(@NonNull final Context context, final ParcelDataCallback callback) {
+    public InvoiceDataAdapter(@NonNull final Context context, final ParcelDataCallback callback) {
         this.context = context;
         this.callback = callback;
     }
 
-    public void setItemList(List<ParcelData> itemList) {
+    public void setItemList(List<InvoiceData> itemList) {
         this.itemList = itemList;
     }
 

@@ -1,7 +1,6 @@
 package uz.alexits.cargostar.database.cache;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -9,19 +8,15 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 
 import uz.alexits.cargostar.database.converters.DateConverter;
 import uz.alexits.cargostar.database.converters.PaymentStatusConverter;
-import uz.alexits.cargostar.database.converters.PointConverter;
-import uz.alexits.cargostar.database.converters.TransportationStatusConverter;
 import uz.alexits.cargostar.database.dao.ActorDao;
 import uz.alexits.cargostar.database.dao.InvoiceDao;
 import uz.alexits.cargostar.database.dao.LocationDao;
+import uz.alexits.cargostar.database.dao.NotificationDao;
 import uz.alexits.cargostar.database.dao.PackagingDao;
-import uz.alexits.cargostar.database.dao.ParcelDao;
+import uz.alexits.cargostar.database.dao.TransportationDao;
 import uz.alexits.cargostar.database.dao.RequestDao;
 import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.calculation.Zone;
@@ -33,9 +28,7 @@ import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.shipping.Cargo;
-import uz.alexits.cargostar.model.shipping.Consolidation;
 import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.model.shipping.ReceiptTransitPointCrossRef;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.Notification;
 import uz.alexits.cargostar.model.actor.AddressBook;
@@ -44,11 +37,10 @@ import uz.alexits.cargostar.model.actor.User;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.model.transportation.TransportationData;
+import uz.alexits.cargostar.model.transportation.TransportationStatus;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,28 +56,34 @@ import java.util.List;
         Branche.class,
         TransitPoint.class,
         Invoice.class,
-        ReceiptTransitPointCrossRef.class,
         Cargo.class,
-        Consolidation.class,
         Notification.class,
         Request.class,
         Provider.class,
         Packaging.class,
         PackagingType.class,
         Zone.class,
-        ZoneSettings.class, ZoneCountry.class}, version = 62, exportSchema = false)
-@TypeConverters({ PointConverter.class, TransportationStatusConverter.class, PaymentStatusConverter.class, DateConverter.class })
+        ZoneSettings.class,
+        ZoneCountry.class,
+        Transportation.class,
+        TransportationStatus.class,
+        TransportationData.class}, version = 64, exportSchema = false)
+@TypeConverters({ PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";
     private static volatile LocalCache instance;
 
     public abstract LocationDao locationDao();
+
     public abstract PackagingDao packagingDao();
+
     public abstract ActorDao actorDao();
 
     public abstract RequestDao requestDao();
-    public abstract ParcelDao parcelDao();
     public abstract InvoiceDao invoiceDao();
+    public abstract TransportationDao transportationDao();
+
+    public abstract NotificationDao notificationDao();
 
     public static LocalCache getInstance(final Context context) {
         if (instance == null) {
@@ -93,7 +91,7 @@ public abstract class LocalCache extends RoomDatabase {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(), LocalCache.class, DB_NAME)
                             //todo: remove allow Main Thread Queries
-                            .allowMainThreadQueries()
+//                            .allowMainThreadQueries()
                             .fallbackToDestructiveMigration()
                             .addCallback(new Callback() {
                                 @Override

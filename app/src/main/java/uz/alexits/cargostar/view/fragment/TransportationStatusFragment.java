@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
@@ -24,11 +23,9 @@ import android.widget.TextView;
 
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.TransportationStatus;
-import uz.alexits.cargostar.viewmodel.ParcelStatusViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 
-public class ParcelStatusFragment extends Fragment {
+public class TransportationStatusFragment extends Fragment {
     private Context context;
     private FragmentActivity activity;
 
@@ -49,9 +46,9 @@ public class ParcelStatusFragment extends Fragment {
 
     private long requestId = -1;
     private long currentLocationId = -1;
-    private final TransportationStatus[] statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
+//    private final TransportationStatus[] statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
 
-    public ParcelStatusFragment() {
+    public TransportationStatusFragment() {
         // Required empty public constructor
     }
 
@@ -63,7 +60,7 @@ public class ParcelStatusFragment extends Fragment {
         if (getArguments() != null) {
             requestId = ParcelStatusFragmentArgs.fromBundle(getArguments()).getParcelId();
         }
-        Log.i(ParcelStatusFragment.class.toString(), "requestId=" + requestId);
+        Log.i(TransportationStatusFragment.class.toString(), "requestId=" + requestId);
     }
 
     @Override
@@ -115,7 +112,6 @@ public class ParcelStatusFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final ParcelStatusViewModel parcelStatusViewModel = new ViewModelProvider(this).get(ParcelStatusViewModel.class);
 
 //        parcelStatusViewModel.selectParcel(requestId).observe(getViewLifecycleOwner(), parcel -> {
 //            currentLocationId = parcel.getInvoice().getCurrentLocation();

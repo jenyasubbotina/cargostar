@@ -34,7 +34,6 @@ import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.calculation.Packaging;
-import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.calculation.Provider;
 import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
@@ -42,7 +41,7 @@ import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.shipping.Cargo;
-import uz.alexits.cargostar.model.shipping.ReceiptWithCargoList;
+import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.utils.ImageSerializer;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
@@ -87,7 +86,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
 
-    private ReceiptWithCargoList currentReceipt;
     private List<CreateInvoiceData> itemList;
     private RecyclerView contentRecyclerView;
 
@@ -255,7 +253,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 //                        tariffRadioGroup.setVisibility(View.VISIBLE);
 //                    }
 //                    currentReceipt = receipt;
-                    updateUI(currentReceipt);
+//                    updateUI();
                 }
                 if (requestKey != IntentConstants.REQUEST_EDIT_PARCEL) {
                     saveReceiptBtn.setVisibility(View.INVISIBLE);
@@ -556,7 +554,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         createReceiptBtn = findViewById(R.id.create_receipt_btn);
     }
 
-    private void updateUI(final ReceiptWithCargoList receipt) {
+    private void updateUI(final Invoice invoice) {
         //public data
 //        (1).firstValue = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
 //        itemList.get(1).secondValue = receipt != null ? receipt.getInvoice().getOperatorId() : null;

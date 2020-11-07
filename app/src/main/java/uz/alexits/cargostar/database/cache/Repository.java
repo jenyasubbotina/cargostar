@@ -2,15 +2,13 @@ package uz.alexits.cargostar.database.cache;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
 
 import uz.alexits.cargostar.database.dao.ActorDao;
 import uz.alexits.cargostar.database.dao.InvoiceDao;
 import uz.alexits.cargostar.database.dao.LocationDao;
+import uz.alexits.cargostar.database.dao.NotificationDao;
 import uz.alexits.cargostar.database.dao.PackagingDao;
-import uz.alexits.cargostar.database.dao.ParcelDao;
+import uz.alexits.cargostar.database.dao.TransportationDao;
 import uz.alexits.cargostar.database.dao.RequestDao;
 import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.calculation.Zone;
@@ -29,6 +27,8 @@ import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.model.transportation.TransportationData;
 
 import java.util.List;
 
@@ -37,13 +37,16 @@ public class Repository {
     private static Repository instance;
 
     private final LocationDao locationDao;
+
     private final PackagingDao packagingDao;
 
     private final ActorDao actorDao;
-    private final InvoiceDao invoiceDao;
 
-    private final ParcelDao parcelDao;
     private final RequestDao requestDao;
+    private final InvoiceDao invoiceDao;
+    private final TransportationDao transportationDao;
+
+    private final NotificationDao notificationDao;
 
     /*location data*/
     private final LiveData<List<Country>> countryList;
@@ -65,9 +68,10 @@ public class Repository {
         this.locationDao = localCache.locationDao();
         this.actorDao = localCache.actorDao();
         this.invoiceDao = localCache.invoiceDao();
-        this.parcelDao = localCache.parcelDao();
+        this.transportationDao = localCache.transportationDao();
         this.requestDao = localCache.requestDao();
         this.packagingDao = localCache.packagingDao();
+        this.notificationDao = localCache.notificationDao();
         /* location data */
         this.countryList = locationDao.selectAllCountries();
         this.regionList = locationDao.selectAllRegions();
@@ -239,6 +243,23 @@ public class Repository {
         return actorDao.selectCustomer(clientId);
     }
 
+    /*address book*/
+    public long createAddressBookEntry(final AddressBook addressBook) {
+        return invoiceDao.insertAddressBookEntry(addressBook);
+    }
+
+    public void updateAddressBookEntry(final AddressBook updatedAddressBook) {
+        invoiceDao.updateAddressBookEntry(updatedAddressBook);
+    }
+
+    public LiveData<AddressBook> selectAddressBookEntryById(final long id) {
+        return invoiceDao.selectAddressBookEntryById(id);
+    }
+
+    public LiveData<List<AddressBook>> selectAddressBookEntries() {
+        return invoiceDao.selectAllAddressBookEntries();
+    }
+
     /* request data*/
     public LiveData<Request> selectRequest(final long requestId) {
         return requestDao.selectRequestById(requestId);
@@ -261,122 +282,51 @@ public class Repository {
         requestDao.updateRequest(updateRequest);
     }
 
-//    public long createParcelTransitPointCrossRef(final ReceiptTransitPointCrossRef receiptTransitPointCrossRef) {
-//        return parcelDao.createParcelTransitPointCrossRef(receiptTransitPointCrossRef);
-//    }
-//
-//    public LiveData<List<Parcel>> selectParcelsByStatus(final long courierId, final TransportationStatus transportationStatus) {
-//        return parcelDao.selectParcelsByStatus(courierId, transportationStatus);
-//    }
-//
-//    public LiveData<List<Parcel>> selectParcelsByStatus(final long courierId, final TransportationStatus[] statusArray) {
-//        return parcelDao.selectParcelsByStatus(courierId, statusArray);
-//    }
-//
-//    public LiveData<List<Parcel>> selectParcelsByLocation(final long courierId,
-//                                                          final TransportationStatus transportationStatus,
-//                                                          final long locationId) {
-//        return parcelDao.selectParcelsByLocation(courierId, transportationStatus, locationId);
-//    }
-//
-//    public LiveData<List<Parcel>> selectParcelsByLocationAndStatus(final long courierId, final TransportationStatus[] statusList, final long locationId) {
-//        return parcelDao.selectParcelsByLocationAndStatus(courierId, TransportationStatus.IN_TRANSIT, locationId, statusList);
-//    }
-//
-//    public void dropReceipts() {
-//        parcelDao.dropReceipts();
-//    }
-//
-//    public void deleteReceipt(final long requestId) {
-//        parcelDao.deleteReceipt(requestId);
-//    }
-//
-//    /*Cargo queries*/
-//    public void createCargo(final List<Cargo> cargoList) {
-//        parcelDao.createCargo(cargoList);
-//    }
-//
-//    public void createCargo(final Cargo cargo) {
-//        parcelDao.createCargo(cargo);
-//    }
-//
-//    public void updateCargo(final Cargo updatedCargo) {
-//        parcelDao.updateCargo(updatedCargo);
-//    }
+    public void readRequest(final long requestId) {
+        requestDao.readNewRequest(requestId, false);
+    }
 
-    public void readReceipt(final long receiptId) {
-        parcelDao.readReceipt(receiptId, false);
+    /* transportation data */
+    public LiveData<List<Transportation>> selectCurrentTransportations() {
+        return transportationDao.selectCurrentTransportations();
+    }
+
+    /* transportation status */
+    public LiveData<List<TransportationData>> selectTransportationDataByTransportationId(final Long transportationId) {
+        return transportationDao.selectTransportationDataByTransportationId(transportationId);
     }
 
     /*Notification queries*/
     public void createNotification(final List<Notification> notificationList) {
-        parcelDao.createNotification(notificationList);
+        notificationDao.createNotification(notificationList);
     }
 
     public void createNotification(final Notification notification) {
-        parcelDao.createNotification(notification);
+        notificationDao.createNotification(notification);
     }
 
     public void updateNotification(final Notification updatedNotification) {
-        parcelDao.updateNotification(updatedNotification);
+        notificationDao.updateNotification(updatedNotification);
     }
 
     public LiveData<Notification> selectNotification(final long receiptId) {
-        return parcelDao.selectNotification(receiptId);
+        return notificationDao.selectNotification(receiptId);
     }
 
     public LiveData<List<Notification>> selectAllNotifications() {
-        return parcelDao.selectAllNotifications();
+        return notificationDao.selectAllNotifications();
     }
 
     public LiveData<List<Notification>> selectNewNotifications() {
-        return parcelDao.selectNewNotifications(false);
+        return notificationDao.selectNewNotifications(false);
     }
 
     public LiveData<Integer> selectNewNotificationsCount() {
-        return parcelDao.selectNewNotificationsCount(false);
+        return notificationDao.selectNewNotificationsCount(false);
     }
 
     public void readNotification(final long receiptId) {
-        parcelDao.readNotification(receiptId, true);
-    }
-
-//    /*Consolidation queries*/
-//    public long[] createConsolidation(final List<Consolidation> consolidationList) {
-//        return parcelDao.createConsolidation(consolidationList);
-//    }
-//
-//    public long createConsolidation(final Consolidation consolidation) {
-//        return parcelDao.createConsolidation(consolidation);
-//    }
-//
-//    public void updateConsolidation(final Consolidation updatedConsolidation) {
-//        parcelDao.updateConsolidation(updatedConsolidation);
-//    }
-//
-//    public LiveData<List<Parcel>> selectParcelsByConsolidationNumber(final long consolidationNumber) {
-//        return parcelDao.selectParcelsByConsolidationNumber(consolidationNumber);
-//    }
-//
-//    public LiveData<Parcel> selectParcelByConsolidationNumber(final long consolidationNumber, final long parcelId) {
-//        return parcelDao.selectParcelByConsolidationNumber(consolidationNumber, parcelId);
-//    }
-
-    /*address book*/
-    public long createAddressBookEntry(final AddressBook addressBook) {
-        return invoiceDao.insertAddressBookEntry(addressBook);
-    }
-
-    public void updateAddressBookEntry(final AddressBook updatedAddressBook) {
-        invoiceDao.updateAddressBookEntry(updatedAddressBook);
-    }
-
-    public LiveData<AddressBook> selectAddressBookEntryById(final long id) {
-        return invoiceDao.selectAddressBookEntryById(id);
-    }
-
-    public LiveData<List<AddressBook>> selectAddressBookEntries() {
-        return invoiceDao.selectAllAddressBookEntries();
+        notificationDao.readNotification(receiptId, true);
     }
 
     private static final String TAG = Repository.class.toString();

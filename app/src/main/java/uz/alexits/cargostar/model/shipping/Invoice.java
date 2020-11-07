@@ -1,9 +1,7 @@
 package uz.alexits.cargostar.model.shipping;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
-import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -12,14 +10,9 @@ import androidx.room.PrimaryKey;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import uz.alexits.cargostar.model.Document;
-import uz.alexits.cargostar.model.PaymentStatus;
-import uz.alexits.cargostar.model.TransportationStatus;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.calculation.Provider;
-import uz.alexits.cargostar.model.location.Address;
-import uz.alexits.cargostar.model.location.TransitPoint;
 
 import java.util.Date;
 

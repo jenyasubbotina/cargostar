@@ -7,16 +7,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.shipping.ReceiptTransitPointCrossRef;
 import uz.alexits.cargostar.model.Notification;
-import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.Repository;
-import uz.alexits.cargostar.model.shipping.Cargo;
-import uz.alexits.cargostar.model.shipping.Consolidation;
-import uz.alexits.cargostar.model.shipping.Parcel;
-import uz.alexits.cargostar.model.shipping.Invoice;
 
 import com.google.gson.JsonElement;
 
