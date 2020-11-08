@@ -12,7 +12,7 @@ import java.util.List;
 
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.view.callback.ParcelDataCallback;
+import uz.alexits.cargostar.view.callback.InvoiceDataCallback;
 import uz.alexits.cargostar.view.viewholder.ParcelDataHeadingViewHolder;
 import uz.alexits.cargostar.view.viewholder.ParcelDataItemViewHolder;
 import uz.alexits.cargostar.view.viewholder.ParcelDataStrokeViewHolder;
@@ -24,10 +24,10 @@ import static uz.alexits.cargostar.view.adapter.InvoiceData.TYPE_STROKE;
 
 public class InvoiceDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Context context;
-    private final ParcelDataCallback callback;
+    private final InvoiceDataCallback callback;
     private List<InvoiceData> itemList;
 
-    public InvoiceDataAdapter(@NonNull final Context context, final ParcelDataCallback callback) {
+    public InvoiceDataAdapter(@NonNull final Context context, final InvoiceDataCallback callback) {
         this.context = context;
         this.callback = callback;
     }

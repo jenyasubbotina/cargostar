@@ -43,12 +43,12 @@ import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.shipping.Cargo;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.utils.UiUtils;
-import uz.alexits.cargostar.view.activity.CalculatorActivity;
 import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
@@ -892,7 +892,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             Toast.makeText(context, "Высота указана неверно", Toast.LENGTH_SHORT).show();
             return;
         }
-        itemList.add(new Cargo("", packagingType.getName(), Double.parseDouble(length), Double.parseDouble(width), Double.parseDouble(height), Double.parseDouble(weight), ""));
+        itemList.add(new Cargo(packagingType.getName(), Double.parseDouble(length), Double.parseDouble(width), Double.parseDouble(height), Double.parseDouble(weight)));
         calculatorAdapter.notifyItemInserted(itemList.size() - 1);
     }
 

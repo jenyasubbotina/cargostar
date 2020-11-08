@@ -1,7 +1,6 @@
 package uz.alexits.cargostar.view.adapter;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.Notification;
+import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.view.callback.NotificationCallback;
 import uz.alexits.cargostar.view.viewholder.NotificationViewHolder;
 

@@ -51,4 +51,49 @@ public class Constants {
 
     /* transportation data */
     public static final String KEY_TRANSPORTATION_ID = "transportation_id";
+    public static final String KEY_TRANSPORTATION_STATUS_ID = "transportation_status_id";
+    public static final String KEY_TRANSIT_POINT_ID = "transit_point_id";
+
+    /* push */
+    public static final String TYPE_REQUEST = "request";
+    public static final String TYPE_TRANSPORTATION = "transportation";
+    public static final String SUBTYPE_NEW = "new";
+    public static final String SUBTYPE_UPDATE = "update";
+    public static final String SUBTYPE_STATUS_UPDATE = "update_status";
+    public static final String PUSH_TYPE = "type";
+    public static final String PUSH_SUBTYPE = "type2";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_ID = "id";
+    public static final String KEY_SENDER_COUNTRY_ID = "country_id";
+    public static final String KEY_SENDER_REGION_ID = "region_id";
+    public static final String KEY_SENDER_CITY_ID = "city_id";
+    public static final String KEY_USER_ID = "user_id";
+    public static final String KEY_CLIENT_ID = "client_id";
+    public static final String KEY_EMPLOYEE_ID = "employee_id";
+    public static final String KEY_SENDER_FIRST_NAME = "firstname";
+    public static final String KEY_SENDER_MIDDLE_NAME = "middlename";
+    public static final String KEY_SENDER_LAST_NAME = "lastname";
+    public static final String KEY_SENDER_PHONE = "telephone";
+    public static final String KEY_SENDER_ADDRESS = "adres";
+    public static final String KEY_RECIPIENT_COUNTRY_ID = "country_to";
+    public static final String KEY_RECIPIENT_CITY_ID = "city_to";
+    public static final String KEY_COMMENT = "comment";
+
+    public static final String KEY_TRANSPORTATION_STATUS = "status_transportation";
+    public static final String KEY_PAYMENT_STATUS_ID = "status_payment";
+    public static final String KEY_CURRENT_TRANSIT_POINT_ID = "current_point";
+    public static final String KEY_ARRIVAL_DATE = "date";
+    public static final String KEY_TRACKING_CODE = "tracking_code";
+    public static final String KEY_QR_CODE = "qr_code";
+    public static final String KEY_PARTY_QR_CODE = "party_qr_code";
+    public static final String KEY_INSTRUCTIONS = "instructions";
+    public static final String KEY_DIRECTION = "direction";
+    public static final String KEY_CITY_FROM = "cityFrom";
+    public static final String KEY_CITY_TO = "cityTo";
+    public static final String KEY_STATUS_NAME = "statusName";
+
+    public static final String MAIN_ACTIVITY_FRAGMENT = "push_fragment";
+    public static final String KEY_PUBLIC_REQUESTS = "public_requests";
+    public static final String KEY_MY_REQUESTS = "my_requests";
+    public static final String KEY_CURRENT_TRANSPORTATION = "current_transportations";
 }

@@ -168,6 +168,9 @@ public class Request {
                    final int status,
                    final Date createdAt,
                    final Date updatedAt) {
+        if (id == -1L) {
+            return;
+        }
         this.id = id;
         this.senderFirstName = senderFirstName;
         this.senderMiddleName = senderMiddleName;

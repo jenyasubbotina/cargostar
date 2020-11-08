@@ -42,7 +42,7 @@ import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
 import uz.alexits.cargostar.view.adapter.TransportationAdapter;
 import uz.alexits.cargostar.view.adapter.SpinnerAdapter;
-import uz.alexits.cargostar.view.callback.ParcelCallback;
+import uz.alexits.cargostar.view.callback.TransportationCallback;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import java.util.List;
@@ -50,7 +50,7 @@ import java.util.List;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class CurrentTransportationsFragment extends Fragment implements ParcelCallback {
+public class CurrentTransportationsFragment extends Fragment implements TransportationCallback {
     private Context context;
     private FragmentActivity activity;
     //viewModel
@@ -269,11 +269,21 @@ public class CurrentTransportationsFragment extends Fragment implements ParcelCa
             });
         });
 
+        /* transportation view model */
         transportationViewModel.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
             Log.i(TAG, "onActivityCreated(): " + transitPointList);
             if (transitPointList != null) {
                 this.transitPointList = transitPointList;
                 initCitySpinner(transitPointList);
+            }
+        });
+
+        transportationViewModel.getCurrentTransportationList().observe(getViewLifecycleOwner(), transportationList -> {
+            transportationAdapter.setTransportationList(transportationList);
+            transportationAdapter.notifyDataSetChanged();
+
+            for (final Transportation transportation : transportationList) {
+                Log.i(TAG, "transportation: " + transportation);
             }
         });
     }
@@ -382,11 +392,38 @@ public class CurrentTransportationsFragment extends Fragment implements ParcelCa
     }
 
     @Override
-    public void onParcelSelected(Transportation currentItem) {
-//        final CurrentParcelsFragmentDirections.ActionCurrentParcelsFragmentToParcelStatusFragment action =
-//                CurrentParcelsFragmentDirections.actionCurrentParcelsFragmentToParcelStatusFragment();
-//        action.setParcelId(currentItem.getInvoice().getId());
-//        NavHostFragment.findNavController(this).navigate(action);
+    public void onTransportationSelected(Transportation currentItem) {
+        Log.i(TAG, "currentItem: " + currentItem);
+        final CurrentTransportationsFragmentDirections.ActionCurrentParcelsFragmentToParcelStatusFragment action =
+                CurrentTransportationsFragmentDirections.actionCurrentParcelsFragmentToParcelStatusFragment(
+                        currentItem.getQrCode(),
+                        currentItem.getTrackingCode(),
+                        currentItem.getTransportationStatusName(),
+                        currentItem.getCityFrom(),
+                        currentItem.getCityTo(),
+                        currentItem.getPartyQrCode(),
+                        currentItem.getInstructions(),
+                        currentItem.getDirection(),
+                        currentItem.getArrivalDate());
+
+        action.setTransportationId(currentItem.getId());
+        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
+        action.setTransportationStatusId(currentItem.getTransportationStatusId() != null ? currentItem.getTransportationStatusId() : -1L);
+        action.setTransportationStatusName(currentItem.getTransportationStatusName());
+        action.setPaymentStatusId(currentItem.getPaymentStatusId() != null ? currentItem.getPaymentStatusId() : -1L);
+        action.setTrackingCode(currentItem.getTrackingCode());
+        action.setQrCode(currentItem.getQrCode());
+        action.setPartyQrCode(currentItem.getPartyQrCode());
+        action.setCurrentTransitPointId(currentItem.getCurrentTransitionPointId() != null ? currentItem.getCurrentTransitionPointId() : -1L);
+        action.setCityFrom(currentItem.getCityFrom());
+        action.setCityTo(currentItem.getCityTo());
+        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
+        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
+        action.setInstructions(currentItem.getInstructions());
+        action.setArrivalDate(currentItem.getArrivalDate());
+        action.setDirection(currentItem.getDirection());
+
+        NavHostFragment.findNavController(this).navigate(action);
     }
 
     private void initCitySpinner(final List<TransitPoint> transitPointList) {
@@ -404,8 +441,8 @@ public class CurrentTransportationsFragment extends Fragment implements ParcelCa
         }
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
-                final CurrentParcelsFragmentDirections.ActionCurrentParcelsFragmentToParcelDataFragment action =
-                        CurrentParcelsFragmentDirections.actionCurrentParcelsFragmentToParcelDataFragment();
+                final CurrentTransportationsFragmentDirections.ActionCurrentParcelsFragmentToParcelDataFragment action =
+                        CurrentTransportationsFragmentDirections.actionCurrentParcelsFragmentToParcelDataFragment();
                 action.setRequestId(1);
                 action.setRequestOrParcel(IntentConstants.INTENT_PARCEL);
                 NavHostFragment.findNavController(this).navigate(action);

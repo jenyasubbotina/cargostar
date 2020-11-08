@@ -5,11 +5,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import retrofit2.http.Query;
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceParams;
 import uz.alexits.cargostar.api.params.SignInParams;
+import uz.alexits.cargostar.api.params.TransportationStatusParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
@@ -24,7 +26,7 @@ import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
-import uz.alexits.cargostar.model.shipping.Cargo;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.calculation.Provider;
@@ -42,6 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationData;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
@@ -290,7 +293,7 @@ public class RetrofitClient {
                               final String oked,
                               final String qr,
                               final String courierGuidelines,
-                              final List<Cargo> cargoList,
+                              final List<Consignment> consignmentList,
                               final double price,
                               final Long tariffId,
                               final Long providerId,
@@ -349,7 +352,7 @@ public class RetrofitClient {
         oked,
         qr,
         courierGuidelines,
-        cargoList,
+                consignmentList,
         price,
         tariffId,
         providerId,
@@ -362,6 +365,10 @@ public class RetrofitClient {
 
     public Response<Invoice> getInvoice(final long invoiceId) throws IOException {
         return apiService.getInvoice(invoiceId).execute();
+    }
+
+    public Response<List<Invoice>> getInvoiceList(final int perPage) throws IOException {
+        return apiService.getInvoiceList(perPage).execute();
     }
 
     public void updateRequest(final long requestId, final Callback<JsonElement> callback) {
@@ -380,6 +387,21 @@ public class RetrofitClient {
 
     public Response<List<TransportationData>> getTransportationData(final Long transportationId) throws IOException {
         return apiService.getTransportationData(transportationId).execute();
+    }
+
+    public Response<List<Route>> getTransportationRoute(final Long transportationId) throws IOException {
+        return apiService.getTransportationRoute(transportationId).execute();
+    }
+
+    public Response<TransportationStatusParams> updateTransportationStatus(final Long transportationId,
+                                                                           final Long transitPointId,
+                                                                           final Long transportationStatusId) throws IOException {
+        return apiService.updateTransportationStatus(new TransportationStatusParams(transportationId, transitPointId, transportationStatusId)).execute();
+    }
+
+    /* Cargo */
+    public Response<List<Consignment>> getCargoListByInvoiceId(@Query("id") final Long invoiceId) throws IOException {
+        return apiService.getCargoListByInvoiceId(invoiceId).execute();
     }
 
 

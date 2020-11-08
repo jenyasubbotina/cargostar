@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import uz.alexits.cargostar.model.Notification;
+import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.database.cache.Repository;
 
 import java.util.List;
@@ -20,17 +20,17 @@ public class NotificationsViewModel extends AndroidViewModel {
     }
 
     /*Notification queries*/
-    public LiveData<Notification> selectNotification(final long receiptId) {
-        return repository.selectNotification(receiptId);
-    }
+//    public LiveData<Notification> selectNotification(final long receiptId) {
+//        return repository.selectNotification(receiptId);
+//    }
 
     public LiveData<List<Notification>> selectNewNotifications() {
         return repository.selectNewNotifications();
     }
 
-    public void readNotification(final long receiptId) {
-        repository.readNotification(receiptId);
-    }
+//    public void readNotification(final long receiptId) {
+//        repository.readNotification(receiptId);
+//    }
 
     public LiveData<List<Notification>> selectAllNotifications() {
         return repository.selectAllNotifications();

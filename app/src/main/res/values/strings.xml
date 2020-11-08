@@ -153,8 +153,8 @@
     <string name="filter">Фильтр</string>
     <string name="in_transit">В транзитной точке</string>
     <string name="on_the_way">В пути</string>
-    <string name="delivered">Доставлено</string>
-    <string name="lost">Утеряно</string>
+    <string name="delivered">Доставлена</string>
+    <string name="lost">Утеряна</string>
     <string name="all">Все</string>
     <string name="parcel">Перевозка</string>
     <string name="party">Партия</string>
@@ -188,4 +188,13 @@
     <string name="default_server_url">https://cargo.alex-its.uz/api/</string>
     <string name="default_api_login">admin</string>
     <string name="default_api_password">5N8zWV2BbQ</string>
+
+    <string name="undefined">Неизвестно</string>
+    <string name="empty">Пусто</string>
+    
+    <string name="public_requests_body">Новая заявка в \"Общие Заявки\"</string>
+    <string name="my_requests_body">Новая заявка в \"Мои Заявки\"</string>
+    <string name="request_has_changed">Заявка была изменена</string>
+    <string name="new_transportation">Новая перевозка</string>
+    <string name="transportation_status_changed">Статус перевозки был изменен</string>
 </resources>

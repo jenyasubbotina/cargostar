@@ -40,6 +40,9 @@ public class FetchTransitPointsWorker extends Worker {
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<TransitPoint> transitPointList = response.body();
+
+                    Log.i(TAG, "transitPointList: " + transitPointList);
+
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertTransitPoints(transitPointList);
                     return Result.success();
                 }

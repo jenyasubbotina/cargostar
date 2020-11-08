@@ -25,6 +25,8 @@ import android.widget.Toast;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.shipping.Cargo;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
@@ -35,7 +37,7 @@ import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.InvoiceData;
 import uz.alexits.cargostar.view.adapter.InvoiceDataAdapter;
-import uz.alexits.cargostar.view.callback.ParcelDataCallback;
+import uz.alexits.cargostar.view.callback.InvoiceDataCallback;
 import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -44,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class InvoiceDataFragment extends Fragment implements ParcelDataCallback {
+public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback {
     private Context context;
     private FragmentActivity activity;
     private List<InvoiceData> itemList;
@@ -141,17 +143,17 @@ public class InvoiceDataFragment extends Fragment implements ParcelDataCallback 
 
         if (getArguments() != null) {
             //parcelId can be requestId
-            requestId = ParcelDataFragmentArgs.fromBundle(getArguments()).getRequestId();
-            requestOrParcel = ParcelDataFragmentArgs.fromBundle(getArguments()).getRequestOrParcel();
-            invoiceId = ParcelDataFragmentArgs.fromBundle(getArguments()).getInvoiceId();
-            senderId = ParcelDataFragmentArgs.fromBundle(getArguments()).getClientId();
-            courierId = ParcelDataFragmentArgs.fromBundle(getArguments()).getCourierId();
-            providerId = ParcelDataFragmentArgs.fromBundle(getArguments()).getProviderId();
-            senderCountryId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderCountryId();
-            senderRegionId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderRegionId();
-            senderCityId = ParcelDataFragmentArgs.fromBundle(getArguments()).getSenderCityId();
-            recipientCountryId = ParcelDataFragmentArgs.fromBundle(getArguments()).getRecipientCountryId();
-            recipientCityId = ParcelDataFragmentArgs.fromBundle(getArguments()).getRecipientCityId();
+            requestId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRequestId();
+            requestOrParcel = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRequestOrParcel();
+            invoiceId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getInvoiceId();
+            senderId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getClientId();
+            courierId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getCourierId();
+            providerId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getProviderId();
+            senderCountryId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCountryId();
+            senderRegionId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderRegionId();
+            senderCityId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCityId();
+            recipientCountryId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCountryId();
+            recipientCityId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCityId();
 
             if (senderId > 0) {
                 SyncWorkRequest.fetchInvoiceData(context, invoiceId, senderId);
@@ -214,6 +216,7 @@ public class InvoiceDataFragment extends Fragment implements ParcelDataCallback 
         final CourierViewModel courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         final RequestsViewModel requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
 
+        requestsViewModel.setRequestId(requestId);
         requestsViewModel.setProviderId(providerId);
         requestsViewModel.setSenderId(senderId);
         requestsViewModel.setInvoiceId(invoiceId);
@@ -264,7 +267,6 @@ public class InvoiceDataFragment extends Fragment implements ParcelDataCallback 
                 publicDataList.set(4, new InvoiceData(getString(R.string.service_provider), null, InvoiceData.TYPE_ITEM));
             }
         });
-
 
         /* sender data */
         requestsViewModel.getSender().observe(getViewLifecycleOwner(), sender -> {
@@ -516,7 +518,29 @@ public class InvoiceDataFragment extends Fragment implements ParcelDataCallback 
             });
         }
 
-
+        requestsViewModel.getConsignmentList().observe(getViewLifecycleOwner(), consignmentList -> {
+            Log.i(TAG, "consignmentList: " + consignmentList);
+            //for each cargo
+            for (final Consignment consignment : consignmentList) {
+                itemList.add(new InvoiceData(getString(R.string.cargo_description), consignment.getDescription(), InvoiceData.TYPE_ITEM));
+                itemList.add(new InvoiceData(getString(R.string.package_type), consignment.getPackagingType(), InvoiceData.TYPE_ITEM));
+                itemList.add(new InvoiceData(getString(R.string.length), String.valueOf(consignment.getLength()), InvoiceData.TYPE_ITEM));
+                itemList.add(new InvoiceData(getString(R.string.width), String.valueOf(consignment.getWidth()), InvoiceData.TYPE_ITEM));
+                itemList.add(new InvoiceData(getString(R.string.height), String.valueOf(consignment.getHeight()), InvoiceData.TYPE_ITEM));
+                itemList.add(new InvoiceData(getString(R.string.weight), String.valueOf(consignment.getWeight()), InvoiceData.TYPE_ITEM));
+                itemList.add(new InvoiceData(getString(R.string.qr_code), consignment.getQr(), InvoiceData.TYPE_ITEM));
+                itemList.add(new InvoiceData(null, null, InvoiceData.TYPE_STROKE));
+                forEachCargoList.add(new InvoiceData(getString(R.string.cargo_description), consignment.getDescription(), InvoiceData.TYPE_ITEM));
+                forEachCargoList.add(new InvoiceData(getString(R.string.package_type), consignment.getPackagingType(), InvoiceData.TYPE_ITEM));
+                forEachCargoList.add(new InvoiceData(getString(R.string.length), String.valueOf(consignment.getLength()), InvoiceData.TYPE_ITEM));
+                forEachCargoList.add(new InvoiceData(getString(R.string.width), String.valueOf(consignment.getWidth()), InvoiceData.TYPE_ITEM));
+                forEachCargoList.add(new InvoiceData(getString(R.string.height), String.valueOf(consignment.getHeight()), InvoiceData.TYPE_ITEM));
+                forEachCargoList.add(new InvoiceData(getString(R.string.weight), String.valueOf(consignment.getWeight()), InvoiceData.TYPE_ITEM));
+                forEachCargoList.add(new InvoiceData(getString(R.string.qr_code), consignment.getQr(), InvoiceData.TYPE_ITEM));
+                forEachCargoList.add(new InvoiceData(null, null, InvoiceData.TYPE_STROKE));
+            }
+//            forEachCargoList.remove(forEachCargoList.size() - 1);
+        });
 
         parcelSearchImageView.setOnClickListener(v -> {
             final String parcelIdStr = parcelSearchEditText.getText().toString();
@@ -704,28 +728,7 @@ public class InvoiceDataFragment extends Fragment implements ParcelDataCallback 
         invoiceDataList.add(new InvoiceData(getString(R.string.courier_guidelines), null, InvoiceData.TYPE_ITEM));
         invoiceDataList.add(new InvoiceData(getString(R.string.tariff), null, InvoiceData.TYPE_ITEM));
         invoiceDataList.add(new InvoiceData(getString(R.string.destination_quantity), null, InvoiceData.TYPE_ITEM));
-        //for each cargo
-        itemList.add(forEachCargoHeading);
-//            cargoListSize = request.getCargoList().size();
-//            for (final Cargo cargo : request.getCargoList()) {
-//                itemList.add(new ParcelData(getString(R.string.cargo_description), cargo.getDescription(), ParcelData.TYPE_ITEM));
-//                itemList.add(new ParcelData(getString(R.string.package_type), cargo.getPackageType(), ParcelData.TYPE_ITEM));
-//                itemList.add(new ParcelData(getString(R.string.length), String.valueOf(cargo.getLength()), ParcelData.TYPE_ITEM));
-//                itemList.add(new ParcelData(getString(R.string.width), String.valueOf(cargo.getWidth()), ParcelData.TYPE_ITEM));
-//                itemList.add(new ParcelData(getString(R.string.height), String.valueOf(cargo.getHeight()), ParcelData.TYPE_ITEM));
-//                itemList.add(new ParcelData(getString(R.string.weight), String.valueOf(cargo.getWeight()), ParcelData.TYPE_ITEM));
-//                itemList.add(new ParcelData(getString(R.string.qr_code), cargo.getQr(), ParcelData.TYPE_ITEM));
-//                itemList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-//                forEachCargoList.add(new ParcelData(getString(R.string.cargo_description), cargo.getDescription(), ParcelData.TYPE_ITEM));
-//                forEachCargoList.add(new ParcelData(getString(R.string.package_type), cargo.getPackageType(), ParcelData.TYPE_ITEM));
-//                forEachCargoList.add(new ParcelData(getString(R.string.length), String.valueOf(cargo.getLength()), ParcelData.TYPE_ITEM));
-//                forEachCargoList.add(new ParcelData(getString(R.string.width), String.valueOf(cargo.getWidth()), ParcelData.TYPE_ITEM));
-//                forEachCargoList.add(new ParcelData(getString(R.string.height), String.valueOf(cargo.getHeight()), ParcelData.TYPE_ITEM));
-//                forEachCargoList.add(new ParcelData(getString(R.string.weight), String.valueOf(cargo.getWeight()), ParcelData.TYPE_ITEM));
-//                forEachCargoList.add(new ParcelData(getString(R.string.qr_code), cargo.getQr(), ParcelData.TYPE_ITEM));
-//                forEachCargoList.add(new ParcelData(null, null, ParcelData.TYPE_STROKE));
-//            }
-//            forEachCargoList.remove(forEachCargoList.size() - 1);
+        //todo: index cargolist
         //payment data
         itemList.add(paymentDataHeading);
         //todo: get overall cost from Invoice
@@ -776,6 +779,8 @@ public class InvoiceDataFragment extends Fragment implements ParcelDataCallback 
         documentsDataList.add(new InvoiceData(getString(R.string.pay_bill), getString(R.string.absent), InvoiceData.TYPE_ITEM));
         documentsDataList.add(new InvoiceData(getString(R.string.invoice_document), getString(R.string.absent), InvoiceData.TYPE_ITEM));
         documentsDataList.add(new InvoiceData(getString(R.string.invoice), getString(R.string.absent), InvoiceData.TYPE_ITEM));
+
+        itemList.add(forEachCargoHeading);
 
         adapter.setItemList(itemList);
         adapter.notifyDataSetChanged();

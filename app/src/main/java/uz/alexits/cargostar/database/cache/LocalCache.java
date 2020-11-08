@@ -27,10 +27,11 @@ import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.shipping.Cargo;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Request;
-import uz.alexits.cargostar.model.Notification;
+import uz.alexits.cargostar.model.transportation.Route;
+import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.actor.User;
@@ -56,7 +57,7 @@ import java.util.List;
         Branche.class,
         TransitPoint.class,
         Invoice.class,
-        Cargo.class,
+        Consignment.class,
         Notification.class,
         Request.class,
         Provider.class,
@@ -67,7 +68,8 @@ import java.util.List;
         ZoneCountry.class,
         Transportation.class,
         TransportationStatus.class,
-        TransportationData.class}, version = 64, exportSchema = false)
+        TransportationData.class,
+        Route.class}, version = 73, exportSchema = false)
 @TypeConverters({ PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";
@@ -91,7 +93,7 @@ public abstract class LocalCache extends RoomDatabase {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(), LocalCache.class, DB_NAME)
                             //todo: remove allow Main Thread Queries
-//                            .allowMainThreadQueries()
+                            .allowMainThreadQueries()
                             .fallbackToDestructiveMigration()
                             .addCallback(new Callback() {
                                 @Override

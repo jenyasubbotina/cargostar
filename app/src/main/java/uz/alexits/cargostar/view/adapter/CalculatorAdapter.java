@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.model.shipping.Cargo;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.view.viewholder.CalcItemViewHolder;
 
@@ -19,13 +20,13 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalcItemViewHolder> 
     private List<Cargo> itemList;
     private final CreateInvoiceCallback callback;
 
-    public CalculatorAdapter(Context context, List<Cargo> itemList, CreateInvoiceCallback callback) {
+    public CalculatorAdapter(final Context context, final List<Cargo> itemList, final CreateInvoiceCallback callback) {
         this.context = context;
         this.itemList = itemList;
         this.callback = callback;
     }
 
-    public void setItemList(List<Cargo> itemList) {
+    public void setItemList(final List<Cargo> itemList) {
         this.itemList = itemList;
         notifyDataSetChanged();
     }
@@ -49,7 +50,7 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalcItemViewHolder> 
             final String index = (position + 1) + ".";
             final String dimensions = currentItem.getLength() + "x" + currentItem.getWidth() + "x" + currentItem.getHeight();
             holder.indexTextView.setText(index);
-            holder.packageTypeTextView.setText(currentItem.getPackageType());
+            holder.packageTypeTextView.setText(currentItem.getPackagingType());
             holder.weightTextView.setText(String.valueOf(currentItem.getWeight()));
             holder.dimensionsTextView.setText(dimensions);
             holder.bind(position, callback);

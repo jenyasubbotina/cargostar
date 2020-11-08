@@ -19,9 +19,12 @@ import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Request;
-import uz.alexits.cargostar.model.Notification;
+import uz.alexits.cargostar.model.transportation.Route;
+import uz.alexits.cargostar.model.transportation.TransportationStatus;
+import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.calculation.Packaging;
@@ -130,8 +133,8 @@ public class Repository {
         return transitPointList;
     }
 
-    public LiveData<TransitPoint> selectTransitPoint(final long pointId) {
-        return locationDao.selectTransitPoint(pointId);
+    public LiveData<TransitPoint> selectTransitPointById(final long transitPointId) {
+        return locationDao.selectTransitPoint(transitPointId);
     }
 
     public LiveData<TransitPoint> selectTransitPointByBranch(final long branchId) {
@@ -161,6 +164,10 @@ public class Repository {
     public LiveData<City> selectCityById(final long cityId) {
         return locationDao.selectCityById(cityId);
     }
+
+//    public LiveData<City> selectCityByTransitPointId() {
+//
+//    }
 
     /* Provider / Packaging Queries*/
     public LiveData<List<Provider>> selectAllProviders() {
@@ -292,8 +299,17 @@ public class Repository {
     }
 
     /* transportation status */
-    public LiveData<List<TransportationData>> selectTransportationDataByTransportationId(final Long transportationId) {
+    public LiveData<List<TransportationData>> selectTransportationDataByTransportationId(final long transportationId) {
         return transportationDao.selectTransportationDataByTransportationId(transportationId);
+    }
+
+    public LiveData<TransportationStatus> selectTransportationStatusByName(final String statusName) {
+        return transportationDao.selectTransportationStatusByName(statusName);
+    }
+
+    /* transportation route */
+    public LiveData<List<Route>> selectRouteByTransportationId(final long transportationId) {
+        return transportationDao.selectRouteByTransportationId(transportationId);
     }
 
     /*Notification queries*/
@@ -309,9 +325,9 @@ public class Repository {
         notificationDao.updateNotification(updatedNotification);
     }
 
-    public LiveData<Notification> selectNotification(final long receiptId) {
-        return notificationDao.selectNotification(receiptId);
-    }
+//    public LiveData<Notification> selectNotification(final long receiptId) {
+//        return notificationDao.selectNotification(receiptId);
+//    }
 
     public LiveData<List<Notification>> selectAllNotifications() {
         return notificationDao.selectAllNotifications();
@@ -325,8 +341,13 @@ public class Repository {
         return notificationDao.selectNewNotificationsCount(false);
     }
 
-    public void readNotification(final long receiptId) {
-        notificationDao.readNotification(receiptId, true);
+//    public void readNotification(final long receiptId) {
+//        notificationDao.readNotification(receiptId, true);
+//    }
+
+    /* cargo */
+    public LiveData<List<Consignment>> selectConsignmentListByRequestId(final Long requestId) {
+        return invoiceDao.selectConsignmentListByRequestId(requestId);
     }
 
     private static final String TAG = Repository.class.toString();

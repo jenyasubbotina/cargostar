@@ -19,6 +19,8 @@ import uz.alexits.cargostar.workers.calculation.FetchZoneCountriesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZoneSettingsWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZonesWorker;
 import uz.alexits.cargostar.workers.actor.CreateUserWorker;
+import uz.alexits.cargostar.workers.invoice.FetchCargoListWorker;
+import uz.alexits.cargostar.workers.invoice.FetchInvoiceListWorker;
 import uz.alexits.cargostar.workers.invoice.FetchInvoiceWorker;
 import uz.alexits.cargostar.workers.invoice.FetchPayerDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchRecipientDataWorker;
@@ -34,6 +36,7 @@ import uz.alexits.cargostar.workers.requests.BindRequestWorker;
 import uz.alexits.cargostar.workers.requests.FetchMyRequestsWorker;
 import uz.alexits.cargostar.workers.requests.FetchRequestsWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationDataWorker;
+import uz.alexits.cargostar.workers.transportation.FetchTransportationRouteWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationStatusesWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationsWorker;
 
@@ -423,6 +426,11 @@ public class SyncWorkRequest {
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
+        final OneTimeWorkRequest fetchCargoListRequest = new OneTimeWorkRequest.Builder(FetchCargoListWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
 
         WorkManager.getInstance(context)
                 .beginWith(fetchSenderDataRequest)
@@ -430,9 +438,36 @@ public class SyncWorkRequest {
                 .then(fetchRecipientDataRequest)
                 .then(fetchPayerDataRequest)
                 .then(insertInvoiceRequest)
+                .then(fetchCargoListRequest)
                 .enqueue();
 
         return insertInvoiceRequest.getId();
+    }
+
+    public static void fetchRequestsAndInvoices(@NonNull final Context context) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
+                .build();
+
+        final OneTimeWorkRequest fetchRequestsRequest = new OneTimeWorkRequest.Builder(FetchRequestsWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchInvoicesRequest = new OneTimeWorkRequest.Builder(FetchInvoiceListWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
+        WorkManager.getInstance(context).beginWith(fetchRequestsRequest).then(fetchInvoicesRequest).enqueue();
     }
 
     /* Transportation */
@@ -479,6 +514,51 @@ public class SyncWorkRequest {
         WorkManager.getInstance(context).enqueue(fetchTransportationDataRequest);
 
         return fetchTransportationDataRequest.getId();
+    }
+
+    public static UUID fetchTransportationRoute(@NonNull final Context context, final long transportationId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
+                .build();
+
+        final OneTimeWorkRequest fetchTransportationRouteRequest = new OneTimeWorkRequest.Builder(FetchTransportationRouteWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context).enqueue(fetchTransportationRouteRequest);
+
+        return fetchTransportationRouteRequest.getId();
+    }
+
+    /* Cargo */
+    public static UUID fetchCargoList(@NonNull final Context context, final Long requestId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_REQUEST_ID, requestId)
+                .build();
+
+        final OneTimeWorkRequest fetchCargoListRequest = new OneTimeWorkRequest.Builder(FetchCargoListWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context).enqueue(fetchCargoListRequest);
+
+        return fetchCargoListRequest.getId();
     }
 
     public static final String KEY_PER_PAGE = "per-page";

@@ -1,6 +1,7 @@
 package uz.alexits.cargostar.view.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,17 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.view.callback.ParcelCallback;
-import uz.alexits.cargostar.view.viewholder.ParcelViewHolder;
+import uz.alexits.cargostar.model.transportation.TransportationStatus;
+import uz.alexits.cargostar.view.callback.TransportationCallback;
+import uz.alexits.cargostar.view.viewholder.TransportationViewHolder;
 
 import java.util.List;
 
-public class TransportationAdapter extends RecyclerView.Adapter<ParcelViewHolder> {
+public class TransportationAdapter extends RecyclerView.Adapter<TransportationViewHolder> {
     private final Context context;
     private List<Transportation> transportationList;
-    private ParcelCallback callback;
 
-    public TransportationAdapter(final Context context, final ParcelCallback callback) {
+    private TransportationCallback callback;
+
+    public TransportationAdapter(final Context context, final TransportationCallback callback) {
         this.context = context;
         this.callback = callback;
     }
@@ -34,46 +37,51 @@ public class TransportationAdapter extends RecyclerView.Adapter<ParcelViewHolder
 
     @NonNull
     @Override
-    public ParcelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TransportationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View root = LayoutInflater.from(context).inflate(R.layout.view_holder_current_parcel, parent, false);
-        return new ParcelViewHolder(root);
+        return new TransportationViewHolder(root);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ParcelViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TransportationViewHolder holder, int position) {
         final Transportation currentTransportation = transportationList.get(position);
-//        final Invoice currentInvoice = currentParcel.getInvoice();
-//
-//        Log.i(ParcelAdapter.class.toString(), "position=" + position + " route=" + currentParcel.getRoute());
-//
-//        if (currentInvoice != null) {
-//            final String parcelIndex = (position + 1) + ".";
-//            final String parcelId = "# " + currentInvoice.getId();
-//            holder.indexTextView.setText(parcelIndex);
-//            holder.parcelIdTextView.setText(parcelId);
-//            holder.fromTextView.setText(currentParcel.getRoute().get(0).getName());
-//            holder.toTextView.setText(currentParcel.getRoute().get(currentParcel.getRoute().size() - 1).getName());
-//            holder.parcelTypeTextView.setText(R.string.parcel);
 
-//            if (currentInvoice.getTransportationStatus() == TransportationStatus.IN_TRANSIT) {
-//                holder.statusTextView.setText(context.getString(R.string.in_transit));
-//                holder.statusTextView.setBackgroundResource(R.drawable.bg_purple);
-//            }
-//            else if (currentInvoice.getTransportationStatus() == TransportationStatus.ON_THE_WAY) {
-//                holder.statusTextView.setText(context.getString(R.string.on_the_way));
-//                holder.statusTextView.setBackgroundResource(R.drawable.bg_blue);
-//            }
-//            else if (currentInvoice.getTransportationStatus() == TransportationStatus.DELIVERED) {
-//                holder.statusTextView.setText(context.getString(R.string.delivered));
-//                holder.statusTextView.setBackgroundResource(R.drawable.bg_green);
-//            }
-//            else if (currentInvoice.getTransportationStatus() == TransportationStatus.LOST) {
-//                holder.statusTextView.setText(context.getString(R.string.lost));
-//                holder.statusTextView.setBackgroundResource(R.drawable.bg_red);
-//            }
+        if (currentTransportation != null) {
+            final String parcelIndex = (position + 1) + ".";
+
+            holder.indexTextView.setText(parcelIndex);
+
+            final Long invoiceId = currentTransportation.getInvoiceId();
+
+            holder.fromTextView.setText(currentTransportation.getCityFrom());
+            holder.toTextView.setText(currentTransportation.getCityTo());
+            holder.transportationTypeTextView.setText(R.string.parcel);
+
+            if (!TextUtils.isEmpty(currentTransportation.getTransportationStatusName())) {
+                if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.in_transit))) {
+                    holder.statusTextView.setText(context.getString(R.string.in_transit));
+                    holder.statusTextView.setBackgroundResource(R.drawable.bg_purple);
+                }
+                else if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.on_the_way))) {
+                    holder.statusTextView.setText(context.getString(R.string.on_the_way));
+                    holder.statusTextView.setBackgroundResource(R.drawable.bg_blue);
+                }
+                else if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.delivered))) {
+                    holder.statusTextView.setText(context.getString(R.string.delivered));
+                    holder.statusTextView.setBackgroundResource(R.drawable.bg_green);
+                }
+                else if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.lost))) {
+                    holder.statusTextView.setText(context.getString(R.string.lost));
+                    holder.statusTextView.setBackgroundResource(R.drawable.bg_red);
+                }
+            }
 
             holder.bind(currentTransportation, callback);
-//        }
+
+            if (invoiceId != null) {
+                holder.transportationIdTextView.setText(String.valueOf(invoiceId));
+            }
+        }
     }
 
     @Override

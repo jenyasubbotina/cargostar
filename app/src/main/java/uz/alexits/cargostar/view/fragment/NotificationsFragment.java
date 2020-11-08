@@ -25,7 +25,7 @@ import android.widget.Toast;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.Notification;
+import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.view.viewholder.NotificationViewHolder;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.NotificationsViewModel;
@@ -178,8 +178,8 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         final String publicBids = getString(R.string.public_bids_one_line);
         final String myBids = getString(R.string.my_bids_one_line);
 
-        currentItem.setRead(true);
-        notificationsViewModel.readNotification(currentItem.getReceiptId());
+//        currentItem.setRead(true);
+//        notificationsViewModel.readNotification(currentItem.getId());
 
         final Intent requestsIntent = new Intent(getContext(), MainActivity.class);
         if (currentItem.getLink().equalsIgnoreCase(publicBids)) {

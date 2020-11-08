@@ -9,7 +9,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import uz.alexits.cargostar.model.Notification;
+import uz.alexits.cargostar.push.Notification;
 
 @Dao
 public interface NotificationDao {
@@ -23,11 +23,11 @@ public interface NotificationDao {
     @Update
     void updateNotification(final Notification updatedNotification);
 
-    @Query("UPDATE notification SET is_read = :isRead WHERE receipt_id == :receiptId")
-    void readNotification(final long receiptId, final boolean isRead);
-
-    @Query("SELECT * FROM notification WHERE receipt_id == :receiptId")
-    LiveData<Notification> selectNotification(final long receiptId);
+//    @Query("UPDATE notification SET is_read = :isRead WHERE receipt_id == :receiptId")
+//    void readNotification(final long receiptId, final boolean isRead);
+//
+//    @Query("SELECT * FROM notification WHERE receipt_id == :receiptId")
+//    LiveData<Notification> selectNotification(final long receiptId);
 
     @Query("SELECT * FROM notification ORDER BY receive_date DESC")
     LiveData<List<Notification>> selectAllNotifications();

@@ -1,6 +1,5 @@
 package uz.alexits.cargostar.view.activity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,14 +22,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.JsonElement;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.calculation.Packaging;
@@ -40,9 +33,8 @@ import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.shipping.Cargo;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.utils.ImageSerializer;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
 import uz.alexits.cargostar.viewmodel.CreateInvoiceViewModel;
@@ -189,7 +181,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     private static List<Long> selectedPackagingIdList = null;
     private static List<ZoneSettings> selectedZoneSettingsList = null;
 
-    private static final List<Cargo> cargoList = new ArrayList<>();
+    private static final List<Consignment> CONSIGNMENT_LIST = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -716,15 +708,15 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             return;
         }
 
-        final Cargo newItem = new Cargo(description, packageType,
-                Integer.parseInt(length), Integer.parseInt(width), Integer.parseInt(height), Integer.parseInt(weight), cargoQr);
+//        final Cargo newItem = new Cargo(description, packageType,
+//                Integer.parseInt(length), Integer.parseInt(width), Integer.parseInt(height), Integer.parseInt(weight), cargoQr);
         final CreateInvoiceData calcItem = new CreateInvoiceData(TYPE_CALCULATOR_ITEM);
         calcItem.packageType = packageType;
-        calcItem.index = String.valueOf(cargoList.size());
+        calcItem.index = String.valueOf(CONSIGNMENT_LIST.size());
         calcItem.dimensions = length + "x" + width + "x" + height;
         calcItem.weight = weight;
 
-        cargoList.add(newItem);
+//        cargoList.add(newItem);
         itemList.add(calcItem);
         adapter.notifyDataSetChanged();
     }
@@ -1070,82 +1062,11 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 //        final CreateInvoiceParams createInvoiceParams = new CreateInvoiceParams(
 //                );
 
-        final List<Cargo> tempCargoList = new ArrayList<>();
-        tempCargoList.add(new Cargo("Cargo1", 4.5, 4, 4, 10));
-        tempCargoList.add(new Cargo("Cargo2", 4.5, 4, 4, 5));
-        tempCargoList.add(new Cargo("Cargo3", 4.5, 4, 4, 14));
+//        final List<Cargo> tempCargoList = new ArrayList<>();
+//        tempCargoList.add(new Cargo("Cargo1", 4.5, 4, 4, 10));
+//        tempCargoList.add(new Cargo("Cargo2", 4.5, 4, 4, 5));
+//        tempCargoList.add(new Cargo("Cargo3", 4.5, 4, 4, 14));
 
-        RetrofitClient.getInstance(context).setServerData(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN),
-                SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH));
-        RetrofitClient.getInstance(context)
-                .createInvoice(11L,
-                        null,
-                        null,
-                        ImageSerializer.fileToBase64(senderSignature),
-                        "android@gmail.com",
-                        "12345677890",
-                        "12345677890",
-                        "12345677890",
-                        "Uzbekistan",
-                        "",
-                        "Tashkent",
-                        "Yunusabad 8",
-                        "100170",
-                        "Android",
-                        "Valerevich",
-                        "Kim",
-                        "+998991231232",
-                        ImageSerializer.fileToBase64(recipientSignature),
-                        "sk@gmail.com",
-                        "12345677890",
-                        "12345677890",
-                        "12345677890",
-                        "Uzbekistan",
-                        "",
-                        "Tashkent",
-                        "Chilonzor 1",
-                        "100100",
-                        "Sergey",
-                        "",
-                        "Kadushkin",
-                        "+998901671213",
-                        "sergey.kim@mail.ru",
-                        "12345677890",
-                        "12345677890",
-                        "12345677890",
-                        "Uzbekistan",
-                        "",
-                        "Tashkent",
-                        "Yunusabad 8",
-                        "100190",
-                        "Sergey",
-                        "",
-                        "Kim",
-                        "+998990116824",
-                        "-10",
-                        "12345677890",
-                        "NBU bank",
-                        "12345677890",
-                        "12345677890",
-                        "12345677890",
-                        qr,
-                        "Инструкции для курьера",
-                        tempCargoList,
-                        2607500,
-                        6L,
-                        5L,
-                        1, new Callback<JsonElement>() {
-                            @Override
-                            public void onResponse(@NonNull final Call<JsonElement> call, @NonNull final Response<JsonElement> response) {
-                                Log.i(TAG, "body: " + response.body());
-                                Log.e(TAG, "errorBody: " + response.errorBody());
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull final Call<JsonElement> call, @NonNull final Throwable t) {
-                                Log.e(TAG, "onFailure: ", t);
-                            }
-                        });
 
         Toast.makeText(context, "Накладная создана успешно!", Toast.LENGTH_SHORT).show();
 
@@ -1163,7 +1084,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     @Override
     public void onDeleteItemClicked(final int position) {
         //todo: refactor
-        cargoList.remove(position - 51);
+        CONSIGNMENT_LIST.remove(position - 51);
         itemList.remove(position);
         adapter.notifyDataSetChanged();
     }

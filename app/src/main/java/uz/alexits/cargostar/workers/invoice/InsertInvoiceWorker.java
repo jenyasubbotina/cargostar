@@ -95,7 +95,7 @@ public class InsertInvoiceWorker extends Worker {
                 return Result.failure();
             }
 
-            Log.i(TAG, "fetchRecipientDataWorker(): successfully inserted invoice " + invoice);
+            Log.i(TAG, "insertInvoiceData(): successfully inserted invoice " + invoice);
             return Result.success();
         }
         catch (Exception e) {

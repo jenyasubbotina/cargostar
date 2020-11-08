@@ -2,6 +2,7 @@ package uz.alexits.cargostar.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SyncRequest;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -75,6 +76,7 @@ public class MainFragment extends Fragment {
 
         SyncWorkRequest.fetchTransitPoints(context);
         SyncWorkRequest.fetchTransportationStatuses(context);
+        SyncWorkRequest.fetchRequestData(context);
     }
 
     @Override

@@ -201,7 +201,7 @@
             app:popExitAnim="@anim/fragment_open_exit"/>
         <action
             android:id="@+id/action_currentParcelsFragment_to_parcelStatusFragment"
-            app:destination="@id/parcelStatusFragment"
+            app:destination="@id/transportationStatusFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -330,7 +330,7 @@
             app:popExitAnim="@anim/fragment_open_exit"/>
     </fragment>
     <fragment
-        android:id="@+id/parcelStatusFragment"
+        android:id="@+id/transportationStatusFragment"
         android:name="uz.alexits.cargostar.view.fragment.TransportationStatusFragment"
         android:label="fragment_parcel_status"
         tools:layout="@layout/fragment_parcel_status" >
@@ -356,7 +356,67 @@
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
         <argument
-            android:name="parcel_id"
+            android:name="transportation_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="invoice_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="current_transit_point_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="qr_code"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="tracking_code"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="transportation_status_name"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="transportation_status_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="city_from"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="city_to"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="courier_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="payment_status_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="party_qr_code"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="instructions"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="direction"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="arrival_date"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="provider_id"
             app:argType="long"
             android:defaultValue="-1L"/>
     </fragment>
@@ -381,7 +441,7 @@
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
             android:id="@+id/action_partyStatusFragment_to_parcelStatusFragment"
-            app:destination="@id/parcelStatusFragment" />
+            app:destination="@id/transportationStatusFragment" />
         <action
             android:id="@+id/action_partyStatusFragment_to_profileFragment"
             app:destination="@id/profileFragment"

@@ -5,6 +5,7 @@ import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceParams;
 import uz.alexits.cargostar.api.params.SignInParams;
+import uz.alexits.cargostar.api.params.TransportationStatusParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
@@ -19,6 +20,7 @@ import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.calculation.Provider;
@@ -33,6 +35,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
+import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationData;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
@@ -127,6 +130,10 @@ public interface ApiService {
     @GET("invoice/view")
     Call<Invoice> getInvoice(@Query("id") final long invoiceId);
 
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("invoice")
+    Call<List<Invoice>> getInvoiceList(@Query("per-page") final int perPage);
+
     /* Address Book */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("address-book/view")
@@ -142,10 +149,24 @@ public interface ApiService {
     Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("status-transport")
+    Call<List<TransportationStatus>> getTransportationStatusList(@Query("per-page") final int perPage);
+
+    //transportation history
+    @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation-status/transportation")
     Call<List<TransportationData>> getTransportationData(@Query("id") final Long transportationId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("status-transport")
-    Call<List<TransportationStatus>> getTransportationStatusList(@Query("id") final int perPage);
+    @GET("transportation/points")
+    Call<List<Route>> getTransportationRoute(@Query("id") final Long transportationId);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @POST("transportation-status/create")
+    Call<TransportationStatusParams> updateTransportationStatus(@Body TransportationStatusParams transportationStatusParams);
+
+    /* Cargo */
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("consignment/invoice")
+    Call<List<Consignment>> getCargoListByInvoiceId(@Query("id") final Long invoiceId);
 }

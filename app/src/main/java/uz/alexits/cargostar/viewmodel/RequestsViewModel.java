@@ -14,6 +14,7 @@ import uz.alexits.cargostar.model.calculation.Provider;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.database.cache.Repository;
@@ -23,6 +24,7 @@ import java.util.List;
 public class RequestsViewModel extends AndroidViewModel {
     private final Repository repository;
 
+    private final MutableLiveData<Long> requestId;
     private final MutableLiveData<Long> invoiceId;
     private final MutableLiveData<Long> providerId;
     private final MutableLiveData<Long> courierId;
@@ -52,6 +54,7 @@ public class RequestsViewModel extends AndroidViewModel {
         this.repository = Repository.getInstance(application);
         this.requestList = repository.selectAllRequests();
 
+        this.requestId = new MutableLiveData<>();
         this.providerId = new MutableLiveData<>();
         this.invoiceId = new MutableLiveData<>();
         this.courierId = new MutableLiveData<>();
@@ -85,6 +88,10 @@ public class RequestsViewModel extends AndroidViewModel {
     }
 
     /* invoice data */
+    public void setRequestId(final Long requestId) {
+        this.requestId.setValue(requestId);
+    }
+
     public void setInvoiceId(final Long invoiceId) {
         if (invoiceId == null) {
             return;
@@ -244,5 +251,9 @@ public class RequestsViewModel extends AndroidViewModel {
 
     public LiveData<City> getPayerCity() {
         return Transformations.switchMap(payerCityId, repository::selectCityById);
+    }
+
+    public LiveData<List<Consignment>> getConsignmentList() {
+        return Transformations.switchMap(requestId, repository::selectConsignmentListByRequestId);
     }
 }

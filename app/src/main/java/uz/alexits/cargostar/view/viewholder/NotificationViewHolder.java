@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.Notification;
+import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.view.callback.NotificationCallback;
 
 public class NotificationViewHolder extends RecyclerView.ViewHolder {

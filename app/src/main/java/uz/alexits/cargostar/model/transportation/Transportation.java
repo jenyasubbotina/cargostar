@@ -15,9 +15,9 @@ import uz.alexits.cargostar.model.shipping.Invoice;
 @Entity(tableName = "transportation",
         foreignKeys = {
                 @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Invoice.class, parentColumns = "id", childColumns = "invoice_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = TransportationStatus.class, parentColumns = "id", childColumns = "transportation_status_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "provider_id"), @Index(value = "invoice_id"), @Index(value = "transportation_status_id")})
+        indices = {@Index(value = "provider_id"), @Index(value = "transportation_status_id"), @Index(value = "invoice_id", unique = true)}
+        )
 public class Transportation {
     @Expose
     @SerializedName("id")
@@ -41,7 +41,7 @@ public class Transportation {
     private final Long invoiceId;
 
     @Expose
-    @SerializedName("status_transportation")
+    @SerializedName("status_transport")
     @ColumnInfo(name = "transportation_status_id")
     private final Long transportationStatusId;
 
@@ -84,6 +84,21 @@ public class Transportation {
     @SerializedName("direction")
     @ColumnInfo(name = "direction")
     private final String direction;
+
+    @Expose
+    @SerializedName("cityFrom")
+    @ColumnInfo(name = "city_from")
+    private String cityFrom;
+
+    @Expose
+    @SerializedName("cityTo")
+    @ColumnInfo(name = "city_to")
+    private String cityTo;
+
+    @Expose
+    @SerializedName("statusName")
+    @ColumnInfo(name = "transportation_status_name")
+    private String transportationStatusName;
 
     @Expose
     @SerializedName("status")
@@ -214,6 +229,30 @@ public class Transportation {
         this.arrivalDate = arrivalDate;
     }
 
+    public String getCityFrom() {
+        return cityFrom;
+    }
+
+    public void setCityFrom(String cityFrom) {
+        this.cityFrom = cityFrom;
+    }
+
+    public String getCityTo() {
+        return cityTo;
+    }
+
+    public void setCityTo(String cityTo) {
+        this.cityTo = cityTo;
+    }
+
+    public String getTransportationStatusName() {
+        return transportationStatusName;
+    }
+
+    public void setTransportationStatusName(String transportationStatusName) {
+        this.transportationStatusName = transportationStatusName;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -231,6 +270,9 @@ public class Transportation {
                 ", partyQrCode='" + partyQrCode + '\'' +
                 ", instructions='" + instructions + '\'' +
                 ", direction='" + direction + '\'' +
+                ", cityFrom='" + cityFrom + '\'' +
+                ", cityTo='" + cityTo + '\'' +
+                ", transportationStatusName='" + transportationStatusName + '\'' +
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +

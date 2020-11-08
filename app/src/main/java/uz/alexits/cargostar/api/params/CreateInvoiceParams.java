@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import uz.alexits.cargostar.model.shipping.Cargo;
+import uz.alexits.cargostar.model.shipping.Consignment;
 
 public class CreateInvoiceParams {
     @SerializedName("courier_id")
@@ -172,7 +172,7 @@ public class CreateInvoiceParams {
 
     /* CargoList */
     @SerializedName("cargo")
-    private final List<Cargo> cargoList;
+    private final List<Consignment> consignmentList;
 
     @SerializedName("price")
     private final double price;
@@ -240,7 +240,7 @@ public class CreateInvoiceParams {
             final String oked,
             final String qr,
             final String courierGuidelines,
-            final List<Cargo> cargoList,
+            final List<Consignment> consignmentList,
             final double price,
             final Long tariffId,
             final Long providerId,
@@ -297,7 +297,7 @@ public class CreateInvoiceParams {
         this.oked = oked;
         this.qr = qr;
         this.courierGuidelines = courierGuidelines;
-        this.cargoList = cargoList;
+        this.consignmentList = consignmentList;
         this.price = price;
         this.tariffId = tariffId;
         this.providerId = providerId;
@@ -512,8 +512,8 @@ public class CreateInvoiceParams {
         return courierGuidelines;
     }
 
-    public List<Cargo> getCargoList() {
-        return cargoList;
+    public List<Consignment> getConsignmentList() {
+        return consignmentList;
     }
 
     public double getPrice() {
@@ -588,7 +588,7 @@ public class CreateInvoiceParams {
                 ", oked='" + oked + '\'' +
                 ", qr='" + qr + '\'' +
                 ", courierGuidelines='" + courierGuidelines + '\'' +
-                ", cargoList=" + cargoList +
+                ", cargoList=" + consignmentList +
                 ", price=" + price +
                 ", tariffId='" + tariffId + '\'' +
                 ", providerId=" + providerId +

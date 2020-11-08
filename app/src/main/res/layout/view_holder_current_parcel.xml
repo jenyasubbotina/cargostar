@@ -29,7 +29,7 @@
         android:fontFamily="@font/geometria_medium"
         android:textSize="16sp"
         android:textColor="@color/colorBlack"
-        android:text="# C123456789012"/>
+        android:text="@string/empty"/>
     
     <TextView
         android:id="@+id/parcel_type_text_view"
@@ -53,7 +53,7 @@
         android:textSize="16sp"
         android:textColor="#A5ABC0"
         android:fontFamily="@font/geometria_bold"
-        android:text="@string/tas"/>
+        android:text="@string/from"/>
 
     <ImageView
         android:id="@+id/path_image_view"
@@ -77,7 +77,7 @@
         android:textSize="16sp"
         android:textColor="#A5ABC0"
         android:fontFamily="@font/geometria_bold"
-        android:text="@string/sam"/>
+        android:text="@string/to"/>
 
     <ImageView
         android:id="@+id/next_image_view"
@@ -97,13 +97,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/parcel_id_text_view"
-        app:layout_constraintStart_toEndOf="@id/to_text_view"
-        android:layout_marginStart="54dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp"
         android:textSize="13sp"
         android:textColor="#FFF"
         android:fontFamily="@font/geometria_bold"
-        android:text="@string/in_transit"
-        android:background="@drawable/bg_purple"
+        android:text="@string/undefined"
+        android:background="@drawable/bg_red"
         android:paddingHorizontal="11dp"
         android:paddingVertical="2dp"/>
 

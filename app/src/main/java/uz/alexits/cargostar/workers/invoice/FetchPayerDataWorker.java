@@ -46,7 +46,8 @@ public class FetchPayerDataWorker extends Worker {
         this.price = getInputData().getLong(Constants.KEY_PRICE, -1L);
         this.status = getInputData().getInt(Constants.KEY_STATUS, -1);
         this.createdAtTime = getInputData().getLong(Constants.KEY_CREATED_AT, -1L);
-        this.updatedAtTime = getInputData().getLong(Constants.KEY_UPDATED_AT, -1L);    }
+        this.updatedAtTime = getInputData().getLong(Constants.KEY_UPDATED_AT, -1L);
+    }
 
     @NonNull
     @Override

@@ -183,7 +183,8 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     @Override
     public void onRequestSelected(Request currentItem, RecyclerView.ViewHolder holder) {
         currentItem.setNew(false);
-        requestsViewModel.readReceipt(currentItem.getId());
+
+        new Thread(() -> requestsViewModel.readReceipt(currentItem.getId()));
 
         final MyRequestsFragmentDirections.ActionMyBidsFragmentToParcelDataFragment action = MyRequestsFragmentDirections.actionMyBidsFragmentToParcelDataFragment();
         action.setRequestId(currentItem.getId());

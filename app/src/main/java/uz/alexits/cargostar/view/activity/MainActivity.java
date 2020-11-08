@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import uz.alexits.cargostar.R;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.fragment.MainFragmentDirections;
 
@@ -33,6 +34,23 @@ public class MainActivity extends AppCompatActivity {
                         MainFragmentDirections.actionMainFragmentToParcelDataFragment();
                 action.setParcelId(getIntent().getLongExtra(IntentConstants.INTENT_REQUEST_VALUE, -1));
                 Navigation.findNavController(this, R.id.main_fragment_container).navigate(action);
+                return;
+            }
+
+            final String pushIntentKey = getIntent().getStringExtra(Constants.MAIN_ACTIVITY_FRAGMENT);
+
+            if (pushIntentKey != null) {
+                if (pushIntentKey.equalsIgnoreCase(Constants.KEY_PUBLIC_REQUESTS)) {
+                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_publicBidsFragment);
+                    return;
+                }
+                if (pushIntentKey.equalsIgnoreCase(Constants.KEY_MY_REQUESTS)) {
+                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_myBidsFragment);
+                    return;
+                }
+                if (pushIntentKey.equalsIgnoreCase(Constants.KEY_CURRENT_TRANSPORTATION)) {
+                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_currentParcelsFragment);
+                }
             }
         }
     }

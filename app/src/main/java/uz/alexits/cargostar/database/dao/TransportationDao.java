@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationData;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
@@ -41,10 +42,20 @@ public interface TransportationDao {
     @Update
     int updateTransportationData(final TransportationData transportationData);
 
+    /* Transportation Route */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    long[] insertTransportationRoute(final List<Route> transportationRouteList);
+
     /* Transportation Statuses */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insertTransportationStatus(final Transportation transportation);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long[] insertTransportationStatusList(final List<TransportationStatus> transportationList);
+
+    @Query("SELECT * FROM route WHERE transportation_id == :transportationId ORDER BY id ASC")
+    LiveData<List<Route>> selectRouteByTransportationId(final long transportationId);
+
+    @Query("SELECT * FROM transportationStatus WHERE name == :statusName LIMIT 1")
+    LiveData<TransportationStatus> selectTransportationStatusByName(final String statusName);
 }

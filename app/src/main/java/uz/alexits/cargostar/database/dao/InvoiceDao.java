@@ -9,6 +9,7 @@ import androidx.room.Update;
 
 import java.util.List;
 import uz.alexits.cargostar.model.actor.AddressBook;
+import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 
 @Dao
@@ -44,4 +45,11 @@ public interface InvoiceDao {
 
     @Update
     int updateAddressBookEntry(final AddressBook addressBook);
+
+    /* cargo */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    long[] insertCargoList(final List<Consignment> consignmentList);
+
+    @Query("SELECT * FROM consignment WHERE request_id == :requestId ORDER BY id DESC")
+    LiveData<List<Consignment>> selectConsignmentListByRequestId(final Long requestId);
 }
