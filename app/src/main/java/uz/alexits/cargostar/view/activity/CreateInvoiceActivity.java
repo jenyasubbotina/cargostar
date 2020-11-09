@@ -2,6 +2,7 @@ package uz.alexits.cargostar.view.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,14 +48,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_PHONE;
-import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_BUTTON;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_CALCULATOR_ITEM;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_HEADING;
-import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_ONE_IMAGE_EDIT_TEXT;
-import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_SINGLE_IMAGE_EDIT_TEXT;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_SINGLE_SPINNER;
-import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_CARD_VIEWS;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_EDIT_TEXTS;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_STROKE;
@@ -61,7 +59,6 @@ import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_IMAGE
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_NUMBER;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_TEXT;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_EMAIL;
-import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_RADIO_BTNS;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_SPINNERS;
 
 public class CreateInvoiceActivity extends AppCompatActivity implements CreateInvoiceCallback {
@@ -81,6 +78,39 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     private List<CreateInvoiceData> itemList;
     private RecyclerView contentRecyclerView;
 
+    /* content views */
+    //transportation
+    private EditText transportationQrEditText;
+    private ImageView transportationQrImageView;
+    private ImageView transportationQrResultImageView;
+    private EditText instructionsEditText;
+
+    //provider
+    private CardView firstProviderCard;
+    private CardView secondProviderCard;
+    private RadioButton firstProviderRadioBtn;
+    private RadioButton secondProviderRadioBtn;
+    private ImageView firstProviderImageView;
+    private ImageView secondProviderImageView;
+
+    //package type
+    private RadioGroup packageTypeRadioGroup;
+    private RadioButton docTypeRadioBtn;
+    private RadioButton boxTypeRadioBtn;
+
+    //cargo
+    private EditText cargoDescriptionEditText;
+    private Spinner packagingTypeSpinner;
+    private EditText weightEditText;
+    private EditText lengthEditText;
+    private EditText widthEditText;
+    private EditText heightEditText;
+    private EditText cargoQrEditText;
+    private ImageView cargoImageView;
+    private ImageView cargoResultImageView;
+    private Button addBtn;
+
+    //calculation
     private TextView totalQuantityTextView;
     private TextView totalWeightTextView;
     private TextView totalDimensionsTextView;
@@ -159,15 +189,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     private String registrationCode;
     private String mfo;
     private String oked;
-    private String qr;
-    private String instructions;
-    private String description;
-    private String packageType;
-    private String weight;
-    private String length;
-    private String width;
-    private String height;
-    private String cargoQr;
 
     /* view model */
     private CourierViewModel courierViewModel;
@@ -486,25 +507,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_NUMBER, -1, true, false));
         itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
 
-        /* parcel data */
-        itemList.add(new CreateInvoiceData(getString(R.string.parcel_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateInvoiceData(getString(R.string.qr_code), getString(R.string.courier_guidelines),null, null,
-                TYPE_ONE_IMAGE_EDIT_TEXT, -1, INPUT_TYPE_TEXT, false, true));
-        itemList.add(new CreateInvoiceData(null, null,null, null,
-                TYPE_TWO_CARD_VIEWS, -1, -1, false, true));
-        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_TWO_RADIO_BTNS));
-        /* for each cargo */
-        itemList.add(new CreateInvoiceData(getString(R.string.for_each_cargo), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateInvoiceData(getString(R.string.cargo_description), getString(R.string.package_type), null, null,
-                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, -1, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.weight), getString(R.string.length), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.width), getString(R.string.height), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.qr_code), null, null, null, TYPE_SINGLE_IMAGE_EDIT_TEXT));
-        itemList.add(new CreateInvoiceData(getString(R.string.add), null, null, null, TYPE_BUTTON));
-        itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
-
         contentRecyclerView = findViewById(R.id.content_recycler_view);
         adapter = new CreateInvoiceAdapter(context, this);
         contentRecyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -517,6 +519,37 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         totalDimensionsTextView = findViewById(R.id.total_dimensions_value_text_view);
         calculateBtn = findViewById(R.id.calculate_btn);
 
+        transportationQrEditText = findViewById(R.id.transportation_qr_edit_text);
+        transportationQrImageView = findViewById(R.id.transportation_qr_image_view);
+        transportationQrResultImageView = findViewById(R.id.transportation_qr_result_image_view);
+        instructionsEditText = findViewById(R.id.instructions_edit_text);
+
+        //provider
+        firstProviderCard = findViewById(R.id.first_card);
+        secondProviderCard = findViewById(R.id.second_card);
+        firstProviderRadioBtn = findViewById(R.id.first_card_radio_btn);
+        secondProviderRadioBtn = findViewById(R.id.second_card_radio_btn);
+        firstProviderImageView = findViewById(R.id.first_card_logo);
+        secondProviderImageView = findViewById(R.id.second_card_logo);
+
+        //package type
+        packageTypeRadioGroup = findViewById(R.id.package_type_radio_group);
+        docTypeRadioBtn = findViewById(R.id.doc_type_radio_btn);
+        boxTypeRadioBtn = findViewById(R.id.box_type_radio_btn);
+
+        //cargo
+        cargoDescriptionEditText = findViewById(R.id.cargo_description_edit_text);
+        packagingTypeSpinner = findViewById(R.id.packaging_type_spinner);
+        weightEditText = findViewById(R.id.weight_edit_text);
+        lengthEditText = findViewById(R.id.length_edit_text);
+        widthEditText = findViewById(R.id.width_edit_text);
+        heightEditText = findViewById(R.id.height_edit_text);
+        cargoQrEditText = findViewById(R.id.cargo_qr_edit_text);
+        cargoImageView = findViewById(R.id.cargo_qr_image_view);
+        cargoResultImageView = findViewById(R.id.cargo_qr_result_image_view);
+        addBtn = findViewById(R.id.add_item_btn);
+
+        //calculations
         tariffRadioGroup = findViewById(R.id.tariff_radio_group);
         paymentMethodRadioGroup = findViewById(R.id.payment_method_radio_group);
         expressRadioBtn = findViewById(R.id.express_radio_btn);
@@ -664,42 +697,42 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     }
 
     private void addItem() {
-        if (TextUtils.isEmpty(description)) {
-            Toast.makeText(context, "Добавьте описание", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(packageType)) {
-            Toast.makeText(context, "Укажите тип упаковки", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(weight)) {
-            Toast.makeText(context, "Укажите вес груза", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(length)) {
-            Toast.makeText(context, "Укажите длину груза", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(width)) {
-            Toast.makeText(context, "Укажите ширину груза", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(height)) {
-            Toast.makeText(context, "Укажите высоту груза", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        if (TextUtils.isEmpty(description)) {
+//            Toast.makeText(context, "Добавьте описание", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(packageType)) {
+//            Toast.makeText(context, "Укажите тип упаковки", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(weight)) {
+//            Toast.makeText(context, "Укажите вес груза", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(length)) {
+//            Toast.makeText(context, "Укажите длину груза", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(width)) {
+//            Toast.makeText(context, "Укажите ширину груза", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        if (TextUtils.isEmpty(height)) {
+//            Toast.makeText(context, "Укажите высоту груза", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
 //        final Cargo newItem = new Cargo(description, packageType,
 //                Integer.parseInt(length), Integer.parseInt(width), Integer.parseInt(height), Integer.parseInt(weight), cargoQr);
-        final CreateInvoiceData calcItem = new CreateInvoiceData(TYPE_CALCULATOR_ITEM);
-        calcItem.packageType = packageType;
-        calcItem.index = String.valueOf(CONSIGNMENT_LIST.size());
-        calcItem.dimensions = length + "x" + width + "x" + height;
-        calcItem.weight = weight;
+//        final CreateInvoiceData calcItem = new CreateInvoiceData(TYPE_CALCULATOR_ITEM);
+//        calcItem.packageType = packageType;
+//        calcItem.index = String.valueOf(CONSIGNMENT_LIST.size());
+//        calcItem.dimensions = length + "x" + width + "x" + height;
+//        calcItem.weight = weight;
 
 //        cargoList.add(newItem);
-        itemList.add(calcItem);
-        adapter.notifyDataSetChanged();
+//        itemList.add(calcItem);
+//        adapter.notifyDataSetChanged();
     }
 
     private void saveReceipt() {
@@ -1252,31 +1285,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 oked = editable.toString();
                 break;
             }
-            case 42: {
-                //qr
-                qr = editable.toString();
-                break;
-            }
-            case 45: {
-                //desc
-                description = editable.toString();
-                break;
-            }
-            case 46: {
-                //weight
-                weight = editable.toString();
-                break;
-            }
-            case 47: {
-                //width
-                width = editable.toString();
-                break;
-            }
-            case 48: {
-                //cargoQr
-                cargoQr = editable.toString();
-                break;
-            }
         }
     }
 
@@ -1388,26 +1396,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 mfo = editable.toString();
                 break;
             }
-            case 42: {
-                //instructions
-                instructions = editable.toString();
-                break;
-            }
-            case 45: {
-                //package type
-                packageType = editable.toString();
-                break;
-            }
-            case 46: {
-                //length
-                length = editable.toString();
-                break;
-            }
-            case 47: {
-                //height
-                height = editable.toString();
-                break;
-            }
         }
     }
 
@@ -1438,7 +1426,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_PARCEL) {
                 Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
                 itemList.get(42).firstValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-                qr = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+//                qr = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
                 adapter.notifyItemChanged(42);
                 return;
             }
@@ -1806,41 +1794,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 createInvoiceViewModel.setPayerCityId(city.getId());
                 break;
             }
-        }
-    }
-
-    @Override
-    public void onRadioBtnsSelected(View checkView, boolean checkedBtn) {
-        if (checkView instanceof RadioButton) {
-            if (checkedBtn) {
-                if (((RadioButton) checkView).getText().equals(getString(R.string.cargostar))) {
-                    calculatorViewModel.setProviderId(6L);
-                    Log.i(TAG, "onRadioBtnsSelected: ");
-                    return;
-                }
-                if (((RadioButton) checkView).getText().equals(getString(R.string.tnt))) {
-                    calculatorViewModel.setProviderId(5L);
-                    Log.i(TAG, "onRadioBtnsSelected: ");
-                    return;
-                }
-                if (((RadioButton) checkView).getText().equals(getString(R.string.fedex))) {
-                    calculatorViewModel.setProviderId(4L);
-                    Log.i(TAG, "onRadioBtnsSelected: ");
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onRadioGroupSelected(final RadioGroup group, final int docTypeId, final int boxTypeId) {
-        if (group.getCheckedRadioButtonId() == docTypeId) {
-            selectedPackageType = 1;
-            Log.i(TAG, "onRadioGroupSelected: ");
-            return;
-        }
-        if (group.getCheckedRadioButtonId() == boxTypeId) {
-            selectedPackageType = 2;
-            Log.i(TAG, "onRadioGroupSelected: ");
         }
     }
 

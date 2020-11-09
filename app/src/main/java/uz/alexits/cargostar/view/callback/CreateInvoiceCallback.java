@@ -24,8 +24,4 @@ public interface CreateInvoiceCallback {
     void onSecondSpinnerItemSelected(final int position, final City city);
 
     void onDeleteItemClicked(final int position);
-
-    void onRadioBtnsSelected(final View checkView, final boolean checkedBtn);
-
-    void onRadioGroupSelected(final RadioGroup group, final int docTypeId, final int boxTypeId);
 }

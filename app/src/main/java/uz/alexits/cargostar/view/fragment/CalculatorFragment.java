@@ -820,16 +820,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         Log.i(TAG, "itemCount=" + calculatorAdapter.getItemCount());
     }
 
-    @Override
-    public void onRadioBtnsSelected(final View checkView, boolean checkedBtn) {
-        //do nothing
-    }
-
-    @Override
-    public void onRadioGroupSelected(RadioGroup group, int docTypeId, int boxTypeId) {
-        //do nothing
-    }
-
     private void addCargoToInvoice() {
         final PackagingType packagingType = (PackagingType) packagingTypeSpinner.getSelectedItem();
         final String weight = weightEditText.getText().toString();

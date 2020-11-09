@@ -37,21 +37,472 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="32dp"/>
 
+            <TextView
+                android:id="@+id/transportation_qr_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/content_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="29dp"
+                android:layout_marginStart="35dp"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/qr_code"/>
+
+            <RelativeLayout
+                android:id="@+id/transportation_qr_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/transportation_qr_text_view"
+                app:layout_constraintStart_toStartOf="@id/width_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/width_edit_text"
+                android:layout_marginTop="4dp">
+
+                <EditText
+                    android:id="@+id/transportation_qr_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:background="@drawable/edit_text_locked"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textColor="@color/colorBlack"
+                    android:padding="17dp"
+                    android:enabled="false"/>
+
+                <ImageView
+                    android:id="@+id/transportation_qr_result_image_view"
+                    android:layout_width="19dp"
+                    android:layout_height="22dp"
+                    android:layout_alignStart="@id/transportation_qr_edit_text"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_image_green"
+                    android:layout_marginStart="12dp"
+                    android:contentDescription="@string/signature"
+                    android:visibility="invisible"/>
+
+                <ImageView
+                    android:id="@+id/transportation_qr_image_view"
+                    android:layout_width="25dp"
+                    android:layout_height="22dp"
+                    android:layout_alignEnd="@id/transportation_qr_edit_text"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_camera"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/qr_code"/>
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/instructions_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/transportation_qr_text_view"
+                app:layout_constraintStart_toStartOf="@id/instructions_edit_text"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/courier_guidelines"/>
+
+            <EditText
+                android:id="@+id/instructions_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/transportation_qr_field"
+                app:layout_constraintStart_toStartOf="@id/length_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/length_edit_text"
+                android:inputType="text"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+            <!--from here-->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/first_card"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                app:layout_constraintTop_toBottomOf="@id/transportation_qr_field"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/second_card"
+                android:layout_marginStart="39dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="35dp"
+                android:elevation="8dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioButton
+                        android:id="@+id/first_card_radio_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:buttonTint="@color/colorBlue"/>
+
+                    <ImageView
+                        android:id="@+id/first_card_logo"
+                        android:layout_width="76dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/first_card_radio_btn"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:src="@drawable/logo_cargo_calc"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/second_card"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                app:layout_constraintTop_toTopOf="@id/first_card"
+                app:layout_constraintStart_toEndOf="@id/first_card"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="39dp"
+                android:elevation="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RadioButton
+                        android:id="@+id/second_card_radio_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:buttonTint="@color/colorBlue"/>
+
+                    <ImageView
+                        android:id="@+id/second_card_logo"
+                        android:layout_width="76dp"
+                        android:layout_height="28dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/second_card_radio_btn"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:src="@drawable/logo_tnt_cacl"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <RadioGroup
+                android:id="@+id/package_type_radio_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/first_card"
+                app:layout_constraintStart_toStartOf="@id/first_card"
+                app:layout_constraintEnd_toEndOf="@id/second_card"
+                android:layout_marginTop="37dp"
+                android:orientation="horizontal"
+                android:checkedButton="@id/doc_type_radio_btn"
+                android:gravity="start">
+
+                <RadioButton
+                    android:id="@+id/doc_type_radio_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorBlack"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textSize="16sp"
+                    android:text="@string/doc_type"
+                    android:buttonTint="@color/colorBlue"
+                    android:layout_gravity="start"/>
+
+                <RadioButton
+                    android:id="@+id/box_type_radio_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorBlack"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textSize="16sp"
+                    android:text="@string/box_type"
+                    android:buttonTint="@color/colorBlue"
+                    android:layout_gravity="start"/>
+            </RadioGroup>
+
             <View
                 android:id="@+id/payment_stroke"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
-                app:layout_constraintTop_toBottomOf="@id/content_recycler_view"
+                app:layout_constraintTop_toBottomOf="@id/package_type_radio_group"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="41dp"
                 android:background="@color/colorGrey" />
 
             <TextView
-                android:id="@+id/total_quantity_text_view"
+                android:id="@+id/for_each_cargo_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/payment_stroke"
+                app:layout_constraintStart_toStartOf="@id/transportation_qr_text_view"
+                android:layout_marginTop="29dp"
+                android:textSize="19sp"
+                android:textColor="@color/colorBlack"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/for_each_cargo"/>
+
+            <TextView
+                android:id="@+id/cargo_description_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/for_each_cargo_text_view"
+                app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
+                android:layout_marginTop="29dp"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/cargo_description"/>
+
+            <EditText
+                android:id="@+id/cargo_description_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_description_text_view"
+                app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
+                app:layout_constraintEnd_toStartOf="@id/packaging_type_field"
+                app:layout_constraintHorizontal_weight="1"
+                android:layout_marginEnd="12dp"
+                android:layout_marginTop="4dp"
+                android:inputType="text"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/packaging_type_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/cargo_description_text_view"
+                app:layout_constraintStart_toStartOf="@id/packaging_type_field"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/package_type"/>
+
+            <RelativeLayout
+                android:id="@+id/packaging_type_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/cargo_description_edit_text"
+                app:layout_constraintBottom_toBottomOf="@id/cargo_description_edit_text"
+                app:layout_constraintStart_toEndOf="@id/cargo_description_edit_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="39dp"
+                app:layout_constraintHorizontal_weight="1"
+                android:background="@drawable/edit_text_locked">
+
+                <Spinner
+                    android:id="@+id/packaging_type_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="8dp" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/weight_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_description_edit_text"
+                app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
+                android:layout_marginTop="29dp"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/weight"/>
+
+            <EditText
+                android:id="@+id/weight_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="@id/weight_text_view"
+                app:layout_constraintTop_toBottomOf="@id/weight_text_view"
+                app:layout_constraintEnd_toStartOf="@id/length_edit_text"
+                android:layout_marginEnd="12dp"
+                android:layout_marginTop="4dp"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/length_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/weight_text_view"
+                app:layout_constraintStart_toStartOf="@id/length_edit_text"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/length"/>
+
+            <EditText
+                android:id="@+id/length_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/weight_edit_text"
+                app:layout_constraintStart_toEndOf="@id/weight_edit_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="35dp"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/width_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/weight_edit_text"
+                app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
+                android:layout_marginTop="29dp"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/width"/>
+
+            <EditText
+                android:id="@+id/width_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/width_text_view"
+                app:layout_constraintStart_toStartOf="@id/weight_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/weight_edit_text"
+                android:layout_marginEnd="12dp"
+                android:layout_marginTop="4dp"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/height_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/width_text_view"
+                app:layout_constraintStart_toStartOf="@id/length_edit_text"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/height"/>
+
+            <EditText
+                android:id="@+id/height_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/width_edit_text"
+                app:layout_constraintStart_toStartOf="@id/length_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/length_edit_text"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/cargo_qr_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/width_edit_text"
+                app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
+                android:layout_marginTop="29dp"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/qr_code"/>
+
+            <RelativeLayout
+                android:id="@+id/cargo_qr_field"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_qr_text_view"
+                app:layout_constraintStart_toStartOf="@id/width_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/width_edit_text"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="12dp">
+
+                <EditText
+                    android:id="@+id/cargo_qr_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:background="@drawable/edit_text_locked"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textColor="@color/colorBlack"
+                    android:padding="17dp"
+                    android:enabled="false"/>
+
+                <ImageView
+                    android:id="@+id/cargo_qr_result_image_view"
+                    android:layout_width="19dp"
+                    android:layout_height="22dp"
+                    android:layout_alignStart="@id/cargo_qr_edit_text"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_image_green"
+                    android:layout_marginStart="12dp"
+                    android:contentDescription="@string/signature"
+                    android:visibility="invisible"/>
+
+                <ImageView
+                    android:id="@+id/cargo_qr_image_view"
+                    android:layout_width="25dp"
+                    android:layout_height="22dp"
+                    android:layout_alignEnd="@id/cargo_qr_edit_text"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_camera"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/qr_code"/>
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/add_item_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_qr_field"
+                app:layout_constraintStart_toStartOf="@id/cargo_qr_field"
+                app:layout_constraintEnd_toEndOf="@id/cargo_qr_field"
+                android:layout_marginTop="37dp"
+                android:text="@string/add"
+                android:fontFamily="@font/geometria_medium"
+                android:textSize="19sp"
+                android:textColor="#FFF"
+                android:textAllCaps="false"
+                android:background="@drawable/btn_gradient_orange"
+                android:paddingHorizontal="33dp"
+                android:paddingVertical="14dp"/>
+
+            <View
+                android:id="@+id/cargo_stroke"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:layout_constraintTop_toBottomOf="@id/add_item_btn"
+                app:layout_constraintStart_toStartOf="@id/payment_stroke"
+                app:layout_constraintEnd_toEndOf="@id/payment_stroke"
+                android:layout_marginTop="41dp"
+                android:background="@color/colorGrey" />
+
+            <!--            to here-->
+
+            <TextView
+                android:id="@+id/total_quantity_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_stroke"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/total_weight_text_view"
                 android:layout_marginStart="35dp"
