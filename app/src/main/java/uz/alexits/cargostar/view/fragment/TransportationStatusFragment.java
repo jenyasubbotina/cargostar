@@ -13,6 +13,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,9 +22,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 import uz.alexits.cargostar.R;
 
@@ -49,6 +54,8 @@ public class TransportationStatusFragment extends Fragment {
     private TextView destinationTextView;
     private Button submitStatusBtn;
 
+    private ProgressBar progressBar;
+
     private ImageView checkImageView;
     private AnimatedVectorDrawable vectorDrawable;
     private AnimatedVectorDrawableCompat vectorDrawableCompat;
@@ -56,6 +63,9 @@ public class TransportationStatusFragment extends Fragment {
     private long transportationId = -1;
     private long currentLocationId = -1;
     private static Transportation currentTransportation;
+
+    private static TransportationStatus nextStatus;
+    private static Long nextPoint;
 
     private static TransportationStatus inTransitTransportationStatus;
     private static TransportationStatus onItsWayTransportationStatus;
@@ -131,6 +141,7 @@ public class TransportationStatusFragment extends Fragment {
         destinationTextView = root.findViewById(R.id.destination_text_view);
         submitStatusBtn = root.findViewById(R.id.submit_status_btn);
         checkImageView = root.findViewById(R.id.check_image_view);
+        progressBar = root.findViewById(R.id.progress_bar);
 
         transportationIdTextView.setText(String.valueOf(currentTransportation.getId()));
         transportationIdItemTextView.setText(String.valueOf(currentTransportation.getId()));
@@ -156,18 +167,47 @@ public class TransportationStatusFragment extends Fragment {
         });
 
         submitStatusBtn.setOnClickListener(v -> {
-            final Drawable drawable = checkImageView.getDrawable();
-            checkImageView.setVisibility(View.VISIBLE);
-
-            if (drawable instanceof AnimatedVectorDrawableCompat) {
-                vectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
-                vectorDrawableCompat.start();
+            if (currentTransportation == null || nextStatus == null) {
+                Toast.makeText(context, "Идет синхронинзация данных", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (drawable instanceof AnimatedVectorDrawable) {
-                vectorDrawable = (AnimatedVectorDrawable) drawable;
-                vectorDrawable.start();
-            }
+            final UUID updateTransportationStatusId = SyncWorkRequest.updateTransportationStatus(context,
+                    currentTransportation.getId(), nextStatus.getId(), nextPoint);
+
+            WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateTransportationStatusId).observe(getViewLifecycleOwner(), workInfo -> {
+                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                    final Drawable drawable = checkImageView.getDrawable();
+                    checkImageView.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    submitStatusBtn.setEnabled(true);
+
+                    if (drawable instanceof AnimatedVectorDrawableCompat) {
+                        vectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
+                        vectorDrawableCompat.start();
+                        return;
+                    }
+                    if (drawable instanceof AnimatedVectorDrawable) {
+                        vectorDrawable = (AnimatedVectorDrawable) drawable;
+                        vectorDrawable.start();
+                    }
+
+
+
+                    return;
+                }
+                if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    checkImageView.setVisibility(View.INVISIBLE);
+                    submitStatusBtn.setEnabled(true);
+
+                    Toast.makeText(context, "Произошла ошибка при обновлении статуса", Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+                progressBar.setVisibility(View.VISIBLE);
+                checkImageView.setVisibility(View.INVISIBLE);
+                submitStatusBtn.setEnabled(false);
+            });
         });
     }
 
@@ -206,42 +246,66 @@ public class TransportationStatusFragment extends Fragment {
 
         statusViewModel.getRoute().observe(getViewLifecycleOwner(), route -> {
             Route currentPath = null;
-            boolean isLastPath = false;
+            Route nextPath = null;
 
-            if (route != null && !route.isEmpty()) {
-                for (int i = 0; i < route.size(); i++) {
-                    if (route.get(i).getTransitPointId().equals(currentTransportation.getCurrentTransitionPointId())) {
-                        currentPath = route.get(i);
+            if (currentTransportation != null) {
+                if (route != null && !route.isEmpty()) {
+                    for (int i = 0; i < route.size(); i++) {
+                        if (route.get(i).getTransitPointId().equals(currentTransportation.getCurrentTransitionPointId())) {
+                            currentPath = route.get(i);
 
-                        if (i == route.size() -1) {
-                            isLastPath = true;
+                            if (i == route.size() - 1) {
+                                nextPath = null;
+                            }
+                            else {
+                                nextPath = route.get(i + 1);
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
-                if (currentPath != null) {
-                    if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.on_the_way))) {
-                        statusViewModel.setNextTransportationStatus(inTransitTransportationStatus);
-                        return;
-                    }
-                    if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.in_transit))) {
-                        if (isLastPath) {
-                            statusViewModel.setNextTransportationStatus(deliveredTransportationStatus);
-                            return;
+                    if (currentPath != null) {
+                        if (currentTransportation.getTransportationStatusName() != null) {
+                            if (nextPath != null) {
+                                if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.on_the_way))) {
+                                    statusViewModel.setNextTransportationStatus(inTransitTransportationStatus);
+                                    statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                                    return;
+                                }
+                                if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.in_transit))) {
+                                    statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
+                                    statusViewModel.setNextTransitPointId(nextPath.getTransitPointId());
+                                }
+                                return;
+                            }
+                            if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.on_the_way))) {
+                                //delivered
+                                statusViewModel.setNextTransportationStatus(deliveredTransportationStatus);
+                                statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                                return;
+                            }
+                            if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.in_transit))) {
+                                statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
+                                statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                            }
                         }
-                        statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
                     }
                 }
             }
         });
-
         statusViewModel.getNextStatus().observe(getViewLifecycleOwner(), nextTransportationStatus -> {
             if (nextTransportationStatus != null) {
                 Log.i(TAG, "next status: " + nextTransportationStatus);
                 submitStatusBtn.setText(nextTransportationStatus.getName());
+                nextStatus = nextTransportationStatus;
             }
         });
 
+        statusViewModel.getNextTransitPoint().observe(getViewLifecycleOwner(), nextTransitPoint -> {
+            if (nextTransitPoint != null) {
+                Log.i(TAG, "next point: " + nextTransitPoint);
+                nextPoint = nextTransitPoint;
+            }
+        });
     }
 
     private static final String TAG = TransportationStatusFragment.class.toString();

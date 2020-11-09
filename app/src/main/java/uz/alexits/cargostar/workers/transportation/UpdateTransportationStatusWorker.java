@@ -18,6 +18,7 @@ import uz.alexits.cargostar.api.params.TransportationStatusParams;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.transportation.Route;
+import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
 
 public class UpdateTransportationStatusWorker extends Worker {
@@ -36,31 +37,43 @@ public class UpdateTransportationStatusWorker extends Worker {
     @Override
     public Result doWork() {
         if (transportationId == -1L) {
-            Log.e(TAG, "fetchTransportationRoute(): empty transportation id");
+            Log.e(TAG, "updateTransportationStatus(): empty transportation id");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();
         }
         if (transportationStatusId == -1L) {
-            Log.e(TAG, "fetchTransportationRoute(): empty status id");
+            Log.e(TAG, "updateTransportationStatus(): empty status id");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();
         }
         if (transitPointId == -1L) {
-            Log.e(TAG, "fetchTransportationRoute(): empty transit point id");
+            Log.e(TAG, "updateTransportationStatus(): empty transit point id");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();
         }
-
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
-            final Response<TransportationStatusParams> response = RetrofitClient.getInstance(getApplicationContext())
+            final Response<Transportation> response = RetrofitClient.getInstance(getApplicationContext())
                     .updateTransportationStatus(transportationId, transitPointId, transportationStatusId);
 
-            if (response.code() == 200) {
+            if (response.code() == 200 || response.code() == 201) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchTransportationRoute(): response=" + response.body());
-                    return Result.success();
+                    final Transportation transportation = response.body();
+
+                    Log.i(TAG, "updateTransportationStatus(): response=" + transportation);
+
+                    final long rowId = LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation);
+
+                    if (rowId <= 0) {
+                        Log.e(TAG, "updateTransportationStatus(): couldn't insert " + transportation);
+                        return Result.failure();
+                    }
+
+                    final Data outputData = new Data.Builder()
+                            .putLong(Constants.KEY_TRANSPORTATION_ID, transportation.getId())
+                            .build();
+                    return Result.success(outputData);
                 }
             }
             else {

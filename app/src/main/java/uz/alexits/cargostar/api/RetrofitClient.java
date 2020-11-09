@@ -393,7 +393,7 @@ public class RetrofitClient {
         return apiService.getTransportationRoute(transportationId).execute();
     }
 
-    public Response<TransportationStatusParams> updateTransportationStatus(final Long transportationId,
+    public Response<Transportation> updateTransportationStatus(final Long transportationId,
                                                                            final Long transitPointId,
                                                                            final Long transportationStatusId) throws IOException {
         return apiService.updateTransportationStatus(new TransportationStatusParams(transportationId, transitPointId, transportationStatusId)).execute();

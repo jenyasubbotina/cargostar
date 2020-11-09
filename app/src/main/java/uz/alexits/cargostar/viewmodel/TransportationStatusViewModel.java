@@ -22,6 +22,8 @@ import uz.alexits.cargostar.model.transportation.TransportationStatus;
 public class TransportationStatusViewModel extends AndroidViewModel {
     private final Repository repository;
 
+    private final MutableLiveData<Transportation> currentTransportation;
+
     private final MutableLiveData<Long> transportationId;
     private final MutableLiveData<Long> currentTransitPointId;
     private final MutableLiveData<Long> currentCityId;
@@ -29,11 +31,16 @@ public class TransportationStatusViewModel extends AndroidViewModel {
     private final LiveData<TransportationStatus> inTransitStatus;
     private final LiveData<TransportationStatus> onItsWayStatus;
     private final LiveData<TransportationStatus> deliveredStatus;
+
     private final MutableLiveData<TransportationStatus> nextTransportationStatus;
+    private final MutableLiveData<Long> nextTransitPointId;
 
     public TransportationStatusViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
+
+        this.currentTransportation = new MutableLiveData<>();
+
         this.transportationId = new MutableLiveData<>();
         this.currentTransitPointId = new MutableLiveData<>();
         this.currentCityId = new MutableLiveData<>();
@@ -41,10 +48,16 @@ public class TransportationStatusViewModel extends AndroidViewModel {
         this.inTransitStatus = repository.selectTransportationStatusByName(application.getApplicationContext().getString(R.string.in_transit));
         this.onItsWayStatus = repository.selectTransportationStatusByName(application.getApplicationContext().getString(R.string.on_the_way));
         this.deliveredStatus = repository.selectTransportationStatusByName(application.getApplicationContext().getString(R.string.delivered));
+
         this.nextTransportationStatus = new MutableLiveData<>();
+        this.nextTransitPointId = new MutableLiveData<>();
     }
 
     /* Transportation */
+    public void setCurrentTransportation(final Transportation transportation) {
+        this.currentTransportation.setValue(transportation);
+    }
+
     public void setCurrentTransitPointId(final Long currentTransitPointId) {
         this.currentTransitPointId.setValue(currentTransitPointId);
     }
@@ -59,6 +72,14 @@ public class TransportationStatusViewModel extends AndroidViewModel {
 
     public void setNextTransportationStatus(final TransportationStatus transportationStatus) {
         this.nextTransportationStatus.setValue(transportationStatus);
+    }
+
+    public void setNextTransitPointId(final Long nextTransitPointId) {
+        this.nextTransitPointId.setValue(nextTransitPointId);
+    }
+
+    public LiveData<Transportation> getCurrentTransportation() {
+        return currentTransportation;
     }
 
     public LiveData<List<Route>> getRoute() {
@@ -80,6 +101,8 @@ public class TransportationStatusViewModel extends AndroidViewModel {
     public LiveData<TransportationStatus> getNextStatus() {
         return nextTransportationStatus;
     }
+
+    public LiveData<Long> getNextTransitPoint() { return nextTransitPointId; }
 
     public LiveData<TransportationStatus> getInTransitStatus() {
         return inTransitStatus;

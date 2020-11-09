@@ -164,7 +164,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View root = inflater.inflate(R    .layout.fragment_parcel_data, container, false);
+        final View root = inflater.inflate(R.layout.fragment_parcel_data, container, false);
         //header views
         fullNameTextView = activity.findViewById(R.id.full_name_text_view);
         branchTextView = activity.findViewById(R.id.branch_text_view);
@@ -548,23 +548,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            final long parcelId = Long.parseLong(parcelIdStr);
-
-            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
-                if (receiptWithCargoList == null) {
-                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-//                if (receiptWithCargoList.getReceipt() == null) {
-//                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-                final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
-                startActivity(mainIntent);
-            });
         });
     }
 

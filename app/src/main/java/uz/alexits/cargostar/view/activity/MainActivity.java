@@ -33,6 +33,19 @@ public class MainActivity extends AppCompatActivity {
                 final MainFragmentDirections.ActionMainFragmentToParcelDataFragment action =
                         MainFragmentDirections.actionMainFragmentToParcelDataFragment();
                 action.setParcelId(getIntent().getLongExtra(IntentConstants.INTENT_REQUEST_VALUE, -1));
+                action.setInvoiceId(getIntent().getLongExtra(Constants.KEY_INVOICE_ID, -1L));
+                action.setClientId(getIntent().getLongExtra(Constants.KEY_CLIENT_ID, -1L));
+                action.setRequestId(getIntent().getLongExtra(Constants.KEY_REQUEST_ID, -1L));
+                action.setProviderId(getIntent().getLongExtra(Constants.KEY_PROVIDER_ID, -1L));
+//                mainIntent.putExtra(Constants.KEY_NUMBER, number);
+//                mainIntent.putExtra(Constants.KEY_SENDER_ID, senderId);
+//                mainIntent.putExtra(Constants.KEY_RECIPIENT_ID, recipientId);
+//                mainIntent.putExtra(Constants.KEY_PAYER_ID, payerId);
+//                mainIntent.putExtra(Constants.KEY_PRICE, price);
+//                mainIntent.putExtra(Constants.KEY_TARIFF_ID, tariffId);
+//                mainIntent.putExtra(Constants.KEY_STATUS, status);
+//                mainIntent.putExtra(Constants.KEY_CREATED_AT, createdAt);
+//                mainIntent.putExtra(Constants.KEY_UPDATED_AT, updatedAt);
                 Navigation.findNavController(this, R.id.main_fragment_container).navigate(action);
                 return;
             }

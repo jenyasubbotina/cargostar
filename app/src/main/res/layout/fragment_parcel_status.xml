@@ -196,6 +196,16 @@
             android:fontFamily="@font/geometria_medium"
             android:elevation="8dp"/>
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/submit_status_btn"
+            app:layout_constraintStart_toStartOf="@id/submit_status_btn"
+            app:layout_constraintEnd_toEndOf="@id/submit_status_btn"
+            android:layout_marginTop="125dp"
+            android:visibility="invisible"/>
+
         <ImageView
             android:id="@+id/check_image_view"
             android:layout_width="48dp"

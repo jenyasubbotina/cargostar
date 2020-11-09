@@ -202,17 +202,17 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
             initUI();
 
-            /* header data view model */
-            courierViewModel.selectRequest(requestId).observe(this, receipt -> {
-                if (receipt != null) {
-                    if (requestOrParcel == IntentConstants.INTENT_REQUEST) {
-                        saveReceiptBtn.setVisibility(View.VISIBLE);
-                        createReceiptBtn.setVisibility(View.VISIBLE);
-                    }
-                    else if (requestOrParcel == IntentConstants.INTENT_PARCEL) {
-                        saveReceiptBtn.setVisibility(View.VISIBLE);
-                        createReceiptBtn.setVisibility(View.INVISIBLE);
-                    }
+//            /* header data view model */
+//            courierViewModel.selectRequest(requestId).observe(this, receipt -> {
+//                if (receipt != null) {
+//                    if (requestOrParcel == IntentConstants.INTENT_REQUEST) {
+//                        saveReceiptBtn.setVisibility(View.VISIBLE);
+//                        createReceiptBtn.setVisibility(View.VISIBLE);
+//                    }
+//                    else if (requestOrParcel == IntentConstants.INTENT_PARCEL) {
+//                        saveReceiptBtn.setVisibility(View.VISIBLE);
+//                        createReceiptBtn.setVisibility(View.INVISIBLE);
+//                    }
                     //todo: handle payment status
 //                    if (receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID ||
 //                            receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_MORE ||
@@ -246,12 +246,12 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 //                    }
 //                    currentReceipt = receipt;
 //                    updateUI();
-                }
-                if (requestKey != IntentConstants.REQUEST_EDIT_PARCEL) {
-                    saveReceiptBtn.setVisibility(View.INVISIBLE);
-                    createReceiptBtn.setVisibility(View.VISIBLE);
-                }
-            });
+//                }
+//                if (requestKey != IntentConstants.REQUEST_EDIT_PARCEL) {
+//                    saveReceiptBtn.setVisibility(View.INVISIBLE);
+//                    createReceiptBtn.setVisibility(View.VISIBLE);
+//                }
+//            });
 
         }
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
@@ -360,25 +360,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            final long parcelId = Long.parseLong(parcelIdStr);
-
-            //todo: refactor this
-            courierViewModel.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
-                if (receiptWithCargoList == null) {
-                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                //todo: handle invoice by request
-//                if (receiptWithCargoList.getReceipt() == null) {
-//                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-                final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
-                startActivity(mainIntent);
-            });
         });
 
         saveReceiptBtn.setOnClickListener(v -> {

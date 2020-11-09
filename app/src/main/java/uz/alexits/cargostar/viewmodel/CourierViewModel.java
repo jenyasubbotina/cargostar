@@ -38,9 +38,9 @@ public class CourierViewModel extends AndroidViewModel {
         return repository.selectBrancheById(brancheId);
     }
 
-    public LiveData<Request> selectRequest(final long requestId) {
-        return repository.selectRequest(requestId);
-    }
+//    public LiveData<Request> getInvoice(final long requestId) {
+//        return repository.selectRequest(requestId);
+//    }
 
     public LiveData<Integer> selectNewNotificationsCount() {
         return repository.selectNewNotificationsCount();

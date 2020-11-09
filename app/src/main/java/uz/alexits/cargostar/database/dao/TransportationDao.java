@@ -17,14 +17,14 @@ import java.util.List;
 @Dao
 public interface TransportationDao {
     /* Transportation */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertTransportation(final Transportation transportation);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertTransportationList(final List<Transportation> transportationList);
 
-    @Query("SELECT * FROM transportation ORDER BY id DESC")
-    LiveData<List<Transportation>> selectCurrentTransportations();
+    @Query("SELECT * FROM transportation WHERE current_transition_point_id == :transitPointId AND transportation_status_id IN (:statusArray) ORDER BY id DESC")
+    LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId);
 
     @Query("DELETE FROM transportation")
     void dropTransportations();
@@ -33,7 +33,7 @@ public interface TransportationDao {
     void deleteTransportation(final long transportationId);
 
     /* Transportation Data */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertTransportationData(final List<TransportationData> transportationDataList);
 
     @Query("SELECT * FROM transportationData WHERE transportation_id == :transportationId")
@@ -43,14 +43,14 @@ public interface TransportationDao {
     int updateTransportationData(final TransportationData transportationData);
 
     /* Transportation Route */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertTransportationRoute(final List<Route> transportationRouteList);
 
     /* Transportation Statuses */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertTransportationStatus(final Transportation transportation);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertTransportationStatusList(final List<TransportationStatus> transportationList);
 
     @Query("SELECT * FROM route WHERE transportation_id == :transportationId ORDER BY id ASC")

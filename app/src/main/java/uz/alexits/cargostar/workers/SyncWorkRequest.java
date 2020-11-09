@@ -25,6 +25,7 @@ import uz.alexits.cargostar.workers.invoice.FetchInvoiceWorker;
 import uz.alexits.cargostar.workers.invoice.FetchPayerDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchRecipientDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchSenderDataWorker;
+import uz.alexits.cargostar.workers.invoice.GetInvoiceHeaderWorker;
 import uz.alexits.cargostar.workers.invoice.InsertInvoiceWorker;
 import uz.alexits.cargostar.workers.location.FetchBranchesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingTypesWorker;
@@ -35,10 +36,12 @@ import uz.alexits.cargostar.workers.login.SignInWorker;
 import uz.alexits.cargostar.workers.requests.BindRequestWorker;
 import uz.alexits.cargostar.workers.requests.FetchMyRequestsWorker;
 import uz.alexits.cargostar.workers.requests.FetchRequestsWorker;
+import uz.alexits.cargostar.workers.requests.InsertRequestWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationDataWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationRouteWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationStatusesWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationsWorker;
+import uz.alexits.cargostar.workers.transportation.UpdateTransportationStatusWorker;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -266,6 +269,68 @@ public class SyncWorkRequest {
         return bindRequest.getId();
     }
 
+    public static void createRequest(@NonNull final Context context,
+                                     final long requestId,
+                                     final long invoiceId,
+                                     final long senderCountryId,
+                                     final long senderRegionId,
+                                     final long senderCityId,
+                                     final long userId,
+                                     final long senderId,
+                                     final long courierId,
+                                     final long providerId,
+                                     final String senderFirstName,
+                                     final String senderMiddleName,
+                                     final String senderLastName,
+                                     final String senderEmail,
+                                     final String senderPhone,
+                                     final String senderAddress,
+                                     final long recipientCountryId,
+                                     final long recipientCityId,
+                                     final String comment,
+                                     final int status,
+                                     final long createdAt,
+                                     final long updatedAt) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_REQUEST_ID, requestId)
+                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
+                .putLong(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
+                .putLong(Constants.KEY_SENDER_REGION_ID, senderRegionId)
+                .putLong(Constants.KEY_SENDER_CITY_ID, senderCityId)
+                .putLong(Constants.KEY_USER_ID, userId)
+                .putLong(Constants.KEY_SENDER_ID, senderId)
+                .putLong(Constants.KEY_COURIER_ID, courierId)
+                .putLong(Constants.KEY_PROVIDER_ID, providerId)
+                .putString(Constants.KEY_SENDER_FIRST_NAME, senderFirstName)
+                .putString(Constants.KEY_SENDER_MIDDLE_NAME, senderMiddleName)
+                .putString(Constants.KEY_SENDER_LAST_NAME, senderLastName)
+                .putString(Constants.KEY_EMAIL, senderEmail)
+                .putString(Constants.KEY_SENDER_PHONE, senderPhone)
+                .putString(Constants.KEY_SENDER_ADDRESS, senderAddress)
+                .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
+                .putLong(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId)
+                .putString(Constants.KEY_COMMENT, comment)
+                .putInt(Constants.KEY_STATUS, status)
+                .putLong(Constants.KEY_CREATED_AT, createdAt)
+                .putLong(Constants.KEY_UPDATED_AT, updatedAt)
+                .build();
+
+        final OneTimeWorkRequest createRequestRequest = new OneTimeWorkRequest.Builder(InsertRequestWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
+        WorkManager.getInstance(context).enqueue(createRequestRequest);
+    }
+
     /* Client */
     public static UUID createUser(@NonNull final Context context,
                                   final String email,
@@ -470,6 +535,28 @@ public class SyncWorkRequest {
         WorkManager.getInstance(context).beginWith(fetchRequestsRequest).then(fetchInvoicesRequest).enqueue();
     }
 
+    public static UUID getInvoiceById(@NonNull final Context context, final long invoiceId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
+                .build();
+
+        final OneTimeWorkRequest getInvoiceRequest = new OneTimeWorkRequest.Builder(GetInvoiceHeaderWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context).enqueue(getInvoiceRequest);
+
+        return getInvoiceRequest.getId();
+    }
+
     /* Transportation */
     public static UUID fetchTransportationList(@NonNull final Context context) {
         final Constraints constraints = new Constraints.Builder()
@@ -533,7 +620,49 @@ public class SyncWorkRequest {
                 .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
+
         WorkManager.getInstance(context).enqueue(fetchTransportationRouteRequest);
+
+        return fetchTransportationRouteRequest.getId();
+    }
+
+    public static UUID updateTransportationStatus(@NonNull final Context context,
+                                                  final long transportationId,
+                                                  final long transportationStatusId,
+                                                  final long transitPointId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
+                .putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportationStatusId)
+                .putLong(Constants.KEY_TRANSIT_POINT_ID, transitPointId)
+                .build();
+
+        final OneTimeWorkRequest updateTransportationStatusRequest = new OneTimeWorkRequest.Builder(UpdateTransportationStatusWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchTransportationDataRequest = new OneTimeWorkRequest.Builder(FetchTransportationDataWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchTransportationRouteRequest = new OneTimeWorkRequest.Builder(FetchTransportationRouteWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context)
+                .beginWith(updateTransportationStatusRequest)
+                .then(fetchTransportationDataRequest)
+                .then(fetchTransportationRouteRequest)
+                .enqueue();
 
         return fetchTransportationRouteRequest.getId();
     }

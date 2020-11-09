@@ -163,7 +163,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @POST("transportation-status/create")
-    Call<TransportationStatusParams> updateTransportationStatus(@Body TransportationStatusParams transportationStatusParams);
+    Call<Transportation> updateTransportationStatus(@Body TransportationStatusParams transportationStatusParams);
 
     /* Cargo */
     @Headers("Content-Type: application/json; charset=utf-8;")

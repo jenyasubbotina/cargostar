@@ -23,11 +23,13 @@ import java.util.Date;
 import java.util.Map;
 
 import uz.alexits.cargostar.R;
+import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FcmMessagingService extends FirebaseMessagingService {
     private static int notificationId = 0;
@@ -102,7 +104,6 @@ public class FcmMessagingService extends FirebaseMessagingService {
             Log.e(TAG, "onMessageReceived(): type2 is empty");
             return;
         }
-
         if (type.equalsIgnoreCase(Constants.TYPE_REQUEST)) {
             final Request request = parseRequest(dataPayload);
 
@@ -119,8 +120,39 @@ public class FcmMessagingService extends FirebaseMessagingService {
             }
             else if (type2.equalsIgnoreCase(Constants.SUBTYPE_UPDATE)) {
                 Log.i(TAG, "onMessageReceived(): request update");
+                if (request.getCourierId() == null) {
+                    body = PUBLIC_REQUESTS_BODY;
+                    intentValue = Constants.KEY_PUBLIC_REQUESTS;
+                }
+                else if (request.getCourierId() == SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID)) {
+                    body = MY_REQUESTS_BODY;
+                    intentValue = Constants.KEY_MY_REQUESTS;
+                }
             }
             //todo: insert request through worker
+            SyncWorkRequest.createRequest(
+                    getApplicationContext(),
+                    request.getId(),
+                    request.getInvoiceId() != null ? request.getInvoiceId() : -1L,
+                    request.getSenderCountryId() != null ? request.getSenderCountryId() : -1L,
+                    request.getSenderRegionId() != null ? request.getSenderRegionId() : -1L,
+                    request.getSenderCityId() != null ? request.getSenderCityId() : -1L,
+                    request.getUserId() != null ? request.getUserId() : -1L,
+                    request.getClientId() != null ? request.getClientId() : -1L,
+                    request.getCourierId() != null ? request.getCourierId() : -1L,
+                    request.getProviderId() != null ? request.getProviderId() : -1L,
+                    request.getSenderFirstName(),
+                    request.getSenderMiddleName(),
+                    request.getSenderLastName(),
+                    request.getSenderEmail(),
+                    request.getSenderPhone(),
+                    request.getSenderAddress(),
+                    request.getRecipientCountryId() != null ? request.getRecipientCountryId() : -1L,
+                    request.getRecipientCityId() != null ? request.getRecipientCityId() : -1L,
+                    request.getComment(),
+                    request.getStatus(),
+                    request.getCreatedAt()!= null ? request.getCreatedAt().getTime() : null,
+                    request.getCreatedAt()!= null ? request.getUpdatedAt().getTime() : null);
         }
         else if (type.equalsIgnoreCase(Constants.TYPE_TRANSPORTATION)) {
             final Transportation transportation = parseTransportation(dataPayload);
@@ -135,12 +167,29 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 body = TRANSPORTATION_STATUS_CHANGE_BODY;
             }
             //todo: insert transportation through worker
+            try {
+                new Thread(() -> {
+                    LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation);
+                }).start();
+            }
+            catch (Exception e) {
+                Log.e(TAG, "insertTransportation(): ", e);
+            }
         }
         if (intentValue == null || body == null) {
             return;
         }
         showMessage(title, body, PACKAGE_NAME, link, intentValue);
         //todo: insert notification into cache through new Thread or Worker
+        final Notification notification = new Notification(false, title, body, link, new Date());
+        try {
+            new Thread(() -> {
+                LocalCache.getInstance(getApplicationContext()).notificationDao().createNotification(notification);
+            }).start();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "insertNotification(): ", e);
+        }
     }
 
     public void showMessage(final String title,
@@ -169,6 +218,14 @@ public class FcmMessagingService extends FirebaseMessagingService {
         }
     }
 
+    private void insertTransportation() {
+
+    }
+
+    private void insertNotification() {
+
+    }
+
     private Request parseRequest(final Map<String, String> dataPayload) {
         final String requestId = dataPayload.get(Constants.KEY_ID);
         final String senderCountryId = dataPayload.get(Constants.KEY_SENDER_COUNTRY_ID);
@@ -192,28 +249,42 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final String createdAt = dataPayload.get(Constants.KEY_CREATED_AT);
         final String updatedAt = dataPayload.get(Constants.KEY_UPDATED_AT);
 
+        final long request_id = requestId != null && !TextUtils.isEmpty(requestId) ? Long.parseLong(requestId.trim()) : -1L;
+        final Long sender_country_id = senderCountryId != null && !TextUtils.isEmpty(senderCountryId) ? Long.parseLong(senderCountryId.trim()) : null;
+        final Long sender_region_id = senderRegionId != null && !TextUtils.isEmpty(senderRegionId) ? Long.parseLong(senderRegionId.trim()) : null;
+        final Long sender_city_id = senderCityId != null && !TextUtils.isEmpty(senderCityId) ? Long.parseLong(senderCityId.trim()) : null;
+        final Long recipient_country_id = recipientCountryId != null && !TextUtils.isEmpty(recipientCountryId) ? Long.parseLong(recipientCountryId.trim()) : null;
+        final Long recipient_city_id = recipientCityId != null && !TextUtils.isEmpty(recipientCityId) ? Long.parseLong(recipientCityId.trim()) : null;
+        final Long user_id = userId != null && !TextUtils.isEmpty(userId) ? Long.parseLong(userId.trim()) : null;
+        final Long sender_id = senderId != null && !TextUtils.isEmpty(senderId) ? Long.parseLong(senderId.trim()) : null;
+        final Long courier_id = courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId.trim()) : null;
+        final Long provider_id = providerId != null && !TextUtils.isEmpty(providerId) ? Long.parseLong(providerId.trim()) : null;
+        final Long invoice_id = invoiceId != null && !TextUtils.isEmpty(invoiceId) ? Long.parseLong(invoiceId.trim()) : null;
+        final Long created_at = createdAt != null && !TextUtils.isEmpty(createdAt) ? Long.parseLong(createdAt.trim()) : null;
+        final Long updated_at = updatedAt != null && !TextUtils.isEmpty(updatedAt) ? Long.parseLong(updatedAt.trim()) : null;
+
         return new Request(
-                requestId != null && !TextUtils.isEmpty(requestId) ? Long.parseLong(requestId) : -1L,
+                request_id,
                 senderFirstName,
                 senderMiddleName,
                 senderLastName,
                 senderEmail,
                 senderPhone,
                 senderAddress,
-                senderCountryId != null && !TextUtils.isEmpty(senderCountryId) ? Long.parseLong(senderCountryId) : null,
-                senderRegionId != null && !TextUtils.isEmpty(senderRegionId) ? Long.parseLong(senderRegionId) : null,
-                senderCityId != null && !TextUtils.isEmpty(senderCityId) ? Long.parseLong(senderCityId) : null,
-                recipientCountryId != null && !TextUtils.isEmpty(recipientCountryId) ? Long.parseLong(recipientCountryId) : null,
-                recipientCityId != null && !TextUtils.isEmpty(recipientCityId) ? Long.parseLong(recipientCityId) : null,
+                sender_country_id,
+                sender_region_id,
+                sender_city_id,
+                recipient_country_id,
+                recipient_city_id,
                 comment,
-                userId != null && !TextUtils.isEmpty(userId) ? Long.parseLong(userId) : null,
-                senderId != null && !TextUtils.isEmpty(senderId) ? Long.parseLong(senderId) : null,
-                courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId) : null,
-                providerId != null && !TextUtils.isEmpty(providerId) ? Long.parseLong(providerId) : null,
-                invoiceId != null && !TextUtils.isEmpty(invoiceId) ? Long.parseLong(invoiceId) : null,
-                status != null && !TextUtils.isEmpty(status) ? Integer.parseInt(status) : -1,
-                new Date(createdAt),
-                new Date(updatedAt));
+                user_id,
+                sender_id,
+                courier_id,
+                provider_id,
+                invoice_id,
+                1,
+                new Date(created_at),
+                new Date(updated_at));
     }
 
     private Transportation parseTransportation(final Map<String, String> dataPayload) {
@@ -237,23 +308,33 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final String createdAt = dataPayload.get(Constants.KEY_CREATED_AT);
         final String updatedAt = dataPayload.get(Constants.KEY_UPDATED_AT);
 
+        final long transportation_id = transportationId != null && !TextUtils.isEmpty(transportationId) ? Long.parseLong(transportationId.trim()) : -1L;
+        final Long provider_id = providerId != null && !TextUtils.isEmpty(providerId) ? Long.parseLong(providerId.trim()) : null;
+        final Long courier_id = courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId.trim()) : null;
+        final Long invoice_id = invoiceId != null && !TextUtils.isEmpty(invoiceId) ? Long.parseLong(invoiceId.trim()) : null;
+        final Long transportation_status_id = transportationStatusId != null && !TextUtils.isEmpty(transportationStatusId) ? Long.parseLong(transportationStatusId.trim()) : null;
+        final Long payment_status_id = paymentStatusId != null && !TextUtils.isEmpty(paymentStatusId) ? Long.parseLong(paymentStatusId.trim()) : null;
+        final Long current_transit_point_id = currentTransitPointId != null && !TextUtils.isEmpty(currentTransitPointId) ? Long.parseLong(currentTransitPointId.trim()) : null;
+        final Long created_at = createdAt != null && !TextUtils.isEmpty(createdAt) ? Long.parseLong(createdAt.trim()) : null;
+        final Long updated_at = updatedAt != null && !TextUtils.isEmpty(updatedAt) ? Long.parseLong(updatedAt.trim()) : null;
+
         final Transportation transportation = new Transportation(
-                transportationId != null && !TextUtils.isEmpty(transportationId) ? Long.parseLong(transportationId) : -1L,
-                providerId != null && !TextUtils.isEmpty(providerId) ? Long.parseLong(providerId) : null,
-                courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId) : null,
-                invoiceId != null && !TextUtils.isEmpty(invoiceId) ? Long.parseLong(invoiceId) : null,
-                transportationStatusId != null && !TextUtils.isEmpty(transportationStatusId) ? Long.parseLong(transportationStatusId) : null,
-                paymentStatusId != null && !TextUtils.isEmpty(paymentStatusId) ? Long.parseLong(paymentStatusId) : null,
-                currentTransitPointId != null && !TextUtils.isEmpty(currentTransitPointId) ? Long.parseLong(currentTransitPointId) : null,
+                transportation_id,
+                provider_id,
+                courier_id,
+                invoice_id,
+                transportation_status_id,
+                payment_status_id,
+                current_transit_point_id,
                 arrivalDate,
                 trackingCode,
                 qrCode,
                 partyQrCode,
                 instructions,
                 direction,
-                status != null && !TextUtils.isEmpty(status) ? Integer.parseInt(status) : -1,
-                new Date(createdAt),
-                new Date(updatedAt));
+                status != null && !TextUtils.isEmpty(status) ? Integer.parseInt(status) : 1,
+                new Date(created_at),
+                new Date(updated_at));
         transportation.setCityTo(cityFrom);
         transportation.setCityTo(cityTo);
         transportation.setTransportationStatusName(statusName);

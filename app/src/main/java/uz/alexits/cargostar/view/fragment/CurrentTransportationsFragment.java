@@ -45,6 +45,7 @@ import uz.alexits.cargostar.view.adapter.SpinnerAdapter;
 import uz.alexits.cargostar.view.callback.TransportationCallback;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -87,6 +88,9 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
     private RecyclerView currentParcelsRecyclerView;
     private TransportationAdapter transportationAdapter;
+
+    private static final List<Long> selectedStatusArray = new ArrayList<>();
+    private static Long selectedTransitPointId = -1L;
 
     public CurrentTransportationsFragment() {
         // Required empty public constructor
@@ -183,8 +187,8 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         });
 
         //default checkBox values
-        inTransitCheckBox.setChecked(true);
-        onTheWayCheckBox.setChecked(true);
+//        inTransitCheckBox.setChecked(true);
+//        onTheWayCheckBox.setChecked(true);
 
         //main content views
         transitPointSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -199,7 +203,9 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                         transitPointField.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
-                if (inTransitCheckBox.isChecked()) {
+                selectedTransitPointId = currentItem.getId();
+                transportationViewModel.setStatusArrayTransitPoint(selectedStatusArray, selectedTransitPointId);
+//                if (inTransitCheckBox.isChecked()) {
 //                    parcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getId()).observe(getViewLifecycleOwner(), parcelList -> {
 //                        Log.i(TAG, "parcelList: " + parcelList);
 //                        if (parcelList != null) {
@@ -207,7 +213,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 //                            parcelAdapter.notifyDataSetChanged();
 //                        }
 //                    });
-                }
+//                }
             }
 
             @Override
@@ -250,23 +256,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                 Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            final long parcelId = Long.parseLong(parcelIdStr);
-
-            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
-                if (receiptWithCargoList == null) {
-                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-//                if (receiptWithCargoList.getReceipt() == null) {
-//                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-                final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
-                startActivity(mainIntent);
-            });
         });
 
         /* transportation view model */
@@ -289,106 +278,115 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     }
 
     private void initParcels(final boolean inTransit, final boolean onTheWay, final boolean delivered, final boolean lost, final boolean all) {
-//        if (all || (inTransit && onTheWay && delivered && lost)) {
-//            //in transit + on the way + delivered + lost
-//            Log.i(TAG, "statusList: in transit + on the way + delivered + lost");
-//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
-//            initCitySpinner(transitPointList);
-//        }
-//        else if (inTransit && !onTheWay && !delivered && !lost) {
-//            //in transit
-//            Log.i(TAG, "statusList: in transit");
-//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT};
-//            initCitySpinner(transitPointList);
-//        }
-//        else if (inTransit && onTheWay && !delivered && !lost) {
-//            //in transit + on the way
-//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY};
-//            Log.i(TAG, "statusList: in transit + on the way, transitPointList=" + transitPointList);
-//            initCitySpinner(transitPointList);
-//        }
-//        else if (inTransit && onTheWay && delivered) {
-//            //in transit + on the way + delivered
-//            Log.i(TAG, "statusList: in transit + on the way + delivered");
-//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED};
-//            initCitySpinner(transitPointList);
-//        }
-//        else if (inTransit && onTheWay) {
-//            //in transit + on the way + lost
-//            Log.i(TAG, "statusList: in transit + on the way + lost");
-//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.LOST};
-//            initCitySpinner(transitPointList);
-//        }
-//        else if (inTransit && delivered && !lost) {
-//            //in transit + delivered
-//            Log.i(TAG, "statusList: in transit + delivered");
-//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.DELIVERED};
-//            initCitySpinner(transitPointList);
-//        }
-//        else if (inTransit && !delivered) {
-//            //in transit + lost
-//            Log.i(TAG, "statusList: in transit + lost");
-//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.LOST};
-//            initCitySpinner(transitPointList);
-//        }
-//        else if (inTransit) {
-//            //in transit + delivered + lost
-//            Log.i(TAG, "statusList: in transit + delivered + lost");
-//            statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.DELIVERED, TransportationStatus.LOST};
-//            initCitySpinner(transitPointList);
-//        }
-//        else if (onTheWay && !delivered && !lost) {
-//            //on the way
-//            Log.i(TAG, "statusList: on the way");
-//            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY};
-//            initCitySpinner(null);
-//        }
-//        else if (onTheWay && delivered && !lost) {
-//            //on the way + delivered
-//            Log.i(TAG, "statusList: on the way + delivered");
-//            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED};
-//            initCitySpinner(null);
-//        }
-//        else if (onTheWay && delivered) {
-//            //on the way + delivered + lost
-//            Log.i(TAG, "statusList: on the way + delivered + lost");
-//            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
-//            initCitySpinner(null);
-//        }
-//        else if (onTheWay) {
-//            //on the way + lost
-//            Log.i(TAG, "statusList: on the way + lost");
-//            statusArray = new TransportationStatus[] {TransportationStatus.ON_THE_WAY, TransportationStatus.LOST};
-//            initCitySpinner(null);
-//        }
-//        else if (delivered && !lost) {
-//            //delivered
-//            Log.i(TAG, "statusList: delivered");
-//            statusArray = new TransportationStatus[] {TransportationStatus.DELIVERED};
-//            initCitySpinner(null);
-//        }
-//        else if (delivered) {
-//            //delivered + lost
-//            Log.i(TAG, "statusList: delivered + lost");
-//            statusArray = new TransportationStatus[] {TransportationStatus.DELIVERED, TransportationStatus.LOST};
-//            initCitySpinner(null);
-//        }
-//        else if (lost) {
-//            //lost
-//            Log.i(TAG, "statusList: lost");
-//            statusArray = new TransportationStatus[] {TransportationStatus.LOST};
-//            initCitySpinner(null);
-//        }
-//        else {
-//            //nothing
-//            Log.i(TAG, "statusList: nothing");
-//            statusArray = new TransportationStatus[] {};
-//            initCitySpinner(null);
-//        }
-//        parcelsViewModel.selectParcelsByStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray).observe(getViewLifecycleOwner(), parcelList -> {
-//            parcelAdapter.setParcelList(parcelList);
-//            parcelAdapter.notifyDataSetChanged();
-//        });
+        if (all || (inTransit && onTheWay && delivered && lost)) {
+            //in transit + on the way + delivered + lost
+            Log.i(TAG, "statusList: in transit + on the way + delivered + lost");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(3L);
+            selectedStatusArray.add(4L);
+            selectedStatusArray.add(5L);
+            selectedStatusArray.add(6L);
+        }
+        else if (inTransit && !onTheWay && !delivered && !lost) {
+            //in transit
+            Log.i(TAG, "statusList: in transit");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(3L);
+        }
+        else if (inTransit && onTheWay && !delivered && !lost) {
+            //in transit + on the way
+            Log.i(TAG, "statusList: in transit + on the way");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(3L);
+            selectedStatusArray.add(4L);
+        }
+        else if (inTransit && onTheWay && delivered) {
+            //in transit + on the way + delivered
+            Log.i(TAG, "statusList: in transit + on the way + delivered");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(3L);
+            selectedStatusArray.add(4L);
+            selectedStatusArray.add(6L);
+        }
+        else if (inTransit && onTheWay) {
+            //in transit + on the way + lost
+            Log.i(TAG, "statusList: in transit + on the way + lost");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(3L);
+            selectedStatusArray.add(4L);
+            selectedStatusArray.add(5L);
+        }
+        else if (inTransit && delivered && !lost) {
+            //in transit + delivered
+            Log.i(TAG, "statusList: in transit + delivered");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(3L);
+            selectedStatusArray.add(6L);
+        }
+        else if (inTransit && !delivered) {
+            //in transit + lost
+            Log.i(TAG, "statusList: in transit + lost");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(3L);
+            selectedStatusArray.add(5L);
+       }
+        else if (inTransit) {
+            //in transit + delivered + lost
+            Log.i(TAG, "statusList: in transit + delivered + lost");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(3L);
+            selectedStatusArray.add(5L);
+            selectedStatusArray.add(6L);        }
+        else if (onTheWay && !delivered && !lost) {
+            //on the way
+            Log.i(TAG, "statusList: on the way");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(4L);        }
+        else if (onTheWay && delivered && !lost) {
+            //on the way + delivered
+            Log.i(TAG, "statusList: on the way + delivered");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(4L);
+            selectedStatusArray.add(6L);        }
+        else if (onTheWay && delivered) {
+            //on the way + delivered + lost
+            Log.i(TAG, "statusList: on the way + delivered + lost");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(4L);
+            selectedStatusArray.add(5L);
+            selectedStatusArray.add(6L);
+        }
+        else if (onTheWay) {
+            //on the way + lost
+            Log.i(TAG, "statusList: on the way + lost");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(4L);
+            selectedStatusArray.add(5L);
+        }
+        else if (delivered && !lost) {
+            //delivered
+            Log.i(TAG, "statusList: delivered");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(6L);
+        }
+        else if (delivered) {
+            //delivered + lost
+            Log.i(TAG, "statusList: delivered + lost");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(5L);
+            selectedStatusArray.add(6L);        }
+        else if (lost) {
+            //lost
+            Log.i(TAG, "statusList: lost");
+            selectedStatusArray.clear();
+            selectedStatusArray.add(5L);
+        }
+        else {
+            //nothing
+            Log.i(TAG, "statusList: nothing");
+            selectedStatusArray.clear();
+        }
+        transportationViewModel.setStatusArrayTransitPoint(selectedStatusArray, selectedTransitPointId);
     }
 
     @Override

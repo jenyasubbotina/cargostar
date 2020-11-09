@@ -42,6 +42,7 @@ import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.utils.UiUtils;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
+import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class CreateUserActivity extends AppCompatActivity {
@@ -124,6 +125,7 @@ public class CreateUserActivity extends AppCompatActivity {
     private CourierViewModel courierViewModel;
     private CustomerViewModel customerViewModel;
     private LocationDataViewModel locationDataViewModel;
+    private RequestsViewModel requestsViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +139,8 @@ public class CreateUserActivity extends AppCompatActivity {
         //header view model
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         customerViewModel = new ViewModelProvider(this).get(CustomerViewModel.class);
+        locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
+        requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
 
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
             if (courier != null) {
@@ -155,8 +159,6 @@ public class CreateUserActivity extends AppCompatActivity {
         });
 
         //location data view model
-        locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
-
         locationDataViewModel.getCountryList().observe(this, countryList -> {
             for (final Country country : countryList) {
                 countryArrayAdapter.add(country);
@@ -185,23 +187,6 @@ public class CreateUserActivity extends AppCompatActivity {
                 Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            final long parcelId = Long.parseLong(parcelIdStr);
-
-            courierViewModel.selectRequest(parcelId).observe(this, receiptWithCargoList -> {
-                if (receiptWithCargoList == null) {
-                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-//                if (receiptWithCargoList.getReceipt() == null) {
-//                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-                final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
-                startActivity(mainIntent);
-            });
         });
         //listeners
         photoImageView.setOnClickListener(v -> {

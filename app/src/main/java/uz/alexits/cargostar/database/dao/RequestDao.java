@@ -13,7 +13,7 @@ import java.util.List;
 
 @Dao
 public interface RequestDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertRequest(final Request newRequest);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)

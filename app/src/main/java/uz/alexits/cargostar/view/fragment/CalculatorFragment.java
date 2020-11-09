@@ -684,23 +684,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            final long parcelId = Long.parseLong(parcelIdStr);
-
-            courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
-                if (receiptWithCargoList == null) {
-                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-//                if (receiptWithCargoList.getReceipt() == null) {
-//                    Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-                final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
-                startActivity(mainIntent);
-            });
         });
 
         locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);

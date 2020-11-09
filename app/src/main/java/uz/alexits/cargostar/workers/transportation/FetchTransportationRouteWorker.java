@@ -28,7 +28,6 @@ public class FetchTransportationRouteWorker extends Worker {
     public Result doWork() {
         if (transportationId == -1L) {
             Log.e(TAG, "fetchTransportationRoute(): empty transportation id");
-            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();
         }
 
@@ -46,12 +45,12 @@ public class FetchTransportationRouteWorker extends Worker {
                 }
             }
             else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
+                Log.e(TAG, "fetchTransportationRoute(): " + response.errorBody());
             }
             return Result.failure();
         }
         catch (IOException e) {
-            Log.e(TAG, "doWork(): ", e);
+            Log.e(TAG, "fetchTransportationRoute(): ", e);
             return Result.failure();
         }
     }

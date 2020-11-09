@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import java.io.IOException;
@@ -28,10 +29,8 @@ public class FetchTransportationDataWorker extends Worker {
     public Result doWork() {
         if (transportationId == -1L) {
             Log.e(TAG, "fetchTransportationData(): empty transportation id");
-            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();
         }
-
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
@@ -42,7 +41,12 @@ public class FetchTransportationDataWorker extends Worker {
                     Log.i(TAG, "fetchTransportationData(): response=" + response.body());
                     final List<TransportationData> transportationData = response.body();
                     LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationData(transportationData);
-                    return Result.success();
+
+                    final Data outputData = new Data.Builder()
+                            .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
+                            .build();
+
+                    return Result.success(outputData);
                 }
             }
             else {

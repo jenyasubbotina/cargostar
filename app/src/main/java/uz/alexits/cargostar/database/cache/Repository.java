@@ -294,8 +294,8 @@ public class Repository {
     }
 
     /* transportation data */
-    public LiveData<List<Transportation>> selectCurrentTransportations() {
-        return transportationDao.selectCurrentTransportations();
+    public LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId) {
+        return transportationDao.selectCurrentTransportations(statusArray, transitPointId);
     }
 
     /* transportation status */

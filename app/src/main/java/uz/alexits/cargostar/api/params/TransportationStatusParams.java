@@ -8,10 +8,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class TransportationStatusParams {
     @Expose
-    @SerializedName("id")
-    private final long id;
-
-    @Expose
     @SerializedName("transportation_id")
     private final Long transportationId;
 
@@ -20,27 +16,17 @@ public class TransportationStatusParams {
     private final Long transitPointId;
 
     @Expose
-    @SerializedName("transportation_status_id")
+    @SerializedName("transportation_status")
     private final Long transportationStatusId;
 
-    @Ignore
-    public TransportationStatusParams(final Long transportationId, final Long transitPointId, final Long transportationStatusId) {
-        this(-1, transportationId, transitPointId, transportationStatusId);
-    }
-
-    public TransportationStatusParams(final long id,
-                                      final Long transportationId,
+    public TransportationStatusParams(final Long transportationId,
                                       final Long transitPointId,
                                       final Long transportationStatusId) {
-        this.id = id;
         this.transportationId = transportationId;
         this.transitPointId = transitPointId;
         this.transportationStatusId = transportationStatusId;
     }
 
-    public long getId() {
-        return id;
-    }
 
     public Long getTransportationId() {
         return transportationId;
@@ -58,7 +44,6 @@ public class TransportationStatusParams {
     @Override
     public String toString() {
         return "TransportationStatusParams{" +
-                "id=" + id +
                 ", transportationId=" + transportationId +
                 ", transitPointId=" + transitPointId +
                 ", transportationStatusId=" + transportationStatusId +

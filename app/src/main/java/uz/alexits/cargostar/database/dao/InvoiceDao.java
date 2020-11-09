@@ -11,10 +11,14 @@ import java.util.List;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
+import uz.alexits.cargostar.model.shipping.Request;
 
 @Dao
 public interface InvoiceDao {
     /* invoice */
+    @Query("SELECT * FROM request WHERE invoice_id == :invoiceId LIMIT 1")
+    LiveData<Request> selectRequestByInvoiceId(final long invoiceId);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertInvoice(final Invoice invoice);
 
@@ -24,7 +28,7 @@ public interface InvoiceDao {
     @Query("SELECT * FROM invoice ORDER BY id ASC")
     LiveData<List<Invoice>> selectAllInvoices();
 
-    @Query("SELECT * FROM invoice WHERE id == :invoiceId")
+    @Query("SELECT * FROM invoice WHERE id == :invoiceId LIMIT 1")
     LiveData<Invoice> selectInvoiceById(final long invoiceId);
 
     @Update

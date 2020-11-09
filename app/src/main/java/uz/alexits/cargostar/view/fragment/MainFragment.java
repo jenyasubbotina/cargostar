@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.work.Data;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,9 +25,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.UUID;
+
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.CalculatorActivity;
@@ -34,6 +41,7 @@ import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
+import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -71,7 +79,6 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         context = getContext();
-
         courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
 
         SyncWorkRequest.fetchTransitPoints(context);
@@ -178,37 +185,73 @@ public class MainFragment extends Fragment {
             }
         });
 
-        parcelSearchImageView.setOnClickListener(v -> {
-            final String parcelIdStr = parcelSearchEditText.getText().toString();
+        LocalCache.getInstance(context).invoiceDao().selectAllInvoices().observe(getViewLifecycleOwner(), invoiceList -> {
+            Log.i(TAG, "invoiceList: " + invoiceList);
+        });
 
-            if (TextUtils.isEmpty(parcelIdStr)) {
+        parcelSearchImageView.setOnClickListener(v -> {
+            final String invoiceIdStr = parcelSearchEditText.getText().toString();
+
+            if (TextUtils.isEmpty(invoiceIdStr)) {
                 Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (!TextUtils.isDigitsOnly(parcelIdStr)) {
+            if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
                 Toast.makeText(context, "Неверный формат", Toast.LENGTH_SHORT).show();
                 return;
             }
             try {
-                final long parcelId = Long.parseLong(parcelIdStr);
-                courierViewModel.selectRequest(parcelId).observe(getViewLifecycleOwner(), receiptWithCargoList -> {
-                    if (receiptWithCargoList == null) {
+                final UUID searchInvoiceUUID = SyncWorkRequest.getInvoiceById(context, Long.parseLong(invoiceIdStr));
+                WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
+                    if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
                         Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
+
+                        parcelSearchEditText.setEnabled(true);
+
                         return;
                     }
-//                    if (receiptWithCargoList.getReceipt() == null) {
-//                        Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-                    final Intent mainIntent = new Intent(context, MainActivity.class);
-                    mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
-                    mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, parcelId);
-                    startActivity(mainIntent);
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        final Data outputData = workInfo.getOutputData();
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
+                        final String number = outputData.getString(Constants.KEY_NUMBER);
+                        final long senderId = outputData.getLong(Constants.KEY_SENDER_ID, -1L);
+                        final long recipientId = outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L);
+                        final long payerId = outputData.getLong(Constants.KEY_PAYER_ID, -1L);
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        final double price = outputData.getDouble(Constants.KEY_PRICE, -1);
+                        final long tariffId = outputData.getLong(Constants.KEY_TARIFF_ID, -1L);
+                        final long status = outputData.getInt(Constants.KEY_STATUS, -1);
+                        final long createdAt = outputData.getLong(Constants.KEY_CREATED_AT, -1L);
+                        final long updatedAt = outputData.getLong(Constants.KEY_UPDATED_AT, -1L);
+
+                        final Intent mainIntent = new Intent(context, MainActivity.class);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, invoiceId);
+                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
+                        mainIntent.putExtra(Constants.KEY_NUMBER, number);
+                        mainIntent.putExtra(Constants.KEY_SENDER_ID, senderId);
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_ID, recipientId);
+                        mainIntent.putExtra(Constants.KEY_PAYER_ID, payerId);
+                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
+                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
+                        mainIntent.putExtra(Constants.KEY_PRICE, price);
+                        mainIntent.putExtra(Constants.KEY_TARIFF_ID, tariffId);
+                        mainIntent.putExtra(Constants.KEY_STATUS, status);
+                        mainIntent.putExtra(Constants.KEY_CREATED_AT, createdAt);
+                        mainIntent.putExtra(Constants.KEY_UPDATED_AT, updatedAt);
+                        startActivity(mainIntent);
+
+                        parcelSearchEditText.setEnabled(true);
+
+                        return;
+                    }
+                    parcelSearchEditText.setEnabled(false);
                 });
             }
             catch (Exception e) {
-                Log.e(TAG, "parseLong(): ", e);
-                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "getInvoiceById(): ", e);
+                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
