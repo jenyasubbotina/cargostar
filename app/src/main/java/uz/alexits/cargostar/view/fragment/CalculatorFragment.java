@@ -39,13 +39,13 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.Regex;
@@ -147,6 +147,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private List<ZoneSettings> selectedZoneSettingsList = null;
 
     private static final List<Consignment> itemList = new ArrayList<>();
+    private static Vat selectedVat;
 
     public CalculatorFragment() {
         // Required empty public constructor
@@ -157,6 +158,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         super.onCreate(savedInstanceState);
         context = getContext();
         activity = getActivity();
+
+        itemList.clear();
 
         SyncWorkRequest.fetchPackagingData(context, 100000);
     }
@@ -583,20 +586,18 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 secondCardRadioBtn.setChecked(false);
 
                 if (firstCardRadioBtn.getText().equals(getString(R.string.cargostar))) {
+                    Log.i(TAG, "checked(): cargostar");
+
                     calculatorViewModel.setProviderId(6L);
                     calculatorViewModel.setCountryIdProviderId(selectedCountryId, 6L);
                     return;
                 }
                 if (firstCardRadioBtn.getText().equals(getString(R.string.tnt))) {
+                    Log.i(TAG, "checked(): tnt");
+
                     calculatorViewModel.setProviderId(5L);
                     calculatorViewModel.setCountryIdProviderId(selectedCountryId, 5L);
                 }
-                return;
-            }
-            if (!secondCardRadioBtn.isChecked()) {
-                selectedProvider = null;
-                calculatorViewModel.setProviderId(null);
-                calculatorViewModel.setCountryIdProviderId(selectedCountryId, null);
             }
         });
 
@@ -604,14 +605,9 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             if (b) {
                 firstCardRadioBtn.setChecked(false);
                 //only fedex case
+                Log.i(TAG, "checked(): fedex");
                 calculatorViewModel.setProviderId(4L);
                 calculatorViewModel.setCountryIdProviderId(selectedCountryId, 4L);
-                return;
-            }
-            if (!firstCardRadioBtn.isChecked()) {
-                selectedProvider = null;
-                calculatorViewModel.setProviderId(null);
-                calculatorViewModel.setCountryIdProviderId(selectedCountryId, null);
             }
         });
 
@@ -620,10 +616,16 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             if (checkedId == docTypeRadioBtn.getId()) {
                 //docs
                 calculatorViewModel.setType(1);
+                if (selectedPackagingIdList != null) {
+                    calculatorViewModel.setTypePackageIdList(1, selectedPackagingIdList);
+                }
             }
             else if (checkedId == boxTypeRadioBtn.getId()) {
                 //boxes
                 calculatorViewModel.setType(2);
+                if (selectedPackagingIdList != null) {
+                    calculatorViewModel.setTypePackageIdList(2, selectedPackagingIdList);
+                }
             }
             else {
                 calculatorViewModel.setType(null);
@@ -635,6 +637,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 final TextView itemTextView = (TextView) view;
                 final PackagingType selectedPackagingType = (PackagingType) adapterView.getSelectedItem();
+
+                Log.i(TAG, "onItemSelected(): packagingType=" + selectedPackagingType + "packagingId=" + selectedPackagingType.getPackagingId());
 
                 calculatorViewModel.setPackagingId(selectedPackagingType.getPackagingId());
 
@@ -718,7 +722,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
@@ -781,6 +785,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
         calculatorViewModel.getPackagingIds().observe(getViewLifecycleOwner(), packagingIds -> {
             selectedPackagingIdList = packagingIds;
+            Log.i(TAG, "packagingIdList: " + selectedPackagingIdList);
             if (packageTypeRadioGroup.getCheckedRadioButtonId() == docTypeRadioBtn.getId()) {
                 calculatorViewModel.setTypePackageIdList(1, packagingIds);
             }
@@ -814,6 +819,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         calculatorViewModel.getZoneSettingsList().observe(getViewLifecycleOwner(), zoneSettingsList -> {
             Log.i(TAG, "zoneSettingsList: " + zoneSettingsList);
             selectedZoneSettingsList = zoneSettingsList;
+        });
+
+        calculatorViewModel.getVat().observe(getViewLifecycleOwner(), vat -> {
+            Log.i(TAG, "vat=" + vat);
+            selectedVat = vat;
         });
     }
 
@@ -984,7 +994,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         ZoneSettings actualZoneSettings = null;
 
         for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
-            if (totalWeight >= zoneSettings.getWeightFrom() && totalWeight < zoneSettings.getWeightTo()) {
+            if (totalWeight > zoneSettings.getWeightFrom() && totalWeight <= zoneSettings.getWeightTo()) {
                 actualZoneSettings = zoneSettings;
                 Log.i(TAG, "selectedZoneSettings=" + actualZoneSettings);
                 break;
@@ -997,16 +1007,29 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 totalPrice += actualZoneSettings.getPriceStep();
             }
         }
+
+        Log.i(TAG, "totalPrice without tax=" + totalPrice);
+
         if (selectedPackaging != null) {
             if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
                 totalPrice += selectedPackaging.getParcelFee();
             }
         }
+
+        Log.i(TAG, "total price + parcelFee " + selectedPackaging.getParcelFee() + "=" + totalPrice);
+
         if (selectedProvider != null) {
             totalPrice = totalPrice * (selectedProvider.getFuel() + 100) / 100;
-
         }
-        totalPrice *= 1.15;
+
+        Log.i(TAG, "total price + fuel " + selectedProvider.getFuel() + "=" + totalPrice);
+
+        if (selectedVat != null) {
+            totalPrice *= (selectedVat.getVat() + 100) / 100;
+        }
+
+        Log.i(TAG, "total price + 15% vat=" + totalPrice);
+
         long roundedPrice = 0;
 
         try {
@@ -1015,7 +1038,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         catch (Exception e) {
             Log.e(TAG, "roundTotalPrice(): ", e);
         }
-
         totalQuantityTextView.setText(String.valueOf(totalQuantity));
         totalWeightTextView.setText(String.valueOf(totalWeight));
         totalDimensionsTextView.setText(String.valueOf(totalVolume));

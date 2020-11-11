@@ -17,6 +17,7 @@ import uz.alexits.cargostar.api.params.UpdateCourierParams;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
@@ -147,6 +148,10 @@ public class RetrofitClient {
 
     public Response<List<ZoneSettings>> getZoneSettings(final int perPage) throws IOException {
         return apiService.getZoneSettings(perPage).execute();
+    }
+
+    public Response<Vat> getVat() throws IOException {
+        return apiService.getVat().execute();
     }
 
     /* Client */

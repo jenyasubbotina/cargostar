@@ -1,6 +1,5 @@
 package uz.alexits.cargostar.view.activity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -11,10 +10,8 @@ import androidx.work.Data;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -34,14 +31,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.api.RetrofitClient;
-import uz.alexits.cargostar.api.params.CreateInvoiceParams;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.calculation.Packaging;
@@ -52,7 +43,6 @@ import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.utils.Constants;
@@ -64,6 +54,7 @@ import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.adapter.CreateInvoiceAdapter;
 import uz.alexits.cargostar.view.adapter.CreateInvoiceData;
+import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import java.util.ArrayList;
@@ -103,7 +94,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
     /* content views */
     //transportation
-    private EditText transportationQrEditText;
+//    private EditText transportationQrEditText;
     private ImageView transportationQrImageView;
     private ImageView transportationQrResultImageView;
     private EditText instructionsEditText;
@@ -228,6 +219,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     /* view model */
     private CourierViewModel courierViewModel;
     private CreateInvoiceViewModel createInvoiceViewModel;
+    private RequestsViewModel requestsViewModel;
 
     /* selected items for calculations */
     private static Integer selectedPackageType = null;
@@ -238,80 +230,46 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     private List<Long> selectedPackagingIdList = null;
     private List<ZoneSettings> selectedZoneSettingsList = null;
 
-    private static final List<Consignment> consignmentList = new ArrayList<>();
+    private static List<Consignment> consignmentList;
     private double totalPrice = 0.0;
     private ProgressBar progressBar;
+
+    /* if invoice was created before */
+    private static long requestId;
+    private static long invoiceId;
+    private static long senderId;
 //    private static final List<Cargo> cargoList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_invoice);
-        context = this;
 
+        context = this;
         itemList = new ArrayList<>();
+        consignmentList = new ArrayList<>();
+
+        initUI();
 
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
+        requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
         createInvoiceViewModel = new ViewModelProvider(this).get(CreateInvoiceViewModel.class);
 
-        if (getIntent() != null) {
+        if (getIntent() != null && getIntent().getExtras() != null) {
             final int requestKey = getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1);
-            final long requestId = getIntent().getLongExtra(IntentConstants.INTENT_REQUEST_VALUE, -1);
-            final long requestOrParcel =  getIntent().getLongExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, -1);
+            final long requestOrParcel =  getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, -1);
+            requestId = getIntent().getLongExtra(Constants.KEY_REQUEST_ID, -1L);
+            invoiceId = getIntent().getLongExtra(Constants.KEY_INVOICE_ID, -1L);
+            senderId = getIntent().getLongExtra(Constants.KEY_SENDER_ID, -1L);
 
-            initUI();
+            Log.i(TAG, "getIntent(): " + getIntent().getExtras());
 
-//            /* header data view model */
-//            courierViewModel.selectRequest(requestId).observe(this, receipt -> {
-//                if (receipt != null) {
-//                    if (requestOrParcel == IntentConstants.INTENT_REQUEST) {
-//                        saveReceiptBtn.setVisibility(View.VISIBLE);
-//                        createReceiptBtn.setVisibility(View.VISIBLE);
-//                    }
-//                    else if (requestOrParcel == IntentConstants.INTENT_PARCEL) {
-//                        saveReceiptBtn.setVisibility(View.VISIBLE);
-//                        createReceiptBtn.setVisibility(View.INVISIBLE);
-//                    }
-                    //todo: handle payment status
-//                    if (receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID ||
-//                            receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_MORE ||
-//                            receipt.getReceipt().getPaymentStatus() == PaymentStatus.PAID_PARTIALLY) {
-//                        cashRadioBtn.setVisibility(View.INVISIBLE);
-//                        terminalRadioBtn.setVisibility(View.INVISIBLE);
-//                        paymentMethodRadioGroup.setVisibility(View.INVISIBLE);
-//                        firstCardRadioBtn.setVisibility(View.INVISIBLE);
-//                        secondCardRadioBtn.setVisibility(View.INVISIBLE);
-//                        firstCardImageView.setVisibility(View.INVISIBLE);
-//                        secondCardImageView.setVisibility(View.INVISIBLE);
-//                        firstCard.setVisibility(View.INVISIBLE);
-//                        secondCard.setVisibility(View.INVISIBLE);
-//                        expressRadioBtn.setVisibility(View.INVISIBLE);
-//                        economyRadioBtn.setVisibility(View.INVISIBLE);
-//                        tariffRadioGroup.setVisibility(View.INVISIBLE);
-//                    }
-//                    else if (receipt.getReceipt().getPaymentStatus() == PaymentStatus.WAITING_CHECK || receipt.getReceipt().getPaymentStatus() == PaymentStatus.WAITING_PAYMENT) {
-//                        cashRadioBtn.setVisibility(View.VISIBLE);
-//                        terminalRadioBtn.setVisibility(View.VISIBLE);
-//                        paymentMethodRadioGroup.setVisibility(View.VISIBLE);
-//                        firstCardRadioBtn.setVisibility(View.VISIBLE);
-//                        secondCardRadioBtn.setVisibility(View.VISIBLE);
-//                        firstCardImageView.setVisibility(View.VISIBLE);
-//                        secondCardImageView.setVisibility(View.VISIBLE);
-//                        firstCard.setVisibility(View.VISIBLE);
-//                        secondCard.setVisibility(View.VISIBLE);
-//                        expressRadioBtn.setVisibility(View.VISIBLE);
-//                        economyRadioBtn.setVisibility(View.VISIBLE);
-//                        tariffRadioGroup.setVisibility(View.VISIBLE);
-//                    }
-//                    currentReceipt = receipt;
-//                    updateUI();
-//                }
-//                if (requestKey != IntentConstants.REQUEST_EDIT_PARCEL) {
-//                    saveReceiptBtn.setVisibility(View.INVISIBLE);
-//                    createReceiptBtn.setVisibility(View.VISIBLE);
-//                }
-//            });
-
+            updateUI();
+        }
+        else {
+            requestId = -1L;
+            invoiceId = -1L;
+            senderId = -1L;
         }
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
             if (courier != null) {
@@ -332,9 +290,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         /* location data view model */
         createInvoiceViewModel.getCountryList().observe(this, countryList -> {
             adapter.setCountryList(countryList);
-//            adapter.notifyItemChanged(8);
-//            adapter.notifyItemChanged(17);
-//            adapter.notifyItemChanged(25);
         });
 
         createInvoiceViewModel.getSenderRegionList().observe(this, senderRegionList ->  {
@@ -457,7 +412,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
@@ -735,7 +690,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         totalDimensionsTextView = findViewById(R.id.total_dimensions_value_text_view);
         calculateBtn = findViewById(R.id.calculate_btn);
 
-        transportationQrEditText = findViewById(R.id.transportation_qr_edit_text);
+//        transportationQrEditText = findViewById(R.id.transportation_qr_edit_text);
         transportationQrImageView = findViewById(R.id.transportation_qr_image_view);
         transportationQrResultImageView = findViewById(R.id.transportation_qr_result_image_view);
         instructionsEditText = findViewById(R.id.instructions_edit_text);
@@ -783,7 +738,40 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         packagingTypeSpinner.setAdapter(packagingTypeArrayAdapter);
     }
 
-    private void updateUI(final Invoice invoice) {
+    private void updateUI() {
+        requestsViewModel.getProvider().observe(this, provider -> {
+            Log.i(TAG, "updateUI(): provider=" + provider);
+        });
+
+        requestsViewModel.getInvoice().observe(this, invoice -> {
+            Log.i(TAG, "updateUI(): invoice=" + invoice);
+        });
+
+        requestsViewModel.getSender().observe(this, sender -> {
+            Log.i(TAG, "updateUI(): sender=" + sender);
+        });
+
+        requestsViewModel.getSenderCountry();
+        requestsViewModel.getSenderRegion();
+        requestsViewModel.getSenderCity();
+
+        requestsViewModel.getRecipient().observe(this, recipient -> {
+            Log.i(TAG, "updateUI(): recipient=" + recipient);
+        });
+
+        requestsViewModel.getRecipientCountry();
+        requestsViewModel.getRecipientRegion();
+        requestsViewModel.getRecipientCity();
+
+        requestsViewModel.getPayer().observe(this, payer -> {
+            Log.i(TAG, "updateUI(): payer=" + payer);
+        });
+
+        requestsViewModel.getPayerCountry();
+        requestsViewModel.getPayerRegion();
+        requestsViewModel.getPayerCity();
+        requestsViewModel.getConsignmentList();
+
         //public data
 //        (1).firstValue = receipt != null ? String.valueOf(receipt.getInvoice().getCourierId()) : null;
 //        itemList.get(1).secondValue = receipt != null ? receipt.getInvoice().getOperatorId() : null;
@@ -1037,12 +1025,14 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         }
         ZoneSettings actualZoneSettings = null;
 
-        for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
+        if (selectedZoneSettingsList != null) {
+            for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
             if (totalWeight >= zoneSettings.getWeightFrom() && totalWeight < zoneSettings.getWeightTo()) {
                 actualZoneSettings = zoneSettings;
                 Log.i(TAG, "selectedZoneSettings=" + actualZoneSettings);
                 break;
             }
+        }
         }
         if (actualZoneSettings != null) {
             totalPrice = actualZoneSettings.getPriceFrom();
@@ -1189,7 +1179,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     }
 
     private void createInvoice() {
-        final String transportationQr = transportationQrEditText.getText().toString().trim();
+//        final String transportationQr = transportationQrEditText.getText().toString().trim();
         final String instructions = instructionsEditText.getText().toString().trim();
 
         courierId = String.valueOf(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID));
@@ -1362,11 +1352,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             Toast.makeText(context, "Для создания заявки укажите email плательщика", Toast.LENGTH_SHORT).show();
             return;
         }
-        //parcel data
-        if (TextUtils.isEmpty(transportationQr)) {
-            Toast.makeText(context, "Для создания заявки отсканируйте QR-код", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (consignmentList.isEmpty()) {
             Toast.makeText(context, "Для создания заявки добавьте хотя бы 1 груз", Toast.LENGTH_SHORT).show();
             return;
@@ -1420,10 +1405,12 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         final UUID sendInvoiceWorkUUID = SyncWorkRequest.sendInvoice(
                 context,
+                requestId,
+                invoiceId,
                 courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId) : -1L,
                 operatorId != null && !TextUtils.isEmpty(operatorId) ? Long.parseLong(operatorId) : -1L,
                 accountantId != null && !TextUtils.isEmpty(accountantId) ? Long.parseLong(accountantId) : -1L,
-                senderSignature,
+                !TextUtils.isEmpty(senderSignature) ? senderSignature : null,
                 senderEmail,
                 senderCargostar,
                 senderTnt,
@@ -1437,7 +1424,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 senderMiddleName,
                 senderLastName,
                 senderPhone,
-                recipientSignature,
+                !TextUtils.isEmpty(recipientSignature) ? recipientSignature : null,
                 recipientEmail,
                 recipientCargo,
                 recipientTnt,
@@ -1470,7 +1457,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 mfo,
                 oked,
                 registrationCode,
-                transportationQr,
                 instructions,
                 serviceProvider.getId(),
                 selectedPackaging.getId(),
@@ -1792,22 +1778,22 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == IntentConstants.REQUEST_SCAN_QR_PARCEL) {
-            if (resultCode == RESULT_CANCELED) {
-                transportationQrEditText.setBackgroundResource(R.drawable.edit_text_locked);
-                transportationQrResultImageView.setImageResource(R.drawable.ic_image_red);
-                transportationQrResultImageView.setVisibility(View.VISIBLE);
-                return;
-            }
-            if (resultCode == RESULT_OK && data != null) {
-                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
-                transportationQrEditText.setText(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
-                transportationQrEditText.setBackgroundResource(R.drawable.edit_text_active);
-                transportationQrResultImageView.setImageResource(R.drawable.ic_image_green);
-                transportationQrResultImageView.setVisibility(View.VISIBLE);
-            }
-            return;
-        }
+//        if (requestCode == IntentConstants.REQUEST_SCAN_QR_PARCEL) {
+//            if (resultCode == RESULT_CANCELED) {
+//                transportationQrEditText.setBackgroundResource(R.drawable.edit_text_locked);
+//                transportationQrResultImageView.setImageResource(R.drawable.ic_image_red);
+//                transportationQrResultImageView.setVisibility(View.VISIBLE);
+//                return;
+//            }
+//            if (resultCode == RESULT_OK && data != null) {
+//                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+//                transportationQrEditText.setText(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+//                transportationQrEditText.setBackgroundResource(R.drawable.edit_text_active);
+//                transportationQrResultImageView.setImageResource(R.drawable.ic_image_green);
+//                transportationQrResultImageView.setVisibility(View.VISIBLE);
+//            }
+//            return;
+//        }
         if (requestCode == IntentConstants.REQUEST_SCAN_QR_CARGO) {
             Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
             cargoQrEditText.setText(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));

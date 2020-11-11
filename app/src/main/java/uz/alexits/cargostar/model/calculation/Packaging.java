@@ -4,14 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
-@Entity(tableName = "packaging")
+@Entity(tableName = "packaging",
+        foreignKeys = {
+                @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {@Index(value = "provider_id")})
 public class Packaging {
     @SerializedName("id")
     @Expose

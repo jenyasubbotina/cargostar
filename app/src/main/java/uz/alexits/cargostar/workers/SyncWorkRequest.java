@@ -15,6 +15,8 @@ import androidx.work.WorkManager;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.actor.UpdateCourierWorker;
+import uz.alexits.cargostar.workers.calculation.FetchProvidersWorker;
+import uz.alexits.cargostar.workers.calculation.FetchVatWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZoneCountriesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZoneSettingsWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZonesWorker;
@@ -165,6 +167,12 @@ public class SyncWorkRequest {
                 .putInt(KEY_PER_PAGE, perPage)
                 .build();
 
+        final OneTimeWorkRequest fetchProviderListRequest = new OneTimeWorkRequest.Builder(FetchProvidersWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
         final OneTimeWorkRequest fetchPackagingRequest = new OneTimeWorkRequest.Builder(FetchPackagingWorker.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
@@ -195,12 +203,20 @@ public class SyncWorkRequest {
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
 
+        final OneTimeWorkRequest fetchVatRequest = new OneTimeWorkRequest.Builder(FetchVatWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
         WorkManager.getInstance(context)
-                .beginWith(fetchPackagingRequest)
+                .beginWith(fetchProviderListRequest)
+                .then(fetchPackagingRequest)
                 .then(fetchPackagingTypesRequest)
                 .then(fetchZonesRequest)
                 .then(fetchZoneCountriesRequest)
                 .then(fetchZoneSettingsRequest)
+                .then(fetchVatRequest)
                 .enqueue();
     }
 
@@ -512,6 +528,8 @@ public class SyncWorkRequest {
     }
 
     public static UUID sendInvoice(@NonNull final Context context,
+                                   final long requestId,
+                                   final long invoiceId,
                                    final long courierId,
                                    final long operatorId,
                                    final long accountantId,
@@ -562,7 +580,6 @@ public class SyncWorkRequest {
                                    final String mfo,
                                    final String oked,
                                    final String registrationCode,
-                                   final String transportationQr,
                                    final String instructions,
                                    final long providerId,
                                    final long packagingId,
@@ -580,6 +597,8 @@ public class SyncWorkRequest {
                 .build();
 
         final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_REQUEST_ID, requestId)
+                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
                 .putLong(Constants.KEY_COURIER_ID, courierId)
                 .putLong(Constants.KEY_OPERATOR_ID, operatorId)
                 .putLong(Constants.KEY_ACCOUNTANT_ID, accountantId)
@@ -635,7 +654,6 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_OKED, oked)
                 .putString(Constants.KEY_REGISTRATION_CODE, registrationCode)
 
-                .putString(Constants.KEY_TRANSPORTATION_QR, transportationQr)
                 .putString(Constants.KEY_INSTRUCTIONS, instructions)
 
                 .putLong(Constants.KEY_PROVIDER_ID, providerId)

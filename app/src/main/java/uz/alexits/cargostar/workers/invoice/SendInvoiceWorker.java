@@ -1,6 +1,7 @@
 package uz.alexits.cargostar.workers.invoice;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -26,9 +27,13 @@ import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.utils.ImageSerializer;
 
 public class SendInvoiceWorker extends Worker {
     private final Gson gson;
+
+    private final long requestId;
+    private final long invoiceId;
 
     private final long courierId;
     private final long operatorId;
@@ -101,6 +106,9 @@ public class SendInvoiceWorker extends Worker {
 
     public SendInvoiceWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
+        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
 
         this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
         this.operatorId = getInputData().getLong(Constants.KEY_OPERATOR_ID, -1L);
@@ -178,12 +186,20 @@ public class SendInvoiceWorker extends Worker {
     @Override
     public Result doWork() {
         final CreateInvoiceParams createInvoiceParams = new CreateInvoiceParams();
+
+        if (requestId != -1L) {
+            createInvoiceParams.setRequestId(requestId);
+        }
+        if (invoiceId != -1L) {
+            createInvoiceParams.setInvoiceId(invoiceId);
+        }
+
         createInvoiceParams.setCourierId(courierId);
         createInvoiceParams.setOperatorId(operatorId);
         createInvoiceParams.setAccountantId(accountantId);
 
         /* sender data */
-        createInvoiceParams.setSenderSignature(senderSignature);
+        createInvoiceParams.setSenderSignature(senderSignature != null && !TextUtils.isEmpty(senderSignature) ? ImageSerializer.fileToBase64(senderSignature) : null);
         createInvoiceParams.setSenderEmail(senderEmail);
         createInvoiceParams.setSenderCargostarAccountNumber(senderCargostar);
         createInvoiceParams.setSenderTntAccountNumber(senderTnt);
@@ -199,7 +215,7 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setSenderPhone(senderPhone);
 
         /* recipient data */
-        createInvoiceParams.setRecipientSignature(recipientSignature);
+        createInvoiceParams.setRecipientSignature(recipientSignature != null && !TextUtils.isEmpty(recipientSignature) ? ImageSerializer.fileToBase64(recipientSignature) : null);
         createInvoiceParams.setRecipientEmail(recipientEmail);
         createInvoiceParams.setRecipientCargostarAccountNumber(recipientCargo);
         createInvoiceParams.setRecipientTntAccountNumber(recipientTnt);

@@ -19,6 +19,7 @@ import uz.alexits.cargostar.database.dao.PackagingDao;
 import uz.alexits.cargostar.database.dao.TransportationDao;
 import uz.alexits.cargostar.database.dao.RequestDao;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
@@ -69,7 +70,8 @@ import java.util.List;
         Transportation.class,
         TransportationStatus.class,
         TransportationData.class,
-        Route.class}, version = 75, exportSchema = false)
+        Route.class,
+        Vat.class}, version = 77, exportSchema = false)
 @TypeConverters({ PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";
@@ -99,10 +101,6 @@ public abstract class LocalCache extends RoomDatabase {
                                 @Override
                                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     super.onCreate(db);
-
-                                    new Thread(() -> {
-                                        populateProviders(context);
-                                    }).start();
                                 }
 
                                 @Override
@@ -127,7 +125,7 @@ public abstract class LocalCache extends RoomDatabase {
                 "FedEx Express — американская грузовая авиакомпания, базирующаяся в городе Мемфис, штат Теннесси.",
                 "FedEx Express — американская грузовая авиакомпания, базирующаяся в городе Мемфис, штат Теннесси.",
                 "FedEx Express — американская грузовая авиакомпания, базирующаяся в городе Мемфис, штат Теннесси.",
-                -1,
+                12,
                 1,
                 new Date(1590523358),
                 new Date(1602670058));

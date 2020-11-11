@@ -15,15 +15,13 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
-public class FetchZoneSettingsWorker extends Worker {
-    private final int perPage;
-
-    public FetchZoneSettingsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
+public class FetchVatWorker extends Worker {
+    public FetchVatWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, -1);
     }
 
     @NonNull
@@ -32,26 +30,26 @@ public class FetchZoneSettingsWorker extends Worker {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
-            final Response<List<ZoneSettings>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneSettings(perPage);
+            final Response<Vat> response = RetrofitClient.getInstance(getApplicationContext()).getVat();
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllZoneSettings(): response=" + response.body());
-                    final List<ZoneSettings> zoneSettingsList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZoneSettingsList(zoneSettingsList);
+                    Log.i(TAG, "fetchVat(): response=" + response.body());
+                    final Vat vat = response.body();
+                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertVat(vat);
                     return ListenableWorker.Result.success();
                 }
             }
             else {
-                Log.e(TAG, "fetchAllZoneSettings(): " + response.errorBody());
+                Log.e(TAG, "fetchVat(): " + response.errorBody());
             }
             return ListenableWorker.Result.failure();
         }
         catch (IOException e) {
-            Log.e(TAG, "fetchAllZoneSettings(): ", e);
+            Log.e(TAG, "fetchVat(): ", e);
             return ListenableWorker.Result.failure();
         }
     }
 
-    private static final String TAG = FetchZoneSettingsWorker.class.toString();
+    private static final String TAG = FetchVatWorker.class.toString();
 }

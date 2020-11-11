@@ -11,6 +11,14 @@ import uz.alexits.cargostar.model.shipping.Consignment;
 
 public class CreateInvoiceParams {
     @Expose
+    @SerializedName("request_id")
+    private Long requestId;
+
+    @Expose
+    @SerializedName("invoice_id")
+    private Long invoiceId;
+
+    @Expose
     @SerializedName("courier_id")
     private long courierId;
 
@@ -265,6 +273,28 @@ public class CreateInvoiceParams {
     @SerializedName("payment_method")
     //1 -> cash & 2-> credit card
     private int paymentMethod;
+
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(final Long requestId) {
+        if (requestId == null) {
+            return;
+        }
+        this.requestId = requestId;
+    }
+
+    public Long getInvoiceId() {
+        return invoiceId;
+    }
+
+    public void setInvoiceId(final Long invoiceId) {
+        if (invoiceId == null) {
+            return;
+        }
+        this.invoiceId = invoiceId;
+    }
 
     public long getCourierId() {
         return courierId;

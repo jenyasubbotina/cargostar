@@ -37,7 +37,8 @@ public class FetchRequestsWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllRequests(): response=" + response.body());
                     final List<Request> publicRequestList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+
+                    LocalCache.getInstance(getApplicationContext()).requestDao().dropAndInsertRequestList(publicRequestList);
                     return ListenableWorker.Result.success();
                 }
             }

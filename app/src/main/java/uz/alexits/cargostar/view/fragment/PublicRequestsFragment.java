@@ -27,16 +27,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.JsonElement;
-
 import java.util.UUID;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.utils.Constants;
@@ -208,7 +202,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);

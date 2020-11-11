@@ -187,7 +187,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);

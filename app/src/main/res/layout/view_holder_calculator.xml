@@ -37,9 +37,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/index_text_view"
         app:layout_constraintBottom_toBottomOf="@id/index_text_view"
-        app:layout_constraintStart_toEndOf="@id/package_text_view"
         app:layout_constraintEnd_toStartOf="@id/dimensions_text_view"
-        android:layout_marginHorizontal="40dp"
+        android:layout_marginEnd="32dp"
         android:fontFamily="@font/geometria_medium"
         android:textSize="16sp"
         android:textColor="@color/colorBlack"
@@ -51,8 +50,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/index_text_view"
         app:layout_constraintBottom_toBottomOf="@id/index_text_view"
-        app:layout_constraintStart_toEndOf="@id/weight_text_view"
-        android:layout_marginStart="51dp"
+        app:layout_constraintEnd_toStartOf="@id/delete_item_image_view"
+        android:layout_marginEnd="48dp"
         android:fontFamily="@font/geometria_medium"
         android:textSize="16sp"
         android:textColor="@color/colorBlack"
@@ -60,7 +59,7 @@
 
     <TextView
         android:id="@+id/package_type_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/package_text_view"
         app:layout_constraintStart_toStartOf="@id/package_text_view"
@@ -72,7 +71,7 @@
 
     <TextView
         android:id="@+id/weight_value_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/package_type_text_view"
         app:layout_constraintStart_toStartOf="@id/weight_text_view"
@@ -83,7 +82,7 @@
 
     <TextView
         android:id="@+id/dimensions_value_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="@id/package_type_text_view"
         app:layout_constraintStart_toStartOf="@id/dimensions_text_view"

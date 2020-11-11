@@ -28,7 +28,6 @@ import android.widget.Toast;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
@@ -232,7 +231,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         requestsViewModel.setRecipientCountryId(recipientCountryId);
         requestsViewModel.setRecipientCityId(recipientCityId);
 
-        //todo: request data
         itemList.set(1, new InvoiceData(getString(R.string.invoice_id), invoiceId > 0 ? String.valueOf(invoiceId) : null, InvoiceData.TYPE_ITEM));
         itemList.set(2, new InvoiceData(getString(R.string.courier_id), courierId > 0 ? String.valueOf(courierId) : null, InvoiceData.TYPE_ITEM));
 //                itemList.set(3, new ParcelData(getString(R.string.operator_id), request.getOperatorId() > 0 ? String.valueOf(request.getOperatorId()) : null, ParcelData.TYPE_ITEM));
@@ -507,21 +505,17 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             payerDataList.set(6, new InvoiceData(getString(R.string.city), city != null ? city.getName() : null, InvoiceData.TYPE_ITEM));
         });
 
-        if (invoiceId <= 0) {
-            editParcelImageView.setVisibility(View.GONE);
-            editParcelImageView.setOnClickListener(null);
-        }
-        else {
-            editParcelImageView.setVisibility(View.VISIBLE);
-            editParcelImageView.setOnClickListener(v -> {
-                //todo: pass all data here
-                final Intent createParcelIntent = new Intent(getContext(), CreateInvoiceActivity.class);
-                createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_PARCEL);
-                createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
-                createParcelIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
-                startActivity(createParcelIntent);
-            });
-        }
+        editParcelImageView.setVisibility(View.VISIBLE);
+
+        editParcelImageView.setOnClickListener(v -> {
+            final Intent createInvoiceIntent = new Intent(getContext(), CreateInvoiceActivity.class);
+            createInvoiceIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_INVOICE);
+            createInvoiceIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
+            createInvoiceIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
+            createInvoiceIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
+            createInvoiceIntent.putExtra(Constants.KEY_SENDER_ID, senderId);
+            startActivity(createInvoiceIntent);
+        });
 
         requestsViewModel.getConsignmentList().observe(getViewLifecycleOwner(), consignmentList -> {
             Log.i(TAG, "consignmentList: " + consignmentList);
@@ -544,7 +538,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 forEachCargoList.add(new InvoiceData(getString(R.string.qr_code), consignment.getQr(), InvoiceData.TYPE_ITEM));
                 forEachCargoList.add(new InvoiceData(null, null, InvoiceData.TYPE_STROKE));
             }
-//            forEachCargoList.remove(forEachCargoList.size() - 1);
         });
 
         parcelSearchImageView.setOnClickListener(v -> {
@@ -582,7 +575,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);

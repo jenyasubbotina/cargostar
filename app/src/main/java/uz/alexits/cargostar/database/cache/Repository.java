@@ -11,6 +11,7 @@ import uz.alexits.cargostar.database.dao.PackagingDao;
 import uz.alexits.cargostar.database.dao.TransportationDao;
 import uz.alexits.cargostar.database.dao.RequestDao;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
@@ -217,6 +218,11 @@ public class Repository {
     /* zone countries */
     public LiveData<List<ZoneCountry>> selectAllZoneCountries() {
         return packagingDao.selectAllZoneCountries();
+    }
+
+    /* vat */
+    public LiveData<Vat> selectVat() {
+        return packagingDao.selectVat();
     }
 
     /* Courier queries */

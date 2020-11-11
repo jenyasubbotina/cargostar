@@ -9,12 +9,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
+import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.calculation.CountryIdProviderId;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.calculation.Provider;
 import uz.alexits.cargostar.model.calculation.TypePackageIdList;
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.City;
@@ -36,6 +38,8 @@ public class CalculatorViewModel extends AndroidViewModel {
 
     private final MutableLiveData<List<Long>> zoneIds;
 
+    private final LiveData<Vat> vat;
+
     public CalculatorViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
@@ -51,6 +55,8 @@ public class CalculatorViewModel extends AndroidViewModel {
         this.countryIdProviderId = new MutableLiveData<>();
 
         this.zoneIds = new MutableLiveData<>();
+
+        this.vat = repository.selectVat();
     }
 
     /* setters */
@@ -144,6 +150,10 @@ public class CalculatorViewModel extends AndroidViewModel {
     public LiveData<List<Zone>> getZoneList() {
         return Transformations.switchMap(countryIdProviderId, input ->
                 repository.selectZoneListByCountryIdAndProviderId(input.getCountryId(), input.getProviderId()));
+    }
+
+    public LiveData<Vat> getVat() {
+        return vat;
     }
 
     private static final String TAG = CalculatorViewModel.class.toString();

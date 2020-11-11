@@ -11,6 +11,7 @@ import uz.alexits.cargostar.api.params.UpdateCourierParams;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.City;
@@ -73,6 +74,10 @@ public interface ApiService {
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("zone-setting")
     Call<List<ZoneSettings>> getZoneSettings(@Query("per-page") final int perPage);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("setting")
+    Call<Vat> getVat();
 
     /*Requests requests */
     @Headers("Content-Type: application/json; charset=utf-8;")

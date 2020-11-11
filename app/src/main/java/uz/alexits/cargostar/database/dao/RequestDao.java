@@ -5,32 +5,43 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
+import retrofit2.http.DELETE;
 import uz.alexits.cargostar.model.shipping.Request;
 
 import java.util.List;
 
 @Dao
-public interface RequestDao {
+public abstract class RequestDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertRequest(final Request newRequest);
+    public abstract long insertRequest(final Request newRequest);
+
+    @Query("DELETE FROM request")
+    public abstract void dropRequests();
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    long[] insertRequests(final List<Request> newRequestList);
+    public abstract long[] insertRequests(final List<Request> newRequestList);
+
+    @Transaction
+    public long[] dropAndInsertRequestList(final List<Request> newRequestList) {
+        dropRequests();
+        return insertRequests(newRequestList);
+    }
 
     @Query("SELECT * FROM request WHERE courier_id IS NULL ORDER BY id DESC")
-    LiveData<List<Request>> selectPublicRequests();
+    public abstract LiveData<List<Request>> selectPublicRequests();
 
     @Query("SELECT * FROM request WHERE courier_id == :courierId ORDER BY id DESC")
-    LiveData<List<Request>> selectRequestsByCourierId(final long courierId);
+    public abstract LiveData<List<Request>> selectRequestsByCourierId(final long courierId);
 
     @Query("SELECT * FROM request WHERE id == :requestId")
-    LiveData<Request> selectRequestById(final long requestId);
+    public abstract LiveData<Request> selectRequestById(final long requestId);
 
     @Update
-    int updateRequest(final Request updatedRequest);
+    public abstract int updateRequest(final Request updatedRequest);
 
     @Query("UPDATE request SET is_new = :isNew WHERE id == :requestId")
-    void readNewRequest(final long requestId, final boolean isNew);
+    public abstract void readNewRequest(final long requestId, final boolean isNew);
 }

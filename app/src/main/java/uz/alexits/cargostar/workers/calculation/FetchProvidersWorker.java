@@ -40,12 +40,12 @@ public class FetchProvidersWorker extends Worker {
                 }
             }
             else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
+                Log.e(TAG, "fetchAllProviders(): " + response.errorBody());
             }
             return ListenableWorker.Result.failure();
         }
         catch (IOException e) {
-            Log.e(TAG, "doWork(): ", e);
+            Log.e(TAG, "fetchAllProviders(): ", e);
             return ListenableWorker.Result.failure();
         }
     }

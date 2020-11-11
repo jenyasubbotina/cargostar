@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.work.Data;
 import androidx.work.WorkInfo;
@@ -35,7 +34,6 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.utils.ImageSerializer;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.utils.UiUtils;
@@ -429,7 +427,7 @@ public class ProfileFragment extends Fragment {
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);

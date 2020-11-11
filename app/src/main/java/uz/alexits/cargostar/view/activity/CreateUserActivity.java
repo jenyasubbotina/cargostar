@@ -37,7 +37,6 @@ import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.utils.ImageSerializer;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.viewmodel.CustomerViewModel;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
@@ -64,7 +63,6 @@ public class CreateUserActivity extends AppCompatActivity {
     private EditText passwordEditText;
     private EditText emailEditText;
     //client data
-    private EditText cargostarAccountNumberEditText;
     private EditText tntAccountNumberEditText;
     private EditText fedexAccountNumberEditText;
     private EditText firstNameEditText;
@@ -217,7 +215,7 @@ public class CreateUserActivity extends AppCompatActivity {
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
@@ -272,7 +270,6 @@ public class CreateUserActivity extends AppCompatActivity {
             final String lastName = lastNameEditText.getText().toString();
             final String phone = phoneEditText.getText().toString();
 
-            final String cargostarAccountNumber = cargostarAccountNumberEditText.getText().toString();
             final String tntAccountNumber = tntAccountNumberEditText.getText().toString();
             final String fedexAccountNumber = fedexAccountNumberEditText.getText().toString();
 
@@ -328,10 +325,6 @@ public class CreateUserActivity extends AppCompatActivity {
                 Toast.makeText(context, "Адрес не указан", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (TextUtils.isEmpty(cargostarAccountNumber)) {
-                Toast.makeText(context, "Укажите номер аккаунта CargoStar", Toast.LENGTH_SHORT).show();
-                return;
-            }
             if (TextUtils.isEmpty(passportSerial) && TextUtils.isEmpty(inn) && TextUtils.isEmpty(company)) {
                 Toast.makeText(context, "Заполните физ. или юр. данные", Toast.LENGTH_SHORT).show();
                 return;
@@ -356,10 +349,6 @@ public class CreateUserActivity extends AppCompatActivity {
             }
             if (!Regex.isPhoneNumber(phone)) {
                 Toast.makeText(context, "Номер телефона указан неверно", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (!Regex.isAccountNumber(cargostarAccountNumber)) {
-                Toast.makeText(context, "Номер аккаунта CargoStar указан неверно", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!TextUtils.isEmpty(tntAccountNumber)) {
@@ -425,7 +414,7 @@ public class CreateUserActivity extends AppCompatActivity {
                     this,
                     email,
                     password,
-                    cargostarAccountNumber,
+                    null,
                     tntAccountNumber,
                     fedexAccountNumber,
                     firstName,
@@ -529,7 +518,6 @@ public class CreateUserActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password_edit_text);
         emailEditText = findViewById(R.id.email_edit_text);
         //client data
-        cargostarAccountNumberEditText = findViewById(R.id.cargostar_account_number_edit_text);
         tntAccountNumberEditText = findViewById(R.id.tnt_account_number_edit_text);
         fedexAccountNumberEditText = findViewById(R.id.fedex_account_number_edit_text);
         firstNameEditText = findViewById(R.id.first_name_edit_text);
@@ -600,10 +588,6 @@ public class CreateUserActivity extends AppCompatActivity {
 
         emailEditText.setOnFocusChangeListener((v, hasFocus) -> {
             UiUtils.onFocusChanged(emailEditText, hasFocus);
-        });
-
-        cargostarAccountNumberEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(cargostarAccountNumberEditText, hasFocus);
         });
 
         tntAccountNumberEditText.setOnFocusChangeListener((v, hasFocus) -> {

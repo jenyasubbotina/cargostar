@@ -2,10 +2,12 @@ package uz.alexits.cargostar.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Index;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneCountry;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
@@ -120,4 +122,14 @@ public interface PackagingDao {
 
 //    @Query("SELECT * FROM zoneCountry WHERE country_id == :countryId AND zone_id IS NOT NULL")
 //    LiveData<List<ZoneCountry>> selectZoneCountryByCountryId(final long countryId);
+
+    /* vat */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long[] insertVat(final List<Vat> vat);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long insertVat(final Vat vat);
+
+    @Query("SELECT * FROM vat LIMIT 1")
+    LiveData<Vat> selectVat();
 }

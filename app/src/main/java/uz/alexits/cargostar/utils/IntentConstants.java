@@ -6,8 +6,8 @@ public class IntentConstants {
     public static final int REQUEST_UPLOAD_DOCUMENT = 0x02;
     public static final int REQUEST_SENDER_SIGNATURE = 0x03;
     public static final int REQUEST_RECIPIENT_SIGNATURE = 0x04;
-    public static final int REQUEST_FIND_PARCEL = 0x06;
-    public static final int REQUEST_EDIT_PARCEL = 0x07;
+    public static final int REQUEST_FIND_INVOICE = 0x06;
+    public static final int REQUEST_EDIT_INVOICE = 0x07;
     public static final int REQUEST_FIND_CUSTOMER = 0x08;
     public static final int REQUEST_PUBLIC_REQUESTS = 0x09;
     public static final int REQUEST_MY_REQUESTS = 0x10;

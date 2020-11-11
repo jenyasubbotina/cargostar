@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
                 Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_myBidsFragment);
                 return;
             }
-            if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_FIND_PARCEL) {
+            if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_FIND_INVOICE) {
                 final MainFragmentDirections.ActionMainFragmentToParcelDataFragment action =
                         MainFragmentDirections.actionMainFragmentToParcelDataFragment();
                 action.setRequestId(getIntent().getLongExtra(Constants.KEY_REQUEST_ID, -1L));
