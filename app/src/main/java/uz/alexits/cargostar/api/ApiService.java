@@ -4,6 +4,7 @@ import retrofit2.http.Body;
 import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceParams;
+import uz.alexits.cargostar.api.params.CreateInvoiceResponse;
 import uz.alexits.cargostar.api.params.SignInParams;
 import uz.alexits.cargostar.api.params.TransportationStatusParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
@@ -124,7 +125,7 @@ public interface ApiService {
     /* Invoice */
     @Headers("Content-type: application/json; charset=utf-8;")
     @POST("invoice/full-create")
-    Call<JsonElement> createInvoice(@Body CreateInvoiceParams createInvoiceParams);
+    Call<CreateInvoiceResponse> createInvoice(@Body CreateInvoiceParams createInvoiceParams);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("invoice/view")

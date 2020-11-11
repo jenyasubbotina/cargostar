@@ -30,11 +30,6 @@ public class Consignment {
     private final Long requestId;
 
     @Expose
-    @SerializedName("packaging_id")
-    @ColumnInfo(name = "packaging_id")
-    private final Long packagingId;
-
-    @Expose
     @SerializedName("packaging-type")
     @ColumnInfo(name = "packaging_type")
     private final String packagingType;
@@ -69,18 +64,12 @@ public class Consignment {
     @ColumnInfo(name = "dimensions")
     private final double dimensions;
 
-    @Expose
-    @SerializedName("cost")
-    @ColumnInfo(name = "cost")
-    private final long cost;
-
     @SerializedName("qr")
     @ColumnInfo(name = "qr")
     private String qr;
 
     public Consignment(final long id,
                        final Long requestId,
-                       final Long packagingId,
                        final String packagingType,
                        final String description,
                        final double length,
@@ -88,11 +77,9 @@ public class Consignment {
                        final double height,
                        final double weight,
                        final double dimensions,
-                       final long cost,
                        final String qr) {
         this.id = id;
         this.requestId = requestId;
-        this.packagingId = packagingId;
         this.packagingType = packagingType;
         this.description = description;
         this.length = length;
@@ -100,7 +87,6 @@ public class Consignment {
         this.height = height;
         this.weight = weight;
         this.dimensions = dimensions;
-        this.cost = cost;
         this.qr = qr;
     }
 
@@ -110,10 +96,6 @@ public class Consignment {
 
     public Long getRequestId() {
         return requestId;
-    }
-
-    public Long getPackagingId() {
-        return packagingId;
     }
 
     public String getPackagingType() {
@@ -144,10 +126,6 @@ public class Consignment {
         return dimensions;
     }
 
-    public long getCost() {
-        return cost;
-    }
-
     public String getQr() {
         return qr;
     }
@@ -159,10 +137,9 @@ public class Consignment {
     @NonNull
     @Override
     public String toString() {
-        return "Cargo{" +
+        return "Consignment{" +
                 "id=" + id +
                 ", requestId=" + requestId +
-                ", packagingId=" + packagingId +
                 ", packagingType='" + packagingType + '\'' +
                 ", description='" + description + '\'' +
                 ", length=" + length +
@@ -170,7 +147,6 @@ public class Consignment {
                 ", height=" + height +
                 ", weight=" + weight +
                 ", dimensions=" + dimensions +
-                ", cost=" + cost +
                 ", qr='" + qr + '\'' +
                 '}';
     }

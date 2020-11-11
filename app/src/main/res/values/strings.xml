@@ -197,4 +197,6 @@
     <string name="request_has_changed">Заявка была изменена</string>
     <string name="new_transportation">Новая перевозка</string>
     <string name="transportation_status_changed">Статус перевозки был изменен</string>
+
+    <string name="rounded_total_price">%1$d сум</string>
 </resources>

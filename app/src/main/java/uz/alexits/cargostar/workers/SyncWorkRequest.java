@@ -18,7 +18,7 @@ import uz.alexits.cargostar.workers.actor.UpdateCourierWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZoneCountriesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZoneSettingsWorker;
 import uz.alexits.cargostar.workers.calculation.FetchZonesWorker;
-import uz.alexits.cargostar.workers.actor.CreateUserWorker;
+import uz.alexits.cargostar.workers.actor.InsertCustomerWorker;
 import uz.alexits.cargostar.workers.invoice.FetchCargoListWorker;
 import uz.alexits.cargostar.workers.invoice.FetchInvoiceListWorker;
 import uz.alexits.cargostar.workers.invoice.FetchInvoiceWorker;
@@ -27,6 +27,7 @@ import uz.alexits.cargostar.workers.invoice.FetchRecipientDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchSenderDataWorker;
 import uz.alexits.cargostar.workers.invoice.GetInvoiceHeaderWorker;
 import uz.alexits.cargostar.workers.invoice.InsertInvoiceWorker;
+import uz.alexits.cargostar.workers.invoice.SendInvoiceWorker;
 import uz.alexits.cargostar.workers.location.FetchBranchesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingTypesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingWorker;
@@ -41,6 +42,7 @@ import uz.alexits.cargostar.workers.transportation.FetchTransportationDataWorker
 import uz.alexits.cargostar.workers.transportation.FetchTransportationRouteWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationStatusesWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationsWorker;
+import uz.alexits.cargostar.workers.transportation.SearchTransportationWorker;
 import uz.alexits.cargostar.workers.transportation.UpdateTransportationStatusWorker;
 
 import java.util.UUID;
@@ -397,7 +399,7 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_SIGNATURE, signatureUrl)
                 .build();
 
-        final OneTimeWorkRequest createUserWorker = new OneTimeWorkRequest.Builder(CreateUserWorker.class)
+        final OneTimeWorkRequest createUserWorker = new OneTimeWorkRequest.Builder(InsertCustomerWorker.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
@@ -509,6 +511,153 @@ public class SyncWorkRequest {
         return insertInvoiceRequest.getId();
     }
 
+    public static UUID sendInvoice(@NonNull final Context context,
+                                   final long courierId,
+                                   final long operatorId,
+                                   final long accountantId,
+                                   final String senderSignature,
+                                   final String senderEmail,
+                                   final String senderCargostar,
+                                   final String senderTnt,
+                                   final String senderFedex,
+                                   final long senderCountryId,
+                                   final long senderRegionId,
+                                   final long senderCityId,
+                                   final String senderAddress,
+                                   final String senderZip,
+                                   final String senderFirstName,
+                                   final String senderMiddleName,
+                                   final String senderLastName,
+                                   final String senderPhone,
+                                   final String recipientSignature,
+                                   final String recipientEmail,
+                                   final String recipientCargo,
+                                   final String recipientTnt,
+                                   final String recipientFedex,
+                                   final long recipientCountryId,
+                                   final long recipientRegionId,
+                                   final long recipientCityId,
+                                   final String recipientAddress,
+                                   final String recipientZip,
+                                   final String recipientFirstName,
+                                   final String recipientMiddleName,
+                                   final String recipientLastName,
+                                   final String recipientPhone,
+                                   final String payerEmail,
+                                   final long payerCountryId,
+                                   final long payerRegionId,
+                                   final long payerCityId,
+                                   final String payerAddress,
+                                   final String payerZip,
+                                   final String payerFirstName,
+                                   final String payerMiddleName,
+                                   final String payerLastName,
+                                   final String payerPhone,
+                                   final String payerCargostar,
+                                   final String payerTnt,
+                                   final String payerFedex,
+                                   final double discount,
+                                   final String checkingAccount,
+                                   final String bank,
+                                   final String mfo,
+                                   final String oked,
+                                   final String registrationCode,
+                                   final String transportationQr,
+                                   final String instructions,
+                                   final long providerId,
+                                   final long packagingId,
+                                   final int deliveryType,
+                                   final int paymentMethod,
+                                   final double totalWeight,
+                                   final double totalVolume,
+                                   final double totalPrice,
+                                   final String serializedConsignmentList) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_COURIER_ID, courierId)
+                .putLong(Constants.KEY_OPERATOR_ID, operatorId)
+                .putLong(Constants.KEY_ACCOUNTANT_ID, accountantId)
+
+                .putString(Constants.KEY_SENDER_SIGNATURE, senderSignature)
+                .putString(Constants.KEY_SENDER_EMAIL, senderEmail)
+                .putString(Constants.KEY_SENDER_CARGOSTAR, senderCargostar)
+                .putString(Constants.KEY_SENDER_TNT, senderTnt)
+                .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
+                .putLong(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
+                .putLong(Constants.KEY_SENDER_REGION_ID, senderRegionId)
+                .putLong(Constants.KEY_SENDER_CITY_ID, senderCityId)
+                .putString(Constants.KEY_SENDER_ADDRESS, senderAddress)
+                .putString(Constants.KEY_SENDER_ZIP, senderZip)
+                .putString(Constants.KEY_SENDER_FIRST_NAME, senderFirstName)
+                .putString(Constants.KEY_SENDER_MIDDLE_NAME, senderMiddleName)
+                .putString(Constants.KEY_SENDER_LAST_NAME, senderLastName)
+                .putString(Constants.KEY_SENDER_PHONE, senderPhone)
+
+                .putString(Constants.KEY_RECIPIENT_SIGNATURE, recipientSignature)
+                .putString(Constants.KEY_RECIPIENT_EMAIL, recipientEmail)
+                .putString(Constants.KEY_RECIPIENT_CARGOSTAR, recipientCargo)
+                .putString(Constants.KEY_RECIPIENT_TNT, recipientTnt)
+                .putString(Constants.KEY_RECIPIENT_FEDEX, recipientFedex)
+                .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
+                .putLong(Constants.KEY_RECIPIENT_REGION_ID, recipientRegionId)
+                .putLong(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId)
+                .putString(Constants.KEY_RECIPIENT_ADDRESS, recipientAddress)
+                .putString(Constants.RECIPIENT_ZIP, recipientZip)
+                .putString(Constants.KEY_RECIPIENT_FIRST_NAME, recipientFirstName)
+                .putString(Constants.KEY_RECIPIENT_MIDDLE_NAME, recipientMiddleName)
+                .putString(Constants.KEY_RECIPIENT_LAST_NAME, recipientLastName)
+                .putString(Constants.KEY_RECIPIENT_PHONE, recipientPhone)
+
+                .putString(Constants.KEY_PAYER_EMAIL, payerEmail)
+                .putLong(Constants.KEY_PAYER_COUNTRY_ID, payerCountryId)
+                .putLong(Constants.KEY_PAYER_REGION_ID, payerRegionId)
+                .putLong(Constants.KEY_PAYER_CITY_ID, payerCityId)
+                .putString(Constants.KEY_PAYER_ADDRESS, payerAddress)
+                .putString(Constants.KEY_PAYER_ZIP, payerZip)
+                .putString(Constants.KEY_PAYER_FIRST_NAME, payerFirstName)
+                .putString(Constants.KEY_PAYER_MIDDLE_NAME, payerMiddleName)
+                .putString(Constants.KEY_PAYER_LAST_NAME, payerLastName)
+                .putString(Constants.KEY_PAYER_PHONE, payerPhone)
+                .putString(Constants.KEY_PAYER_CARGOSTAR, payerCargostar)
+                .putString(Constants.KEY_PAYER_TNT, payerTnt)
+                .putString(Constants.KEY_PAYER_FEDEX, payerFedex)
+                .putDouble(Constants.KEY_DISCOUNT, discount)
+
+                .putString(Constants.KEY_CHECKING_ACCOUNT, checkingAccount)
+                .putString(Constants.KEY_BANK, bank)
+                .putString(Constants.KEY_MFO, mfo)
+                .putString(Constants.KEY_OKED, oked)
+                .putString(Constants.KEY_REGISTRATION_CODE, registrationCode)
+
+                .putString(Constants.KEY_TRANSPORTATION_QR, transportationQr)
+                .putString(Constants.KEY_INSTRUCTIONS, instructions)
+
+                .putLong(Constants.KEY_PROVIDER_ID, providerId)
+                .putLong(Constants.KEY_PACKAGING_ID, packagingId)
+                .putInt(Constants.KEY_DELIVERY_TYPE, deliveryType)
+                .putInt(Constants.KEY_PAYMENT_METHOD, paymentMethod)
+                .putDouble(Constants.KEY_TOTAL_WEIGHT, totalWeight)
+                .putDouble(Constants.KEY_TOTAL_VOLUME, totalVolume)
+                .putDouble(Constants.KEY_TOTAL_PRICE, totalPrice)
+
+                .putString(Constants.KEY_SERIALIZED_CONSIGNMENT_LIST, serializedConsignmentList)
+                .build();
+
+        final OneTimeWorkRequest sendInvoiceRequest = new OneTimeWorkRequest.Builder(SendInvoiceWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context).enqueue(sendInvoiceRequest);
+        return sendInvoiceRequest.getId();
+    }
+
     public static void fetchRequestsAndInvoices(@NonNull final Context context) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -535,7 +684,7 @@ public class SyncWorkRequest {
         WorkManager.getInstance(context).beginWith(fetchRequestsRequest).then(fetchInvoicesRequest).enqueue();
     }
 
-    public static UUID getInvoiceById(@NonNull final Context context, final long invoiceId) {
+    public static UUID searchInvoice(@NonNull final Context context, final long invoiceId) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
                 .setRequiresCharging(false)
@@ -548,6 +697,28 @@ public class SyncWorkRequest {
                 .build();
 
         final OneTimeWorkRequest getInvoiceRequest = new OneTimeWorkRequest.Builder(GetInvoiceHeaderWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context).enqueue(getInvoiceRequest);
+
+        return getInvoiceRequest.getId();
+    }
+
+    public static UUID searchTransportation(@NonNull final Context context, final String transportationQr) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putString(Constants.KEY_TRANSPORTATION_QR, transportationQr)
+                .build();
+
+        final OneTimeWorkRequest getInvoiceRequest = new OneTimeWorkRequest.Builder(SearchTransportationWorker.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)

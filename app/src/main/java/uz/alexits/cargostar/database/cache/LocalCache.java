@@ -69,7 +69,7 @@ import java.util.List;
         Transportation.class,
         TransportationStatus.class,
         TransportationData.class,
-        Route.class}, version = 73, exportSchema = false)
+        Route.class}, version = 75, exportSchema = false)
 @TypeConverters({ PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";

@@ -19,9 +19,9 @@ public class CreateInvoiceButtonViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindBtn(final CreateInvoiceCallback callback) {
-        button.setOnClickListener(v -> {
-            callback.onAddBtnClicked();
-        });
+//        button.setOnClickListener(v -> {
+//            callback.onAddBtnClicked();
+//        });
     }
 
     public void unbindBtn() {

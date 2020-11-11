@@ -96,4 +96,51 @@ public class Constants {
     public static final String KEY_PUBLIC_REQUESTS = "public_requests";
     public static final String KEY_MY_REQUESTS = "my_requests";
     public static final String KEY_CURRENT_TRANSPORTATION = "current_transportations";
+    public static final String KEY_OPERATOR_ID = "operator_id";
+    public static final String KEY_ACCOUNTANT_ID = "accountant_id";
+
+    public static final String KEY_SENDER_SIGNATURE = "sender_signature";
+    public static final String KEY_SENDER_EMAIL = "sender_email";
+    public static final String KEY_SENDER_CARGOSTAR = "sender_cargostar";
+    public static final String KEY_SENDER_TNT = "sender_tnt";
+    public static final String KEY_SENDER_FEDEX = "sender_fedex";
+    public static final String KEY_SENDER_ZIP = "sender_zip";
+
+    public static final String KEY_RECIPIENT_SIGNATURE = "recipient_signature";
+    public static final String KEY_RECIPIENT_EMAIL = "recipient_email";
+    public static final String KEY_RECIPIENT_CARGOSTAR = "recipient_cargostar";
+    public static final String KEY_RECIPIENT_TNT = "recipient_tnt";
+    public static final String KEY_RECIPIENT_FEDEX = "recipient_fedex";
+    public static final String KEY_RECIPIENT_REGION_ID = "recipient_region_id";
+    public static final String KEY_RECIPIENT_ADDRESS = "recipient_address";
+    public static final String RECIPIENT_ZIP = "recipient_zip";
+    public static final String KEY_RECIPIENT_FIRST_NAME = "recipient_first_name";
+    public static final String KEY_RECIPIENT_MIDDLE_NAME = "recipient_middle_name";
+    public static final String KEY_RECIPIENT_LAST_NAME = "recipient_last_name";
+    public static final String KEY_RECIPIENT_PHONE = "recipient_phone";
+
+    public static final String KEY_PAYER_EMAIL = "payer_email";
+    public static final String KEY_PAYER_CARGOSTAR = "payer_cargostar";
+    public static final String KEY_PAYER_TNT = "payer_tnt";
+    public static final String KEY_PAYER_FEDEX = "payer_fedex";
+    public static final String KEY_PAYER_COUNTRY_ID = "payer_country_id";
+    public static final String KEY_PAYER_REGION_ID = "payer_region_id";
+    public static final String KEY_PAYER_CITY_ID = "payer_city_id";
+    public static final String KEY_PAYER_ADDRESS = "payer_address";
+    public static final String KEY_PAYER_ZIP = "payer_zip";
+    public static final String KEY_PAYER_FIRST_NAME = "payer_first_name";
+    public static final String KEY_PAYER_MIDDLE_NAME = "payer_middle_name";
+    public static final String KEY_PAYER_LAST_NAME = "payer_last_name";
+    public static final String KEY_PAYER_PHONE = "payer_phone";
+
+    public static final String KEY_REGISTRATION_CODE = "registration_code";
+    public static final String KEY_TRANSPORTATION_QR = "transportation_qr";
+    public static final String KEY_PACKAGING_ID = "packaging_id";
+    public static final String KEY_PAYMENT_METHOD = "payment_method";
+    public static final String KEY_DELIVERY_TYPE = "delivery_type";
+    public static final String KEY_TOTAL_WEIGHT = "total_weight";
+    public static final String KEY_TOTAL_VOLUME = "total_volume";
+    public static final String KEY_TOTAL_PRICE = "total_price";
+    public static final String KEY_SERIALIZED_CONSIGNMENT_LIST = "serialized_consignment_list";
+
 }

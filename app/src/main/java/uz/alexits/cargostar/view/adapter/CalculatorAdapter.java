@@ -17,21 +17,21 @@ import java.util.List;
 
 public class CalculatorAdapter extends RecyclerView.Adapter<CalcItemViewHolder> {
     private final Context context;
-    private List<Cargo> itemList;
+    private List<Consignment> itemList;
     private final CreateInvoiceCallback callback;
 
-    public CalculatorAdapter(final Context context, final List<Cargo> itemList, final CreateInvoiceCallback callback) {
+    public CalculatorAdapter(final Context context, final List<Consignment> itemList, final CreateInvoiceCallback callback) {
         this.context = context;
         this.itemList = itemList;
         this.callback = callback;
     }
 
-    public void setItemList(final List<Cargo> itemList) {
+    public void setItemList(final List<Consignment> itemList) {
         this.itemList = itemList;
         notifyDataSetChanged();
     }
 
-    public List<Cargo> getItemList() {
+    public List<Consignment> getItemList() {
         return itemList;
     }
 
@@ -44,7 +44,7 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalcItemViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull CalcItemViewHolder holder, int position) {
-        final Cargo currentItem = itemList.get(position);
+        final Consignment currentItem = itemList.get(position);
 
         if (currentItem != null) {
             final String index = (position + 1) + ".";

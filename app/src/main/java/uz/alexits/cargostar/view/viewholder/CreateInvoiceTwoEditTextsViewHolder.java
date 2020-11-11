@@ -16,7 +16,8 @@ public class CreateInvoiceTwoEditTextsViewHolder extends RecyclerView.ViewHolder
     public EditText firstEditText;
     public EditText secondEditText;
 
-    private TextWatcher textWatcher;
+    private TextWatcher firstTextWatcher;
+    private TextWatcher secondTextWatcher;
 
     public CreateInvoiceTwoEditTextsViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -27,7 +28,7 @@ public class CreateInvoiceTwoEditTextsViewHolder extends RecyclerView.ViewHolder
     }
 
     public void bindWatchers(final int position, final CreateInvoiceCallback callback) {
-        textWatcher = new TextWatcher() {
+        firstTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -43,12 +44,28 @@ public class CreateInvoiceTwoEditTextsViewHolder extends RecyclerView.ViewHolder
                 callback.afterFirstEditTextChanged(position, editable);
             }
         };
-        firstEditText.addTextChangedListener(textWatcher);
-        secondEditText.addTextChangedListener(textWatcher);
+        secondTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                callback.afterSecondEditTextChanged(position, s);
+            }
+        };
+        firstEditText.addTextChangedListener(firstTextWatcher);
+        secondEditText.addTextChangedListener(secondTextWatcher);
     }
 
     public void unbindWatchers() {
-        firstEditText.removeTextChangedListener(textWatcher);
-        secondEditText.removeTextChangedListener(textWatcher);
+        firstEditText.removeTextChangedListener(firstTextWatcher);
+        secondEditText.removeTextChangedListener(firstTextWatcher);
     }
 }

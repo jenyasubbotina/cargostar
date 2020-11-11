@@ -18,7 +18,7 @@ import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.ImageSerializer;
 
-public class CreateUserWorker extends Worker {
+public class InsertCustomerWorker extends Worker {
     private final String email;
     private final String password;
     private final String cargostarAccountNumber;
@@ -47,7 +47,7 @@ public class CreateUserWorker extends Worker {
     private final String photoUrl;
     private final String signatureUrl;
 
-    public CreateUserWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public InsertCustomerWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.email = getInputData().getString(Constants.KEY_EMAIL);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
@@ -161,5 +161,5 @@ public class CreateUserWorker extends Worker {
         return Result.failure();
     }
 
-    private static final String TAG = CreateUserWorker.class.toString();
+    private static final String TAG = InsertCustomerWorker.class.toString();
 }

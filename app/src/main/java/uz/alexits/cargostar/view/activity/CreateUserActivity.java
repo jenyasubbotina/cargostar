@@ -3,6 +3,7 @@ package uz.alexits.cargostar.view.activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.work.Data;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
@@ -35,6 +36,7 @@ import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.ImageSerializer;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.viewmodel.CustomerViewModel;
@@ -89,7 +91,6 @@ public class CreateUserActivity extends AppCompatActivity {
 
     private EditText zipEditText;
     private EditText photoEditText;
-    private EditText discountEditText;
     private EditText signatureEditText;
     //payment data
     private TextView passportSerialTextView;
@@ -182,10 +183,64 @@ public class CreateUserActivity extends AppCompatActivity {
 
         //listeners
         parcelSearchImageView.setOnClickListener(v -> {
-            final String parcelIdStr = parcelSearchEditText.getText().toString();
-            if (TextUtils.isEmpty(parcelIdStr)) {
+            final String invoiceIdStr = parcelSearchEditText.getText().toString();
+
+            if (TextUtils.isEmpty(invoiceIdStr)) {
                 Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
                 return;
+            }
+            if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
+                Toast.makeText(context, "Неверный формат", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                final UUID searchInvoiceUUID = SyncWorkRequest.searchInvoice(context, Long.parseLong(invoiceIdStr));
+                WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(this, workInfo -> {
+                    if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                        Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
+
+                        parcelSearchEditText.setEnabled(true);
+
+                        return;
+                    }
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        final Data outputData = workInfo.getOutputData();
+
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+
+                        final Intent mainIntent = new Intent(context, MainActivity.class);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
+                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
+                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
+                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
+                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, senderCityId);
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId);
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId);
+                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
+                        startActivity(mainIntent);
+
+                        parcelSearchEditText.setEnabled(true);
+
+                        return;
+                    }
+                    parcelSearchEditText.setEnabled(false);
+                });
+            }
+            catch (Exception e) {
+                Log.e(TAG, "getInvoiceById(): ", e);
+                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
         //listeners
@@ -230,7 +285,6 @@ public class CreateUserActivity extends AppCompatActivity {
             final String geolocation = geolocationEditText.getText().toString();
 
             final String photo = photoEditText.getText().toString();
-            final String discount = discountEditText.getText().toString();
             final String signature = signatureEditText.getText().toString();
 
             //PassportData
@@ -326,21 +380,6 @@ public class CreateUserActivity extends AppCompatActivity {
                 return;
             }
             }
-
-            double discountDouble = 0;
-
-            if (!TextUtils.isEmpty(discount)) {
-                if (!Regex.isFloatOrInt(discount)) {
-                    Toast.makeText(context, "Скидка указана неверно", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                try {
-                    discountDouble = Double.parseDouble(discount);
-                }
-                catch (NumberFormatException e) {
-                    Log.e(TAG, "createUser(): ", e);
-                }
-            }
             if (TextUtils.isEmpty(passportSerial) && (TextUtils.isEmpty(inn) || TextUtils.isEmpty(company))) {
                 Toast.makeText(context, "Для юр. лица укажите ИНН и название компании", Toast.LENGTH_SHORT).show();
                 return;
@@ -399,7 +438,7 @@ public class CreateUserActivity extends AppCompatActivity {
                     address,
                     geolocation,
                     zip,
-                    discountDouble,
+                    0.0,
                     userType,
                     passportSerial,
                     inn,
@@ -525,7 +564,6 @@ public class CreateUserActivity extends AppCompatActivity {
 
         zipEditText = findViewById(R.id.zip_edit_text);
         photoEditText = findViewById(R.id.photo_edit_text);
-        discountEditText = findViewById(R.id.discount_edit_text);
         signatureEditText = findViewById(R.id.signature_edit_text);
         //payment data
         passportSerialTextView = findViewById(R.id.passport_serial_text_view);
@@ -606,10 +644,6 @@ public class CreateUserActivity extends AppCompatActivity {
 
         photoEditText.setOnFocusChangeListener((v, hasFocus) -> {
             UiUtils.onFocusChanged(photoEditText, hasFocus);
-        });
-
-        discountEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(discountEditText, hasFocus);
         });
 
         signatureEditText.setOnFocusChangeListener((v, hasFocus) -> {

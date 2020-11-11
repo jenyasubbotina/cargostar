@@ -17,7 +17,7 @@ import uz.alexits.cargostar.model.shipping.Request;
 public interface InvoiceDao {
     /* invoice */
     @Query("SELECT * FROM request WHERE invoice_id == :invoiceId LIMIT 1")
-    LiveData<Request> selectRequestByInvoiceId(final long invoiceId);
+    Request selectRequestByInvoiceId(final long invoiceId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertInvoice(final Invoice invoice);

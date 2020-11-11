@@ -494,17 +494,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
             final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
             /* sender location data */
-            if (position == 9) {
-                viewHolder.bindFirstSpinner(context, position, callback);
-                viewHolder.bindSecondSpinner(context, position, callback);
-            }
-            /* recipient location data */
-            if (position == 18) {
-                viewHolder.bindFirstSpinner(context, position, callback);
-                viewHolder.bindSecondSpinner(context, position, callback);
-            }
-            /* payer location data */
-            else if (position == 26) {
+            if (position == 9 || position == 18 || position == 26) {
                 viewHolder.bindFirstSpinner(context, position, callback);
                 viewHolder.bindSecondSpinner(context, position, callback);
             }
@@ -549,17 +539,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
             final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
             /* sender location data */
-            if (position == 9){
-                viewHolder.unbindFirstSpinner();
-                viewHolder.unbindSecondSpinner();
-            }
-            /* recipient location data */
-            if (position == 18) {
-                viewHolder.unbindFirstSpinner();
-                viewHolder.unbindSecondSpinner();
-            }
-            /* payer location data */
-            else if (position == 26) {
+            if (position == 9 || position == 18 || position == 26){
                 viewHolder.unbindFirstSpinner();
                 viewHolder.unbindSecondSpinner();
             }

@@ -12,6 +12,9 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Data;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import android.text.Editable;
 import android.text.TextUtils;
@@ -44,6 +47,7 @@ import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.shipping.Cargo;
 import uz.alexits.cargostar.model.shipping.Consignment;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
@@ -60,6 +64,7 @@ import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CalculatorFragment extends Fragment implements CreateInvoiceCallback {
     private Context context;
@@ -141,7 +146,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private List<Long> selectedPackagingIdList = null;
     private List<ZoneSettings> selectedZoneSettingsList = null;
 
-    private static final List<Cargo> itemList = new ArrayList<>();
+    private static final List<Consignment> itemList = new ArrayList<>();
 
     public CalculatorFragment() {
         // Required empty public constructor
@@ -153,7 +158,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         context = getContext();
         activity = getActivity();
 
-        SyncWorkRequest.fetchPackagingData(getContext(), 100000);
+        SyncWorkRequest.fetchPackagingData(context, 100000);
     }
 
     @Override
@@ -679,10 +684,64 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         });
 
         parcelSearchImageView.setOnClickListener(v -> {
-            final String parcelIdStr = parcelSearchEditText.getText().toString();
-            if (TextUtils.isEmpty(parcelIdStr)) {
+            final String invoiceIdStr = parcelSearchEditText.getText().toString();
+
+            if (TextUtils.isEmpty(invoiceIdStr)) {
                 Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
                 return;
+            }
+            if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
+                Toast.makeText(context, "Неверный формат", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                final UUID searchInvoiceUUID = SyncWorkRequest.searchInvoice(context, Long.parseLong(invoiceIdStr));
+                WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
+                    if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                        Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
+
+                        parcelSearchEditText.setEnabled(true);
+
+                        return;
+                    }
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        final Data outputData = workInfo.getOutputData();
+
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+
+                        final Intent mainIntent = new Intent(context, MainActivity.class);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
+                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
+                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
+                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
+                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, senderCityId);
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId);
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId);
+                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
+                        startActivity(mainIntent);
+
+                        parcelSearchEditText.setEnabled(true);
+
+                        return;
+                    }
+                    parcelSearchEditText.setEnabled(false);
+                });
+            }
+            catch (Exception e) {
+                Log.e(TAG, "getInvoiceById(): ", e);
+                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -715,7 +774,9 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         });
 
         calculatorViewModel.getType().observe(getViewLifecycleOwner(), type -> {
-            calculatorViewModel.setTypePackageIdList(type, selectedPackagingIdList);
+            if (type != null && selectedPackaging != null) {
+                calculatorViewModel.setTypePackageIdList(type, selectedPackagingIdList);
+            }
         });
 
         calculatorViewModel.getPackagingIds().observe(getViewLifecycleOwner(), packagingIds -> {
@@ -730,9 +791,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
         calculatorViewModel.getPackagingTypeList().observe(getViewLifecycleOwner(), packagingTypeList -> {
             packagingTypeArrayAdapter.clear();
-            for (final PackagingType packagingType : packagingTypeList) {
-                packagingTypeArrayAdapter.add(packagingType);
-            }
+            packagingTypeArrayAdapter.addAll(packagingTypeList);
             packagingTypeArrayAdapter.notifyDataSetChanged();
         });
 
@@ -756,16 +815,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             Log.i(TAG, "zoneSettingsList: " + zoneSettingsList);
             selectedZoneSettingsList = zoneSettingsList;
         });
-    }
-
-    @Override
-    public void onAddBtnClicked() {
-        //do nothing
-    }
-
-    @Override
-    public void onCameraImageClicked(int position) {
-        //do nothing
     }
 
     @Override
@@ -865,7 +914,17 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             Toast.makeText(context, "Высота указана неверно", Toast.LENGTH_SHORT).show();
             return;
         }
-        itemList.add(new Cargo(packagingType.getName(), Double.parseDouble(length), Double.parseDouble(width), Double.parseDouble(height), Double.parseDouble(weight)));
+        itemList.add(new Consignment(
+                -1,
+                -1L,
+                packagingType.getName(),
+                null,
+                Double.parseDouble(length),
+                Double.parseDouble(width),
+                Double.parseDouble(height),
+                Double.parseDouble(weight),
+                -1,
+                null));
         calculatorAdapter.notifyItemInserted(itemList.size() - 1);
     }
 
@@ -903,7 +962,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         
         double totalPrice = 0.0;
 
-        for (final Cargo item : itemList) {
+        for (final Consignment item : itemList) {
             totalWeight += item.getWeight();
             totalLength += item.getLength();
             totalWidth += item.getWidth();
@@ -948,12 +1007,20 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
         }
         totalPrice *= 1.15;
+        long roundedPrice = 0;
+
+        try {
+            roundedPrice = Math.round(totalPrice);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "roundTotalPrice(): ", e);
+        }
 
         totalQuantityTextView.setText(String.valueOf(totalQuantity));
         totalWeightTextView.setText(String.valueOf(totalWeight));
         totalDimensionsTextView.setText(String.valueOf(totalVolume));
-        expressCost.setText(String.valueOf(totalPrice));
-        economyExpressCost.setText(String.valueOf(totalPrice));
+        expressCost.setText(getString(R.string.rounded_total_price, roundedPrice));
+        economyExpressCost.setText(getString(R.string.rounded_total_price, roundedPrice));
     }
 
     private void hidePackageTypeRadioBtns() {

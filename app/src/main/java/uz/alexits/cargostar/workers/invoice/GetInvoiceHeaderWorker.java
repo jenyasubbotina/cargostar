@@ -28,26 +28,24 @@ public class GetInvoiceHeaderWorker extends Worker {
             Log.e(TAG, "selectInvoiceById(): invoiceId is empty");
             return Result.failure();
         }
-        final Request request = LocalCache.getInstance(getApplicationContext()).invoiceDao().selectRequestByInvoiceId(invoiceId).getValue();
+        final Request request = LocalCache.getInstance(getApplicationContext()).invoiceDao().selectRequestByInvoiceId(invoiceId);
 
         if (request == null) {
-            Log.e(TAG, "selectInvoiceById(): invoice is NULL ??? " + invoiceId + " " + request);
+            Log.e(TAG, "selectInvoiceById(): invoice is NULL " + invoiceId);
             return Result.failure();
         }
 
         final Data.Builder outputData = new Data.Builder();
-        outputData.putLong(Constants.KEY_INVOICE_ID, request.getId());
-//        outputData.putString(Constants.KEY_NUMBER, request.getNumber());
-//        outputData.putLong(Constants.KEY_SENDER_ID, request.getSenderId());
-//        outputData.putLong(Constants.KEY_RECIPIENT_ID, request.getRecipientId());
-//        outputData.putLong(Constants.KEY_PAYER_ID, request.getPayerId());
-//        outputData.putLong(Constants.KEY_REQUEST_ID, request.getRequestId());
+        outputData.putLong(Constants.KEY_REQUEST_ID, request.getId());
+        outputData.putLong(Constants.KEY_INVOICE_ID, request.getInvoiceId());
+        outputData.putLong(Constants.KEY_COURIER_ID, request.getCourierId());
+        outputData.putLong(Constants.KEY_CLIENT_ID, request.getClientId());
+        outputData.putLong(Constants.KEY_SENDER_COUNTRY_ID, request.getSenderCountryId());
+        outputData.putLong(Constants.KEY_SENDER_REGION_ID, request.getSenderRegionId());
+        outputData.putLong(Constants.KEY_SENDER_CITY_ID, request.getSenderCityId());
+        outputData.putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, request.getRecipientCountryId());
+        outputData.putLong(Constants.KEY_RECIPIENT_CITY_ID, request.getRecipientCityId());
         outputData.putLong(Constants.KEY_PROVIDER_ID, request.getProviderId());
-//        outputData.putDouble(Constants.KEY_PRICE, request.getPrice());
-//        outputData.putLong(Constants.KEY_TARIFF_ID, request.getTariffId());
-        outputData.putInt(Constants.KEY_STATUS, request.getStatus());
-        outputData.putLong(Constants.KEY_CREATED_AT, request.getCreatedAt() != null ? request.getCreatedAt().getTime() : -1L);
-        outputData.putLong(Constants.KEY_UPDATED_AT, request.getUpdatedAt() != null ? request.getUpdatedAt().getTime() : -1L);
 
         return Result.success(outputData.build());
     }

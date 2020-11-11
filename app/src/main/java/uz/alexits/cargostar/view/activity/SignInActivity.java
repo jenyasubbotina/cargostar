@@ -105,6 +105,7 @@ public class SignInActivity extends AppCompatActivity {
                     signInBtn.setEnabled(true);
                     return;
                 }
+                Log.i(TAG, "workInfo: " + workInfo.getState() + " attempt=" + workInfo.getRunAttemptCount());
                 progressBar.setVisibility(View.VISIBLE);
                 signInBtn.setEnabled(false);
             });

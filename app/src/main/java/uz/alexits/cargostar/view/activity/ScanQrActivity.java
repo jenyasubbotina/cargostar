@@ -38,6 +38,7 @@ public class ScanQrActivity extends AppCompatActivity {
         if (result != null) {
             if (result.getContents() == null) {
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+                finish();
             }
             else {
                 Toast.makeText(this, "Scanned", Toast.LENGTH_SHORT).show();

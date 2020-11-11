@@ -19,7 +19,7 @@ import java.util.List;
 
 public class PaintView extends View {
     public static int BRUSH_SIZE = 5;
-    public static final int DEFAULT_COLOR = Color.RED;
+    public static final int DEFAULT_COLOR = Color.BLUE;
     public static final int DEFAULT_BG_COLOR = Color.WHITE;
     private static final float TOUCH_TOLERANCE = 4;
     private float mX, mY;

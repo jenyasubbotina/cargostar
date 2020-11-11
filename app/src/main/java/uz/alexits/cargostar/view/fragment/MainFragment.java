@@ -2,7 +2,6 @@ package uz.alexits.cargostar.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SyncRequest;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -41,7 +40,6 @@ import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
-import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -84,6 +82,7 @@ public class MainFragment extends Fragment {
         SyncWorkRequest.fetchTransitPoints(context);
         SyncWorkRequest.fetchTransportationStatuses(context);
         SyncWorkRequest.fetchRequestData(context);
+        SyncWorkRequest.fetchPackagingData(context, 100000);
     }
 
     @Override
@@ -201,7 +200,7 @@ public class MainFragment extends Fragment {
                 return;
             }
             try {
-                final UUID searchInvoiceUUID = SyncWorkRequest.getInvoiceById(context, Long.parseLong(invoiceIdStr));
+                final UUID searchInvoiceUUID = SyncWorkRequest.searchInvoice(context, Long.parseLong(invoiceIdStr));
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
                         Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
@@ -212,34 +211,30 @@ public class MainFragment extends Fragment {
                     }
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
-                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final String number = outputData.getString(Constants.KEY_NUMBER);
-                        final long senderId = outputData.getLong(Constants.KEY_SENDER_ID, -1L);
-                        final long recipientId = outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L);
-                        final long payerId = outputData.getLong(Constants.KEY_PAYER_ID, -1L);
+
                         final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
-                        final double price = outputData.getDouble(Constants.KEY_PRICE, -1);
-                        final long tariffId = outputData.getLong(Constants.KEY_TARIFF_ID, -1L);
-                        final long status = outputData.getInt(Constants.KEY_STATUS, -1);
-                        final long createdAt = outputData.getLong(Constants.KEY_CREATED_AT, -1L);
-                        final long updatedAt = outputData.getLong(Constants.KEY_UPDATED_AT, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_PARCEL);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_NUMBER, number);
-                        mainIntent.putExtra(Constants.KEY_SENDER_ID, senderId);
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_ID, recipientId);
-                        mainIntent.putExtra(Constants.KEY_PAYER_ID, payerId);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
+                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
+                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
+                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
+                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, senderCityId);
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId);
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId);
                         mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
-                        mainIntent.putExtra(Constants.KEY_PRICE, price);
-                        mainIntent.putExtra(Constants.KEY_TARIFF_ID, tariffId);
-                        mainIntent.putExtra(Constants.KEY_STATUS, status);
-                        mainIntent.putExtra(Constants.KEY_CREATED_AT, createdAt);
-                        mainIntent.putExtra(Constants.KEY_UPDATED_AT, updatedAt);
                         startActivity(mainIntent);
 
                         parcelSearchEditText.setEnabled(true);
@@ -256,6 +251,42 @@ public class MainFragment extends Fragment {
         });
     }
 
+    private void searchTransportation(final String transportationQr) {
+        final UUID searchInvoiceUUID = SyncWorkRequest.searchTransportation(context, transportationQr);
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
+            if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                Toast.makeText(context, "QR-кода нет в базе данных", Toast.LENGTH_SHORT).show();
+
+                parcelSearchEditText.setEnabled(true);
+
+                return;
+            }
+            if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                final Data outputData = workInfo.getOutputData();
+
+                final Intent mainIntent = new Intent(context, MainActivity.class);
+                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_TRANSPORTATION);
+                mainIntent.putExtra(Constants.KEY_TRANSPORTATION_ID, outputData.getLong(Constants.KEY_TRANSPORTATION_ID, -1L));
+                mainIntent.putExtra(Constants.KEY_INVOICE_ID, outputData.getLong(Constants.KEY_INVOICE_ID, -1L));
+                mainIntent.putExtra(Constants.KEY_CITY_FROM, outputData.getString(Constants.KEY_CITY_FROM));
+                mainIntent.putExtra(Constants.KEY_CITY_TO, outputData.getString(Constants.KEY_CITY_TO));
+                mainIntent.putExtra(Constants.KEY_COURIER_ID, outputData.getLong(Constants.KEY_COURIER_ID, -1L));
+                mainIntent.putExtra(Constants.KEY_PROVIDER_ID, outputData.getLong(Constants.KEY_PROVIDER_ID, -1L));
+                mainIntent.putExtra(Constants.KEY_DIRECTION, outputData.getString(Constants.KEY_DIRECTION));
+                mainIntent.putExtra(Constants.KEY_TRANSPORTATION_STATUS_ID, outputData.getLong(Constants.KEY_TRANSPORTATION_STATUS_ID, -1L));
+                mainIntent.putExtra(Constants.KEY_TRANSPORTATION_STATUS, outputData.getString(Constants.KEY_TRANSPORTATION_STATUS));
+                mainIntent.putExtra(Constants.KEY_CURRENT_TRANSIT_POINT_ID, outputData.getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, -1L));
+                mainIntent.putExtra(Constants.KEY_INSTRUCTIONS, outputData.getString(Constants.KEY_INSTRUCTIONS));
+                mainIntent.putExtra(Constants.KEY_ARRIVAL_DATE, outputData.getString(Constants.KEY_ARRIVAL_DATE));
+                mainIntent.putExtra(Constants.KEY_TRACKING_CODE, outputData.getString(Constants.KEY_TRACKING_CODE));
+                mainIntent.putExtra(Constants.KEY_QR_CODE, outputData.getString(Constants.KEY_QR_CODE));
+                mainIntent.putExtra(Constants.KEY_PARTY_QR_CODE, outputData.getString(Constants.KEY_PARTY_QR_CODE));
+                mainIntent.putExtra(Constants.KEY_PAYMENT_STATUS_ID, outputData.getLong(Constants.KEY_PAYMENT_STATUS_ID, -1L));
+                startActivity(mainIntent);
+            }
+        });
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -264,11 +295,9 @@ public class MainFragment extends Fragment {
         }
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
-                final MainFragmentDirections.ActionMainFragmentToParcelDataFragment action =
-                        MainFragmentDirections.actionMainFragmentToParcelDataFragment();
-                action.setParcelId(1);
-                action.setParcelId(IntentConstants.INTENT_PARCEL);
-                NavHostFragment.findNavController(this).navigate(action);
+                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+
+
             }
         }
     }

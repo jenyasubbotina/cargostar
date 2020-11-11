@@ -7,8 +7,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class Cargo {
     @Expose
+    @SerializedName("description")
+    private final String description;
+
+    @Expose
     @SerializedName("packaging-type")
     private final String packagingType;
+
     @Expose
     @SerializedName("length")
     private final double length;
@@ -25,12 +30,22 @@ public class Cargo {
     @SerializedName("weight")
     private final double weight;
 
-    public Cargo(String packagingType, double length, double width, double height, double weight) {
+    public Cargo(final String description,
+                 final String packagingType,
+                 double length,
+                 double width,
+                 double height,
+                 double weight) {
+        this.description = description;
         this.packagingType = packagingType;
         this.length = length;
         this.width = width;
         this.height = height;
         this.weight = weight;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getPackagingType() {

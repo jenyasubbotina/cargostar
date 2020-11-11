@@ -29,4 +29,5 @@ public class IntentConstants {
 
     /* FCM */
     public static final String TOKEN = "token";
+    public static final String REQUEST_FIND_TRANSPORTATION = "intent_request_find_transportation";
 }

@@ -23,6 +23,9 @@ public interface TransportationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertTransportationList(final List<Transportation> transportationList);
 
+    @Query("SELECT * FROM transportation WHERE qr_code == :qrCode LIMIT 1")
+    Transportation selectTransportationByQr(final String qrCode);
+
     @Query("SELECT * FROM transportation WHERE current_transition_point_id == :transitPointId AND transportation_status_id IN (:statusArray) ORDER BY id DESC")
     LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId);
 
