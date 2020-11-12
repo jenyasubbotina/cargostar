@@ -61,15 +61,15 @@ public class TransportationStatusFragment extends Fragment {
     private AnimatedVectorDrawableCompat vectorDrawableCompat;
 
     private long transportationId = -1;
-    private long currentLocationId = -1;
-    private static Transportation currentTransportation;
+    private Transportation currentTransportation;
 
-    private static TransportationStatus nextStatus;
-    private static Long nextPoint;
+    private TransportationStatus nextStatus;
+    private Long nextPoint;
 
     private static TransportationStatus inTransitTransportationStatus;
     private static TransportationStatus onItsWayTransportationStatus;
     private static TransportationStatus deliveredTransportationStatus;
+    private static TransportationStatus leftCountryTransportationStatus;
 //    private final TransportationStatus[] statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
 
     public TransportationStatusFragment() {
@@ -99,32 +99,11 @@ public class TransportationStatusFragment extends Fragment {
             final String instructions = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInstructions();
             final String arrivalDate = TransportationStatusFragmentArgs.fromBundle(getArguments()).getArrivalDate();
             final String direction = TransportationStatusFragmentArgs.fromBundle(getArguments()).getDirection();
-
-            currentTransportation = new Transportation(
-                    transportationId,
-                    providerId,
-                    courierId,
-                    invoiceId,
-                    statusId,
-                    paymentStatusId,
-                    currentTransitPointId,
-                    arrivalDate,
-                    trackingCode,
-                    qrCode,
-                    partyQRCode,
-                    instructions,
-                    direction,
-                    1,
-                    null,
-                    null);
-            currentTransportation.setCityFrom(cityFrom);
-            currentTransportation.setCityTo(cityTo);
-            currentTransportation.setTransportationStatusName(statusName);
         }
-        Log.i(TransportationStatusFragment.class.toString(), "currentTransportation=" + currentTransportation);
+        Log.i(TransportationStatusFragment.class.toString(), "currentTransportationId=" + transportationId);
 
-        SyncWorkRequest.fetchTransportationData(context, currentTransportation.getId());
-        SyncWorkRequest.fetchTransportationRoute(context, currentTransportation.getId());
+        SyncWorkRequest.fetchTransportationData(context, transportationId);
+        SyncWorkRequest.fetchTransportationRoute(context, transportationId);
     }
 
     @Override
@@ -143,13 +122,8 @@ public class TransportationStatusFragment extends Fragment {
         checkImageView = root.findViewById(R.id.check_image_view);
         progressBar = root.findViewById(R.id.progress_bar);
 
-        transportationIdTextView.setText(String.valueOf(currentTransportation.getId()));
-        transportationIdItemTextView.setText(String.valueOf(currentTransportation.getId()));
-        srcCityTextView.setText(currentTransportation.getCityFrom());
-        destCityTextView.setText(currentTransportation.getCityTo());
-        sourceTextView.setText(currentTransportation.getCityFrom());
-        destinationTextView.setText(currentTransportation.getCityTo());
-//        currentPointTextView.setText(currentTransportation.getCurrentTransitionPointId());
+        transportationIdTextView.setText(String.valueOf(transportationId));
+        transportationIdItemTextView.setText(String.valueOf(transportationId));
 
         return root;
     }
@@ -179,7 +153,6 @@ public class TransportationStatusFragment extends Fragment {
                     final Drawable drawable = checkImageView.getDrawable();
                     checkImageView.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.INVISIBLE);
-                    submitStatusBtn.setEnabled(true);
 
                     if (drawable instanceof AnimatedVectorDrawableCompat) {
                         vectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
@@ -190,15 +163,11 @@ public class TransportationStatusFragment extends Fragment {
                         vectorDrawable = (AnimatedVectorDrawable) drawable;
                         vectorDrawable.start();
                     }
-
-
-
                     return;
                 }
                 if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
                     progressBar.setVisibility(View.INVISIBLE);
                     checkImageView.setVisibility(View.INVISIBLE);
-                    submitStatusBtn.setEnabled(true);
 
                     Toast.makeText(context, "Произошла ошибка при обновлении статуса", Toast.LENGTH_SHORT).show();
 
@@ -217,8 +186,20 @@ public class TransportationStatusFragment extends Fragment {
 
         final TransportationStatusViewModel statusViewModel = new ViewModelProvider(this).get(TransportationStatusViewModel.class);
 
-        statusViewModel.setTransportationId(currentTransportation.getId());
-        statusViewModel.setCurrentTransitPointId(currentTransportation.getCurrentTransitionPointId());
+        statusViewModel.setTransportationId(transportationId);
+
+        statusViewModel.getCurrentTransportation().observe(getViewLifecycleOwner(), transportation -> {
+            if (transportation != null) {
+                Log.i(TAG, "currentTransportation: " + transportation);
+                currentTransportation = transportation;
+                statusViewModel.setCurrentTransitPointId(currentTransportation.getCurrentTransitionPointId());
+
+                srcCityTextView.setText(currentTransportation.getCityFrom());
+                destCityTextView.setText(currentTransportation.getCityTo());
+                sourceTextView.setText(currentTransportation.getCityFrom());
+                destinationTextView.setText(currentTransportation.getCityTo());
+            }
+        });
 
         statusViewModel.getInTransitStatus().observe(getViewLifecycleOwner(), inTransitStatus -> {
             inTransitTransportationStatus = inTransitStatus;
@@ -230,6 +211,10 @@ public class TransportationStatusFragment extends Fragment {
 
         statusViewModel.getDeliveredStatus().observe(getViewLifecycleOwner(), deliveredStatus -> {
             deliveredTransportationStatus = deliveredStatus;
+        });
+
+        statusViewModel.getLeftCountryStatus().observe(getViewLifecycleOwner(), leftCountryStatus -> {
+            leftCountryTransportationStatus = leftCountryStatus;
         });
 
         statusViewModel.getCurrentTransitPoint().observe(getViewLifecycleOwner(), transitPoint -> {
@@ -264,28 +249,33 @@ public class TransportationStatusFragment extends Fragment {
                         }
                     }
                     if (currentPath != null) {
+                        Log.i(TAG, "currentPath: " + currentPath);
                         if (currentTransportation.getTransportationStatusName() != null) {
                             if (nextPath != null) {
-                                if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.on_the_way))) {
+                                Log.i(TAG, "nextPath: " + nextPath);
+                                if (currentTransportation.getTransportationStatusId() == onItsWayTransportationStatus.getId()) {
                                     statusViewModel.setNextTransportationStatus(inTransitTransportationStatus);
-                                    statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                                    statusViewModel.setNextTransitPointId(nextPath.getTransitPointId());
                                     return;
                                 }
-                                if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.in_transit))) {
+                                if (currentTransportation.getTransportationStatusId() == inTransitTransportationStatus.getId()) {
                                     statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
-                                    statusViewModel.setNextTransitPointId(nextPath.getTransitPointId());
+                                    statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
                                 }
                                 return;
                             }
-                            if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.on_the_way))) {
+                            if (currentTransportation.getTransportationStatusId() == onItsWayTransportationStatus.getId()) {
                                 //delivered
                                 statusViewModel.setNextTransportationStatus(deliveredTransportationStatus);
                                 statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
                                 return;
                             }
-                            if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(getString(R.string.in_transit))) {
+                            if (currentTransportation.getTransportationStatusId() == inTransitTransportationStatus.getId()) {
                                 statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
                                 statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                            }
+                            if (currentTransportation.getTransportationStatusId() == deliveredTransportationStatus.getId()) {
+                                statusViewModel.setNextTransportationStatus(null);
                             }
                         }
                     }
@@ -293,11 +283,17 @@ public class TransportationStatusFragment extends Fragment {
             }
         });
         statusViewModel.getNextStatus().observe(getViewLifecycleOwner(), nextTransportationStatus -> {
-            if (nextTransportationStatus != null) {
+            nextStatus = nextTransportationStatus;
+
+            if (nextStatus != null) {
                 Log.i(TAG, "next status: " + nextTransportationStatus);
-                submitStatusBtn.setText(nextTransportationStatus.getName());
-                nextStatus = nextTransportationStatus;
+                submitStatusBtn.setText(nextStatus.getName());
+                submitStatusBtn.setBackgroundResource(R.drawable.btn_gradient_orange);
+                submitStatusBtn.setEnabled(true);
+                return;
             }
+            submitStatusBtn.setEnabled(false);
+            submitStatusBtn.setBackgroundResource(R.drawable.bg_gradient_grey);
         });
 
         statusViewModel.getNextTransitPoint().observe(getViewLifecycleOwner(), nextTransitPoint -> {

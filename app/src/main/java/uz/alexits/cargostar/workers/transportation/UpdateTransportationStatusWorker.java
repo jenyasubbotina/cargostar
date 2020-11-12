@@ -63,7 +63,7 @@ public class UpdateTransportationStatusWorker extends Worker {
 
                     Log.i(TAG, "updateTransportationStatus(): response=" + transportation);
 
-                    final long rowId = LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation);
+                    final int rowId = LocalCache.getInstance(getApplicationContext()).transportationDao().updateTransportation(transportation);
 
                     if (rowId <= 0) {
                         Log.e(TAG, "updateTransportationStatus(): couldn't insert " + transportation);

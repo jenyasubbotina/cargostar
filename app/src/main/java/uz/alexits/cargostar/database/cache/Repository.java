@@ -300,6 +300,10 @@ public class Repository {
     }
 
     /* transportation data */
+    public LiveData<Transportation> selectTransportationById(final long transportationId) {
+        return transportationDao.selectTransportationById(transportationId);
+    }
+
     public LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId) {
         return transportationDao.selectCurrentTransportations(statusArray, transitPointId);
     }
@@ -309,8 +313,8 @@ public class Repository {
         return transportationDao.selectTransportationDataByTransportationId(transportationId);
     }
 
-    public LiveData<TransportationStatus> selectTransportationStatusByName(final String statusName) {
-        return transportationDao.selectTransportationStatusByName(statusName);
+    public LiveData<TransportationStatus> selectTransportationStatusById(final long statusId) {
+        return transportationDao.selectTransportationStatusById(statusId);
     }
 
     /* transportation route */

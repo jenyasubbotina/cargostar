@@ -84,13 +84,13 @@ public interface ApiService {
     @GET("request")
     Call<List<Request>> getPublicRequests(@Query("per-page") final int perPage);
 
-//    @Headers("Content-Type: application/json; charset=utf-8;")
-//    @PUT("request/update")
-//    Call<JsonElement> updateRequest(@Query("id") final long id, @Body UpdateRequestParams updateRequestParams);
-
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request/employee")
     Call<List<Request>> getMyRequests(@Query("per-page") final int perPage, @Query("id") final long courierId);
+
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @PUT("request/update")
+    Call<Request> bindRequest(@Query("id") final long requestId, @Body BindRequestParams bindRequestParams);
 
     /* Providers / packaging */
     @Headers("Content-Type: application/json; charset=utf-8;")
@@ -118,10 +118,6 @@ public interface ApiService {
     @Headers("Content-type: application/json; charset=utf-8;")
     @POST("employee/auth")
     Call<Courier> signIn(@Body SignInParams signInParams);
-
-    @Headers("Content-type: application/json; charset=utf-8;")
-    @PUT("request/update")
-    Call<Request> bindRequest(@Query("id") final long requestId, @Body BindRequestParams bindRequestParams);
 
     @Headers("Content-type: application/json; charset=utf-8;")
     @PUT("employee/update")

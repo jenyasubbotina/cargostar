@@ -23,6 +23,9 @@ public interface TransportationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertTransportationList(final List<Transportation> transportationList);
 
+    @Update
+    int updateTransportation(final Transportation transportation);
+
     @Query("SELECT * FROM transportation WHERE qr_code == :qrCode LIMIT 1")
     Transportation selectTransportationByQr(final String qrCode);
 
@@ -59,6 +62,9 @@ public interface TransportationDao {
     @Query("SELECT * FROM route WHERE transportation_id == :transportationId ORDER BY id ASC")
     LiveData<List<Route>> selectRouteByTransportationId(final long transportationId);
 
-    @Query("SELECT * FROM transportationStatus WHERE name == :statusName LIMIT 1")
-    LiveData<TransportationStatus> selectTransportationStatusByName(final String statusName);
+    @Query("SELECT * FROM transportationStatus WHERE id == :statusId LIMIT 1")
+    LiveData<TransportationStatus> selectTransportationStatusById(final long statusId);
+
+    @Query("SELECT * FROM transportation WHERE id == :transportationId")
+    LiveData<Transportation> selectTransportationById(final long transportationId);
 }

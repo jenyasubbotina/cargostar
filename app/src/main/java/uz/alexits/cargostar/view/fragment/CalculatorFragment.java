@@ -2,6 +2,7 @@ package uz.alexits.cargostar.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.icu.number.Precision;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -62,6 +63,9 @@ import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -131,8 +135,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private TextView totalQuantityTextView;
     private TextView totalWeightTextView;
     private TextView totalDimensionsTextView;
-    private TextView expressCost;
-    private TextView economyExpressCost;
+
+    private TextView firstTariffNameTextView;
+    private TextView firstTariffPriceTextView;
+//    private TextView secondTariffNameTextView;
+//    private TextView secondTariffPriceTextView;
     private Button calculateBtn;
 
     /* show current cargoList */
@@ -205,8 +212,10 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         totalDimensionsTextView = root.findViewById(R.id.total_dimensions_value_text_view);
         calculateBtn = root.findViewById(R.id.calculate_btn);
 
-        expressCost = root.findViewById(R.id.express_sum_text_view);
-        economyExpressCost = root.findViewById(R.id.economy_express_sum_text_view);
+        firstTariffNameTextView = root.findViewById(R.id.result_express_text_view);
+//        secondTariffNameTextView = root.findViewById(R.id.result_economy_express_text_view);
+        firstTariffPriceTextView = root.findViewById(R.id.express_sum_text_view);
+//        secondTariffPriceTextView = root.findViewById(R.id.economy_express_sum_text_view);
 
         packageTypeRadioGroup = root.findViewById(R.id.package_type_radio_group);
         docTypeRadioBtn = root.findViewById(R.id.doc_type_radio_btn);
@@ -616,6 +625,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             if (checkedId == docTypeRadioBtn.getId()) {
                 //docs
                 calculatorViewModel.setType(1);
+                //make consignment fields invisible
+                lengthEditText.setVisibility(View.INVISIBLE);
+                widthEditText.setVisibility(View.INVISIBLE);
+                heightEditText.setVisibility(View.INVISIBLE);
+
                 if (selectedPackagingIdList != null) {
                     calculatorViewModel.setTypePackageIdList(1, selectedPackagingIdList);
                 }
@@ -623,6 +637,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             else if (checkedId == boxTypeRadioBtn.getId()) {
                 //boxes
                 calculatorViewModel.setType(2);
+                //make consignment fields visible
+                lengthEditText.setVisibility(View.VISIBLE);
+                widthEditText.setVisibility(View.VISIBLE);
+                heightEditText.setVisibility(View.VISIBLE);
+
                 if (selectedPackagingIdList != null) {
                     calculatorViewModel.setTypePackageIdList(2, selectedPackagingIdList);
                 }
@@ -881,10 +900,10 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
     private void addCargoToInvoice() {
         final PackagingType packagingType = (PackagingType) packagingTypeSpinner.getSelectedItem();
-        final String weight = weightEditText.getText().toString();
-        final String length = lengthEditText.getText().toString();
-        final String width = widthEditText.getText().toString();
-        final String height = heightEditText.getText().toString();
+        final String weight = weightEditText.getText().toString().trim();
+        final String length = lengthEditText.getText().toString().trim();
+        final String width = widthEditText.getText().toString().trim();
+        final String height = heightEditText.getText().toString().trim();
 
         /* check for empty fields */
         if (packagingType == null) {
@@ -895,44 +914,47 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             Toast.makeText(context, "Укажите вес", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(length)) {
-            Toast.makeText(context, "Укажите длину", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(width)) {
-            Toast.makeText(context, "Укажите ширину", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(height)) {
-            Toast.makeText(context, "Укажите высоту", Toast.LENGTH_SHORT).show();
-            return;
-        }
         /* check for regex */
         if (!Regex.isFloatOrInt(weight)) {
             Toast.makeText(context, "Вес указан неверно", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!Regex.isFloatOrInt(length)) {
-            Toast.makeText(context, "Длина указана неверно", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!Regex.isFloatOrInt(width)) {
-            Toast.makeText(context, "Ширина указана неверно", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!Regex.isFloatOrInt(height)) {
-            Toast.makeText(context, "Высота указана неверно", Toast.LENGTH_SHORT).show();
-            return;
+        if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+            if (TextUtils.isEmpty(length)) {
+                Toast.makeText(context, "Укажите длину", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(width)) {
+                Toast.makeText(context, "Укажите ширину", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(height)) {
+                Toast.makeText(context, "Укажите высоту", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!Regex.isFloatOrInt(length)) {
+                Toast.makeText(context, "Длина указана неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isFloatOrInt(width)) {
+                Toast.makeText(context, "Ширина указана неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isFloatOrInt(height)) {
+                Toast.makeText(context, "Высота указана неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         itemList.add(new Consignment(
                 -1,
                 -1L,
                 packagingType.getName(),
                 null,
-                Double.parseDouble(length),
-                Double.parseDouble(width),
-                Double.parseDouble(height),
-                Double.parseDouble(weight),
+                !TextUtils.isEmpty(length) ? Double.parseDouble(length) : 0,
+                !TextUtils.isEmpty(width) ? Double.parseDouble(width) : 0,
+                !TextUtils.isEmpty(height) ? Double.parseDouble(height) : 0,
+                !TextUtils.isEmpty(weight) ? Double.parseDouble(weight) : 0,
                 -1,
                 null));
         calculatorAdapter.notifyItemInserted(itemList.size() - 1);
@@ -1007,29 +1029,17 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 totalPrice += actualZoneSettings.getPriceStep();
             }
         }
-
-        Log.i(TAG, "totalPrice without tax=" + totalPrice);
-
         if (selectedPackaging != null) {
             if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
                 totalPrice += selectedPackaging.getParcelFee();
             }
         }
-
-        Log.i(TAG, "total price + parcelFee " + selectedPackaging.getParcelFee() + "=" + totalPrice);
-
         if (selectedProvider != null) {
             totalPrice = totalPrice * (selectedProvider.getFuel() + 100) / 100;
         }
-
-        Log.i(TAG, "total price + fuel " + selectedProvider.getFuel() + "=" + totalPrice);
-
         if (selectedVat != null) {
             totalPrice *= (selectedVat.getVat() + 100) / 100;
         }
-
-        Log.i(TAG, "total price + 15% vat=" + totalPrice);
-
         long roundedPrice = 0;
 
         try {
@@ -1038,11 +1048,21 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         catch (Exception e) {
             Log.e(TAG, "roundTotalPrice(): ", e);
         }
+
         totalQuantityTextView.setText(String.valueOf(totalQuantity));
-        totalWeightTextView.setText(String.valueOf(totalWeight));
-        totalDimensionsTextView.setText(String.valueOf(totalVolume));
-        expressCost.setText(getString(R.string.rounded_total_price, roundedPrice));
-        economyExpressCost.setText(getString(R.string.rounded_total_price, roundedPrice));
+        totalWeightTextView.setText(String.valueOf(new BigDecimal(Double.toString(totalWeight)).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+        totalDimensionsTextView.setText(String.valueOf(new BigDecimal(Double.toString(totalVolume)).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+
+        if (selectedPackaging != null) {
+            firstTariffNameTextView.setVisibility(View.VISIBLE);
+            firstTariffPriceTextView.setVisibility(View.VISIBLE);
+            firstTariffNameTextView.setText(selectedPackaging.getName());
+            firstTariffPriceTextView.setText(getString(R.string.rounded_total_price, roundedPrice));
+        }
+        else {
+            firstTariffNameTextView.setVisibility(View.INVISIBLE);
+            firstTariffPriceTextView.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void hidePackageTypeRadioBtns() {

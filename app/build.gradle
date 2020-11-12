@@ -4,7 +4,7 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
 def APP_NAME = "CargoStar"
-def APP_VERSION = "1.0.0.3"
+def APP_VERSION = "1.0.0.4"
 
 android {
     compileSdkVersion 30
