@@ -75,7 +75,7 @@ public abstract class PackagingDao {
 
     @Transaction
     public long[] insertPackagingTypeListTransaction(final List<PackagingType> packagingTypeList) {
-        dropPackaging();
+        dropPackagingType();
         return insertPackagingTypes(packagingTypeList);
     }
 
