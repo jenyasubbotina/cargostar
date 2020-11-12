@@ -39,7 +39,7 @@ public class FetchZoneCountriesWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchZoneCountries(): response=" + response.body());
                     final List<ZoneCountry> zoneCountryList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZoneCountries(zoneCountryList);
+                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZoneCountriesTransaction(zoneCountryList);
                     return ListenableWorker.Result.success();
                 }
             }

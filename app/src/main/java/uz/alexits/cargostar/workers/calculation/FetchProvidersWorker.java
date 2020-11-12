@@ -35,7 +35,7 @@ public class FetchProvidersWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllProviders(): response=" + response.body());
                     final List<Provider> providerList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertProviders(providerList);
+                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertProvidersTransaction(providerList);
                     return ListenableWorker.Result.success();
                 }
             }

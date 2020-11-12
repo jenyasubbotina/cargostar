@@ -38,7 +38,7 @@ public class FetchZonesWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllZones(): response=" + response.body());
                     final List<Zone> zoneList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZones(zoneList);
+                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZonesTransaction(zoneList);
                     return ListenableWorker.Result.success();
                 }
             }

@@ -33,7 +33,7 @@ public class FetchPackagingWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllPackaging(): response=" + response.body());
                     final List<Packaging> packagingList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertPackaging(packagingList);
+                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertPackagingTransaction(packagingList);
                     return ListenableWorker.Result.success();
                 }
             }
