@@ -46,6 +46,7 @@ public class CreateInvoiceTwoImageEditTextsViewHolder extends RecyclerView.ViewH
         firstImageView.setOnClickListener(v -> {
             callback.onSenderSignatureClicked();
         });
+
         secondImageView.setOnClickListener(v -> {
             callback.onRecipientSignatureClicked();
         });

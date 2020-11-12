@@ -1814,15 +1814,27 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             return;
         }
         if (requestCode == IntentConstants.REQUEST_SENDER_SIGNATURE) {
-            itemList.get(5).firstValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-            senderSignature = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-            adapter.notifyItemChanged(5);
-            return;
+            if (resultCode == RESULT_CANCELED) {
+                return;
+            }
+            if (resultCode == RESULT_OK && data != null) {
+                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+                itemList.get(5).firstValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                senderSignature = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                adapter.notifyItemChanged(5);
+                return;
+            }
         }
         if (requestCode == IntentConstants.REQUEST_RECIPIENT_SIGNATURE) {
-            itemList.get(5).secondValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-            recipientSignature = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-            adapter.notifyItemChanged(5);
+            if (resultCode == RESULT_CANCELED) {
+                return;
+            }
+            if (resultCode == RESULT_OK && data != null) {
+                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+                itemList.get(5).secondValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                recipientSignature = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                adapter.notifyItemChanged(5);
+            }
         }
     }
 

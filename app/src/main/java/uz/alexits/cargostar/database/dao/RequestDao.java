@@ -21,7 +21,7 @@ public abstract class RequestDao {
     @Query("DELETE FROM request")
     public abstract void dropRequests();
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long[] insertRequests(final List<Request> newRequestList);
 
     @Transaction
