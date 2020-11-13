@@ -33,14 +33,16 @@ public class FetchTransportationsWorker extends Worker {
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllRequests(): response=" + response.body());
                     final List<Transportation> currentTransportations = response.body();
-                    LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationList(currentTransportations);
+
+                    Log.i(TAG, "fetchAllTransportations(): response=" + currentTransportations);
+
+                    final long[] rowsInserted = LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationListTransaction(currentTransportations);
                     return ListenableWorker.Result.success();
                 }
             }
             else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
+                Log.e(TAG, "fetchAllTransportations(): " + response.errorBody());
             }
             return ListenableWorker.Result.failure();
         }

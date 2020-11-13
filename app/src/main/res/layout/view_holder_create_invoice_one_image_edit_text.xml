@@ -16,20 +16,48 @@
         android:textSize="16sp"
         android:textColor="#A5ABC0"
         android:fontFamily="@font/geometria_actual"
-        android:text="@string/sender_signature"/>
+        android:text="@string/email"/>
 
-    <RelativeLayout
-        android:id="@+id/first_field"
+    <EditText
+        android:id="@+id/first_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/first_text_view"
         app:layout_constraintStart_toStartOf="@id/first_text_view"
-        app:layout_constraintEnd_toStartOf="@id/second_edit_text"
+        app:layout_constraintEnd_toStartOf="@id/second_field"
+        android:layout_marginEnd="12dp"
+        android:inputType="text"
+        android:background="@drawable/edit_text_locked"
+        android:textSize="16sp"
+        android:fontFamily="@font/geometria_actual"
+        android:textColor="@color/colorBlack"
+        android:padding="17dp" />
+
+    <TextView
+        android:id="@+id/second_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/first_text_view"
+        app:layout_constraintStart_toStartOf="@id/second_field"
+        android:layout_marginEnd="35dp"
+        android:textSize="16sp"
+        android:textColor="#A5ABC0"
+        android:fontFamily="@font/geometria_actual"
+        android:text="@string/sender_signature"/>
+
+    <RelativeLayout
+        android:id="@+id/second_field"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/first_edit_text"
+        app:layout_constraintBottom_toBottomOf="@id/first_edit_text"
+        app:layout_constraintStart_toEndOf="@id/first_edit_text"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="12dp">
+        android:layout_marginEnd="35dp">
 
         <EditText
-            android:id="@+id/first_edit_text"
+            android:id="@+id/second_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -41,10 +69,10 @@
             android:enabled="false"/>
 
         <ImageView
-            android:id="@+id/first_result_image_view"
+            android:id="@+id/second_result_image_view"
             android:layout_width="19dp"
             android:layout_height="22dp"
-            android:layout_alignStart="@id/first_edit_text"
+            android:layout_alignStart="@id/second_edit_text"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_image_green"
             android:layout_marginStart="12dp"
@@ -52,40 +80,15 @@
             android:visibility="invisible"/>
 
         <ImageView
-            android:id="@+id/first_image_view"
+            android:id="@+id/second_image_view"
             android:layout_width="25dp"
             android:layout_height="22dp"
-            android:layout_alignEnd="@id/first_edit_text"
+            android:layout_alignEnd="@id/second_edit_text"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_signature_grey"
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/signature"/>
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/second_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/first_text_view"
-        app:layout_constraintStart_toStartOf="@id/second_edit_text"
-        android:textSize="16sp"
-        android:textColor="#A5ABC0"
-        android:fontFamily="@font/geometria_actual"
-        android:text="@string/receiver_signature"/>
 
-    <EditText
-        android:id="@+id/second_edit_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/first_field"
-        app:layout_constraintBottom_toBottomOf="@id/first_field"
-        app:layout_constraintStart_toEndOf="@id/first_field"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="35dp"
-        android:inputType="text"
-        android:background="@drawable/edit_text_locked"
-        android:textSize="16sp"
-        android:fontFamily="@font/geometria_actual"
-        android:textColor="@color/colorBlack"
-        android:padding="17dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

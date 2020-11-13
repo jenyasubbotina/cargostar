@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RadioButton
+        android:id="@+id/tariff_radio_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/price_text_view"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="14dp"
+        android:layout_marginStart="39dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="16sp"
+        android:fontFamily="@font/geometria_medium"
+        android:buttonTint="@color/colorBlue"
+        android:text="@string/express"/>
+
+    <TextView
+        android:id="@+id/price_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/tariff_radio_btn"
+        app:layout_constraintBottom_toBottomOf="@id/tariff_radio_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="39dp"
+        android:gravity="end"
+        android:textColor="#0052A6"
+        android:textSize="16sp"
+        android:fontFamily="@font/geometria_medium"
+        android:text="@string/sum_example"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

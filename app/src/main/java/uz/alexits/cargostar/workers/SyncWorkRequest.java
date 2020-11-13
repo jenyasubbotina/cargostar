@@ -531,11 +531,8 @@ public class SyncWorkRequest {
                                    final long requestId,
                                    final long invoiceId,
                                    final long courierId,
-                                   final long operatorId,
-                                   final long accountantId,
                                    final String senderSignature,
                                    final String senderEmail,
-                                   final String senderCargostar,
                                    final String senderTnt,
                                    final String senderFedex,
                                    final long senderCountryId,
@@ -547,7 +544,8 @@ public class SyncWorkRequest {
                                    final String senderMiddleName,
                                    final String senderLastName,
                                    final String senderPhone,
-                                   final String recipientSignature,
+                                   final String senderCompanyName,
+                                   final int senderType,
                                    final String recipientEmail,
                                    final String recipientCargo,
                                    final String recipientTnt,
@@ -561,6 +559,8 @@ public class SyncWorkRequest {
                                    final String recipientMiddleName,
                                    final String recipientLastName,
                                    final String recipientPhone,
+                                   final String recipientCompanyName,
+                                   final int recipientType,
                                    final String payerEmail,
                                    final long payerCountryId,
                                    final long payerRegionId,
@@ -574,7 +574,12 @@ public class SyncWorkRequest {
                                    final String payerCargostar,
                                    final String payerTnt,
                                    final String payerFedex,
+                                   final String payerTntTaxId,
+                                   final String payerFedexTaxId,
+                                   final String payerCompanyName,
+                                   final int payerType,
                                    final double discount,
+                                   final String payerInn,
                                    final String checkingAccount,
                                    final String bank,
                                    final String mfo,
@@ -587,7 +592,7 @@ public class SyncWorkRequest {
                                    final int paymentMethod,
                                    final double totalWeight,
                                    final double totalVolume,
-                                   final double totalPrice,
+                                   final String totalPrice,
                                    final String serializedConsignmentList) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -600,12 +605,9 @@ public class SyncWorkRequest {
                 .putLong(Constants.KEY_REQUEST_ID, requestId)
                 .putLong(Constants.KEY_INVOICE_ID, invoiceId)
                 .putLong(Constants.KEY_COURIER_ID, courierId)
-                .putLong(Constants.KEY_OPERATOR_ID, operatorId)
-                .putLong(Constants.KEY_ACCOUNTANT_ID, accountantId)
 
                 .putString(Constants.KEY_SENDER_SIGNATURE, senderSignature)
                 .putString(Constants.KEY_SENDER_EMAIL, senderEmail)
-                .putString(Constants.KEY_SENDER_CARGOSTAR, senderCargostar)
                 .putString(Constants.KEY_SENDER_TNT, senderTnt)
                 .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
                 .putLong(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
@@ -617,8 +619,9 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_SENDER_MIDDLE_NAME, senderMiddleName)
                 .putString(Constants.KEY_SENDER_LAST_NAME, senderLastName)
                 .putString(Constants.KEY_SENDER_PHONE, senderPhone)
+                .putString(Constants.KEY_SENDER_COMPANY_NAME, senderCompanyName)
+                .putInt(Constants.KEY_SENDER_TYPE, senderType)
 
-                .putString(Constants.KEY_RECIPIENT_SIGNATURE, recipientSignature)
                 .putString(Constants.KEY_RECIPIENT_EMAIL, recipientEmail)
                 .putString(Constants.KEY_RECIPIENT_CARGOSTAR, recipientCargo)
                 .putString(Constants.KEY_RECIPIENT_TNT, recipientTnt)
@@ -632,6 +635,8 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_RECIPIENT_MIDDLE_NAME, recipientMiddleName)
                 .putString(Constants.KEY_RECIPIENT_LAST_NAME, recipientLastName)
                 .putString(Constants.KEY_RECIPIENT_PHONE, recipientPhone)
+                .putString(Constants.KEY_RECIPIENT_COMPANY_NAME, recipientCompanyName)
+                .putInt(Constants.KEY_RECIPIENT_TYPE, recipientType)
 
                 .putString(Constants.KEY_PAYER_EMAIL, payerEmail)
                 .putLong(Constants.KEY_PAYER_COUNTRY_ID, payerCountryId)
@@ -646,6 +651,11 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_PAYER_CARGOSTAR, payerCargostar)
                 .putString(Constants.KEY_PAYER_TNT, payerTnt)
                 .putString(Constants.KEY_PAYER_FEDEX, payerFedex)
+                .putString(Constants.KEY_PAYER_TNT_TAX_ID, payerTntTaxId)
+                .putString(Constants.KEY_PAYER_FEDEX_TAX_ID, payerFedexTaxId)
+                .putString(Constants.KEY_PAYER_COMPANY_NAME, payerCompanyName)
+                .putInt(Constants.KEY_PAYER_TYPE, payerType)
+                .putString(Constants.KEY_PAYER_INN, payerInn)
                 .putDouble(Constants.KEY_DISCOUNT, discount)
 
                 .putString(Constants.KEY_CHECKING_ACCOUNT, checkingAccount)
@@ -662,7 +672,7 @@ public class SyncWorkRequest {
                 .putInt(Constants.KEY_PAYMENT_METHOD, paymentMethod)
                 .putDouble(Constants.KEY_TOTAL_WEIGHT, totalWeight)
                 .putDouble(Constants.KEY_TOTAL_VOLUME, totalVolume)
-                .putDouble(Constants.KEY_TOTAL_PRICE, totalPrice)
+                .putString(Constants.KEY_TOTAL_PRICE, totalPrice)
 
                 .putString(Constants.KEY_SERIALIZED_CONSIGNMENT_LIST, serializedConsignmentList)
                 .build();

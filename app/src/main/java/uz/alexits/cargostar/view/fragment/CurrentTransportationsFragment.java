@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.transportation.Transportation;
@@ -333,6 +334,10 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
             for (final Transportation transportation : transportationList) {
                 Log.i(TAG, "transportation: " + transportation);
             }
+        });
+
+        Repository.getInstance(getActivity().getApplication()).selectAllTransportation().observe(getViewLifecycleOwner(), transportationList -> {
+            Log.i(TAG, "all: " + transportationList);
         });
     }
 

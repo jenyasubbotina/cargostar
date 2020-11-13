@@ -30,13 +30,13 @@ public class CalculatorViewModel extends AndroidViewModel {
     private final MutableLiveData<Long> destCountryId;
 
     private final MutableLiveData<Long> providerId;
-    private final MutableLiveData<Long> packagingId;
     private final MutableLiveData<Integer> type;
 
     private final MutableLiveData<TypePackageIdList> typePackageIdList;
     private final MutableLiveData<CountryIdProviderId> countryIdProviderId;
 
     private final MutableLiveData<List<Long>> zoneIds;
+    private final MutableLiveData<List<Packaging>> packagingList;
 
     private final LiveData<Vat> vat;
 
@@ -48,13 +48,13 @@ public class CalculatorViewModel extends AndroidViewModel {
         this.destCountryId = new MutableLiveData<>();
 
         this.providerId = new MutableLiveData<>();
-        this.packagingId = new MutableLiveData<>();
         this.type = new MutableLiveData<>();
 
         this.typePackageIdList = new MutableLiveData<>();
         this.countryIdProviderId = new MutableLiveData<>();
 
         this.zoneIds = new MutableLiveData<>();
+        this.packagingList = new MutableLiveData<>();
 
         this.vat = repository.selectVat();
     }
@@ -90,14 +90,6 @@ public class CalculatorViewModel extends AndroidViewModel {
             return;
         }
         this.type.setValue(type);
-    }
-
-    public void setPackagingId(final Long packagingId) {
-        if (packagingId == null) {
-            this.packagingId.setValue(-1L);
-            return;
-        }
-        this.packagingId.setValue(packagingId);
     }
 
     public void setTypePackageIdList(final Integer type, final List<Long> packagingIds) {
@@ -139,10 +131,6 @@ public class CalculatorViewModel extends AndroidViewModel {
                 repository.selectPackagingTypesByTypeAndPackagingIds(input.getType(), input.getPackagingIdList()));
     }
 
-    public LiveData<Packaging> getPackaging() {
-        return Transformations.switchMap(packagingId, repository::selectPackagingById);
-    }
-
     public LiveData<List<ZoneSettings>> getZoneSettingsList() {
         return Transformations.switchMap(zoneIds, repository::selectZoneSettingsByZoneIds);
     }
@@ -150,6 +138,14 @@ public class CalculatorViewModel extends AndroidViewModel {
     public LiveData<List<Zone>> getZoneList() {
         return Transformations.switchMap(countryIdProviderId, input ->
                 repository.selectZoneListByCountryIdAndProviderId(input.getCountryId(), input.getProviderId()));
+    }
+
+//    public void setZoneSettingsIds(final List<Long> zoneSettingsIds) {
+//        this.zoneSettingsIds.setValue(zoneSettingsIds);
+//    }
+//
+    public LiveData<List<Packaging>> getTariffList() {
+        return Transformations.switchMap(providerId, repository::selectPackagingsByProviderId);
     }
 
     public LiveData<Vat> getVat() {

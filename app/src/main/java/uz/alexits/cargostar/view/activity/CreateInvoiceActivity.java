@@ -34,21 +34,25 @@ import com.google.gson.Gson;
 
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.TariffPrice;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.model.calculation.Vat;
 import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.shipping.Consignment;
-import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.view.adapter.CalculatorAdapter;
+import uz.alexits.cargostar.view.adapter.TariffPriceRadioAdapter;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
+import uz.alexits.cargostar.view.callback.TariffCallback;
+import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
 import uz.alexits.cargostar.viewmodel.CreateInvoiceViewModel;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
@@ -57,24 +61,27 @@ import uz.alexits.cargostar.view.adapter.CreateInvoiceData;
 import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_PHONE;
+import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_HEADING;
-import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_SINGLE_SPINNER;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_EDIT_TEXTS;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_STROKE;
-import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_NUMBER;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_TEXT;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.INPUT_TYPE_EMAIL;
 import static uz.alexits.cargostar.view.adapter.CreateInvoiceData.TYPE_TWO_SPINNERS;
 
-public class CreateInvoiceActivity extends AppCompatActivity implements CreateInvoiceCallback {
+public class CreateInvoiceActivity extends AppCompatActivity implements CreateInvoiceCallback, TariffCallback {
     private Context context;
     //header views
     private TextView fullNameTextView;
@@ -94,9 +101,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
     /* content views */
     //transportation
-//    private EditText transportationQrEditText;
-    private ImageView transportationQrImageView;
-    private ImageView transportationQrResultImageView;
     private EditText instructionsEditText;
 
     //provider
@@ -114,6 +118,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
     //cargo
     private EditText cargoDescriptionEditText;
+    private EditText cargoNameEditText;
+    private EditText cargoPriceEditText;
 
     private Spinner packagingTypeSpinner;
     private ArrayAdapter<PackagingType> packagingTypeArrayAdapter;
@@ -128,6 +134,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     private ImageView cargoResultImageView;
     private Button addBtn;
 
+    private ProgressBar progressBar;
+
     //calculation
     private TextView totalQuantityTextView;
     private TextView totalWeightTextView;
@@ -136,76 +144,72 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     private Button calculateBtn;
 
     private RadioGroup paymentMethodRadioGroup;
-
-    private RadioGroup tariffRadioGroup;
     private RadioButton cashRadioBtn;
     private RadioButton terminalRadioBtn;
-    private RadioButton expressRadioBtn;
-    private RadioButton economyRadioBtn;
 
-    private TextView economyPriceTextView;
-    private TextView expressPriceTextView;
+    private RecyclerView tariffPriceRecyclerView;
+    private TariffPriceRadioAdapter tariffPriceRadioAdapter;
 
-    private Button saveInvoiceBtn;
     private Button createInvoiceBtn;
 
-    //EditText watcher values
+    /* invoice data */
     private String courierId;
-    private String operatorId;
-    private String accountantId;
+
+    /* sender data */
+    private String senderEmail;
     private String senderSignature;
-    private String recipientSignature;
-    private String senderCargostar;
-    private String senderTnt;
-    private String senderFedex;
-    private String senderAddress;
-
-    private Country senderCountry;
-    private Region senderRegion;
-    private City senderCity;
-
-    private Provider serviceProvider;
-
-    private String senderZip;
     private String senderFirstName;
     private String senderMiddleName;
     private String senderLastName;
     private String senderPhone;
-    private String senderEmail;
+    private String senderAddress;
+    private Country senderCountry;
+    private Region senderRegion;
+    private City senderCity;
+    private String senderZip;
+    private String senderTnt;
+    private String senderFedex;
+    private String senderCompanyName;
+    private int senderType;
 
-    private String recipientCargo;
-    private String recipientTnt;
-    private String recipientFedex;
-    private String recipientAddress;
-
-    private Country recipientCountry;
-    private Region recipientRegion;
-    private City recipientCity;
-
-    private String recipientZip;
+    /* recipient data */
+    private String recipientEmail;
     private String recipientFirstName;
     private String recipientMiddleName;
     private String recipientLastName;
     private String recipientPhone;
-    private String recipientEmail;
-    private String payerAddress;
+    private String recipientAddress;
+    private Country recipientCountry;
+    private Region recipientRegion;
+    private City recipientCity;
+    private String recipientZip;
+    private String recipientCargo;
+    private String recipientTnt;
+    private String recipientFedex;
+    private String recipientCompanyName;
+    private int recipientType;
 
-    private Country payerCountry;
-    private Region payerRegion;
-    private City payerCity;
-
-    private String payerZip;
+    /* payer data */
+    private String payerEmail;
     private String payerFirstName;
     private String payerMiddleName;
     private String payerLastName;
     private String payerPhone;
-    private String payerEmail;
-    private String discount;
+    private String payerAddress;
+    private Country payerCountry;
+    private Region payerRegion;
+    private City payerCity;
+    private String payerZip;
     private String payerCargostar;
     private String payerTnt;
     private String payerFedex;
     private String payerTntTaxId;
     private String payerFedexTaxId;
+    private int payerType;
+
+    private String discount;
+    private String payerInn;
+    private String payerCompanyName;
     private String checkingAccount;
     private String bank;
     private String registrationCode;
@@ -218,27 +222,25 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
     /* view model */
     private CourierViewModel courierViewModel;
-    private CreateInvoiceViewModel createInvoiceViewModel;
     private RequestsViewModel requestsViewModel;
-
-    /* selected items for calculations */
-    private static Integer selectedPackageType = null;
-
-    /* selected items */
-    private Long selectedCountryId = null;
-    private Packaging selectedPackaging = null;
-    private List<Long> selectedPackagingIdList = null;
-    private List<ZoneSettings> selectedZoneSettingsList = null;
-
-    private static List<Consignment> consignmentList;
-    private double totalPrice = 0.0;
-    private ProgressBar progressBar;
+    private CreateInvoiceViewModel createInvoiceViewModel;
+    private CalculatorViewModel calculatorViewModel;
 
     /* if invoice was created before */
     private static long requestId;
     private static long invoiceId;
     private static long senderId;
-//    private static final List<Cargo> cargoList = new ArrayList<>();
+
+    /* selected items */
+    private Long selectedCountryId = null;
+    private Provider selectedProvider = null;
+    private List<Packaging> tariffList = null;
+    private List<Long> selectedPackagingIdList = null;
+    private List<ZoneSettings> selectedZoneSettingsList = null;
+    private Vat selectedVat = null;
+
+    private static List<Consignment> consignmentList;
+    private static final List<TariffPrice> tariffPriceList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,6 +256,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
         createInvoiceViewModel = new ViewModelProvider(this).get(CreateInvoiceViewModel.class);
+        calculatorViewModel = new ViewModelProvider(this).get(CalculatorViewModel.class);
 
         if (getIntent() != null && getIntent().getExtras() != null) {
             final int requestKey = getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1);
@@ -262,15 +265,18 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             invoiceId = getIntent().getLongExtra(Constants.KEY_INVOICE_ID, -1L);
             senderId = getIntent().getLongExtra(Constants.KEY_SENDER_ID, -1L);
 
-            Log.i(TAG, "getIntent(): " + getIntent().getExtras());
-
             updateUI();
+
+            createInvoiceBtn.setText(R.string.update_invoice);
         }
         else {
             requestId = -1L;
             invoiceId = -1L;
             senderId = -1L;
+            createInvoiceBtn.setText(R.string.create_invoice);
         }
+
+        /* header view model */
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
             if (courier != null) {
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
@@ -289,18 +295,22 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         /* location data view model */
         createInvoiceViewModel.getCountryList().observe(this, countryList -> {
+            Log.i(TAG, "countryList: " + countryList);
             adapter.setCountryList(countryList);
         });
 
         createInvoiceViewModel.getSenderRegionList().observe(this, senderRegionList ->  {
+            Log.i(TAG, "senderRegionList: " + senderRegionList);
             adapter.setSenderRegionList(senderRegionList);
         });
 
         createInvoiceViewModel.getRecipientRegionList().observe(this, recipientRegionList -> {
+            Log.i(TAG, "recipientRegionList: " + recipientRegionList);
             adapter.setRecipientRegionList(recipientRegionList);
         });
 
         createInvoiceViewModel.getPayerRegionList().observe(this, payerRegionList -> {
+            Log.i(TAG, "payerRegionList: " + payerRegionList);
             adapter.setPayerRegionList(payerRegionList);
         });
 
@@ -316,51 +326,35 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             adapter.setPayerCityList(payerCityList);
         });
 
-        /* address book data view model */
-        //todo: handle addressBook population
-//        createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, addressBookEntries -> {
-//            Log.i(TAG, "entries=" + addressBookEntries);
-//            adapter.setAddressBookEntries(addressBookEntries);
-//            adapter.notifyDataSetChanged();
-//        });
-
         /* calculator data view model */
-        createInvoiceViewModel.getProvider().observe(this, provider -> {
-            Log.i(TAG, "provider: " + provider);
-            serviceProvider = provider;
+        calculatorViewModel.getProvider().observe(this, provider -> {
+            selectedProvider = provider;
         });
 
-        createInvoiceViewModel.getType().observe(this, type -> {
-            Log.i(TAG, "type: " + type);
-            if (type != null && selectedPackagingIdList != null) {
-                createInvoiceViewModel.setTypePackageIdList(type, selectedPackagingIdList);
+        calculatorViewModel.getType().observe(this, type -> {
+            if (type != null) {
+                calculatorViewModel.setTypePackageIdList(type, selectedPackagingIdList);
             }
         });
 
-        createInvoiceViewModel.getPackagingIds().observe(this, packagingIds -> {
-            Log.i(TAG, "packagingIds: " + packagingIds);
+        calculatorViewModel.getPackagingIds().observe(this, packagingIds -> {
             selectedPackagingIdList = packagingIds;
+            Log.i(TAG, "packagingIdList: " + selectedPackagingIdList);
             if (packageTypeRadioGroup.getCheckedRadioButtonId() == docTypeRadioBtn.getId()) {
-                createInvoiceViewModel.setTypePackageIdList(1, packagingIds);
+                calculatorViewModel.setTypePackageIdList(1, packagingIds);
             }
             else if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
-                createInvoiceViewModel.setTypePackageIdList(2, packagingIds);
+                calculatorViewModel.setTypePackageIdList(2, packagingIds);
             }
         });
 
-        createInvoiceViewModel.getPackagingTypeList().observe(this, packagingTypeList -> {
-            Log.i(TAG, "packagingTypeList: " + packagingTypeList);
+        calculatorViewModel.getPackagingTypeList().observe(this, packagingTypeList -> {
             packagingTypeArrayAdapter.clear();
             packagingTypeArrayAdapter.addAll(packagingTypeList);
             packagingTypeArrayAdapter.notifyDataSetChanged();
         });
 
-        createInvoiceViewModel.getPackaging().observe(this, packaging -> {
-            Log.i(TAG, "packaging: " + packaging);
-            selectedPackaging = packaging;
-        });
-
-        createInvoiceViewModel.getZoneList().observe(this, zoneList -> {
+        calculatorViewModel.getZoneList().observe(this, zoneList -> {
             if (zoneList != null && !zoneList.isEmpty()) {
 
                 final List<Long> zoneIds = new ArrayList<>();
@@ -368,15 +362,25 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 for (final Zone zone : zoneList) {
                     zoneIds.add(zone.getId());
                 }
-                createInvoiceViewModel.setZoneIds(zoneIds);
+                calculatorViewModel.setZoneIds(zoneIds);
             }
         });
 
-        createInvoiceViewModel.getZoneSettingsList().observe(this, zoneSettingsList -> {
+        calculatorViewModel.getZoneSettingsList().observe(this, zoneSettingsList -> {
             Log.i(TAG, "zoneSettingsList: " + zoneSettingsList);
             selectedZoneSettingsList = zoneSettingsList;
         });
 
+        calculatorViewModel.getVat().observe(this, vat -> {
+            Log.i(TAG, "vat=" + vat);
+            selectedVat = vat;
+        });
+
+        calculatorViewModel.getTariffList().observe(this, packagingList -> {
+            tariffList = packagingList;
+        });
+
+        /* listeners */
         parcelSearchImageView.setOnClickListener(v -> {
             final String invoiceIdStr = parcelSearchEditText.getText().toString();
 
@@ -439,11 +443,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             }
         });
 
-        transportationQrImageView.setOnClickListener(v -> {
-            startActivityForResult(new Intent(context, ScanQrActivity.class), IntentConstants.REQUEST_SCAN_QR_PARCEL);
-
-        });
-
         cargoQrImageView.setOnClickListener(v -> {
             startActivityForResult(new Intent(context, ScanQrActivity.class), IntentConstants.REQUEST_SCAN_QR_CARGO);
         });
@@ -462,56 +461,60 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             if (b) {
                 secondProviderRadioBtn.setChecked(false);
 
-                Log.i(TAG, "selectedCountryId: " + selectedCountryId);
-
                 if (firstProviderRadioBtn.getText().equals(getString(R.string.cargostar))) {
-                    Log.i(TAG, "selectProvider(): cargostar");
-                    createInvoiceViewModel.setProviderId(6L);
-                    createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, 6L);
+                    Log.i(TAG, "checked(): cargostar");
+
+                    calculatorViewModel.setProviderId(6L);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, 6L);
                     return;
                 }
                 if (firstProviderRadioBtn.getText().equals(getString(R.string.tnt))) {
-                    Log.i(TAG, "selectProvider(): tnt");
-                    createInvoiceViewModel.setProviderId(5L);
-                    createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, 5L);
+                    Log.i(TAG, "checked(): tnt");
+
+                    calculatorViewModel.setProviderId(5L);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, 5L);
                 }
-                return;
             }
-//            if (!secondProviderRadioBtn.isChecked()) {
-//                selectedProvider = null;
-//                createInvoiceViewModel.setProviderId(null);
-//                createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, null);
-//            }
         });
 
         secondProviderRadioBtn.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
-                Log.i(TAG, "selectProvider(): fedex");
                 firstProviderRadioBtn.setChecked(false);
                 //only fedex case
-                createInvoiceViewModel.setProviderId(4L);
-                createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, 4L);
-                return;
+                Log.i(TAG, "checked(): fedex");
+                calculatorViewModel.setProviderId(4L);
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, 4L);
             }
-//            if (!firstProviderRadioBtn.isChecked()) {
-//                selectedProvider = null;
-//                createInvoiceViewModel.setProviderId(null);
-//                createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, null);
-//            }
         });
 
         /* choose packaging type (1 / 2) */
         packageTypeRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == docTypeRadioBtn.getId()) {
                 //docs
-                createInvoiceViewModel.setType(1);
+                calculatorViewModel.setType(1);
+                //make consignment fields invisible
+                lengthEditText.setVisibility(View.INVISIBLE);
+                widthEditText.setVisibility(View.INVISIBLE);
+                heightEditText.setVisibility(View.INVISIBLE);
+
+                if (selectedPackagingIdList != null) {
+                    calculatorViewModel.setTypePackageIdList(1, selectedPackagingIdList);
+                }
             }
             else if (checkedId == boxTypeRadioBtn.getId()) {
                 //boxes
-                createInvoiceViewModel.setType(2);
+                calculatorViewModel.setType(2);
+                //make consignment fields visible
+                lengthEditText.setVisibility(View.VISIBLE);
+                widthEditText.setVisibility(View.VISIBLE);
+                heightEditText.setVisibility(View.VISIBLE);
+
+                if (selectedPackagingIdList != null) {
+                    calculatorViewModel.setTypePackageIdList(2, selectedPackagingIdList);
+                }
             }
             else {
-                createInvoiceViewModel.setType(null);
+                calculatorViewModel.setType(null);
             }
         });
 
@@ -521,7 +524,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 final TextView itemTextView = (TextView) view;
                 final PackagingType selectedPackagingType = (PackagingType) adapterView.getSelectedItem();
 
-                createInvoiceViewModel.setPackagingId(selectedPackagingType.getPackagingId());
+                Log.i(TAG, "onItemSelected(): packagingType=" + selectedPackagingType + "packagingId=" + selectedPackagingType.getPackagingId());
 
                 if (itemTextView != null) {
                     if (i < adapterView.getCount()) {
@@ -543,10 +546,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         calculateBtn.setOnClickListener(v -> {
             calculateTotalPrice();
-        });
-
-        saveInvoiceBtn.setOnClickListener(v -> {
-            saveReceipt();
         });
 
         createInvoiceBtn.setOnClickListener(v -> {
@@ -594,67 +593,58 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         /* public data */
         itemList.add(new CreateInvoiceData(getString(R.string.public_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateInvoiceData(getString(R.string.courier_id), getString(R.string.operator_id), String.valueOf(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)), null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, false, false));
-        itemList.add(new CreateInvoiceData(getString(R.string.accountant_id), null, null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.courier_id), null, String.valueOf(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID)), null,
                 TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_TEXT, -1, false, false));
         itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
 
         /* sender data */
         itemList.add(new CreateInvoiceData(getString(R.string.sender_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateInvoiceData(getString(R.string.sender_signature), getString(R.string.receiver_signature), null, null,
-                TYPE_TWO_IMAGE_EDIT_TEXTS));
-        itemList.add(new CreateInvoiceData(getString(R.string.email), getString(R.string.cargostar_account_number), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.tnt_account_number), getString(R.string.fedex_account_number), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-
+        itemList.add(new CreateInvoiceData(getString(R.string.email), getString(R.string.sender_signature), null, null,
+                TYPE_EDIT_TEXT_IMAGE_VIEW, INPUT_TYPE_EMAIL, -1, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.first_name), getString(R.string.last_name), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.middle_name), getString(R.string.phone_number), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_PHONE, true, true));
         itemList.add(new CreateInvoiceData(getString(R.string.take_address), getString(R.string.country), null, null,
-                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
+                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, -1, true, true));
         itemList.add(new CreateInvoiceData(getString(R.string.region), getString(R.string.city), null, null,
                 TYPE_TWO_SPINNERS, -1, -1, true, true));
-
-        itemList.add(new CreateInvoiceData(getString(R.string.post_index), getString(R.string.first_name), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.post_index), getString(R.string.company_name), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.middle_name), getString(R.string.last_name), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.phone_number), null, null, null,
-                TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_PHONE, -1, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.tnt_account_number), getString(R.string.fedex_account_number), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
         itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
 
         /* recipient data */
         itemList.add(new CreateInvoiceData(getString(R.string.receiver_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateInvoiceData(getString(R.string.email), getString(R.string.cargostar_account_number), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.tnt_account_number), getString(R.string.fedex_account_number), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-
+        itemList.add(new CreateInvoiceData(getString(R.string.email), getString(R.string.first_name), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_TEXT, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.last_name), getString(R.string.middle_name), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
         itemList.add(new CreateInvoiceData(getString(R.string.delivery_address), getString(R.string.country), null, null,
                 TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
         itemList.add(new CreateInvoiceData(getString(R.string.region), getString(R.string.city), null, null,
                 TYPE_TWO_SPINNERS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-
-        itemList.add(new CreateInvoiceData(getString(R.string.post_index), getString(R.string.first_name), null, null,
+        itemList.add(new CreateInvoiceData(getString(R.string.post_index), getString(R.string.phone_number), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_PHONE, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.cargostar_account_number), getString(R.string.tnt_account_number), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.fedex_account_number), getString(R.string.company_name), null, null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.middle_name), getString(R.string.last_name), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.phone_number), null, null, null,
-                TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_PHONE, -1, true, true));
         itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
-
         /* payer data */
         itemList.add(new CreateInvoiceData(getString(R.string.payer_data), null, null, null, TYPE_HEADING));
-        itemList.add(new CreateInvoiceData(getString(R.string.address_book), null, null, null, TYPE_SINGLE_SPINNER));
-        itemList.add(new CreateInvoiceData(getString(R.string.email), getString(R.string.country), null, null,
-                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_EMAIL, INPUT_TYPE_TEXT, true, true));
+//        itemList.add(new CreateInvoiceData(getString(R.string.address_book), null, null, null, TYPE_SINGLE_SPINNER));
+        itemList.add(new CreateInvoiceData(getString(R.string.email), getString(R.string.first_name), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_TEXT, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.last_name), getString(R.string.middle_name), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.payer_address), getString(R.string.country), null, null,
+                TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, -1, true, true));
         itemList.add(new CreateInvoiceData(getString(R.string.region), getString(R.string.city), null, null,
                 TYPE_TWO_SPINNERS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.delivery_address), getString(R.string.post_index), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_NUMBER, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.first_name), getString(R.string.middle_name), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-        itemList.add(new CreateInvoiceData(getString(R.string.last_name), getString(R.string.phone_number), null, null,
-                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_PHONE, true, true));
+        itemList.add(new CreateInvoiceData(getString(R.string.post_index), getString(R.string.phone_number), null, null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_PHONE, true, true));
         itemList.add(new CreateInvoiceData(getString(R.string.discount), null, null, null,
                 TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_NUMBER, -1, false, false));
         itemList.add(new CreateInvoiceData(null, null, null, null, TYPE_STROKE));
@@ -670,6 +660,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         /* payment data */
         itemList.add(new CreateInvoiceData(getString(R.string.payment_data), null, null, null, TYPE_HEADING));
+        itemList.add(new CreateInvoiceData(getString(R.string.INN), getString(R.string.company_name),null,null,
+                TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
         itemList.add(new CreateInvoiceData(getString(R.string.checking_account), getString(R.string.bank),null,null,
                 TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
         itemList.add(new CreateInvoiceData(getString(R.string.payer_registration_code), getString(R.string.mfo), null, null,
@@ -690,9 +682,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         totalDimensionsTextView = findViewById(R.id.total_dimensions_value_text_view);
         calculateBtn = findViewById(R.id.calculate_btn);
 
-//        transportationQrEditText = findViewById(R.id.transportation_qr_edit_text);
-        transportationQrImageView = findViewById(R.id.transportation_qr_image_view);
-        transportationQrResultImageView = findViewById(R.id.transportation_qr_result_image_view);
         instructionsEditText = findViewById(R.id.instructions_edit_text);
 
         //provider
@@ -709,6 +698,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         boxTypeRadioBtn = findViewById(R.id.box_type_radio_btn);
 
         //cargo
+        cargoNameEditText = findViewById(R.id.cargo_name_edit_text);
+        cargoPriceEditText = findViewById(R.id.cargo_price_edit_text);
         cargoDescriptionEditText = findViewById(R.id.cargo_description_edit_text);
         packagingTypeSpinner = findViewById(R.id.packaging_type_spinner);
         packagingTypeField = findViewById(R.id.packaging_type_field);
@@ -722,20 +713,22 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         addBtn = findViewById(R.id.add_item_btn);
 
         //calculations
-        tariffRadioGroup = findViewById(R.id.tariff_radio_group);
         paymentMethodRadioGroup = findViewById(R.id.payment_method_radio_group);
-        expressRadioBtn = findViewById(R.id.express_radio_btn);
-        economyRadioBtn = findViewById(R.id.economy_radio_btn);
         cashRadioBtn = findViewById(R.id.cash_radio_btn);
         terminalRadioBtn = findViewById(R.id.terminal_radio_btn);
-        economyPriceTextView = findViewById(R.id.economy_price_text_view);
-        expressPriceTextView = findViewById(R.id.express_price_text_view);
-        saveInvoiceBtn = findViewById(R.id.save_btn);
         createInvoiceBtn = findViewById(R.id.create_receipt_btn);
 
         packagingTypeArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         packagingTypeArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         packagingTypeSpinner.setAdapter(packagingTypeArrayAdapter);
+
+        final LinearLayoutManager tariffPriceLayoutManager = new LinearLayoutManager(context);
+        tariffPriceLayoutManager.setOrientation(RecyclerView.VERTICAL);
+
+        tariffPriceRecyclerView = findViewById(R.id.tariff_price_recycler_view);
+        tariffPriceRadioAdapter = new TariffPriceRadioAdapter(context, this);
+        tariffPriceRecyclerView.setLayoutManager(tariffPriceLayoutManager);
+        tariffPriceRecyclerView.setAdapter(tariffPriceRadioAdapter);
     }
 
     private void updateUI() {
@@ -910,7 +903,9 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     /* btns */
     private void addCargoToInvoice() {
         final PackagingType packagingType = (PackagingType) packagingTypeSpinner.getSelectedItem();
+        final String name = cargoNameEditText.getText().toString().trim();
         final String description = cargoDescriptionEditText.getText().toString().trim();
+        final String price = cargoPriceEditText.getText().toString().trim();
         final String weight = weightEditText.getText().toString().trim();
         final String length = lengthEditText.getText().toString().trim();
         final String width = widthEditText.getText().toString().trim();
@@ -926,45 +921,67 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             Toast.makeText(context, "Укажите вес", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(length)) {
-            Toast.makeText(context, "Укажите длину", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(width)) {
-            Toast.makeText(context, "Укажите ширину", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(height)) {
-            Toast.makeText(context, "Укажите высоту", Toast.LENGTH_SHORT).show();
-            return;
-        }
         /* check for regex */
         if (!Regex.isFloatOrInt(weight)) {
             Toast.makeText(context, "Вес указан неверно", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!Regex.isFloatOrInt(length)) {
-            Toast.makeText(context, "Длина указана неверно", Toast.LENGTH_SHORT).show();
+        if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+            if (TextUtils.isEmpty(length)) {
+                Toast.makeText(context, "Укажите длину", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(width)) {
+                Toast.makeText(context, "Укажите ширину", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(height)) {
+                Toast.makeText(context, "Укажите высоту", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isFloatOrInt(length)) {
+                Toast.makeText(context, "Длина указана неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isFloatOrInt(width)) {
+                Toast.makeText(context, "Ширина указана неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!Regex.isFloatOrInt(height)) {
+                Toast.makeText(context, "Высота указана неверно", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        if (TextUtils.isEmpty(consignmentQr)) {
+            Toast.makeText(context, "Отсканируйте груз", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!Regex.isFloatOrInt(width)) {
-            Toast.makeText(context, "Ширина указана неверно", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(context, "Добавьте наименование вложения", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!Regex.isFloatOrInt(height)) {
-            Toast.makeText(context, "Высота указана неверно", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(description)) {
+            Toast.makeText(context, "Добавьте описание вложения", Toast.LENGTH_SHORT).show();
             return;
         }
-        //todo: packagingId & deliveryType
+        else if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+            if (TextUtils.isEmpty(price)) {
+                Toast.makeText(context, "Добавьте стоимость вложения", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         consignmentList.add(new Consignment(
                 -1,
-                -1L,
+                requestId,
                 String.valueOf(packagingType.getId()),
+                name,
                 description,
-                Double.parseDouble(length),
-                Double.parseDouble(width),
-                Double.parseDouble(height),
-                Double.parseDouble(weight),
+                price,
+                !TextUtils.isEmpty(length) ? Double.parseDouble(length) : 0,
+                !TextUtils.isEmpty(width) ? Double.parseDouble(width) : 0,
+                !TextUtils.isEmpty(height) ? Double.parseDouble(height) : 0,
+                !TextUtils.isEmpty(weight) ? Double.parseDouble(weight) : 0,
                 -1,
                 consignmentQr));
         calculatorAdapter.notifyItemInserted(consignmentList.size() - 1);
@@ -995,6 +1012,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             Toast.makeText(context, "Добавьте хотя бы одну позицию", Toast.LENGTH_SHORT).show();
             return;
         }
+        tariffPriceList.clear();
+
         int totalQuantity = consignmentList.size();
         double totalVolume = 0.0;
         double totalWeight = 0.0;
@@ -1002,62 +1021,76 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         double totalWidth = 0.0;
         double totalHeight = 0.0;
 
-        double totalPrice = 0.0;
-
         for (final Consignment item : consignmentList) {
             totalWeight += item.getWeight();
             totalLength += item.getLength();
             totalWidth += item.getWidth();
             totalHeight += item.getHeight();
         }
-        totalVolume = totalLength * totalWidth * totalHeight;
+        if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+            totalVolume = totalLength * totalWidth * totalHeight;
+        }
 
-        if (selectedPackaging != null) {
-            final int volumex = selectedPackaging.getVolumex();
+        if (selectedZoneSettingsList.isEmpty()) {
+            Toast.makeText(context, "Зоны для подсчета не найдены", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            if (volumex > 0) {
-                final double volumexWeight = totalVolume / volumex;
+        final Map<ZoneSettings, Packaging> zoneSettingsTariffMap = new HashMap<>();
 
-                if (volumexWeight > totalWeight) {
-                    totalWeight = volumexWeight;
+        for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
+            for (final Packaging packaging : tariffList) {
+                if (packaging.getId() == zoneSettings.getPackagingId()) {
+                    if (packaging != null) {
+                        final int volumex = packaging.getVolumex();
+
+                        if (volumex > 0) {
+                            final double volumexWeight = totalVolume / volumex;
+
+                            if (volumexWeight > totalWeight) {
+                                totalWeight = volumexWeight;
+                            }
+                        }
+                        if (totalWeight > zoneSettings.getWeightFrom() && totalWeight <= zoneSettings.getWeightTo()) {
+                            zoneSettingsTariffMap.put(zoneSettings, packaging);
+                        }
+                    }
                 }
             }
         }
-        ZoneSettings actualZoneSettings = null;
 
-        if (selectedZoneSettingsList != null) {
-            for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
-            if (totalWeight >= zoneSettings.getWeightFrom() && totalWeight < zoneSettings.getWeightTo()) {
-                actualZoneSettings = zoneSettings;
-                Log.i(TAG, "selectedZoneSettings=" + actualZoneSettings);
-                break;
-            }
-        }
-        }
-        if (actualZoneSettings != null) {
+        double totalPrice = 0.0;
+
+        for (final ZoneSettings actualZoneSettings : zoneSettingsTariffMap.keySet()) {
             totalPrice = actualZoneSettings.getPriceFrom();
-            Log.i(TAG, "calculating: from " + actualZoneSettings.getWeightFrom() + " to " + actualZoneSettings.getWeightTo() + " with " + actualZoneSettings.getWeightStep());
+            final Packaging correspondingTariff = zoneSettingsTariffMap.get(actualZoneSettings);
+
             for (double i = actualZoneSettings.getWeightFrom(); i < totalWeight; i += actualZoneSettings.getWeightStep()) {
+                if (actualZoneSettings.getWeightStep() <= 0) {
+                    break;
+                }
                 totalPrice += actualZoneSettings.getPriceStep();
             }
-        }
-        if (selectedPackaging != null) {
-            if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
-                totalPrice += selectedPackaging.getParcelFee();
+            if (totalPrice > 0) {
+                if (correspondingTariff != null) {
+                    if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+                        totalPrice += correspondingTariff.getParcelFee();
+                    }
+                }
+                if (selectedProvider != null) {
+                    totalPrice = totalPrice * (selectedProvider.getFuel() + 100) / 100;
+                }
+                if (selectedVat != null) {
+                    totalPrice *= (selectedVat.getVat() + 100) / 100;
+                }
             }
+            tariffPriceList.add(new TariffPrice(correspondingTariff.getName(), String.valueOf((int) totalPrice), correspondingTariff.getId()));
         }
-        if (serviceProvider != null) {
-            totalPrice = totalPrice * (serviceProvider.getFuel() + 100) / 100;
-
-        }
-        totalPrice *= 1.15;
-        this.totalPrice = totalPrice;
-
         totalQuantityTextView.setText(String.valueOf(totalQuantity));
-        totalWeightTextView.setText(String.valueOf(totalWeight));
-        totalDimensionsTextView.setText(String.valueOf(totalVolume));
-        expressPriceTextView.setText(String.valueOf(totalPrice));
-        economyPriceTextView.setText(String.valueOf(totalPrice));
+        totalWeightTextView.setText(String.valueOf(new BigDecimal(Double.toString(totalWeight)).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+        totalDimensionsTextView.setText(String.valueOf(new BigDecimal(Double.toString(totalVolume)).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+
+        tariffPriceRadioAdapter.setItemList(tariffPriceList);
     }
 
     private void saveReceipt() {
@@ -1105,75 +1138,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             Toast.makeText(context, "Для создания заявки укажите email отправителя", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!senderCountry.equals(getString(R.string.uzbekistan)) && !recipientCountry.equals(getString(R.string.uzbekistan))) {
-            Toast.makeText(context, "Страна отправителя или получателя должна быть Узбекистан", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //todo: handle service provider
-//        if (!firstCardRadioBtn.isChecked() && !secondCardRadioBtn.isChecked()) {
-//            Toast.makeText(context, "Для создания заявки выберите поставщика услуг", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//        if (firstCardRadioBtn.isChecked()) {
-//            serviceProvider = firstCardValue;
-//        }
-//        else if (secondCardRadioBtn.isChecked()) {
-//            serviceProvider = secondCardValue;
-//        }
-
-//        currentReceipt.getInvoice().setServiceProvider(serviceProvider);
-//        currentReceipt.getInvoice().setSenderSignature(senderSignature);
-//        currentReceipt.getInvoice().setSenderEmail(senderEmail);
-//        currentReceipt.getInvoice().setSenderCargostarAccountNumber(senderCargostar);
-//        currentReceipt.getInvoice().setRecipientFirstName(recipientFirstName);
-//        currentReceipt.getInvoice().setRecipientMiddleName(recipientMiddleName);
-//        currentReceipt.getInvoice().setRecipientLastName(recipientLastName);
-//        currentReceipt.getInvoice().setRecipientPhone(recipientPhone);
-//        currentReceipt.getInvoice().setRecipientEmail(recipientEmail);
-//        currentReceipt.getInvoice().setRecipientSignature(recipientSignature);
-//        currentReceipt.getInvoice().setPayerFirstName(payerFirstName);
-//        currentReceipt.getInvoice().setPayerMiddleName(payerMiddleName);
-//        currentReceipt.getInvoice().setPayerLastName(payerLastName);
-//        currentReceipt.getInvoice().setPayerPhone(payerPhone);
-//        currentReceipt.getInvoice().setPayerEmail(payerEmail);
-//        currentReceipt.getInvoice().setQr(qr);
-//        //sender data
-//        currentReceipt.getInvoice().setSenderLogin(senderLogin);
-//        currentReceipt.getInvoice().setSenderTntAccountNumber(senderTnt);
-//        currentReceipt.getInvoice().setSenderFedexAccountNumber(senderFedex);
-//        currentReceipt.getInvoice().setRecipientLogin(recipientLogin);
-//        currentReceipt.getInvoice().setRecipientCargostarAccountNumber(recipientCargo);
-//        currentReceipt.getInvoice().setRecipientTntAccountNumber(recipientTnt);
-//        currentReceipt.getInvoice().setRecipientFedexAccountNumber(recipientFedex);
-//        //payer data
-//        currentReceipt.getInvoice().setPayerLogin(payerLogin);
-//        currentReceipt.getInvoice().setPayerCargostarAccountNumber(payerCargostar);
-//        currentReceipt.getInvoice().setPayerTntAccountNumber(payerTnt);
-//        currentReceipt.getInvoice().setPayerFedexAccountNumber(payerFedex);
-//        currentReceipt.getInvoice().setCheckingAccount(checkingAccount);
-//        currentReceipt.getInvoice().setBank(bank);
-//        currentReceipt.getInvoice().setRegistrationCode(registrationCode);
-//        currentReceipt.getInvoice().setMfo(mfo);
-//        currentReceipt.getInvoice().setOked(oked);
-//        currentReceipt.getInvoice().setInstructions(instructions);
-//        currentReceipt.getInvoice().setPaymentStatus(PaymentStatus.WAITING_PAYMENT);
-
-//        if (!TextUtils.isEmpty(discount)) {
-//            currentReceipt.getInvoice().setDiscount(Integer.parseInt(discount));
-//        }
-//        if (newSenderAddress != null) {
-//            newSenderAddress.setZip(senderZip);
-//            currentReceipt.getInvoice().setSenderAddress(newSenderAddress);
-//        }
-//        if (newRecipientAddress != null) {
-//            newRecipientAddress.setZip(recipientZip);
-//            currentReceipt.getInvoice().setRecipientAddress(newRecipientAddress);
-//        }
-//        if (newPayerAddress != null) {
-//            newPayerAddress.setZip(payerZip);
-//            currentReceipt.getInvoice().setPayerAddress(newPayerAddress);
-//        }
-//        createParcelViewModel.updateReceipt(currentReceipt.getReceipt());
         Toast.makeText(context, "Данные сохранены успешно", Toast.LENGTH_SHORT).show();
         finish();
     }
@@ -1243,11 +1207,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         if (TextUtils.isEmpty(senderSignature)) {
             Log.e(TAG, "sendInvoice(): senderSignature is empty");
             Toast.makeText(context, "Для создания заявки добавьте подпись отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(senderCargostar)) {
-            Log.e(TAG, "sendInvoice(): senderCargostar is empty");
-            Toast.makeText(context, "Для создания заявки укажите номер акканута CargoStar отправителя", Toast.LENGTH_SHORT).show();
             return;
         }
         //recipient data
@@ -1352,6 +1311,24 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             Toast.makeText(context, "Для создания заявки укажите email плательщика", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (!TextUtils.isEmpty(senderCompanyName)) {
+            senderType = 2;
+        }
+        else {
+            senderType = 1;
+        }
+        if (!TextUtils.isEmpty(recipientCompanyName)) {
+            recipientType = 2;
+        }
+        else {
+            recipientType = 1;
+        }
+        if (!TextUtils.isEmpty(payerCompanyName)) {
+            payerType = 2;
+        }
+        else {
+            payerType = 1;
+        }
         if (consignmentList.isEmpty()) {
             Toast.makeText(context, "Для создания заявки добавьте хотя бы 1 груз", Toast.LENGTH_SHORT).show();
             return;
@@ -1377,7 +1354,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
             deliveryType = 2;
         }
-
         if (paymentMethodRadioGroup.getCheckedRadioButtonId() != cashRadioBtn.getId()
                 && paymentMethodRadioGroup.getCheckedRadioButtonId() != terminalRadioBtn.getId()) {
             Toast.makeText(context, "Для создания заявки выберите способ оплаты", Toast.LENGTH_SHORT).show();
@@ -1408,11 +1384,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 requestId,
                 invoiceId,
                 courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId) : -1L,
-                operatorId != null && !TextUtils.isEmpty(operatorId) ? Long.parseLong(operatorId) : -1L,
-                accountantId != null && !TextUtils.isEmpty(accountantId) ? Long.parseLong(accountantId) : -1L,
                 !TextUtils.isEmpty(senderSignature) ? senderSignature : null,
                 senderEmail,
-                senderCargostar,
                 senderTnt,
                 senderFedex,
                 senderCountry.getId(),
@@ -1424,7 +1397,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 senderMiddleName,
                 senderLastName,
                 senderPhone,
-                !TextUtils.isEmpty(recipientSignature) ? recipientSignature : null,
+                senderCompanyName,
+                senderType,
                 recipientEmail,
                 recipientCargo,
                 recipientTnt,
@@ -1438,6 +1412,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 recipientMiddleName,
                 recipientLastName,
                 recipientPhone,
+                recipientCompanyName,
+                recipientType,
                 payerEmail,
                 payerCountry.getId(),
                 payerRegion.getId(),
@@ -1451,20 +1427,25 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 payerCargostar,
                 payerTnt,
                 payerFedex,
+                payerTntTaxId,
+                payerFedexTaxId,
+                payerCompanyName,
+                payerType,
                 discount != null && !TextUtils.isEmpty(discount) ? Double.parseDouble(discount) : -1,
+                payerInn,
                 checkingAccount,
                 bank,
                 mfo,
                 oked,
                 registrationCode,
                 instructions,
-                serviceProvider.getId(),
-                selectedPackaging.getId(),
+                selectedProvider.getId(),
+                tariffPriceRadioAdapter.getSelectedPackagingId(),
                 deliveryType,
                 paymentMethod,
                 totalWeight,
                 totalVolume,
-                totalPrice,
+                tariffPriceRadioAdapter.getSelectedPrice(),
                 serializedConsignmentList);
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(sendInvoiceWorkUUID).observe(this, workInfo -> {
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
@@ -1474,8 +1455,8 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 Log.i(TAG, "createInvoice(): successfully ");
                 Toast.makeText(context, "Накладная создана успешно", Toast.LENGTH_SHORT).show();
 
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+//                startActivity(new Intent(this, MainActivity.class));
+//                finish();
 
                 return;
             }
@@ -1523,159 +1504,121 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 Log.i(TAG, "courierId: " + courierId);
                 break;
             }
-            case 2: {
-                //accountantId
-                accountantId = editable.toString();
+            case 4: {
+                //senderEmail
+                senderEmail = editable.toString();
                 break;
             }
             case 5: {
-                //senderSignature
-                senderSignature = editable.toString();
-                break;
+                //senderFirstName
+                senderFirstName = editable.toString();
             }
             case 6: {
-                //senderEmail
-                senderEmail = editable.toString();
-//                createParcelViewModel.selectAddressBookEntriesBySenderLogin(senderLogin).observe(this, this::initPayerAddressBook);
-
-                //todo: fill in Spinner through AddressBook
-//                createParcelViewModel.selectCustomerByLogin(senderLogin).observe(this, customer -> {
-//                    if (customer != null) {
-//                        if (customer.getSignature() != null) {
-//                            itemList.get(5).firstValue =  customer.getSignature().getName();
-//                            adapter.notifyItemChanged(5);
-//                        }
-//                        itemList.get(6).firstValue = customer.getAccount().getLogin();
-//                        itemList.get(6).secondValue = customer.getCargostarAccountNumber();
-//                        adapter.notifyItemChanged(6);
-//                        itemList.get(7).firstValue = customer.getTntAccountNumber();
-//                        itemList.get(7).secondValue = customer.getFedexAccountNumber();
-//                        adapter.notifyItemChanged(7);
-//                        itemList.get(8).firstValue = customer.getAddress().getAddress();
-//                        itemList.get(8).secondValue = customer.getAddress().getCountry();
-//                        adapter.notifyItemChanged(8);
-//                        itemList.get(9).firstValue = customer.getAddress().getCity();
-//                        itemList.get(9).secondValue = customer.getAddress().getRegion();
-//                        adapter.notifyItemChanged(9);
-//                        itemList.get(10).firstValue = customer.getAddress().getZip();
-//                        itemList.get(10).secondValue = customer.getFirstName();
-//                        adapter.notifyItemChanged(10);
-//                        itemList.get(11).firstValue = customer.getMiddleName();
-//                        itemList.get(11).secondValue = customer.getLastName();
-//                        adapter.notifyItemChanged(11);
-//                        itemList.get(12).firstValue = customer.getPhone();
-//                        itemList.get(12).secondValue = customer.getAccount().getEmail();
-//                        adapter.notifyItemChanged(12);
-//                    }
-//                });
-                break;
-            }
-            case 7: {
-                //senderTnt
-                senderTnt = editable.toString();
-                break;
-            }
-            case 8: {
-                //senderAddress
-                senderAddress = editable.toString();
-                break;
-            }
-            case 10: {
-                //senderZip
-                senderZip = editable.toString();
-                break;
-            }
-            case 11: {
                 //senderMiddleName
                 senderMiddleName = editable.toString();
                 break;
             }
-            case 12: {
-                //senderPhone
-                senderPhone = editable.toString();
+            case 7: {
+                //senderAddress
+                senderAddress = editable.toString();
                 break;
             }
-            case 15: {
+            case 9: {
+                //senderZip
+                senderZip = editable.toString();
+                break;
+            }
+            case 10: {
+                //senderTnt
+                senderTnt = editable.toString();
+                break;
+            }
+            case 13: {
                 //recipientEmail
                 recipientEmail = editable.toString();
                 break;
             }
-            case 16: {
-                //recipientTnt
-                recipientTnt = editable.toString();
+            case 14: {
+                //recipientLastName
+                recipientLastName = editable.toString();
                 break;
             }
-            case 17: {
+            case 15: {
                 //recipientAddress
                 recipientAddress = editable.toString();
                 break;
             }
-            case 19: {
+            case 17: {
                 //recipientZip
                 recipientZip = editable.toString();
                 break;
             }
-            case 20: {
-                //recipientMiddleName
-                recipientMiddleName = editable.toString();
+            case 18: {
+                //recipientCargo
+                recipientCargo = editable.toString();
                 break;
             }
-            case 21: {
-                //recipientPhone
-                recipientPhone = editable.toString();
+            case 19: {
+                //recipientFedex
+                recipientFedex = editable.toString();
                 break;
             }
-            case 25: {
+            case 22: {
                 //payerEmail
                 payerEmail = editable.toString();
                 break;
             }
-            case 27: {
-                //payerEmail
-                payerAddress = editable.toString();
-                break;
-            }
-            case 28: {
-                //payerFirstName
-                payerFirstName = editable.toString();
-                break;
-            }
-            case 29: {
+            case 23: {
                 //payerLastName
                 payerLastName = editable.toString();
                 break;
             }
-            case 30: {
-                //payerLastName
+            case 24: {
+                //payerAddress
+                payerAddress = editable.toString();
+                break;
+            }
+            case 26: {
+                //payerZip
+                payerZip = editable.toString();
+                break;
+            }
+            case 27: {
+                //discount
                 discount = editable.toString();
                 break;
             }
-            case 32: {
-                //payerCargo
+            case 29: {
+                //payerCargostar
                 payerCargostar = editable.toString();
                 break;
             }
-            case 33: {
+            case 30: {
                 //payerTnt
                 payerTnt = editable.toString();
                 break;
             }
-            case 34: {
+            case 31: {
                 //payerFedex
                 payerFedex = editable.toString();
                 break;
             }
-            case 37: {
+            case 34: {
+                //payerInn
+                payerInn = editable.toString();
+                break;
+            }
+            case 35: {
                 //checkingAccount
                 checkingAccount = editable.toString();
                 break;
             }
-            case 38: {
+            case 36: {
                 //registrationCode
                 registrationCode = editable.toString();
                 break;
             }
-            case 39: {
+            case 37: {
                 //oked
                 oked = editable.toString();
                 break;
@@ -1686,87 +1629,92 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     @Override
     public void afterSecondEditTextChanged(int position, Editable editable) {
         switch (position) {
-            case 1: {
-                //operatorId
-                operatorId = editable.toString();
+            case 4: {
+                //senderSignature
+                senderSignature = editable.toString();
                 break;
             }
             case 5: {
-                //recipientSignature
-                recipientSignature = editable.toString();
-                break;
-            }
-            case 6: {
-                //senderCargo
-                senderCargostar = editable.toString();
-                break;
-            }
-            case 7: {
-                //senderFedex
-                senderFedex = editable.toString();
-                break;
-            }
-            case 10: {
-                //senderFirstName
-                senderFirstName = editable.toString();
-                break;
-            }
-            case 11: {
                 //senderLastName
                 senderLastName = editable.toString();
                 break;
             }
-            case 15: {
-                //recipientCargo
-                recipientCargo = editable.toString();
+            case 6: {
+                //senderPhone
+                senderPhone = editable.toString();
                 break;
             }
-            case 16: {
-                //recipientFedex
-                recipientFedex = editable.toString();
+            case 9: {
+                //senderCompanyName
+                senderCompanyName = editable.toString();
                 break;
             }
-            case 19: {
+            case 10: {
+                //senderFedex
+                senderFedex = editable.toString();
+                break;
+            }
+            case 13: {
                 //recipientFirstName
                 recipientFirstName = editable.toString();
                 break;
             }
-            case 20: {
-                //recipientLastName
-                recipientLastName = editable.toString();
+            case 14: {
+                //recipientMiddleName
+                recipientMiddleName = editable.toString();
                 break;
             }
-            case 27: {
-                //payerZip
-                payerZip = editable.toString();
+            case 17: {
+                //recipientPhone
+                recipientPhone = editable.toString();
                 break;
             }
-            case 28: {
+            case 18: {
+                //recipientTnt
+                recipientTnt = editable.toString();
+                break;
+            }
+            case 19: {
+                //recipientCompanyName
+                recipientCompanyName = editable.toString();
+                break;
+            }
+            case 22: {
+                //payerFirstName
+                payerFirstName = editable.toString();
+                break;
+            }
+            case 23: {
                 //payerMiddleName
                 payerMiddleName = editable.toString();
                 break;
             }
-            case 29: {
+            case 26: {
                 //payerPhone
                 payerPhone = editable.toString();
                 break;
             }
-            case 33: {
-                //retntTaxId
+            case 30: {
+                //payerTntTaxId
                 payerTntTaxId = editable.toString();
                 break;
             }
-            case 34: {
-                //reFedexTaxId
+            case 31: {
+                //payerFedexTaxId
                 payerFedexTaxId = editable.toString();
                 break;
             }
-            case 37: {
+            case 34: {
+                //payerCompanyName
+                payerCompanyName = editable.toString();
+                break;
+            }
+            case 35: {
                 //bank
                 bank = editable.toString();
                 break;
             }
-            case 38: {
+            case 36: {
                 //mfo
                 mfo = editable.toString();
                 break;
@@ -1795,9 +1743,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 //            return;
 //        }
         if (requestCode == IntentConstants.REQUEST_SCAN_QR_CARGO) {
-            Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
-            cargoQrEditText.setText(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
-
             if (resultCode == RESULT_CANCELED) {
                 cargoQrEditText.setBackgroundResource(R.drawable.edit_text_locked);
                 cargoResultImageView.setImageResource(R.drawable.ic_image_red);
@@ -1819,21 +1764,9 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             }
             if (resultCode == RESULT_OK && data != null) {
                 Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
-                itemList.get(5).firstValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                itemList.get(4).secondValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
                 senderSignature = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-                adapter.notifyItemChanged(5);
-                return;
-            }
-        }
-        if (requestCode == IntentConstants.REQUEST_RECIPIENT_SIGNATURE) {
-            if (resultCode == RESULT_CANCELED) {
-                return;
-            }
-            if (resultCode == RESULT_OK && data != null) {
-                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
-                itemList.get(5).secondValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-                recipientSignature = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-                adapter.notifyItemChanged(5);
+                adapter.notifyItemChanged(4);
             }
         }
     }
@@ -1901,16 +1834,16 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     @Override
     public void onSpinnerEditTextItemSelected(final int position, final Object selectedObject) {
         switch (position) {
-            case 8: {
+            case 7: {
                 //sender country
                 senderCountry = (Country) selectedObject;
                 createInvoiceViewModel.setSenderCountryId(senderCountry.getId());
-//                calculatorViewModel.setSrcCountryId(senderCountry.getId());
+                calculatorViewModel.setSrcCountryId(senderCountry.getId());
 
                 //country & null = hide all
                 if (recipientCountry == null) {
                     selectedCountryId = null;
-                    createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                     firstProviderRadioBtn.setChecked(false);
                     secondProviderRadioBtn.setChecked(false);
@@ -1932,7 +1865,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                     //uzbekistan -> uzbekistan = cargo only
                     if (!TextUtils.isEmpty(recipientCountry.getNameEn()) && recipientCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
                         selectedCountryId = senderCountry.getId();
-                        createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                        calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                         firstProviderRadioBtn.setChecked(false);
 
@@ -1952,7 +1885,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                     }
                     //uzbekistan -> other = fedex & tnt (export)
                     selectedCountryId = recipientCountry.getId();
-                    createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                     firstProviderRadioBtn.setChecked(false);
                     secondProviderRadioBtn.setChecked(false);
@@ -1974,7 +1907,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 //other -> uzbekistan = tnt only
                 if (!TextUtils.isEmpty(recipientCountry.getNameEn()) && recipientCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
                     selectedCountryId = senderCountry.getId();
-                    createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                     firstProviderRadioBtn.setChecked(false);
                     firstProviderImageView.setImageResource(R.drawable.logo_tnt_cacl);
@@ -1992,7 +1925,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                     return;
                 }
                 selectedCountryId = null;
-                createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                 firstProviderRadioBtn.setChecked(false);
                 secondProviderRadioBtn.setChecked(false);
@@ -2009,16 +1942,16 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 secondProviderCard.setVisibility(View.INVISIBLE);
             }
                 break;
-            case 17: {
+            case 15: {
                 //recipient country
                 recipientCountry = (Country) selectedObject;
                 createInvoiceViewModel.setRecipientCountryId(recipientCountry.getId());
-//                calculatorViewModel.setDestCountryId(recipientCountry.getId());
+                calculatorViewModel.setDestCountryId(recipientCountry.getId());
 
                 //country & null = hide all
                 if (senderCountry == null) {
                     selectedCountryId = null;
-                    createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                     firstProviderRadioBtn.setChecked(false);
                     secondProviderRadioBtn.setChecked(false);
@@ -2040,7 +1973,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                     //uzbekistan -> uzbekistan = cargo only
                     if (!TextUtils.isEmpty(recipientCountry.getNameEn()) && recipientCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
                         selectedCountryId = recipientCountry.getId();
-                        createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                        calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                         firstProviderRadioBtn.setChecked(false);
 
@@ -2060,7 +1993,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                     }
                     //uzbekistan -> other = fedex & tnt (export)
                     selectedCountryId = recipientCountry.getId();
-                    createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                     firstProviderImageView.setImageResource(R.drawable.logo_tnt_cacl);
                     firstProviderRadioBtn.setChecked(false);
@@ -2083,7 +2016,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 //other -> uzbekistan = tnt only
                 if (!TextUtils.isEmpty(recipientCountry.getNameEn()) && recipientCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
                     selectedCountryId = senderCountry.getId();
-                    createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                     firstProviderRadioBtn.setChecked(false);
 
@@ -2102,7 +2035,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                     return;
                 }
                 selectedCountryId = null;
-                createInvoiceViewModel.setCountryIdProviderId(selectedCountryId, serviceProvider != null ? serviceProvider.getId() : null);
+                calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
 
                 firstProviderRadioBtn.setChecked(false);
                 secondProviderRadioBtn.setChecked(false);
@@ -2119,17 +2052,11 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 secondProviderCard.setVisibility(View.INVISIBLE);
                 break;
             }
-            case 25: {
+            case 24: {
                 //payer country
                 payerCountry = (Country) selectedObject;
                 createInvoiceViewModel.setPayerCountryId(payerCountry.getId());
                 break;
-            }
-            case 46: {
-                //packaging type
-//                packagingType = (PackagingType) selectedObject;
-//                Log.i(TAG, "selected packaging type: " + packagingType);
-//                calculatorViewModel.setPackagingId();
             }
         }
     }
@@ -2137,19 +2064,19 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     @Override
     public void onFirstSpinnerItemSelected(final int position, final Region region) {
         switch (position) {
-            case 9: {
+            case 8: {
                 //sender region
                 senderRegion = region;
                 createInvoiceViewModel.setSenderRegionId(region.getId());
                 break;
             }
-            case 18: {
+            case 16: {
                 //recipient region
                 recipientRegion = region;
                 createInvoiceViewModel.setRecipientRegionId(region.getId());
                 break;
             }
-            case 26: {
+            case 25: {
                 //payer region
                 payerRegion = region;
                 createInvoiceViewModel.setPayerRegionId(region.getId());
@@ -2161,19 +2088,19 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     @Override
     public void onSecondSpinnerItemSelected(final int position, final City city) {
         switch (position) {
-            case 9: {
+            case 8: {
                 //sender city
                 senderCity = city;
                 createInvoiceViewModel.setSenderCityId(city.getId());
                 break;
             }
-            case 18: {
+            case 16: {
                 //recipient city
                 recipientCity = city;
                 createInvoiceViewModel.setRecipientCityId(city.getId());
                 break;
             }
-            case 26: {
+            case 25: {
                 //payer city
                 payerCity = city;
                 createInvoiceViewModel.setPayerCityId(city.getId());
@@ -2184,6 +2111,13 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
     private void initCitySpinner() {
 
+    }
+
+    @Override
+    public void onTariffSelected(int position, int lastCheckedPosition) {
+        Log.i(TAG, "onTariffSelected(): lastCheckedPosition=" + lastCheckedPosition + " currentPosition=" + position);
+        tariffPriceRadioAdapter.setLastCheckedPosition(position);
+        tariffPriceRadioAdapter.notifyDataSetChanged();
     }
 
     private static final String TAG = CreateInvoiceActivity.class.toString();

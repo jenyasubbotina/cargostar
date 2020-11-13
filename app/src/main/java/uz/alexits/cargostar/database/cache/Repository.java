@@ -203,6 +203,10 @@ public class Repository {
         return packagingDao.selectPackagingById(packagingId);
     }
 
+    public LiveData<List<Packaging>> selectPackagingListByIds(final List<Long> packagingIdList) {
+        return packagingDao.selectPackagingListByIds(packagingIdList);
+    }
+
     public LiveData<List<PackagingType>> selectPackagingTypesByProviderId(final long providerId, final long type) {
         return packagingDao.selectPackagingTypesByProviderId(providerId, type);
     }
@@ -302,6 +306,10 @@ public class Repository {
     /* transportation data */
     public LiveData<Transportation> selectTransportationById(final long transportationId) {
         return transportationDao.selectTransportationById(transportationId);
+    }
+
+    public LiveData<List<Transportation>> selectAllTransportation() {
+        return transportationDao.selectAllTransportation();
     }
 
     public LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId) {

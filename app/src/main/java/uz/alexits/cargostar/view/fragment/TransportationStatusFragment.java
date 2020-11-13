@@ -230,14 +230,17 @@ public class TransportationStatusFragment extends Fragment {
         });
 
         statusViewModel.getRoute().observe(getViewLifecycleOwner(), route -> {
+            Log.i(TAG, "route: " + route);
             Route currentPath = null;
             Route nextPath = null;
 
             if (currentTransportation != null) {
                 if (route != null && !route.isEmpty()) {
+                    Log.i(TAG, "route is not empty: ");
                     for (int i = 0; i < route.size(); i++) {
                         if (route.get(i).getTransitPointId().equals(currentTransportation.getCurrentTransitionPointId())) {
                             currentPath = route.get(i);
+                            Log.i(TAG, "currentPath: " + currentPath);
 
                             if (i == route.size() - 1) {
                                 nextPath = null;

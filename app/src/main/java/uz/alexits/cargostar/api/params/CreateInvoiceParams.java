@@ -22,14 +22,6 @@ public class CreateInvoiceParams {
     @SerializedName("courier_id")
     private long courierId;
 
-    @Expose
-    @SerializedName("operator_id")
-    private long operatorId;
-
-    @Expose
-    @SerializedName("accountant_id")
-    private long accountantId;
-
     /* Sender */
     @Expose
     @SerializedName("sender_signature")
@@ -38,10 +30,6 @@ public class CreateInvoiceParams {
     @Expose
     @SerializedName("sender_email")
     private String senderEmail;
-
-    @Expose
-    @SerializedName("sender_cargostar")
-    private String senderCargostarAccountNumber;
 
     @Expose
     @SerializedName("sender_tnt")
@@ -86,6 +74,14 @@ public class CreateInvoiceParams {
     @Expose
     @SerializedName("sender_phone")
     private String senderPhone;
+
+    @Expose
+    @SerializedName("sender_company")
+    private String senderCompanyName;
+
+    @Expose
+    @SerializedName("sender_type")
+    private int senderType;
 
     /* Recipient */
     @Expose
@@ -144,6 +140,14 @@ public class CreateInvoiceParams {
     @SerializedName("recipient_phone")
     private String recipientPhone;
 
+    @Expose
+    @SerializedName("recipient_company")
+    private String recipientCompanyName;
+
+    @Expose
+    @SerializedName("recipient_type")
+    private int recipientType;
+
     /* Payer */
     @Expose
     @SerializedName("payer_email")
@@ -196,6 +200,26 @@ public class CreateInvoiceParams {
     @Expose
     @SerializedName("payer_phone")
     private String payerPhone;
+
+    @Expose
+    @SerializedName("payer_inn")
+    private String payerInn;
+
+    @Expose
+    @SerializedName("payer_company")
+    private String payerCompanyName;
+
+    @Expose
+    @SerializedName("payer_type")
+    private int payerType;
+
+    @Expose
+    @SerializedName("payer_tnt_tax_id")
+    private String payerTntTaxId;
+
+    @Expose
+    @SerializedName("payer_fedex_tax_id")
+    private String payerFedexTaxId;
 
     @Expose
     @SerializedName("discount")
@@ -259,7 +283,7 @@ public class CreateInvoiceParams {
 
     @Expose
     @SerializedName("total_price")
-    private double totalPrice;
+    private String totalPrice;
 
     @Expose
     @SerializedName("provider_id")
@@ -304,22 +328,6 @@ public class CreateInvoiceParams {
         this.courierId = courierId;
     }
 
-    public long getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorId(long operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public long getAccountantId() {
-        return accountantId;
-    }
-
-    public void setAccountantId(long accountantId) {
-        this.accountantId = accountantId;
-    }
-
     public String getSenderSignature() {
         return senderSignature;
     }
@@ -334,14 +342,6 @@ public class CreateInvoiceParams {
 
     public void setSenderEmail(String senderEmail) {
         this.senderEmail = senderEmail;
-    }
-
-    public String getSenderCargostarAccountNumber() {
-        return senderCargostarAccountNumber;
-    }
-
-    public void setSenderCargostarAccountNumber(String senderCargostarAccountNumber) {
-        this.senderCargostarAccountNumber = senderCargostarAccountNumber;
     }
 
     public String getSenderTntAccountNumber() {
@@ -760,11 +760,11 @@ public class CreateInvoiceParams {
         this.packagingId = packagingId;
     }
 
-    public double getTotalPrice() {
+    public String getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(double totalPrice) {
+    public void setTotalPrice(final String totalPrice) {
         this.totalPrice = totalPrice;
     }
 
@@ -792,71 +792,152 @@ public class CreateInvoiceParams {
         this.paymentMethod = paymentMethod;
     }
 
+    public String getSenderCompanyName() {
+        return senderCompanyName;
+    }
+
+    public void setSenderCompanyName(String senderCompanyName) {
+        this.senderCompanyName = senderCompanyName;
+    }
+
+    public int getSenderType() {
+        return senderType;
+    }
+
+    public void setSenderType(int senderType) {
+        this.senderType = senderType;
+    }
+
+    public String getRecipientCompanyName() {
+        return recipientCompanyName;
+    }
+
+    public void setRecipientCompanyName(String recipientCompanyName) {
+        this.recipientCompanyName = recipientCompanyName;
+    }
+
+    public int getRecipientType() {
+        return recipientType;
+    }
+
+    public void setRecipientType(int recipientType) {
+        this.recipientType = recipientType;
+    }
+
+    public String getPayerInn() {
+        return payerInn;
+    }
+
+    public void setPayerInn(String payerInn) {
+        this.payerInn = payerInn;
+    }
+
+    public String getPayerCompanyName() {
+        return payerCompanyName;
+    }
+
+    public void setPayerCompanyName(String payerCompanyName) {
+        this.payerCompanyName = payerCompanyName;
+    }
+
+    public int getPayerType() {
+        return payerType;
+    }
+
+    public void setPayerType(int payerType) {
+        this.payerType = payerType;
+    }
+
+    public String getPayerTntTaxId() {
+        return payerTntTaxId;
+    }
+
+    public void setPayerTntTaxId(String payerTntTaxId) {
+        this.payerTntTaxId = payerTntTaxId;
+    }
+
+    public String getPayerFedexTaxId() {
+        return payerFedexTaxId;
+    }
+
+    public void setPayerFedexTaxId(String payerFedexTaxId) {
+        this.payerFedexTaxId = payerFedexTaxId;
+    }
+
     @NonNull
     @Override
     public String toString() {
         return "CreateInvoiceParams{" +
-                "courierId='" + courierId + '\'' +
-                "\noperatorId='" + operatorId + '\'' +
-                "\naccountantId='" + accountantId + '\'' +
-                "\nsenderSignature='" + senderSignature + '\'' +
-                "\nsenderEmail='" + senderEmail + '\'' +
-                "\nsenderCargostarAccountNumber='" + senderCargostarAccountNumber + '\'' +
-                "\nsenderTntAccountNumber='" + senderTntAccountNumber + '\'' +
-                "\nsenderFedexAccountNumber='" + senderFedexAccountNumber + '\'' +
-                "\nsenderCountryId=" + senderCountryId +
-                "\nsenderRegionId=" + senderRegionId +
-                "\nsenderCityId=" + senderCityId +
-                "\nsenderAddress='" + senderAddress + '\'' +
-                "\nsenderZip='" + senderZip + '\'' +
-                "\nsenderFirstName='" + senderFirstName + '\'' +
-                "\nsenderMiddleName='" + senderMiddleName + '\'' +
-                "\nsenderLastName='" + senderLastName + '\'' +
-                "\nsenderPhone='" + senderPhone + '\'' +
-                "\nrecipientSignature='" + recipientSignature + '\'' +
-                "\nrecipientEmail='" + recipientEmail + '\'' +
-                "\nrecipientCargostarAccountNumber='" + recipientCargostarAccountNumber + '\'' +
-                "\nrecipientTntAccountNumber='" + recipientTntAccountNumber + '\'' +
-                "\nrecipientFedexAccountNumber='" + recipientFedexAccountNumber + '\'' +
-                "\nrecipientCountryId=" + recipientCountryId +
-                "\nrecipientRegionId=" + recipientRegionId +
-                "\nrecipientCityId=" + recipientCityId +
-                "\nrecipientAddress='" + recipientAddress + '\'' +
-                "\nrecipientZip='" + recipientZip + '\'' +
-                "\nrecipientFirstName='" + recipientFirstName + '\'' +
-                "\nrecipientMiddleName='" + recipientMiddleName + '\'' +
-                "\nrecipientLastName='" + recipientLastName + '\'' +
-                "\nrecipientPhone='" + recipientPhone + '\'' +
-                "\npayerEmail='" + payerEmail + '\'' +
-                "\npayerCargostarAccountNumber='" + payerCargostarAccountNumber + '\'' +
-                "\npayerTntAccountNumber='" + payerTntAccountNumber + '\'' +
-                "\npayerFedexAccountNumber='" + payerFedexAccountNumber + '\'' +
-                "\npayerCountryId=" + payerCountryId +
-                "\npayerRegionId=" + payerRegionId +
-                "\npayerCityId=" + payerCityId +
-                "\npayerAddress='" + payerAddress + '\'' +
-                "\npayerZip='" + payerZip + '\'' +
-                "\npayerFirstName='" + payerFirstName + '\'' +
-                "\npayerMiddleName='" + payerMiddleName + '\'' +
-                "\npayerLastName='" + payerLastName + '\'' +
-                "\npayerPhone='" + payerPhone + '\'' +
-                "\ndiscount='" + discount + '\'' +
-                "\ncheckingAccount='" + checkingAccount + '\'' +
-                "\nbank='" + bank + '\'' +
-                "\nregistrationCode='" + registrationCode + '\'' +
-                "\nmfo='" + mfo + '\'' +
-                "\noked='" + oked + '\'' +
-                "\ntransportationQr='" + transportationQr + '\'' +
-                "\ninstructions='" + instructions + '\'' +
-                "\nconsignmentList=" + consignmentList +
-                "\nconsignmentQuantity=" + consignmentQuantity +
-                "\ntotalWeight=" + totalWeight +
-                "\ntotalVolume=" + totalVolume +
-                "\nprice=" + price +
-                "\npackagingId=" + packagingId +
-                "\ntotalPrice=" + totalPrice +
-                "\nproviderId=" + providerId +
-                "\npaymentMethod=" + paymentMethod +
+                "requestId=" + requestId +
+                ", invoiceId=" + invoiceId +
+                ", courierId=" + courierId +
+                ", senderSignature='" + senderSignature + '\'' +
+                ", senderEmail='" + senderEmail + '\'' +
+                ", senderTntAccountNumber='" + senderTntAccountNumber + '\'' +
+                ", senderFedexAccountNumber='" + senderFedexAccountNumber + '\'' +
+                ", senderCountryId=" + senderCountryId +
+                ", senderRegionId=" + senderRegionId +
+                ", senderCityId=" + senderCityId +
+                ", senderAddress='" + senderAddress + '\'' +
+                ", senderZip='" + senderZip + '\'' +
+                ", senderFirstName='" + senderFirstName + '\'' +
+                ", senderMiddleName='" + senderMiddleName + '\'' +
+                ", senderLastName='" + senderLastName + '\'' +
+                ", senderPhone='" + senderPhone + '\'' +
+                ", senderCompanyName='" + senderCompanyName + '\'' +
+                ", senderType=" + senderType +
+                ", recipientSignature='" + recipientSignature + '\'' +
+                ", recipientEmail='" + recipientEmail + '\'' +
+                ", recipientCargostarAccountNumber='" + recipientCargostarAccountNumber + '\'' +
+                ", recipientTntAccountNumber='" + recipientTntAccountNumber + '\'' +
+                ", recipientFedexAccountNumber='" + recipientFedexAccountNumber + '\'' +
+                ", recipientCountryId=" + recipientCountryId +
+                ", recipientRegionId=" + recipientRegionId +
+                ", recipientCityId=" + recipientCityId +
+                ", recipientAddress='" + recipientAddress + '\'' +
+                ", recipientZip='" + recipientZip + '\'' +
+                ", recipientFirstName='" + recipientFirstName + '\'' +
+                ", recipientMiddleName='" + recipientMiddleName + '\'' +
+                ", recipientLastName='" + recipientLastName + '\'' +
+                ", recipientPhone='" + recipientPhone + '\'' +
+                ", recipientCompanyName='" + recipientCompanyName + '\'' +
+                ", recipientType=" + recipientType +
+                ", payerEmail='" + payerEmail + '\'' +
+                ", payerCargostarAccountNumber='" + payerCargostarAccountNumber + '\'' +
+                ", payerTntAccountNumber='" + payerTntAccountNumber + '\'' +
+                ", payerFedexAccountNumber='" + payerFedexAccountNumber + '\'' +
+                ", payerCountryId=" + payerCountryId +
+                ", payerRegionId=" + payerRegionId +
+                ", payerCityId=" + payerCityId +
+                ", payerAddress='" + payerAddress + '\'' +
+                ", payerZip='" + payerZip + '\'' +
+                ", payerFirstName='" + payerFirstName + '\'' +
+                ", payerMiddleName='" + payerMiddleName + '\'' +
+                ", payerLastName='" + payerLastName + '\'' +
+                ", payerPhone='" + payerPhone + '\'' +
+                ", payerInn='" + payerInn + '\'' +
+                ", payerCompanyName='" + payerCompanyName + '\'' +
+                ", payerType=" + payerType +
+                ", payerTntTaxId='" + payerTntTaxId + '\'' +
+                ", payerFedexTaxId=" + payerFedexTaxId +
+                ", discount=" + discount +
+                ", checkingAccount='" + checkingAccount + '\'' +
+                ", bank='" + bank + '\'' +
+                ", registrationCode='" + registrationCode + '\'' +
+                ", mfo='" + mfo + '\'' +
+                ", oked='" + oked + '\'' +
+                ", transportationQr='" + transportationQr + '\'' +
+                ", instructions='" + instructions + '\'' +
+                ", consignmentList=" + consignmentList +
+                ", consignmentQuantity=" + consignmentQuantity +
+                ", totalWeight=" + totalWeight +
+                ", totalVolume=" + totalVolume +
+                ", price=" + price +
+                ", packagingId=" + packagingId +
+                ", totalPrice=" + totalPrice +
+                ", providerId=" + providerId +
+                ", deliveryType=" + deliveryType +
+                ", paymentMethod=" + paymentMethod +
                 '}';
     }
 }

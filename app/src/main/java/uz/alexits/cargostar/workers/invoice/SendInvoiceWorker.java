@@ -32,65 +32,73 @@ import uz.alexits.cargostar.utils.ImageSerializer;
 public class SendInvoiceWorker extends Worker {
     private final Gson gson;
 
-    private final long requestId;
-    private final long invoiceId;
-
-    private final long courierId;
-    private final long operatorId;
-    private final long accountantId;
-
-    private final String senderSignature;
+    /* sender data */
     private final String senderEmail;
-    private final String senderCargostar;
-    private final String senderTnt;
-    private final String senderFedex;
+    private final String senderSignature;
+    private final String senderFirstName;
+    private final String senderMiddleName;
+    private final String senderLastName;
+    private final String senderPhone;
     private final long senderCountryId;
     private final long senderRegionId;
     private final long senderCityId;
     private final String senderAddress;
     private final String senderZip;
-    private final String senderFirstName;
-    private final String senderMiddleName;
-    private final String senderLastName;
-    private final String senderPhone;
+    private final String senderTnt;
+    private final String senderFedex;
+    private final String senderCompanyName;
+    private final int senderType;
 
-    private final String recipientSignature;
+    /* recipient data */
     private final String recipientEmail;
-    private final String recipientCargo;
-    private final String recipientTnt;
-    private final String recipientFedex;
-    private final long recipientCountryId;
-    private final long recipientRegionId;
-    private final long recipientCityId;
-    private final String recipientAddress;
-    private final String recipientZip;
     private final String recipientFirstName;
     private final String recipientMiddleName;
     private final String recipientLastName;
     private final String recipientPhone;
+    private final String recipientAddress;
+    private final long recipientCountryId;
+    private final long recipientRegionId;
+    private final long recipientCityId;
+    private final String recipientZip;
+    private final String recipientCargo;
+    private final String recipientTnt;
+    private final String recipientFedex;
+    private final String recipientCompanyName;
+    private final int recipientType;
 
+    /* payer data */
     private final String payerEmail;
-    private final long payerCountryId;
-    private final long payerRegionId;
-    private final long payerCityId;
-    private final String payerAddress;
-    private final String payerZip;
     private final String payerFirstName;
     private final String payerMiddleName;
     private final String payerLastName;
     private final String payerPhone;
+    private final String payerAddress;
+    private final long payerCountryId;
+    private final long payerRegionId;
+    private final long payerCityId;
+    private final String payerZip;
     private final String payerCargostar;
     private final String payerTnt;
     private final String payerFedex;
-    private final double discount;
+    private final String payerTntTaxId;
+    private final String payerFedexTaxId;
+    private final int payerType;
 
+    /* account numbers */
+    private final double discount;
+    private final String payerInn;
+    private final String payerCompanyName;
     private final String checkingAccount;
     private final String bank;
     private final String mfo;
     private final String oked;
     private final String registrationCode;
 
-    private final String transportationQr;
+    /* invoice data */
+    private final long requestId;
+    private final long invoiceId;
+
+    private final long courierId;
     private final String instructions;
 
     private final long providerId;
@@ -100,7 +108,7 @@ public class SendInvoiceWorker extends Worker {
 
     private final double totalWeight;
     private final double totalVolume;
-    private final double totalPrice;
+    private final String totalPrice;
 
     private final String serializedConsignmentList;
 
@@ -111,12 +119,9 @@ public class SendInvoiceWorker extends Worker {
         this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
 
         this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
-        this.operatorId = getInputData().getLong(Constants.KEY_OPERATOR_ID, -1L);
-        this.accountantId = getInputData().getLong(Constants.KEY_ACCOUNTANT_ID, -1L);
 
         this.senderSignature = getInputData().getString(Constants.KEY_SENDER_SIGNATURE);
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
-        this.senderCargostar = getInputData().getString(Constants.KEY_SENDER_CARGOSTAR);
         this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
         this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
         this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
@@ -128,8 +133,9 @@ public class SendInvoiceWorker extends Worker {
         this.senderMiddleName = getInputData().getString(Constants.KEY_SENDER_MIDDLE_NAME);
         this.senderLastName = getInputData().getString(Constants.KEY_SENDER_LAST_NAME);
         this.senderPhone = getInputData().getString(Constants.KEY_SENDER_PHONE);
+        this.senderCompanyName = getInputData().getString(Constants.KEY_SENDER_COMPANY_NAME);
+        this.senderType = getInputData().getInt(Constants.KEY_SENDER_TYPE, 0);
 
-        this.recipientSignature = getInputData().getString(Constants.KEY_RECIPIENT_SIGNATURE);
         this.recipientEmail = getInputData().getString(Constants.KEY_RECIPIENT_EMAIL);
         this.recipientCargo = getInputData().getString(Constants.KEY_RECIPIENT_CARGOSTAR);
         this.recipientTnt = getInputData().getString(Constants.KEY_RECIPIENT_TNT);
@@ -143,6 +149,8 @@ public class SendInvoiceWorker extends Worker {
         this.recipientMiddleName = getInputData().getString(Constants.KEY_RECIPIENT_MIDDLE_NAME);
         this.recipientLastName = getInputData().getString(Constants.KEY_RECIPIENT_LAST_NAME);
         this.recipientPhone = getInputData().getString(Constants.KEY_RECIPIENT_PHONE);
+        this.recipientCompanyName = getInputData().getString(Constants.KEY_RECIPIENT_COMPANY_NAME);
+        this.recipientType = getInputData().getInt(Constants.KEY_RECIPIENT_TYPE, 0);
 
         this.payerEmail = getInputData().getString(Constants.KEY_PAYER_EMAIL);
         this.payerCountryId = getInputData().getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L);
@@ -157,15 +165,20 @@ public class SendInvoiceWorker extends Worker {
         this.payerCargostar = getInputData().getString(Constants.KEY_PAYER_CARGOSTAR);
         this.payerTnt = getInputData().getString(Constants.KEY_PAYER_TNT);
         this.payerFedex = getInputData().getString(Constants.KEY_PAYER_FEDEX);
-        this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, -1);
 
+        this.payerTntTaxId = getInputData().getString(Constants.KEY_PAYER_TNT_TAX_ID);
+        this.payerFedexTaxId = getInputData().getString(Constants.KEY_PAYER_FEDEX_TAX_ID);
+        this.payerType = getInputData().getInt(Constants.KEY_PAYER_TYPE, 0);
+
+        this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, -1);
+        this.payerInn = getInputData().getString(Constants.KEY_PAYER_INN);
+        this.payerCompanyName = getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME);
         this.checkingAccount = getInputData().getString(Constants.KEY_CHECKING_ACCOUNT);
         this.bank = getInputData().getString(Constants.KEY_BANK);
         this.mfo = getInputData().getString(Constants.KEY_MFO);
         this.oked = getInputData().getString(Constants.KEY_OKED);
         this.registrationCode = getInputData().getString(Constants.KEY_REGISTRATION_CODE);
 
-        this.transportationQr = getInputData().getString(Constants.KEY_TRANSPORTATION_QR);
         this.instructions = getInputData().getString(Constants.KEY_INSTRUCTIONS);
 
         this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, -1L);
@@ -175,7 +188,7 @@ public class SendInvoiceWorker extends Worker {
 
         this.totalWeight = getInputData().getDouble(Constants.KEY_TOTAL_WEIGHT, -1);
         this.totalVolume = getInputData().getDouble(Constants.KEY_TOTAL_VOLUME, -1);
-        this.totalPrice = getInputData().getDouble(Constants.KEY_TOTAL_PRICE, -1);
+        this.totalPrice = getInputData().getString(Constants.KEY_TOTAL_PRICE);
 
         this.serializedConsignmentList = getInputData().getString(Constants.KEY_SERIALIZED_CONSIGNMENT_LIST);
 
@@ -195,13 +208,10 @@ public class SendInvoiceWorker extends Worker {
         }
 
         createInvoiceParams.setCourierId(courierId);
-        createInvoiceParams.setOperatorId(operatorId);
-        createInvoiceParams.setAccountantId(accountantId);
 
         /* sender data */
         createInvoiceParams.setSenderSignature(senderSignature != null && !TextUtils.isEmpty(senderSignature) ? ImageSerializer.fileToBase64(senderSignature) : null);
         createInvoiceParams.setSenderEmail(senderEmail);
-        createInvoiceParams.setSenderCargostarAccountNumber(senderCargostar);
         createInvoiceParams.setSenderTntAccountNumber(senderTnt);
         createInvoiceParams.setSenderFedexAccountNumber(senderFedex);
         createInvoiceParams.setSenderAddress(senderAddress);
@@ -213,9 +223,10 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setSenderMiddleName(senderMiddleName);
         createInvoiceParams.setSenderLastName(senderLastName);
         createInvoiceParams.setSenderPhone(senderPhone);
+        createInvoiceParams.setSenderCompanyName(senderCompanyName);
+        createInvoiceParams.setSenderType(senderType);
 
         /* recipient data */
-        createInvoiceParams.setRecipientSignature(recipientSignature != null && !TextUtils.isEmpty(recipientSignature) ? ImageSerializer.fileToBase64(recipientSignature) : null);
         createInvoiceParams.setRecipientEmail(recipientEmail);
         createInvoiceParams.setRecipientCargostarAccountNumber(recipientCargo);
         createInvoiceParams.setRecipientTntAccountNumber(recipientTnt);
@@ -229,6 +240,8 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setRecipientMiddleName(recipientMiddleName);
         createInvoiceParams.setRecipientLastName(recipientLastName);
         createInvoiceParams.setRecipientPhone(recipientPhone);
+        createInvoiceParams.setRecipientCompanyName(recipientCompanyName);
+        createInvoiceParams.setRecipientType(recipientType);
 
         /* payer data */
         createInvoiceParams.setPayerEmail(payerEmail);
@@ -245,6 +258,11 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setPayerCargostarAccountNumber(payerCargostar);
         createInvoiceParams.setPayerTntAccountNumber(payerTnt);
         createInvoiceParams.setPayerFedexAccountNumber(payerFedex);
+        createInvoiceParams.setPayerTntTaxId(payerTntTaxId);
+        createInvoiceParams.setPayerFedexTaxId(payerFedexTaxId);
+        createInvoiceParams.setPayerType(payerType);
+        createInvoiceParams.setPayerInn(payerInn);
+        createInvoiceParams.setPayerCompanyName(payerCompanyName);
 
         /* account data */
         createInvoiceParams.setCheckingAccount(checkingAccount);
@@ -253,8 +271,6 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setMfo(mfo);
         createInvoiceParams.setOked(oked);
 
-        /* transportation data */
-        createInvoiceParams.setTransportationQr(transportationQr);
         createInvoiceParams.setInstructions(instructions);
 
         createInvoiceParams.setProviderId(providerId);

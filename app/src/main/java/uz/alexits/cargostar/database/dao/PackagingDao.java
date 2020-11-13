@@ -66,6 +66,9 @@ public abstract class PackagingDao {
     @Query("SELECT * FROM packaging WHERE id == :packagingId ORDER BY id ASC")
     public abstract LiveData<Packaging> selectPackagingById(final Long packagingId);
 
+    @Query("SELECT * FROM packaging WHERE id IN (:packagingIdList) ORDER BY id ASC")
+    public abstract LiveData<List<Packaging>> selectPackagingListByIds(final List<Long> packagingIdList);
+
     /* packaging-types */
     @Query("DELETE FROM packagingType")
     abstract void dropPackagingType();

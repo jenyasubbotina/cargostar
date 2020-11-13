@@ -35,9 +35,19 @@ public class Consignment {
     private final String packagingType;
 
     @Expose
+    @SerializedName("name")
+    @ColumnInfo(name = "name")
+    private final String name;
+
+    @Expose
     @SerializedName("description")
     @ColumnInfo(name = "description")
     private final String description;
+
+    @Expose
+    @SerializedName("cost")
+    @ColumnInfo(name = "cost")
+    private final String cost;
 
     @Expose
     @SerializedName("length")
@@ -71,7 +81,9 @@ public class Consignment {
     public Consignment(final long id,
                        final Long requestId,
                        final String packagingType,
+                       final String name,
                        final String description,
+                       final String cost,
                        final double length,
                        final double width,
                        final double height,
@@ -81,7 +93,9 @@ public class Consignment {
         this.id = id;
         this.requestId = requestId;
         this.packagingType = packagingType;
+        this.name = name;
         this.description = description;
+        this.cost = cost;
         this.length = length;
         this.width = width;
         this.height = height;
@@ -102,8 +116,16 @@ public class Consignment {
         return packagingType;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public String getCost() {
+        return cost;
     }
 
     public double getLength() {
@@ -141,7 +163,9 @@ public class Consignment {
                 "id=" + id +
                 ", requestId=" + requestId +
                 ", packagingType='" + packagingType + '\'' +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", cost=" + cost +
                 ", length=" + length +
                 ", width=" + width +
                 ", height=" + height +

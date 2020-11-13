@@ -2,7 +2,6 @@ package uz.alexits.cargostar.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.icu.number.Precision;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -38,6 +37,7 @@ import android.widget.Toast;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.TariffPrice;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.Provider;
 import uz.alexits.cargostar.model.calculation.Vat;
@@ -50,6 +50,7 @@ import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.Regex;
+import uz.alexits.cargostar.view.adapter.TariffPriceAdapter;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
@@ -65,9 +66,10 @@ import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class CalculatorFragment extends Fragment implements CreateInvoiceCallback {
@@ -135,11 +137,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private TextView totalQuantityTextView;
     private TextView totalWeightTextView;
     private TextView totalDimensionsTextView;
-
-    private TextView firstTariffNameTextView;
-    private TextView firstTariffPriceTextView;
-//    private TextView secondTariffNameTextView;
-//    private TextView secondTariffPriceTextView;
+    private RecyclerView tariffPriceRecyclerView;
+    private TariffPriceAdapter tariffPriceAdapter;
     private Button calculateBtn;
 
     /* show current cargoList */
@@ -149,12 +148,13 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     /* selected items */
     private Long selectedCountryId = null;
     private Provider selectedProvider = null;
-    private Packaging selectedPackaging = null;
+    private List<Packaging> tariffList = null;
     private List<Long> selectedPackagingIdList = null;
     private List<ZoneSettings> selectedZoneSettingsList = null;
+    private Vat selectedVat = null;
 
-    private static final List<Consignment> itemList = new ArrayList<>();
-    private static Vat selectedVat;
+    private static final List<Consignment> consignmentList = new ArrayList<>();
+    private static final List<TariffPrice> tariffPriceList = new ArrayList<>();
 
     public CalculatorFragment() {
         // Required empty public constructor
@@ -166,7 +166,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         context = getContext();
         activity = getActivity();
 
-        itemList.clear();
+        consignmentList.clear();
 
         SyncWorkRequest.fetchPackagingData(context, 100000);
     }
@@ -212,11 +212,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         totalDimensionsTextView = root.findViewById(R.id.total_dimensions_value_text_view);
         calculateBtn = root.findViewById(R.id.calculate_btn);
 
-        firstTariffNameTextView = root.findViewById(R.id.result_express_text_view);
-//        secondTariffNameTextView = root.findViewById(R.id.result_economy_express_text_view);
-        firstTariffPriceTextView = root.findViewById(R.id.express_sum_text_view);
-//        secondTariffPriceTextView = root.findViewById(R.id.economy_express_sum_text_view);
-
         packageTypeRadioGroup = root.findViewById(R.id.package_type_radio_group);
         docTypeRadioBtn = root.findViewById(R.id.doc_type_radio_btn);
         boxTypeRadioBtn = root.findViewById(R.id.box_type_radio_btn);
@@ -244,12 +239,20 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         firstCardRadioBtn = root.findViewById(R.id.first_card_radio_btn);
         secondCardRadioBtn = root.findViewById(R.id.second_card_radio_btn);
 
+        final LinearLayoutManager itemLayoutManager = new LinearLayoutManager(context);
+        itemLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        final LinearLayoutManager tariffPriceLayoutManager = new LinearLayoutManager(context);
+        tariffPriceLayoutManager.setOrientation(RecyclerView.VERTICAL);
+
         itemRecyclerView = root.findViewById(R.id.calculationsRecyclerView);
-        calculatorAdapter = new CalculatorAdapter(context, itemList, this);
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
-        itemRecyclerView.setLayoutManager(layoutManager);
+        calculatorAdapter = new CalculatorAdapter(context, consignmentList, this);
+        itemRecyclerView.setLayoutManager(itemLayoutManager);
         itemRecyclerView.setAdapter(calculatorAdapter);
+
+        tariffPriceRecyclerView = root.findViewById(R.id.tariff_price_recycler_view);
+        tariffPriceAdapter = new TariffPriceAdapter(context);
+        tariffPriceRecyclerView.setLayoutManager(tariffPriceLayoutManager);
+        tariffPriceRecyclerView.setAdapter(tariffPriceAdapter);
 
         return root;
     }
@@ -659,8 +662,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
                 Log.i(TAG, "onItemSelected(): packagingType=" + selectedPackagingType + "packagingId=" + selectedPackagingType.getPackagingId());
 
-                calculatorViewModel.setPackagingId(selectedPackagingType.getPackagingId());
-
                 if (itemTextView != null) {
                     if (i < adapterView.getCount()) {
                         itemTextView.setTextColor(context.getColor(R.color.colorBlack));
@@ -797,7 +798,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         });
 
         calculatorViewModel.getType().observe(getViewLifecycleOwner(), type -> {
-            if (type != null && selectedPackaging != null) {
+            if (type != null) {
                 calculatorViewModel.setTypePackageIdList(type, selectedPackagingIdList);
             }
         });
@@ -817,10 +818,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             packagingTypeArrayAdapter.clear();
             packagingTypeArrayAdapter.addAll(packagingTypeList);
             packagingTypeArrayAdapter.notifyDataSetChanged();
-        });
-
-        calculatorViewModel.getPackaging().observe(getViewLifecycleOwner(), packaging -> {
-            selectedPackaging = packaging;
         });
 
         calculatorViewModel.getZoneList().observe(getViewLifecycleOwner(), zoneList -> {
@@ -843,6 +840,10 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         calculatorViewModel.getVat().observe(getViewLifecycleOwner(), vat -> {
             Log.i(TAG, "vat=" + vat);
             selectedVat = vat;
+        });
+
+        calculatorViewModel.getTariffList().observe(getViewLifecycleOwner(), packagingList -> {
+            tariffList = packagingList;
         });
     }
 
@@ -888,11 +889,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
     @Override
     public void onDeleteItemClicked(final int position) {
-        if (itemList.size() <= 0) {
+        if (consignmentList.size() <= 0) {
             return;
         }
-        Log.i(TAG, "position=" + position + " size" + itemList.size());
-        itemList.remove(position);
+        Log.i(TAG, "position=" + position + " size" + consignmentList.size());
+        consignmentList.remove(position);
         calculatorAdapter.notifyDataSetChanged();
 
         Log.i(TAG, "itemCount=" + calculatorAdapter.getItemCount());
@@ -932,7 +933,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 Toast.makeText(context, "Укажите высоту", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             if (!Regex.isFloatOrInt(length)) {
                 Toast.makeText(context, "Длина указана неверно", Toast.LENGTH_SHORT).show();
                 return;
@@ -946,10 +946,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 return;
             }
         }
-        itemList.add(new Consignment(
+        consignmentList.add(new Consignment(
                 -1,
                 -1L,
                 packagingType.getName(),
+                null,
+                null,
                 null,
                 !TextUtils.isEmpty(length) ? Double.parseDouble(length) : 0,
                 !TextUtils.isEmpty(width) ? Double.parseDouble(width) : 0,
@@ -957,7 +959,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 !TextUtils.isEmpty(weight) ? Double.parseDouble(weight) : 0,
                 -1,
                 null));
-        calculatorAdapter.notifyItemInserted(itemList.size() - 1);
+        calculatorAdapter.notifyItemInserted(consignmentList.size() - 1);
     }
 
     private void calculateTotalPrice() {
@@ -981,88 +983,89 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             Toast.makeText(context, "Укажите тип упаковки", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (itemList.isEmpty()) {
+        if (consignmentList.isEmpty()) {
             Toast.makeText(context, "Добавьте хотя бы одну позицию", Toast.LENGTH_SHORT).show();
             return;
         }
-        int totalQuantity = itemList.size();
+        tariffPriceList.clear();
+
+        int totalQuantity = consignmentList.size();
         double totalVolume = 0.0;
         double totalWeight = 0.0;
         double totalLength = 0.0;
         double totalWidth = 0.0;
         double totalHeight = 0.0;
-        
-        double totalPrice = 0.0;
 
-        for (final Consignment item : itemList) {
+        for (final Consignment item : consignmentList) {
             totalWeight += item.getWeight();
             totalLength += item.getLength();
             totalWidth += item.getWidth();
             totalHeight += item.getHeight();
         }
-        totalVolume = totalLength * totalWidth * totalHeight;
+        if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+            totalVolume = totalLength * totalWidth * totalHeight;
+        }
 
-        if (selectedPackaging != null) {
-            final int volumex = selectedPackaging.getVolumex();
+        if (selectedZoneSettingsList.isEmpty()) {
+            Toast.makeText(context, "Зоны для подсчета не найдены", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            if (volumex > 0) {
-                final double volumexWeight = totalVolume / volumex;
+        final Map<ZoneSettings, Packaging> zoneSettingsTariffMap = new HashMap<>();
 
-                if (volumexWeight > totalWeight) {
-                    totalWeight = volumexWeight;
+        for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
+            for (final Packaging packaging : tariffList) {
+                if (packaging.getId() == zoneSettings.getPackagingId()) {
+                    if (packaging != null) {
+                        final int volumex = packaging.getVolumex();
+
+                        if (volumex > 0) {
+                            final double volumexWeight = totalVolume / volumex;
+
+                            if (volumexWeight > totalWeight) {
+                                totalWeight = volumexWeight;
+                            }
+                        }
+                        if (totalWeight > zoneSettings.getWeightFrom() && totalWeight <= zoneSettings.getWeightTo()) {
+                            zoneSettingsTariffMap.put(zoneSettings, packaging);
+                        }
+                    }
                 }
             }
         }
-        ZoneSettings actualZoneSettings = null;
 
-        for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
-            if (totalWeight > zoneSettings.getWeightFrom() && totalWeight <= zoneSettings.getWeightTo()) {
-                actualZoneSettings = zoneSettings;
-                Log.i(TAG, "selectedZoneSettings=" + actualZoneSettings);
-                break;
-            }
-        }
-        if (actualZoneSettings != null) {
+        double totalPrice = 0.0;
+
+        for (final ZoneSettings actualZoneSettings : zoneSettingsTariffMap.keySet()) {
             totalPrice = actualZoneSettings.getPriceFrom();
-            Log.i(TAG, "calculating: from " + actualZoneSettings.getWeightFrom() + " to " + actualZoneSettings.getWeightTo() + " with " + actualZoneSettings.getWeightStep());
+            final Packaging correspondingTariff = zoneSettingsTariffMap.get(actualZoneSettings);
+
             for (double i = actualZoneSettings.getWeightFrom(); i < totalWeight; i += actualZoneSettings.getWeightStep()) {
+                if (actualZoneSettings.getWeightStep() <= 0) {
+                    break;
+                }
                 totalPrice += actualZoneSettings.getPriceStep();
             }
-        }
-        if (selectedPackaging != null) {
-            if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
-                totalPrice += selectedPackaging.getParcelFee();
+            if (totalPrice > 0) {
+                if (correspondingTariff != null) {
+                    if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
+                        totalPrice += correspondingTariff.getParcelFee();
+                    }
+                }
+                if (selectedProvider != null) {
+                    totalPrice = totalPrice * (selectedProvider.getFuel() + 100) / 100;
+                }
+                if (selectedVat != null) {
+                    totalPrice *= (selectedVat.getVat() + 100) / 100;
+                }
             }
+            tariffPriceList.add(new TariffPrice(correspondingTariff.getName(), String.valueOf((int) totalPrice), correspondingTariff.getId()));
         }
-        if (selectedProvider != null) {
-            totalPrice = totalPrice * (selectedProvider.getFuel() + 100) / 100;
-        }
-        if (selectedVat != null) {
-            totalPrice *= (selectedVat.getVat() + 100) / 100;
-        }
-        long roundedPrice = 0;
-
-        try {
-            roundedPrice = Math.round(totalPrice);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "roundTotalPrice(): ", e);
-        }
-
         totalQuantityTextView.setText(String.valueOf(totalQuantity));
         totalWeightTextView.setText(String.valueOf(new BigDecimal(Double.toString(totalWeight)).setScale(2, RoundingMode.HALF_UP).doubleValue()));
         totalDimensionsTextView.setText(String.valueOf(new BigDecimal(Double.toString(totalVolume)).setScale(2, RoundingMode.HALF_UP).doubleValue()));
 
-        if (selectedPackaging != null) {
-            firstTariffNameTextView.setVisibility(View.VISIBLE);
-            firstTariffPriceTextView.setVisibility(View.VISIBLE);
-            firstTariffNameTextView.setText(selectedPackaging.getName());
-            firstTariffPriceTextView.setText(getString(R.string.rounded_total_price, roundedPrice));
-        }
-        else {
-            firstTariffNameTextView.setVisibility(View.INVISIBLE);
-            firstTariffPriceTextView.setVisibility(View.INVISIBLE);
-        }
+        tariffPriceAdapter.setItemList(tariffPriceList);
     }
 
     private void hidePackageTypeRadioBtns() {

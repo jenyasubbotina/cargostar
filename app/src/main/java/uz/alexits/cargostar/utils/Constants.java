@@ -143,4 +143,13 @@ public class Constants {
     public static final String KEY_TOTAL_PRICE = "total_price";
     public static final String KEY_SERIALIZED_CONSIGNMENT_LIST = "serialized_consignment_list";
 
+    public static final String KEY_PAYER_TNT_TAX_ID = "payer_tnt_tax_id";
+    public static final String KEY_PAYER_FEDEX_TAX_ID = "payer_fedex_tax_id";
+    public static final String KEY_PAYER_TYPE = "payer_type";
+    public static final String KEY_PAYER_INN = "payer_inn";
+    public static final String KEY_PAYER_COMPANY_NAME = "payer_company";
+    public static final String KEY_RECIPIENT_COMPANY_NAME = "recipient_company";
+    public static final String KEY_RECIPIENT_TYPE = "recipient_type";
+    public static final String KEY_SENDER_COMPANY_NAME = "sender_company";
+    public static final String KEY_SENDER_TYPE = "sender_type";
 }

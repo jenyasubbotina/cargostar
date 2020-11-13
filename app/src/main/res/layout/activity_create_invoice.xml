@@ -48,67 +48,12 @@
                 android:layout_marginTop="32dp"/>
 
             <TextView
-                android:id="@+id/transportation_qr_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/content_recycler_view"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="29dp"
-                android:layout_marginStart="35dp"
-                android:textSize="16sp"
-                android:textColor="#A5ABC0"
-                android:fontFamily="@font/geometria_actual"
-                android:text="@string/qr_code"/>
-
-            <RelativeLayout
-                android:id="@+id/transportation_qr_field"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/transportation_qr_text_view"
-                app:layout_constraintStart_toStartOf="@id/width_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/width_edit_text"
-                android:layout_marginTop="4dp">
-
-                <EditText
-                    android:id="@+id/transportation_qr_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:background="@drawable/edit_text_locked"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/geometria_actual"
-                    android:textColor="@color/colorBlack"
-                    android:padding="17dp"
-                    android:enabled="false"/>
-
-                <ImageView
-                    android:id="@+id/transportation_qr_result_image_view"
-                    android:layout_width="19dp"
-                    android:layout_height="22dp"
-                    android:layout_alignStart="@id/transportation_qr_edit_text"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_image_green"
-                    android:layout_marginStart="12dp"
-                    android:contentDescription="@string/signature"
-                    android:visibility="invisible"/>
-
-                <ImageView
-                    android:id="@+id/transportation_qr_image_view"
-                    android:layout_width="25dp"
-                    android:layout_height="22dp"
-                    android:layout_alignEnd="@id/transportation_qr_edit_text"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_camera"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="@string/qr_code"/>
-            </RelativeLayout>
-
-            <TextView
                 android:id="@+id/instructions_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/transportation_qr_text_view"
+                app:layout_constraintTop_toBottomOf="@id/content_recycler_view"
                 app:layout_constraintStart_toStartOf="@id/instructions_edit_text"
+                android:layout_marginTop="29dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
@@ -118,9 +63,11 @@
                 android:id="@+id/instructions_edit_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/transportation_qr_field"
-                app:layout_constraintStart_toStartOf="@id/length_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/length_edit_text"
+                app:layout_constraintTop_toBottomOf="@id/instructions_text_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginHorizontal="35dp"
+                android:layout_marginTop="4dp"
                 android:inputType="text"
                 android:background="@drawable/edit_text_locked"
                 android:textSize="16sp"
@@ -132,10 +79,11 @@
                 android:id="@+id/first_card"
                 android:layout_width="0dp"
                 android:layout_height="66dp"
-                app:layout_constraintTop_toBottomOf="@id/transportation_qr_field"
-                app:layout_constraintStart_toStartOf="@id/transportation_qr_field"
-                app:layout_constraintEnd_toEndOf="@id/transportation_qr_field"
+                app:layout_constraintTop_toBottomOf="@id/instructions_edit_text"
+                app:layout_constraintStart_toStartOf="@id/instructions_edit_text"
+                app:layout_constraintEnd_toStartOf="@id/second_card"
                 android:layout_marginTop="35dp"
+                android:layout_marginEnd="16dp"
                 android:elevation="8dp">
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -166,14 +114,14 @@
                 android:layout_width="0dp"
                 android:layout_height="66dp"
                 app:layout_constraintTop_toTopOf="@id/first_card"
-                app:layout_constraintStart_toStartOf="@id/instructions_edit_text"
+                app:layout_constraintStart_toEndOf="@id/first_card"
                 app:layout_constraintEnd_toEndOf="@id/instructions_edit_text"
+                android:layout_marginStart="16dp"
                 android:elevation="8dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-
                     <RadioButton
                         android:id="@+id/second_card_radio_btn"
                         android:layout_width="0dp"
@@ -233,8 +181,8 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 app:layout_constraintTop_toBottomOf="@id/package_type_radio_group"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/instructions_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/instructions_edit_text"
                 android:layout_marginTop="41dp"
                 android:background="@color/colorGrey" />
 
@@ -243,48 +191,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/payment_stroke"
-                app:layout_constraintStart_toStartOf="@id/transportation_qr_text_view"
+                app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="29dp"
+                android:layout_marginStart="35dp"
                 android:textSize="19sp"
                 android:textColor="@color/colorBlack"
                 android:fontFamily="@font/geometria_actual"
                 android:text="@string/for_each_cargo"/>
 
             <TextView
-                android:id="@+id/cargo_description_text_view"
+                android:id="@+id/packaging_type_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/for_each_cargo_text_view"
                 app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
-                android:layout_marginTop="29dp"
-                android:textSize="16sp"
-                android:textColor="#A5ABC0"
-                android:fontFamily="@font/geometria_actual"
-                android:text="@string/cargo_description"/>
-
-            <EditText
-                android:id="@+id/cargo_description_edit_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/cargo_description_text_view"
-                app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
-                app:layout_constraintEnd_toStartOf="@id/packaging_type_field"
-                app:layout_constraintHorizontal_weight="1"
-                android:layout_marginEnd="12dp"
-                android:layout_marginTop="4dp"
-                android:inputType="text"
-                android:background="@drawable/edit_text_locked"
-                android:textSize="16sp"
-                android:fontFamily="@font/geometria_actual"
-                android:padding="17dp"
-                android:textColor="@color/colorBlack"/>
-
-            <TextView
-                android:id="@+id/packaging_type_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/cargo_description_text_view"
-                app:layout_constraintStart_toStartOf="@id/packaging_type_field"
+                android:layout_marginTop="24dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
@@ -294,10 +215,10 @@
                 android:id="@+id/packaging_type_field"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/cargo_description_edit_text"
-                app:layout_constraintBottom_toBottomOf="@id/cargo_description_edit_text"
-                app:layout_constraintStart_toStartOf="@id/instructions_edit_text"
-                app:layout_constraintEnd_toEndOf="@id/instructions_edit_text"
+                app:layout_constraintTop_toBottomOf="@id/packaging_type_text_view"
+                app:layout_constraintStart_toStartOf="@id/packaging_type_text_view"
+                app:layout_constraintEnd_toEndOf="@id/length_edit_text"
+                android:layout_marginTop="4dp"
                 app:layout_constraintHorizontal_weight="1"
                 android:background="@drawable/edit_text_locked">
 
@@ -313,9 +234,9 @@
                 android:id="@+id/weight_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/cargo_description_edit_text"
+                app:layout_constraintTop_toBottomOf="@id/packaging_type_field"
                 app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
-                android:layout_marginTop="29dp"
+                android:layout_marginTop="24dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
@@ -369,7 +290,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/weight_edit_text"
                 app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
-                android:layout_marginTop="29dp"
+                android:layout_marginTop="24dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
@@ -422,7 +343,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/width_edit_text"
                 app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
-                android:layout_marginTop="29dp"
+                android:layout_marginTop="24dp"
                 android:textSize="16sp"
                 android:textColor="#A5ABC0"
                 android:fontFamily="@font/geometria_actual"
@@ -435,8 +356,7 @@
                 app:layout_constraintTop_toBottomOf="@id/cargo_qr_text_view"
                 app:layout_constraintStart_toStartOf="@id/width_edit_text"
                 app:layout_constraintEnd_toEndOf="@id/width_edit_text"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="12dp">
+                android:layout_marginTop="4dp">
 
                 <EditText
                     android:id="@+id/cargo_qr_edit_text"
@@ -472,14 +392,94 @@
                     android:contentDescription="@string/qr_code"/>
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/cargo_name_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/cargo_qr_text_view"
+                app:layout_constraintStart_toStartOf="@id/height_edit_text"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/cargo_name"/>
+
+            <EditText
+                android:id="@+id/cargo_name_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/cargo_qr_field"
+                app:layout_constraintBottom_toBottomOf="@id/cargo_qr_field"
+                app:layout_constraintStart_toStartOf="@id/height_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/height_edit_text"
+                android:inputType="text"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/cargo_description_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_qr_field"
+                app:layout_constraintStart_toStartOf="@id/cargo_qr_text_view"
+                android:layout_marginTop="24dp"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/cargo_description"/>
+
+            <EditText
+                android:id="@+id/cargo_description_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_description_text_view"
+                app:layout_constraintStart_toStartOf="@id/cargo_qr_field"
+                app:layout_constraintEnd_toEndOf="@id/cargo_name_edit_text"
+                app:layout_constraintHorizontal_weight="1"
+                android:layout_marginTop="4dp"
+                android:inputType="text"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+
+            <TextView
+                android:id="@+id/cargo_price_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_description_edit_text"
+                app:layout_constraintStart_toStartOf="@id/cargo_description_text_view"
+                android:layout_marginTop="24dp"
+                android:textSize="16sp"
+                android:textColor="#A5ABC0"
+                android:fontFamily="@font/geometria_actual"
+                android:text="@string/cargo_price"/>
+
+            <EditText
+                android:id="@+id/cargo_price_edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/cargo_price_text_view"
+                app:layout_constraintStart_toStartOf="@id/cargo_qr_field"
+                app:layout_constraintEnd_toEndOf="@id/cargo_qr_field"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_locked"
+                android:textSize="16sp"
+                android:fontFamily="@font/geometria_actual"
+                android:padding="17dp"
+                android:textColor="@color/colorBlack"/>
+
             <Button
                 android:id="@+id/add_item_btn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/cargo_qr_field"
-                app:layout_constraintStart_toStartOf="@id/cargo_qr_field"
-                app:layout_constraintEnd_toEndOf="@id/cargo_qr_field"
-                android:layout_marginTop="37dp"
+                app:layout_constraintTop_toTopOf="@id/cargo_price_edit_text"
+                app:layout_constraintBottom_toBottomOf="@id/cargo_price_edit_text"
+                app:layout_constraintStart_toStartOf="@id/cargo_name_edit_text"
+                app:layout_constraintEnd_toEndOf="@id/cargo_name_edit_text"
                 android:text="@string/add"
                 android:fontFamily="@font/geometria_medium"
                 android:textSize="19sp"
@@ -622,69 +622,20 @@
                 android:fontFamily="@font/geometria_medium"
                 android:text="@string/calculation_results"/>
 
-            <RadioGroup
-                android:id="@+id/tariff_radio_group"
-                android:layout_width="wrap_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tariff_price_recycler_view"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/calculation_result_text_view"
-                app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
-                android:layout_marginTop="37dp"
-                android:orientation="vertical"
-                android:checkedButton="@id/express_radio_btn"
-                android:gravity="center">
-
-                <RadioButton
-                    android:id="@+id/express_radio_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
-                    android:fontFamily="@font/geometria_actual"
-                    android:textSize="16sp"
-                    android:text="@string/express"
-                    android:buttonTint="@color/colorBlue"
-                    android:layout_gravity="start"/>
-
-                <RadioButton
-                    android:id="@+id/economy_radio_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorBlack"
-                    android:fontFamily="@font/geometria_actual"
-                    android:textSize="16sp"
-                    android:text="@string/economy_express"
-                    android:buttonTint="@color/colorBlue"
-                    android:layout_gravity="start"/>
-            </RadioGroup>
-
-            <TextView
-                android:id="@+id/express_price_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/tariff_radio_group"
-                app:layout_constraintEnd_toEndOf="@id/calculate_btn"
-                android:layout_marginTop="6dp"
-                android:textColor="#0052A6"
-                android:textSize="16sp"
-                android:fontFamily="@font/geometria_medium"
-                android:text="@string/sum_example"/>
-
-            <TextView
-                android:id="@+id/economy_price_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/express_price_text_view"
-                app:layout_constraintEnd_toEndOf="@id/calculate_btn"
-                android:layout_marginTop="12dp"
-                android:textColor="#0052A6"
-                android:textSize="16sp"
-                android:fontFamily="@font/geometria_medium"
-                android:text="@string/sum_example"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginVertical="24dp"/>
 
             <TextView
                 android:id="@+id/payment_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/tariff_radio_group"
+                app:layout_constraintTop_toBottomOf="@+id/tariff_price_recycler_view"
                 app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
                 android:layout_marginTop="37dp"
                 android:textSize="19sp"
@@ -730,31 +681,14 @@
             </RadioGroup>
 
             <Button
-                android:id="@+id/save_btn"
+                android:id="@+id/create_receipt_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/payment_method_radio_group"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@id/total_quantity_text_view"
-                android:layout_marginTop="37dp"
-                android:layout_marginBottom="46dp"
-                android:text="@string/save"
-                android:fontFamily="@font/geometria_medium"
-                android:textSize="19sp"
-                android:textColor="#FFF"
-                android:textAllCaps="false"
-                android:background="@drawable/btn_gradient_orange"
-                android:paddingHorizontal="33dp"
-                android:paddingVertical="14dp"/>
-
-            <Button
-                android:id="@+id/create_receipt_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/save_btn"
-                app:layout_constraintBottom_toBottomOf="@id/save_btn"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="35dp"
+                android:layout_marginBottom="46dp"
                 android:text="@string/create_invoice"
                 android:fontFamily="@font/geometria_medium"
                 android:textSize="19sp"
