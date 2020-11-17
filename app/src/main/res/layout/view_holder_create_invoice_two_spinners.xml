@@ -34,7 +34,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:paddingHorizontal="4dp"
-            android:paddingVertical="8dp" />
+            android:paddingVertical="8dp"
+            android:prompt="@string/choose_region"/>
     </RelativeLayout>
 
     <TextView
@@ -66,7 +67,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:paddingHorizontal="4dp"
-            android:paddingVertical="8dp" />
+            android:paddingVertical="8dp"
+            android:prompt="@string/choose_city"/>
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

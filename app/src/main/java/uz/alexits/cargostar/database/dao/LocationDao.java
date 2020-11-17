@@ -32,6 +32,9 @@ public interface LocationDao {
     @Query("SELECT * FROM country WHERE id == :countryId")
     LiveData<Country> selectCountryById(final long countryId);
 
+    @Query("SELECT * FROM country WHERE id == (SELECT recipient_country_id FROM request WHERE id == :requestId LIMIT 1)")
+    LiveData<Country> selectDestinationCountryByRequestId(final long requestId);
+
     /* regions */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long[] insertRegions(final List<Region> regionList);

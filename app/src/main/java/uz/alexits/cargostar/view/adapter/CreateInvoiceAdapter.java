@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.w3c.dom.Text;
+
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.model.actor.AddressBook;
@@ -52,6 +55,8 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private final ArrayAdapter<PackagingType> packagingTypeArrayAdapter;
 
+    private final ArrayAdapter<AddressBook> addressBookArrayAdapter;
+
     private List<Country> countryList;
 
     private List<Region> senderRegionList;
@@ -85,6 +90,8 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         this.packagingTypeList = new ArrayList<>();
 
+        this.addressBookEntries = new ArrayList<>();
+
         this.senderRegionArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, senderRegionList);
         this.recipientRegionArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, recipientRegionList);
         this.payerRegionArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, payerRegionList);
@@ -94,6 +101,8 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.payerCityArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, payerCityList);
 
         this.packagingTypeArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, packagingTypeList);
+
+        this.addressBookArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, addressBookEntries);
 
         this.position = -1;
     }
@@ -132,6 +141,9 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void setAddressBookEntries(final List<AddressBook> addressBookEntries) {
         this.addressBookEntries = addressBookEntries;
+        addressBookArrayAdapter.clear();;
+        addressBookArrayAdapter.addAll(addressBookEntries);
+        addressBookArrayAdapter.notifyDataSetChanged();
     }
 
     public void setCountryList(final List<Country> countryList) {
@@ -350,7 +362,6 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             });
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
-            Log.i(TAG, "onBindViewHolder() editTextSpinner " + position);
             final CreateInvoiceEditTextSpinnerViewHolder viewHolder = (CreateInvoiceEditTextSpinnerViewHolder) holder;
             viewHolder.firstTextView.setText(itemList.get(position).firstKey);
             viewHolder.editText.setText(itemList.get(position).firstValue);
@@ -387,13 +398,20 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
                 UiUtils.onFocusChanged(viewHolder.editText, hasFocus);
             });
             /* country spinner */
-            if (position == 7 || position == 15 || position == 24) {
-                countryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                viewHolder.spinner.setAdapter(countryArrayAdapter);
+            if (position == 7 || position == 16 || position == 26) {
+                if (!TextUtils.isEmpty(itemList.get(position).secondValue)) {
+                    viewHolder.spinner.post(() -> {
+                        viewHolder.spinner.setSelection(Integer.parseInt(itemList.get(position).secondValue), false);
+                    });
+                    Log.i(TAG, "changeSpinner: " + itemList.get(position).secondValue);
+                }
+                if (viewHolder.spinner.getAdapter() == null) {
+                    countryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    viewHolder.spinner.setAdapter(countryArrayAdapter);
+                }
             }
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
-            Log.i(TAG, "onBindViewHolder() twoSpinners " + position);
             final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
             viewHolder.regionTextView.setText(itemList.get(position).firstKey);
             viewHolder.cityTextView.setText(itemList.get(position).secondKey);
@@ -406,18 +424,24 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
                 viewHolder.citySpinner.setAdapter(senderCityArrayAdapter);
             }
             /* recipient location data */
-            else if (position == 16) {
+            else if (position == 17) {
                 recipientRegionArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 recipientCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 viewHolder.regionSpinner.setAdapter(recipientRegionArrayAdapter);
                 viewHolder.citySpinner.setAdapter(recipientCityArrayAdapter);
             }
             /* payer location data */
-            else if (position == 25) {
+            else if (position == 27) {
                 payerRegionArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 payerCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 viewHolder.regionSpinner.setAdapter(payerRegionArrayAdapter);
                 viewHolder.citySpinner.setAdapter(payerCityArrayAdapter);
+            }
+            if (itemList.get(position).firstValue != null && TextUtils.isEmpty(itemList.get(position).firstValue)) {
+                viewHolder.regionSpinner.setSelection(Integer.parseInt(itemList.get(position).firstValue), false);
+            }
+            if (itemList.get(position).secondValue != null && TextUtils.isEmpty(itemList.get(position).secondValue)) {
+                viewHolder.citySpinner.setSelection(Integer.parseInt(itemList.get(position).secondValue), false);
             }
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_STROKE) {
@@ -456,6 +480,33 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             viewHolder.firstTextView.setText(itemList.get(position).firstKey);
             viewHolder.secondTextView.setText(itemList.get(position).secondKey);
 
+            if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
+                viewHolder.firstEditText.setText(itemList.get(position).firstValue);
+                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_active);
+            }
+            else {
+                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
+            if (itemList.get(position).firstEnabled) {
+                if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_EMAIL) {
+                    viewHolder.firstEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                }
+                else if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_TEXT) {
+                    viewHolder.firstEditText.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+                }
+                else if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_NUMBER_DECIMAL) {
+                    viewHolder.firstEditText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                }
+                else if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_NUMBER) {
+                    viewHolder.firstEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                }
+                else if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_PHONE) {
+                    viewHolder.firstEditText.setInputType(InputType.TYPE_CLASS_PHONE);
+                }
+            }
+            else {
+                viewHolder.firstEditText.setEnabled(false);
+            }
             if (!TextUtils.isEmpty(itemList.get(position).secondValue)) {
                 viewHolder.secondEditText.setText(itemList.get(position).secondValue);
                 viewHolder.secondResultImageView.setImageResource(R.drawable.ic_image_green);
@@ -467,6 +518,9 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
                 viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_locked);
                 viewHolder.secondResultImageView.setVisibility(View.INVISIBLE);
             }
+            viewHolder.firstEditText.setOnFocusChangeListener((v, hasFocus) -> {
+                UiUtils.onFocusChanged(viewHolder.firstEditText, hasFocus);
+            });
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_BUTTON) {
             final CreateInvoiceButtonViewHolder viewHolder = (CreateInvoiceButtonViewHolder) holder;
@@ -477,9 +531,8 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             final CreateInvoiceSingleSpinnerViewHolder viewHolder = (CreateInvoiceSingleSpinnerViewHolder) holder;
             viewHolder.textView.setText(itemList.get(position).firstKey);
 
-            final SpinnerAdapter<AddressBook> addressBookSpinnerAdapter = new SpinnerAdapter<>(context, R.layout.spinner_item, addressBookEntries);
-            addressBookSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
-            viewHolder.spinner.setAdapter(addressBookSpinnerAdapter);
+            addressBookArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+            viewHolder.spinner.setAdapter(addressBookArrayAdapter);
         }
     }
 
@@ -503,7 +556,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
             final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
             /* sender location data */
-            if (position == 8 || position == 16 || position == 25) {
+            if (position == 8 || position == 17 || position == 27) {
                 viewHolder.bindFirstSpinner(context, position, callback);
                 viewHolder.bindSecondSpinner(context, position, callback);
             }
@@ -525,52 +578,51 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         //address book spinner
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
             final CreateInvoiceSingleSpinnerViewHolder viewHolder = (CreateInvoiceSingleSpinnerViewHolder) holder;
-            viewHolder.bindSpinner(callback);
+            viewHolder.bindSpinner(context, callback);
         }
     }
 
     @Override
     public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-
-        if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_EDIT_TEXTS) {
-            final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
-            viewHolder.unbindWatchers();
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT) {
-            final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
-            viewHolder.unbindWatchers();
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
-            final CreateInvoiceEditTextSpinnerViewHolder viewHolder = (CreateInvoiceEditTextSpinnerViewHolder) holder;
-            viewHolder.unbindWatcher();
-            viewHolder.unbindSpinner();
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
-            final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
-            /* sender location data */
-            if (position == 8 || position == 16 || position == 25){
-                viewHolder.unbindFirstSpinner();
-                viewHolder.unbindSecondSpinner();
-            }
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS) {
-            final CreateInvoiceTwoImageEditTextsViewHolder viewHolder = (CreateInvoiceTwoImageEditTextsViewHolder) holder;
-            viewHolder.unbindImageViews();
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_BUTTON) {
-            final CreateInvoiceButtonViewHolder viewHolder = (CreateInvoiceButtonViewHolder) holder;
-            viewHolder.unbindBtn();
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
-            final CreateInvoiceEditTextImageView viewHolder = (CreateInvoiceEditTextImageView) holder;
-            viewHolder.unbindImageViews();
-        }
-        //address book spinner
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
-            final CreateInvoiceSingleSpinnerViewHolder viewHolder = (CreateInvoiceSingleSpinnerViewHolder) holder;
-            viewHolder.unbindSpinner();
-        }
+//        if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_EDIT_TEXTS) {
+//            final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
+//            viewHolder.unbindWatchers();
+//        }
+//        else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT) {
+//            final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
+//            viewHolder.unbindWatchers();
+//        }
+//        else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
+//            final CreateInvoiceEditTextSpinnerViewHolder viewHolder = (CreateInvoiceEditTextSpinnerViewHolder) holder;
+//            viewHolder.unbindWatcher();
+//            viewHolder.unbindSpinner();
+//        }
+//        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
+//            final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
+//            /* sender location data */
+//            if (position == 8 || position == 16 || position == 25){
+//                viewHolder.unbindFirstSpinner();
+//                viewHolder.unbindSecondSpinner();
+//            }
+//        }
+//        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS) {
+//            final CreateInvoiceTwoImageEditTextsViewHolder viewHolder = (CreateInvoiceTwoImageEditTextsViewHolder) holder;
+//            viewHolder.unbindImageViews();
+//        }
+//        else if (getItemViewType(position) == CreateInvoiceData.TYPE_BUTTON) {
+//            final CreateInvoiceButtonViewHolder viewHolder = (CreateInvoiceButtonViewHolder) holder;
+//            viewHolder.unbindBtn();
+//        }
+//        else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
+//            final CreateInvoiceEditTextImageView viewHolder = (CreateInvoiceEditTextImageView) holder;
+//            viewHolder.unbindImageViews();
+//        }
+//        //address book spinner
+//        else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
+//            final CreateInvoiceSingleSpinnerViewHolder viewHolder = (CreateInvoiceSingleSpinnerViewHolder) holder;
+//            viewHolder.unbindSpinner();
+//        }
     }
 
     @Override

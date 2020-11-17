@@ -39,7 +39,7 @@ public class InsertInvoiceWorker extends Worker {
         this.recipientId = getInputData().getLong(Constants.KEY_RECIPIENT_ID, -1L);
         this.payerId = getInputData().getLong(Constants.KEY_PAYER_ID, -1L);
 
-        this.price = getInputData().getLong(Constants.KEY_PRICE, -1L);
+        this.price = getInputData().getDouble(Constants.KEY_PRICE, -1);
         this.status = getInputData().getInt(Constants.KEY_STATUS, -1);
         this.createdAtTime = getInputData().getLong(Constants.KEY_CREATED_AT, -1L);
         this.updatedAtTime = getInputData().getLong(Constants.KEY_UPDATED_AT, -1L);    }

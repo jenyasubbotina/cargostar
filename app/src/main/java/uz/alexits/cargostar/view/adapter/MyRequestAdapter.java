@@ -46,7 +46,7 @@ public class MyRequestAdapter extends RecyclerView.Adapter<MyRequestViewHolder> 
             final String requestId = "# " + currentRequest.getId();
             holder.indexTextView.setText(requestIndex);
             holder.parcelIdTextView.setText(requestId);
-            holder.fromTextView.setText(String.valueOf(currentRequest.getSenderCityId()));
+            holder.fromTextView.setText(currentRequest.getSenderCity());
 
             if (currentRequest.isNew()) {
                 holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
@@ -54,14 +54,12 @@ public class MyRequestAdapter extends RecyclerView.Adapter<MyRequestViewHolder> 
             else {
                 holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
             }
-            //todo: get payment status from Invoice via invoiceId
-//            final PaymentStatus paymentStatus = currentRequest.getPaymentStatus();
-//            if (paymentStatus == PaymentStatus.PAID || paymentStatus == PaymentStatus.PAID_PARTIALLY || paymentStatus == PaymentStatus.PAID_MORE) {
-//                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
-//            }
-//            else if (paymentStatus == PaymentStatus.WAITING_PAYMENT || paymentStatus == PaymentStatus.WAITING_CHECK) {
-//                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_red);
-//            }
+            if (currentRequest.getPaymentStatus() != null && currentRequest.getPaymentStatus().equalsIgnoreCase("succeeded")) {
+                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
+            }
+            else {
+                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_red);
+            }
         }
         holder.bind(currentRequest, callback);
     }

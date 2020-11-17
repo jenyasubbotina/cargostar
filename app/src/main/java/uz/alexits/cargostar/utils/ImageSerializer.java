@@ -88,7 +88,6 @@ public class ImageSerializer {
         catch (IOException e) {
             Log.e(TAG, "getSignature(): ", e);
         }
-
         Log.e(TAG, "fileToBase64: couldn't read bytes from file " + filePath);
         return null;
     }

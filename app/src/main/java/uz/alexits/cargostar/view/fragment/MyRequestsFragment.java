@@ -81,7 +81,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         if (getArguments() != null) {
             courierId = MyRequestsFragmentArgs.fromBundle(getArguments()).getCourierId();
         }
-        SyncWorkRequest.fetchRequestData(getContext());
+        SyncWorkRequest.fetchRequestData(context);
     }
 
     @Override
@@ -227,7 +227,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     public void onRequestSelected(Request currentItem, RecyclerView.ViewHolder holder) {
         currentItem.setNew(false);
 
-        new Thread(() -> requestsViewModel.readReceipt(currentItem.getId()));
+        new Thread(() -> requestsViewModel.readReceipt(currentItem.getId())).start();
 
         final MyRequestsFragmentDirections.ActionMyBidsFragmentToParcelDataFragment action = MyRequestsFragmentDirections.actionMyBidsFragmentToParcelDataFragment();
         action.setRequestId(currentItem.getId());
@@ -241,7 +241,9 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         action.setRecipientCountryId(currentItem.getRecipientCountryId() != null ? currentItem.getRecipientCountryId() : -1L);
         action.setRecipientCityId(currentItem.getRecipientCityId() != null ? currentItem.getRecipientCityId() : -1L);
         action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
-        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
+        action.setDeliveryType(currentItem.getDeliveryType());
+        action.setComment(currentItem.getComment());
+        action.setConsignmentQuantity(currentItem.getConsignmentQuantity());
         NavHostFragment.findNavController(this).navigate(action);
     }
 

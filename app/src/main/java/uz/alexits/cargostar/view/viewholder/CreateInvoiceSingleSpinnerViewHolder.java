@@ -1,5 +1,6 @@
 package uz.alexits.cargostar.view.viewholder;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
@@ -19,11 +20,20 @@ public class CreateInvoiceSingleSpinnerViewHolder extends RecyclerView.ViewHolde
         spinner = itemView.findViewById(R.id.spinner);
     }
 
-    public void bindSpinner(final CreateInvoiceCallback callback) {
+    public void bindSpinner(final Context context, final CreateInvoiceCallback callback) {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                callback.onSpinnerItemChanged(adapterView, view, i, l);
+                final TextView itemTextView = (TextView) view;
+                final Object selectedObject = adapterView.getSelectedItem();
+
+                if (itemTextView != null) {
+                    if (i < adapterView.getCount()) {
+                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
+                        spinner.setBackgroundResource(R.drawable.edit_text_active);
+                    }
+                }
+                callback.onBigSpinnerItemSelected(i, selectedObject);
             }
 
             @Override

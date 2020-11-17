@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -23,37 +24,48 @@ import retrofit2.Response;
 
 public class FetchTransitPointsWorker extends Worker {
     private final int perPage;
+    private String login;
+    private String password;
 
     public FetchTransitPointsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, -1);
+        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
+        this.login = SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN);
+        this.password = SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH);
+
+        if (login == null || password == null) {
+            this.login = getInputData().getString(Constants.KEY_LOGIN);
+            this.password = getInputData().getString(Constants.KEY_PASSWORD);
+        }
     }
 
     @NonNull
     @Override
     public Result doWork() {
+        Log.i(TAG, "login: " + login + " password: " + password);
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
             final Response<List<TransitPoint>> response = RetrofitClient.getInstance(getApplicationContext()).getTransitPoints(perPage);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<TransitPoint> transitPointList = response.body();
 
-                    Log.i(TAG, "transitPointList: " + transitPointList);
+                    Log.i(TAG, "fetchTransitPointList(): " + transitPointList);
 
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertTransitPoints(transitPointList);
-                    return Result.success();
+                    return Result.success(new Data.Builder()
+                            .putString(Constants.KEY_LOGIN, login)
+                            .putString(Constants.KEY_PASSWORD, password).build());
                 }
             }
             else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
+                Log.e(TAG, "fetchTransitPointList(): " + response.errorBody());
             }
             return Result.failure();
         }
         catch (IOException e) {
-            Log.e(TAG, "doWork(): ", e);
+            Log.e(TAG, "fetchTransitPointList(): ", e);
             return Result.failure();
         }
     }

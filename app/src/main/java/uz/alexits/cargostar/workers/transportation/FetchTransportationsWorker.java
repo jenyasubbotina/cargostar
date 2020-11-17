@@ -37,7 +37,7 @@ public class FetchTransportationsWorker extends Worker {
 
                     Log.i(TAG, "fetchAllTransportations(): response=" + currentTransportations);
 
-                    final long[] rowsInserted = LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationListTransaction(currentTransportations);
+                    final long[] rowsInserted = LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationList(currentTransportations);
                     return ListenableWorker.Result.success();
                 }
             }

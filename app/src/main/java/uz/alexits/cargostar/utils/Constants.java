@@ -152,4 +152,9 @@ public class Constants {
     public static final String KEY_RECIPIENT_TYPE = "recipient_type";
     public static final String KEY_SENDER_COMPANY_NAME = "sender_company";
     public static final String KEY_SENDER_TYPE = "sender_type";
+    public static final String KEY_SENDER_CITY = "senderCity";
+    public static final String KEY_RECIPIENT_CITY = "recipientCity";
+    public static final String KEY_PAYMENT_STATUS = "payment_status";
+    public static final String KEY_CONSIGNMENT_QUANTITY = "count";
+    public static final String KEY_IS_SENDER_SIGNATURE_LOCAL = "is_sender_signature_local";
 }

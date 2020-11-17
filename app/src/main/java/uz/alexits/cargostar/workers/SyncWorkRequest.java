@@ -14,6 +14,7 @@ import androidx.work.WorkManager;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.workers.actor.FetchAddressBookWorker;
 import uz.alexits.cargostar.workers.actor.UpdateCourierWorker;
 import uz.alexits.cargostar.workers.calculation.FetchProvidersWorker;
 import uz.alexits.cargostar.workers.calculation.FetchVatWorker;
@@ -27,13 +28,17 @@ import uz.alexits.cargostar.workers.invoice.FetchInvoiceWorker;
 import uz.alexits.cargostar.workers.invoice.FetchPayerDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchRecipientDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchSenderDataWorker;
+import uz.alexits.cargostar.workers.invoice.FetchSenderListData;
 import uz.alexits.cargostar.workers.invoice.GetInvoiceHeaderWorker;
 import uz.alexits.cargostar.workers.invoice.InsertInvoiceWorker;
 import uz.alexits.cargostar.workers.invoice.SendInvoiceWorker;
 import uz.alexits.cargostar.workers.location.FetchBranchesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingTypesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingWorker;
+import uz.alexits.cargostar.workers.location.FetchCitiesWorker;
+import uz.alexits.cargostar.workers.location.FetchCountriesWorker;
 import uz.alexits.cargostar.workers.location.FetchLocationDataWorker;
+import uz.alexits.cargostar.workers.location.FetchRegionsWorker;
 import uz.alexits.cargostar.workers.location.FetchTransitPointsWorker;
 import uz.alexits.cargostar.workers.login.SignInWorker;
 import uz.alexits.cargostar.workers.requests.BindRequestWorker;
@@ -90,6 +95,144 @@ public class SyncWorkRequest {
         return signInRequest.getId();
     }
 
+    public static UUID synchronizeFirstTime(final Context context, final String login, final String password, final String token) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+        final Data inputData = new Data.Builder()
+                .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
+                .putString(Constants.KEY_LOGIN, login)
+                .putString(Constants.KEY_PASSWORD, password)
+                .putString(SharedPrefs.TOKEN, token)
+                .build();
+        /* fetch location data from server*/
+        final OneTimeWorkRequest fetchCountriesRequest = new OneTimeWorkRequest.Builder(FetchCountriesWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchRegionsRequest = new OneTimeWorkRequest.Builder(FetchRegionsWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchCitiesRequest = new OneTimeWorkRequest.Builder(FetchCitiesWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch branches from server */
+        final OneTimeWorkRequest fetchBranchesRequest = new OneTimeWorkRequest.Builder(FetchBranchesWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch transit points from server */
+        final OneTimeWorkRequest fetchTransitPointsRequest = new OneTimeWorkRequest.Builder(FetchTransitPointsWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch provider data from server */
+        final OneTimeWorkRequest fetchProviderListRequest = new OneTimeWorkRequest.Builder(FetchProvidersWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch packaging data from server */
+        final OneTimeWorkRequest fetchPackagingRequest = new OneTimeWorkRequest.Builder(FetchPackagingWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch packaging type data from server */
+        final OneTimeWorkRequest fetchPackagingTypesRequest = new OneTimeWorkRequest.Builder(FetchPackagingTypesWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch zone data from server */
+        final OneTimeWorkRequest fetchZonesRequest = new OneTimeWorkRequest.Builder(FetchZonesWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch zone country data from server */
+        final OneTimeWorkRequest fetchZoneCountriesRequest = new OneTimeWorkRequest.Builder(FetchZoneCountriesWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch zone settings data from server */
+        final OneTimeWorkRequest fetchZoneSettingsRequest = new OneTimeWorkRequest.Builder(FetchZoneSettingsWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch vat data from server */
+        final OneTimeWorkRequest fetchVatRequest = new OneTimeWorkRequest.Builder(FetchVatWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch request data from server */
+        final OneTimeWorkRequest fetchRequestListRequest = new OneTimeWorkRequest.Builder(FetchRequestsWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch sender data from server */
+        final OneTimeWorkRequest fetchSenderListRequest = new OneTimeWorkRequest.Builder(FetchSenderListData.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch address book data from server */
+        final OneTimeWorkRequest fetchAddressBookRequest = new OneTimeWorkRequest.Builder(FetchAddressBookWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch invoice data from server */
+        final OneTimeWorkRequest fetchInvoicesRequest = new OneTimeWorkRequest.Builder(FetchInvoiceListWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* last one -> sign in */
+        final OneTimeWorkRequest signInRequest = new OneTimeWorkRequest.Builder(SignInWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        //todo: add transportation worker request
+        WorkManager.getInstance(context)
+                .beginWith(fetchCountriesRequest)
+                .then(fetchRegionsRequest)
+                .then(fetchCitiesRequest)
+                .then(fetchBranchesRequest)
+                .then(fetchTransitPointsRequest)
+                .then(fetchProviderListRequest)
+                .then(fetchPackagingRequest)
+                .then(fetchPackagingTypesRequest)
+                .then(fetchZonesRequest)
+                .then(fetchZoneCountriesRequest)
+                .then(fetchZoneSettingsRequest)
+                .then(fetchVatRequest)
+                .then(fetchRequestListRequest)
+                .then(fetchSenderListRequest)
+                .then(fetchAddressBookRequest)
+                .then(fetchInvoicesRequest)
+//                .then(fetchTransportationD)
+                .then(signInRequest)
+                .enqueue();
+
+        return signInRequest.getId();
+    }
+
     public static UUID fetchTransportationStatuses(@NonNull final Context context) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -138,22 +281,22 @@ public class SyncWorkRequest {
         return fetchTransitPointsRequest.getId();
     }
 
-    public static UUID fetchLocationData(@NonNull final Context context) {
-        final Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                .setRequiresCharging(false)
-                .setRequiresStorageNotLow(false)
-                .setRequiresDeviceIdle(false)
-                .build();
-
-        final OneTimeWorkRequest fetchLocationDataRequest = new OneTimeWorkRequest.Builder(FetchLocationDataWorker.class)
-                .setConstraints(constraints)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-
-        WorkManager.getInstance(context).enqueue(fetchLocationDataRequest);
-        return fetchLocationDataRequest.getId();
-    }
+//    public static UUID fetchLocationData(@NonNull final Context context) {
+//        final Constraints constraints = new Constraints.Builder()
+//                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+//                .setRequiresCharging(false)
+//                .setRequiresStorageNotLow(false)
+//                .setRequiresDeviceIdle(false)
+//                .build();
+//
+//        final OneTimeWorkRequest fetchLocationDataRequest = new OneTimeWorkRequest.Builder(FetchLocationDataWorker.class)
+//                .setConstraints(constraints)
+//                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+//                .build();
+//
+//        WorkManager.getInstance(context).enqueue(fetchLocationDataRequest);
+//        return fetchLocationDataRequest.getId();
+//    }
 
     /* Calculation Data */
     public static void fetchPackagingData(@NonNull final Context context, final int perPage) {
@@ -306,6 +449,11 @@ public class SyncWorkRequest {
                                      final long recipientCountryId,
                                      final long recipientCityId,
                                      final String comment,
+                                     final String cityFrom,
+                                     final String cityTo,
+                                     final int consignmentQuantity,
+                                     final String paymentStatus,
+                                     final int deliveryType,
                                      final int status,
                                      final long createdAt,
                                      final long updatedAt) {
@@ -338,6 +486,11 @@ public class SyncWorkRequest {
                 .putInt(Constants.KEY_STATUS, status)
                 .putLong(Constants.KEY_CREATED_AT, createdAt)
                 .putLong(Constants.KEY_UPDATED_AT, updatedAt)
+                .putString(Constants.KEY_CITY_FROM, cityFrom)
+                .putString(Constants.KEY_CITY_TO, cityTo)
+                .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, consignmentQuantity)
+                .putString(Constants.KEY_PAYMENT_STATUS, paymentStatus)
+                .putInt(Constants.KEY_DELIVERY_TYPE, deliveryType)
                 .build();
 
         final OneTimeWorkRequest createRequestRequest = new OneTimeWorkRequest.Builder(InsertRequestWorker.class)
@@ -527,11 +680,67 @@ public class SyncWorkRequest {
         return insertInvoiceRequest.getId();
     }
 
+    public static UUID fetchInvoiceData(@NonNull final Context context, final long invoiceId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
+                .build();
+
+        final OneTimeWorkRequest fetchInvoiceRequest = new OneTimeWorkRequest.Builder(FetchInvoiceWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchSenderDataRequest = new OneTimeWorkRequest.Builder(FetchSenderDataWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchRecipientDataRequest = new OneTimeWorkRequest.Builder(FetchRecipientDataWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchPayerDataRequest = new OneTimeWorkRequest.Builder(FetchPayerDataWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest insertInvoiceRequest = new OneTimeWorkRequest.Builder(InsertInvoiceWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchCargoListRequest = new OneTimeWorkRequest.Builder(FetchCargoListWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
+        WorkManager.getInstance(context)
+                .beginWith(fetchSenderDataRequest)
+                .then(fetchInvoiceRequest)
+                .then(fetchRecipientDataRequest)
+                .then(fetchPayerDataRequest)
+                .then(insertInvoiceRequest)
+                .then(fetchCargoListRequest)
+                .enqueue();
+
+        return insertInvoiceRequest.getId();
+    }
+
     public static UUID sendInvoice(@NonNull final Context context,
                                    final long requestId,
                                    final long invoiceId,
                                    final long courierId,
                                    final String senderSignature,
+                                   final boolean isSenderSignatureLocal,
                                    final String senderEmail,
                                    final String senderTnt,
                                    final String senderFedex,
@@ -607,6 +816,7 @@ public class SyncWorkRequest {
                 .putLong(Constants.KEY_COURIER_ID, courierId)
 
                 .putString(Constants.KEY_SENDER_SIGNATURE, senderSignature)
+                .putBoolean(Constants.KEY_IS_SENDER_SIGNATURE_LOCAL, isSenderSignatureLocal)
                 .putString(Constants.KEY_SENDER_EMAIL, senderEmail)
                 .putString(Constants.KEY_SENDER_TNT, senderTnt)
                 .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
@@ -684,32 +894,6 @@ public class SyncWorkRequest {
                 .build();
         WorkManager.getInstance(context).enqueue(sendInvoiceRequest);
         return sendInvoiceRequest.getId();
-    }
-
-    public static void fetchRequestsAndInvoices(@NonNull final Context context) {
-        final Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresCharging(false)
-                .setRequiresStorageNotLow(false)
-                .setRequiresDeviceIdle(false)
-                .build();
-
-        final Data inputData = new Data.Builder()
-                .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
-                .build();
-
-        final OneTimeWorkRequest fetchRequestsRequest = new OneTimeWorkRequest.Builder(FetchRequestsWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-        final OneTimeWorkRequest fetchInvoicesRequest = new OneTimeWorkRequest.Builder(FetchInvoiceListWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-
-        WorkManager.getInstance(context).beginWith(fetchRequestsRequest).then(fetchInvoicesRequest).enqueue();
     }
 
     public static UUID searchInvoice(@NonNull final Context context, final long invoiceId) {

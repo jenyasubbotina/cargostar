@@ -3,6 +3,7 @@ package uz.alexits.cargostar.workers.calculation;
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -15,20 +16,29 @@ import uz.alexits.cargostar.model.calculation.Provider;
 import java.io.IOException;
 import java.util.List;
 import retrofit2.Response;
+import uz.alexits.cargostar.utils.Constants;
 
 public class FetchProvidersWorker extends Worker {
     private static final String TAG = FetchProvidersWorker.class.toString();
+    private String login;
+    private String password;
 
     public FetchProvidersWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
+        this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
+        this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+
+        if (login == null || password == null) {
+            this.login = getInputData().getString(Constants.KEY_LOGIN);
+            this.password = getInputData().getString(Constants.KEY_PASSWORD);
+        }
     }
 
     @NonNull
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
             final Response<List<Provider>> response = RetrofitClient.getInstance(getApplicationContext()).getProviders();
 
             if (response.code() == 200) {
@@ -36,7 +46,9 @@ public class FetchProvidersWorker extends Worker {
                     Log.i(TAG, "fetchAllProviders(): response=" + response.body());
                     final List<Provider> providerList = response.body();
                     LocalCache.getInstance(getApplicationContext()).packagingDao().insertProvidersTransaction(providerList);
-                    return ListenableWorker.Result.success();
+                    return ListenableWorker.Result.success(new Data.Builder()
+                            .putString(Constants.KEY_LOGIN, login)
+                            .putString(Constants.KEY_PASSWORD, password).build());
                 }
             }
             else {

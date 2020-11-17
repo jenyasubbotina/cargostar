@@ -29,6 +29,7 @@ import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FcmMessagingService extends FirebaseMessagingService {
@@ -36,25 +37,11 @@ public class FcmMessagingService extends FirebaseMessagingService {
     private static String DEFAULT_CHANNEL_ID;
     private static String PACKAGE_NAME;
 
-    private static String PUBLIC_REQUESTS_BODY;
-    private static String MY_REQUESTS_BODY;
-    private static String TRANSPORTATION_NEW_BODY;
-    private static String TRANSPORTATION_STATUS_CHANGE_BODY;
-
-    private static String INTENT_KEY;
-
     @Override
     public void onCreate() {
         super.onCreate();
         DEFAULT_CHANNEL_ID = getString(R.string.implicit_notification_channel_id);
         PACKAGE_NAME = getPackageName();
-
-        PUBLIC_REQUESTS_BODY = getString(R.string.public_requests_body);
-        MY_REQUESTS_BODY = getString(R.string.my_requests_body);
-        TRANSPORTATION_NEW_BODY = getString(R.string.new_transportation);
-        TRANSPORTATION_STATUS_CHANGE_BODY = getString(R.string.transportation_status_changed);
-
-        INTENT_KEY = Constants.MAIN_ACTIVITY_FRAGMENT;
     }
 
     @Override
@@ -92,7 +79,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final String title = dataPayload.get(Constants.KEY_TITLE);
         final String type = dataPayload.get(Constants.PUSH_TYPE);
         final String type2 = dataPayload.get(Constants.PUSH_SUBTYPE);
-        String link = ".view.activity.MainActivity";
+        String link = null;
         String body = null;
         String intentValue = null;
 
@@ -110,26 +97,26 @@ public class FcmMessagingService extends FirebaseMessagingService {
             if (type2.equalsIgnoreCase(Constants.SUBTYPE_NEW)) {
                 Log.i(TAG, "onMessageReceived(): new request");
                 if (request.getCourierId() == null) {
-                    body = PUBLIC_REQUESTS_BODY;
                     intentValue = Constants.KEY_PUBLIC_REQUESTS;
+                    link = IntentConstants.REQUEST_PUBLIC_REQUESTS;
                 }
                 else if (request.getCourierId() == SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID)) {
-                    body = MY_REQUESTS_BODY;
                     intentValue = Constants.KEY_MY_REQUESTS;
+                    link = IntentConstants.REQUEST_MY_REQUESTS;
                 }
             }
             else if (type2.equalsIgnoreCase(Constants.SUBTYPE_UPDATE)) {
                 Log.i(TAG, "onMessageReceived(): request update");
                 if (request.getCourierId() == null) {
-                    body = PUBLIC_REQUESTS_BODY;
                     intentValue = Constants.KEY_PUBLIC_REQUESTS;
+                    link = IntentConstants.REQUEST_PUBLIC_REQUESTS;
                 }
                 else if (request.getCourierId() == SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID)) {
-                    body = MY_REQUESTS_BODY;
                     intentValue = Constants.KEY_MY_REQUESTS;
+                    link = IntentConstants.REQUEST_MY_REQUESTS;
                 }
             }
-            //todo: insert request through worker
+            body = String.valueOf(request.getId());
             SyncWorkRequest.createRequest(
                     getApplicationContext(),
                     request.getId(),
@@ -150,9 +137,14 @@ public class FcmMessagingService extends FirebaseMessagingService {
                     request.getRecipientCountryId() != null ? request.getRecipientCountryId() : -1L,
                     request.getRecipientCityId() != null ? request.getRecipientCityId() : -1L,
                     request.getComment(),
+                    request.getSenderCity(),
+                    request.getRecipientCity(),
+                    request.getConsignmentQuantity(),
+                    request.getPaymentStatus(),
+                    request.getDeliveryType(),
                     request.getStatus(),
-                    request.getCreatedAt()!= null ? request.getCreatedAt().getTime() : null,
-                    request.getCreatedAt()!= null ? request.getUpdatedAt().getTime() : null);
+                    new Date().getTime(),
+                    new Date().getTime());
         }
         else if (type.equalsIgnoreCase(Constants.TYPE_TRANSPORTATION)) {
             final Transportation transportation = parseTransportation(dataPayload);
@@ -160,13 +152,12 @@ public class FcmMessagingService extends FirebaseMessagingService {
 
             if (type2.equalsIgnoreCase(Constants.SUBTYPE_NEW)) {
                 Log.i(TAG, "onMessageReceived(): new transportation");
-                body = TRANSPORTATION_NEW_BODY;
             }
             else if (type2.equalsIgnoreCase(Constants.SUBTYPE_STATUS_UPDATE)) {
                 Log.i(TAG, "onMessageReceived(): transportation status update");
-                body = TRANSPORTATION_STATUS_CHANGE_BODY;
             }
-            //todo: insert transportation through worker
+            body = String.valueOf(transportation.getId());
+            link = IntentConstants.REQUEST_CURRENT_TRANSPORTATIONS;
             try {
                 new Thread(() -> {
                     LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation);
@@ -176,11 +167,10 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 Log.e(TAG, "insertTransportation(): ", e);
             }
         }
-        if (intentValue == null || body == null) {
+        if (intentValue == null) {
             return;
         }
         showMessage(title, body, PACKAGE_NAME, link, intentValue);
-        //todo: insert notification into cache through new Thread or Worker
         final Notification notification = new Notification(false, title, body, link, new Date());
         try {
             new Thread(() -> {
@@ -198,15 +188,15 @@ public class FcmMessagingService extends FirebaseMessagingService {
                             final String link,
                             final String intentValue) {
         if (packageName != null && link != null && intentValue != null) {
-            final Intent notifyIntent = new Intent();
-            notifyIntent.setComponent(new ComponentName(packageName, packageName + link));
-            notifyIntent.putExtra(INTENT_KEY, intentValue);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-            stackBuilder.addNextIntentWithParentStack(notifyIntent);
-            PendingIntent pendingIntent = stackBuilder.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT);
+//            final Intent notifyIntent = new Intent();
+//            notifyIntent.setComponent(new ComponentName(packageName, packageName + link));
+//            notifyIntent.putExtra(IntentConstants.INTENT_PUSH_KEY, link);
+//            TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+//            stackBuilder.addNextIntentWithParentStack(notifyIntent);
+//            PendingIntent pendingIntent = stackBuilder.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT);
 
             final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DEFAULT_CHANNEL_ID);
-            notificationBuilder.setContentIntent(pendingIntent);
+//            notificationBuilder.setContentIntent(pendingIntent);
             notificationBuilder.setContentTitle(title);
             notificationBuilder.setContentText(body);
             notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -216,14 +206,6 @@ public class FcmMessagingService extends FirebaseMessagingService {
             notificationBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
             NotificationManagerCompat.from(this).notify(notificationId++, notificationBuilder.build());
         }
-    }
-
-    private void insertTransportation() {
-
-    }
-
-    private void insertNotification() {
-
     }
 
     private Request parseRequest(final Map<String, String> dataPayload) {
@@ -248,6 +230,11 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final String status = dataPayload.get(Constants.KEY_STATUS);
         final String createdAt = dataPayload.get(Constants.KEY_CREATED_AT);
         final String updatedAt = dataPayload.get(Constants.KEY_UPDATED_AT);
+        final String cityFrom = dataPayload.get(Constants.KEY_SENDER_CITY);
+        final String cityTo = dataPayload.get(Constants.KEY_RECIPIENT_CITY);
+        final String paymentStatus = dataPayload.get(Constants.KEY_PAYMENT_STATUS);
+        final String deliveryType = dataPayload.get(Constants.KEY_DELIVERY_TYPE);
+        final String consignmentQuantity = dataPayload.get(Constants.KEY_CONSIGNMENT_QUANTITY);
 
         final long request_id = requestId != null && !TextUtils.isEmpty(requestId) ? Long.parseLong(requestId.trim()) : -1L;
         final Long sender_country_id = senderCountryId != null && !TextUtils.isEmpty(senderCountryId) ? Long.parseLong(senderCountryId.trim()) : null;
@@ -262,6 +249,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final Long invoice_id = invoiceId != null && !TextUtils.isEmpty(invoiceId) ? Long.parseLong(invoiceId.trim()) : null;
         final Long created_at = createdAt != null && !TextUtils.isEmpty(createdAt) ? Long.parseLong(createdAt.trim()) : null;
         final Long updated_at = updatedAt != null && !TextUtils.isEmpty(updatedAt) ? Long.parseLong(updatedAt.trim()) : null;
+        final int delivery_type = deliveryType != null && !TextUtils.isEmpty(deliveryType) ? Integer.parseInt(deliveryType) : null;
 
         return new Request(
                 request_id,
@@ -283,8 +271,13 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 provider_id,
                 invoice_id,
                 1,
-                new Date(created_at),
-                new Date(updated_at));
+                new Date(),
+                new Date(),
+                cityFrom,
+                cityTo,
+                consignmentQuantity != null ? Integer.parseInt(consignmentQuantity) : 0,
+                paymentStatus,
+                delivery_type);
     }
 
     private Transportation parseTransportation(final Map<String, String> dataPayload) {
@@ -292,6 +285,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final String courierId = dataPayload.get(Constants.KEY_EMPLOYEE_ID);
         final String providerId = dataPayload.get(Constants.KEY_PROVIDER_ID);
         final String invoiceId = dataPayload.get(Constants.KEY_INVOICE_ID);
+        final String requestId = dataPayload.get(Constants.KEY_REQUEST_ID);
         final String transportationStatusId = dataPayload.get(Constants.KEY_TRANSPORTATION_STATUS);
         final String paymentStatusId = dataPayload.get(Constants.KEY_PAYMENT_STATUS_ID);
         final String currentTransitPointId = dataPayload.get(Constants.KEY_CURRENT_TRANSIT_POINT_ID);
@@ -312,6 +306,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final Long provider_id = providerId != null && !TextUtils.isEmpty(providerId) ? Long.parseLong(providerId.trim()) : null;
         final Long courier_id = courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId.trim()) : null;
         final Long invoice_id = invoiceId != null && !TextUtils.isEmpty(invoiceId) ? Long.parseLong(invoiceId.trim()) : null;
+        final Long request_id = requestId != null && !TextUtils.isEmpty(requestId) ? Long.parseLong(requestId.trim()) : null;
         final Long transportation_status_id = transportationStatusId != null && !TextUtils.isEmpty(transportationStatusId) ? Long.parseLong(transportationStatusId.trim()) : null;
         final Long payment_status_id = paymentStatusId != null && !TextUtils.isEmpty(paymentStatusId) ? Long.parseLong(paymentStatusId.trim()) : null;
         final Long current_transit_point_id = currentTransitPointId != null && !TextUtils.isEmpty(currentTransitPointId) ? Long.parseLong(currentTransitPointId.trim()) : null;
@@ -323,6 +318,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 provider_id,
                 courier_id,
                 invoice_id,
+                request_id,
                 transportation_status_id,
                 payment_status_id,
                 current_transit_point_id,
@@ -333,8 +329,8 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 instructions,
                 direction,
                 status != null && !TextUtils.isEmpty(status) ? Integer.parseInt(status) : 1,
-                new Date(created_at),
-                new Date(updated_at));
+                new Date(),
+                new Date());
         transportation.setCityTo(cityFrom);
         transportation.setCityTo(cityTo);
         transportation.setTransportationStatusName(statusName);

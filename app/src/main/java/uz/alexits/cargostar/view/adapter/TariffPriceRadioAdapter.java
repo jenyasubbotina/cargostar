@@ -39,20 +39,12 @@ public class TariffPriceRadioAdapter extends RecyclerView.Adapter<TariffPriceRad
     }
 
     public String getSelectedPrice() {
-        return itemList.get(position).getPrice();
+        return itemList == null || itemList.isEmpty() ? null : itemList.get(position).getPrice();
     }
-
-//    public void setSelectedPrice(final String selectedPrice) {
-//        this.selectedPrice = selectedPrice;
-//    }
 
     public long getSelectedPackagingId() {
-        return itemList.get(position).getTariffId();
+        return itemList == null || itemList.isEmpty() ? 0 : itemList.get(position).getTariffId();
     }
-
-//    public void setSelectedPackagingId(final long selectedPackagingId) {
-//        this.selectedPackagingId = selectedPackagingId;
-//    }
 
     public int getLastCheckedPosition() {
         return lastCheckedPosition;

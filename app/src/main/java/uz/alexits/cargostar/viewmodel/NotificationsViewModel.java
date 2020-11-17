@@ -28,9 +28,9 @@ public class NotificationsViewModel extends AndroidViewModel {
         return repository.selectNewNotifications();
     }
 
-//    public void readNotification(final long receiptId) {
-//        repository.readNotification(receiptId);
-//    }
+    public void readNotification(final long notificationId) {
+        repository.readNotification(notificationId);
+    }
 
     public LiveData<List<Notification>> selectAllNotifications() {
         return repository.selectAllNotifications();

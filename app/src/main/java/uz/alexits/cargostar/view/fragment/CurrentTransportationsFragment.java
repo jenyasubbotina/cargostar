@@ -63,9 +63,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     //viewModel
     private CourierViewModel courierViewModel;
     private TransportationViewModel transportationViewModel;
-    //transportation statuses -> all
-//    private static TransportationStatus[] statusArray;
-    //header views
+   //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
     private EditText parcelSearchEditText;
@@ -211,15 +209,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                 }
                 selectedTransitPointId = currentItem.getId();
                 transportationViewModel.setStatusArrayTransitPoint(selectedStatusArray, selectedTransitPointId);
-//                if (inTransitCheckBox.isChecked()) {
-//                    parcelsViewModel.selectParcelsByLocationAndStatus(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID), statusArray, currentItem.getId()).observe(getViewLifecycleOwner(), parcelList -> {
-//                        Log.i(TAG, "parcelList: " + parcelList);
-//                        if (parcelList != null) {
-//                            parcelAdapter.setParcelList(parcelList);
-//                            parcelAdapter.notifyDataSetChanged();
-//                        }
-//                    });
-//                }
             }
 
             @Override
@@ -438,7 +427,8 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
             Log.i(TAG, "statusList: delivered + lost");
             selectedStatusArray.clear();
             selectedStatusArray.add(5L);
-            selectedStatusArray.add(6L);        }
+            selectedStatusArray.add(6L);
+        }
         else if (lost) {
             //lost
             Log.i(TAG, "statusList: lost");
@@ -470,6 +460,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
         action.setTransportationId(currentItem.getId());
         action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
+        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : -1L);
         action.setTransportationStatusId(currentItem.getTransportationStatusId() != null ? currentItem.getTransportationStatusId() : -1L);
         action.setTransportationStatusName(currentItem.getTransportationStatusName());
         action.setPaymentStatusId(currentItem.getPaymentStatusId() != null ? currentItem.getPaymentStatusId() : -1L);
@@ -506,7 +497,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                 final CurrentTransportationsFragmentDirections.ActionCurrentParcelsFragmentToParcelDataFragment action =
                         CurrentTransportationsFragmentDirections.actionCurrentParcelsFragmentToParcelDataFragment();
                 action.setRequestId(1);
-                action.setRequestOrParcel(IntentConstants.INTENT_PARCEL);
+                action.setRequestOrParcel(IntentConstants.INTENT_TRANSPORTATION);
                 NavHostFragment.findNavController(this).navigate(action);
             }
         }

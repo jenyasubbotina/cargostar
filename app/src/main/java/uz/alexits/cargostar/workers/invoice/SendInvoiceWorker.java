@@ -35,6 +35,7 @@ public class SendInvoiceWorker extends Worker {
     /* sender data */
     private final String senderEmail;
     private final String senderSignature;
+    private final boolean isSenderSignatureLocal;
     private final String senderFirstName;
     private final String senderMiddleName;
     private final String senderLastName;
@@ -121,6 +122,7 @@ public class SendInvoiceWorker extends Worker {
         this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
 
         this.senderSignature = getInputData().getString(Constants.KEY_SENDER_SIGNATURE);
+        this.isSenderSignatureLocal = getInputData().getBoolean(Constants.KEY_IS_SENDER_SIGNATURE_LOCAL, true);
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
         this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
         this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
@@ -210,7 +212,9 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setCourierId(courierId);
 
         /* sender data */
-        createInvoiceParams.setSenderSignature(senderSignature != null && !TextUtils.isEmpty(senderSignature) ? ImageSerializer.fileToBase64(senderSignature) : null);
+        if (senderSignature != null && !TextUtils.isEmpty(senderSignature)) {
+            createInvoiceParams.setSenderSignature(isSenderSignatureLocal ? ImageSerializer.fileToBase64(senderSignature) : senderSignature);
+        }
         createInvoiceParams.setSenderEmail(senderEmail);
         createInvoiceParams.setSenderTntAccountNumber(senderTnt);
         createInvoiceParams.setSenderFedexAccountNumber(senderFedex);

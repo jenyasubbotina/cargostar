@@ -33,11 +33,6 @@ public class CreateInvoiceData {
     public final int secondInputType;
     public boolean firstEnabled;
     public boolean secondEnabled;
-//    //for calc item
-//    public String index;
-//    public String packageType;
-//    public String weight;
-//    public String dimensions;
 
     public CreateInvoiceData(final int type) {
         firstInputType = -1;

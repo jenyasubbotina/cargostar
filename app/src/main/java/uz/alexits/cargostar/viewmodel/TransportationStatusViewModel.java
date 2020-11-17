@@ -13,6 +13,7 @@ import java.util.List;
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.location.City;
+import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
@@ -34,6 +35,8 @@ public class TransportationStatusViewModel extends AndroidViewModel {
     private final MutableLiveData<TransportationStatus> nextTransportationStatus;
     private final MutableLiveData<Long> nextTransitPointId;
 
+    private final MutableLiveData<Long> requestId;
+
     public TransportationStatusViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
@@ -49,6 +52,8 @@ public class TransportationStatusViewModel extends AndroidViewModel {
 
         this.nextTransportationStatus = new MutableLiveData<>();
         this.nextTransitPointId = new MutableLiveData<>();
+
+        this.requestId = new MutableLiveData<>();
     }
 
     /* Transportation */
@@ -63,6 +68,10 @@ public class TransportationStatusViewModel extends AndroidViewModel {
 
     public void setCurrentCityId(final Long cityId) {
         this.currentCityId.setValue(cityId);
+    }
+
+    public void setRequestId(final Long requestId) {
+        this.requestId.setValue(requestId);
     }
 
     public void setNextTransportationStatus(final TransportationStatus transportationStatus) {
@@ -113,5 +122,9 @@ public class TransportationStatusViewModel extends AndroidViewModel {
 
     public LiveData<TransportationStatus> getLeftCountryStatus() {
         return leftCountryStatus;
+    }
+
+    public LiveData<Country> getDestinationCountry() {
+        return Transformations.switchMap(requestId, repository::selectDestinationCountryByRequestId);
     }
 }

@@ -20,10 +20,10 @@ import java.util.Date;
 @Entity(tableName = "invoice",
         foreignKeys = {
         @ForeignKey(entity = Customer.class, parentColumns = "id", childColumns = "sender_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = AddressBook.class, parentColumns = "id", childColumns = "recipient_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = AddressBook.class, parentColumns = "id", childColumns = "payer_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = AddressBook.class, parentColumns = "id", childColumns = "recipient_id", onDelete = ForeignKey.SET_NULL, onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = AddressBook.class, parentColumns = "id", childColumns = "payer_id", onDelete = ForeignKey.SET_NULL, onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Request.class, parentColumns = "id", childColumns = "request_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+                @ForeignKey(entity = Request.class, parentColumns = "id", childColumns = "request_id", onDelete = ForeignKey.SET_NULL, onUpdate = ForeignKey.CASCADE)},
         indices = {@Index(value = "sender_id"),
                 @Index(value = "recipient_id"),
                 @Index(value = "payer_id"),

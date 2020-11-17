@@ -20,11 +20,12 @@ public class Notification {
     private long id;
 
     @ColumnInfo(name = "is_read", defaultValue = "false")
-    private final boolean isRead;
+    private boolean isRead;
 
     @ColumnInfo(name = "title")
     private final String title;
 
+    //id of request, invoice or transportation
     @ColumnInfo(name = "body")
     private final String body;
 
@@ -53,6 +54,10 @@ public class Notification {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
     }
 
     public boolean isRead() {

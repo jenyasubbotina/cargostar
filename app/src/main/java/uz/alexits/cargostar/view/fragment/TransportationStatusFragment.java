@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,24 +25,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
 import uz.alexits.cargostar.utils.IntentConstants;
+import uz.alexits.cargostar.view.callback.TransportationCallback;
 import uz.alexits.cargostar.viewmodel.TransportationStatusViewModel;
-import uz.alexits.cargostar.viewmodel.TransportationViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
-public class TransportationStatusFragment extends Fragment {
+public class TransportationStatusFragment extends Fragment implements TransportationCallback {
     private Context context;
     private FragmentActivity activity;
-
-    private ConstraintLayout parcelItem;
 
     private TextView transportationIdTextView;
     private TextView transportationIdItemTextView;
@@ -66,11 +63,17 @@ public class TransportationStatusFragment extends Fragment {
     private TransportationStatus nextStatus;
     private Long nextPoint;
 
+    private long invoiceId;
+    private long requestId;
+    private long courierId;
+    private long providerId;
+
     private static TransportationStatus inTransitTransportationStatus;
     private static TransportationStatus onItsWayTransportationStatus;
     private static TransportationStatus deliveredTransportationStatus;
     private static TransportationStatus leftCountryTransportationStatus;
-//    private final TransportationStatus[] statusArray = new TransportationStatus[] {TransportationStatus.IN_TRANSIT, TransportationStatus.ON_THE_WAY, TransportationStatus.DELIVERED, TransportationStatus.LOST};
+
+    private Country destinationCountry;
 
     public TransportationStatusFragment() {
         // Required empty public constructor
@@ -84,7 +87,11 @@ public class TransportationStatusFragment extends Fragment {
 
         if (getArguments() != null) {
             transportationId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationId();
-            final long invoiceId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInvoiceId();
+            invoiceId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInvoiceId();
+            requestId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getRequestId();
+            courierId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCourierId();
+            providerId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getProviderId();
+
             final long statusId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationStatusId();
             final String statusName = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationStatusName();
             final long paymentStatusId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getPaymentStatusId();
@@ -94,8 +101,6 @@ public class TransportationStatusFragment extends Fragment {
             final long currentTransitPointId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCurrentTransitPointId();
             final String cityFrom = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCityFrom();
             final String cityTo = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCityTo();
-            final long courierId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCourierId();
-            final long providerId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getProviderId();
             final String instructions = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInstructions();
             final String arrivalDate = TransportationStatusFragmentArgs.fromBundle(getArguments()).getArrivalDate();
             final String direction = TransportationStatusFragmentArgs.fromBundle(getArguments()).getDirection();
@@ -110,7 +115,6 @@ public class TransportationStatusFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_parcel_status, container, false);
 
-        parcelItem = root.findViewById(R.id.parcel_item);
         transportationIdTextView = root.findViewById(R.id.parcel_id_text_view);
         transportationIdItemTextView = root.findViewById(R.id.parcel_id_item_text_view);
         srcCityTextView = root.findViewById(R.id.from_text_view);
@@ -131,14 +135,6 @@ public class TransportationStatusFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        parcelItem.setOnClickListener(v -> {
-            final TransportationStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action =
-                    TransportationStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
-            action.setRequestId(transportationId);
-            action.setRequestOrParcel(IntentConstants.INTENT_PARCEL);
-            NavHostFragment.findNavController(this).navigate(action);
-        });
 
         submitStatusBtn.setOnClickListener(v -> {
             if (currentTransportation == null || nextStatus == null) {
@@ -187,6 +183,7 @@ public class TransportationStatusFragment extends Fragment {
         final TransportationStatusViewModel statusViewModel = new ViewModelProvider(this).get(TransportationStatusViewModel.class);
 
         statusViewModel.setTransportationId(transportationId);
+        statusViewModel.setRequestId(requestId);
 
         statusViewModel.getCurrentTransportation().observe(getViewLifecycleOwner(), transportation -> {
             if (transportation != null) {
@@ -258,28 +255,45 @@ public class TransportationStatusFragment extends Fragment {
                                 Log.i(TAG, "nextPath: " + nextPath);
                                 if (currentTransportation.getTransportationStatusId() == onItsWayTransportationStatus.getId()) {
                                     statusViewModel.setNextTransportationStatus(inTransitTransportationStatus);
-                                    statusViewModel.setNextTransitPointId(nextPath.getTransitPointId());
+                                    statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
                                     return;
                                 }
                                 if (currentTransportation.getTransportationStatusId() == inTransitTransportationStatus.getId()) {
                                     statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
-                                    statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                                    statusViewModel.setNextTransitPointId(nextPath.getTransitPointId());
                                 }
                                 return;
                             }
                             if (currentTransportation.getTransportationStatusId() == onItsWayTransportationStatus.getId()) {
-                                //delivered
-                                statusViewModel.setNextTransportationStatus(deliveredTransportationStatus);
+                                statusViewModel.setNextTransportationStatus(inTransitTransportationStatus);
                                 statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
                                 return;
                             }
                             if (currentTransportation.getTransportationStatusId() == inTransitTransportationStatus.getId()) {
-                                statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
+                                if (destinationCountry != null) {
+                                    if (destinationCountry.getId() == 191) {
+                                        //delivered
+                                        statusViewModel.setNextTransportationStatus(deliveredTransportationStatus);
+                                        statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                                        return;
+                                    }
+                                    //left country
+                                    statusViewModel.setNextTransportationStatus(leftCountryTransportationStatus);
+                                    statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                                }
+                            }
+                            if (currentTransportation.getTransportationStatusId() == deliveredTransportationStatus.getId()
+                                    || currentTransportation.getTransportationStatusId() == leftCountryTransportationStatus.getId()) {
+                                statusViewModel.setNextTransportationStatus(null);
                                 statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
                             }
-                            if (currentTransportation.getTransportationStatusId() == deliveredTransportationStatus.getId()) {
-                                statusViewModel.setNextTransportationStatus(null);
-                            }
+//                            if (currentTransportation.getTransportationStatusId() == inTransitTransportationStatus.getId()) {
+//                                statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
+//                                statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+//                            }
+//                            if (currentTransportation.getTransportationStatusId() == deliveredTransportationStatus.getId()) {
+//                                statusViewModel.setNextTransportationStatus(null);
+//                            }
                         }
                     }
                 }
@@ -305,7 +319,25 @@ public class TransportationStatusFragment extends Fragment {
                 nextPoint = nextTransitPoint;
             }
         });
+
+        statusViewModel.getDestinationCountry().observe(getViewLifecycleOwner(), destinationCountry -> {
+           if (destinationCountry != null) {
+               this.destinationCountry = destinationCountry;
+               Log.i(TAG, "destinationCountry: " + destinationCountry);
+           }
+        });
     }
 
     private static final String TAG = TransportationStatusFragment.class.toString();
+
+    @Override
+    public void onTransportationSelected(Transportation currentItem) {
+        final TransportationStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action =
+                            TransportationStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
+        action.setRequestOrParcel(IntentConstants.INTENT_TRANSPORTATION);
+        action.setInvoiceId(invoiceId > 0 ? invoiceId : -1L);
+        action.setCourierId(courierId > 0 ? courierId : -1L);
+        action.setProviderId(providerId > 0 ? providerId : -1L);
+        NavHostFragment.findNavController(this).navigate(action);
+    }
 }

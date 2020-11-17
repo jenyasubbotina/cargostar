@@ -167,6 +167,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
         });
+
         parcelSearchImageView.setOnClickListener(v -> {
             final String invoiceIdStr = parcelSearchEditText.getText().toString();
 
@@ -242,6 +243,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
 
         final PublicRequestsFragmentDirections.ActionPublicBidsFragmentToParcelDataFragment action = PublicRequestsFragmentDirections.actionPublicBidsFragmentToParcelDataFragment();
         action.setRequestId(currentItem.getId());
+        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
         action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
         action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
         action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : -1L);
@@ -251,7 +253,9 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         action.setRecipientCountryId(currentItem.getRecipientCountryId() != null ? currentItem.getRecipientCountryId() : -1L);
         action.setRecipientCityId(currentItem.getRecipientCityId() != null ? currentItem.getRecipientCityId() : -1L);
         action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
-        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
+        action.setDeliveryType(currentItem.getDeliveryType());
+        action.setComment(currentItem.getComment());
+        action.setConsignmentQuantity(currentItem.getConsignmentQuantity());
         NavHostFragment.findNavController(this).navigate(action);
     }
 

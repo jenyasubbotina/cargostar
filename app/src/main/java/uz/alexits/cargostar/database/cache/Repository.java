@@ -2,6 +2,7 @@ package uz.alexits.cargostar.database.cache;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
+import androidx.room.Query;
 
 import uz.alexits.cargostar.database.dao.ActorDao;
 import uz.alexits.cargostar.database.dao.InvoiceDao;
@@ -166,9 +167,9 @@ public class Repository {
         return locationDao.selectCityById(cityId);
     }
 
-//    public LiveData<City> selectCityByTransitPointId() {
-//
-//    }
+    public LiveData<Country> selectDestinationCountryByRequestId(final long requestId) {
+        return locationDao.selectDestinationCountryByRequestId(requestId);
+    }
 
     /* Provider / Packaging Queries*/
     public LiveData<List<Provider>> selectAllProviders() {
@@ -277,6 +278,10 @@ public class Repository {
         return invoiceDao.selectAllAddressBookEntries();
     }
 
+    public LiveData<List<AddressBook>> selectAddressBookBySenderEmail(final String senderEmail) {
+        return invoiceDao.selectAddressBookBySenderEmail(senderEmail);
+    }
+
     /* request data*/
     public LiveData<Request> selectRequest(final long requestId) {
         return requestDao.selectRequestById(requestId);
@@ -314,6 +319,10 @@ public class Repository {
 
     public LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId) {
         return transportationDao.selectCurrentTransportations(statusArray, transitPointId);
+    }
+
+    public LiveData<Transportation> selectTransportationByInvoiceId(final long invoiceId) {
+        return transportationDao.selectTransportationByInvoiceId(invoiceId);
     }
 
     /* transportation status */
@@ -359,9 +368,9 @@ public class Repository {
         return notificationDao.selectNewNotificationsCount(false);
     }
 
-//    public void readNotification(final long receiptId) {
-//        notificationDao.readNotification(receiptId, true);
-//    }
+    public void readNotification(final long notificationId) {
+        notificationDao.readNotification(notificationId, true);
+    }
 
     /* cargo */
     public LiveData<List<Consignment>> selectConsignmentListByRequestId(final Long requestId) {

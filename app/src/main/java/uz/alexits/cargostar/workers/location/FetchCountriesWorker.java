@@ -1,7 +1,6 @@
 package uz.alexits.cargostar.workers.location;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -12,26 +11,25 @@ import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.location.Branche;
-import uz.alexits.cargostar.api.RetrofitClient;
-
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
+
 import retrofit2.Response;
+import uz.alexits.cargostar.api.RetrofitClient;
+import uz.alexits.cargostar.database.cache.LocalCache;
+import uz.alexits.cargostar.model.location.Branche;
+import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
-public class FetchBranchesWorker extends Worker {
+public class FetchCountriesWorker extends Worker {
     private final int perPage;
     @Nullable private final String login;
     @Nullable private final String password;
 
-    public FetchBranchesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public FetchCountriesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, -1);
+        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
     }
@@ -40,19 +38,19 @@ public class FetchBranchesWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         if (login == null || password == null) {
-            Log.e(TAG, "getBranches(): login or password is empty");
+            Log.e(TAG, "fetchCountries(): login or password is empty");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();
         }
 
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<Branche>> response = RetrofitClient.getInstance(getApplicationContext()).getBranches(perPage);
+            final Response<List<Country>> response = RetrofitClient.getInstance(getApplicationContext()).getCountries(perPage);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
-                    final List<Branche> brancheList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).locationDao().insertBranches(brancheList);
+                    final List<Country> countryList = response.body();
+                    LocalCache.getInstance(getApplicationContext()).locationDao().insertCountries(countryList);
                     return ListenableWorker.Result.success(
                             new Data.Builder()
                                     .putString(Constants.KEY_LOGIN, login)
@@ -60,15 +58,16 @@ public class FetchBranchesWorker extends Worker {
                 }
             }
             else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
+                Log.e(TAG, "fetchCountries(): " + response.errorBody());
             }
             return ListenableWorker.Result.failure();
         }
         catch (IOException e) {
-            Log.e(TAG, "doWork(): ", e);
+            Log.e(TAG, "fetchCountries(): ", e);
             return ListenableWorker.Result.failure();
         }
     }
 
-    private static final String TAG = FetchBranchesWorker.class.toString();
+    private static final String TAG = FetchCountriesWorker.class.toString();
 }
+

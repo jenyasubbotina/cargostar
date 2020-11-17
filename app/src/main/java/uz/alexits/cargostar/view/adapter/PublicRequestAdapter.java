@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.model.PaymentStatus;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.view.callback.RequestCallback;
 import uz.alexits.cargostar.view.viewholder.PublicRequestViewHolder;
@@ -53,7 +54,7 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
             final String requestId = "# " + currentRequest.getId();
             holder.indexTextView.setText(requestIndex);
             holder.parcelIdTextView.setText(requestId);
-            holder.fromTextView.setText(String.valueOf(currentRequest.getSenderCityId()));
+            holder.fromTextView.setText(currentRequest.getSenderCity());
 
             if (currentRequest.isNew()) {
                 holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
@@ -61,14 +62,12 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
             else {
                 holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
             }
-            //todo: get payment status from Invoice via invoiceId
-//            final PaymentStatus paymentStatus = currentRequest.getPaymentStatus();
-//            if (paymentStatus == PaymentStatus.PAID || paymentStatus == PaymentStatus.PAID_PARTIALLY || paymentStatus == PaymentStatus.PAID_MORE) {
-//                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
-//            }
-//            else if (paymentStatus == PaymentStatus.WAITING_PAYMENT || paymentStatus == PaymentStatus.WAITING_CHECK) {
-//                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_red);
-//            }
+            if (currentRequest.getPaymentStatus() != null && currentRequest.getPaymentStatus().equalsIgnoreCase("succeeded")) {
+                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
+            }
+            else {
+                holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_red);
+            }
         }
         holder.bind(currentRequest, callback);
     }

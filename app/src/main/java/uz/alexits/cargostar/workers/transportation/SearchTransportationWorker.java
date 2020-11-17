@@ -31,31 +31,33 @@ public class SearchTransportationWorker extends Worker {
         }
         final Transportation transportation = LocalCache.getInstance(getApplicationContext()).transportationDao().selectTransportationByQr(transportationQr);
 
+        final Data.Builder outputDataBuilder = new Data.Builder()
+                .putString(Constants.KEY_TRANSPORTATION_QR, transportationQr);
+
         if (transportation == null) {
             Log.e(TAG, "searchTransportation(): transportationQr is NULL " + transportationQr);
-            return Result.failure();
+            return Result.failure(outputDataBuilder.build());
         }
 
-        final Data.Builder outputData = new Data.Builder();
+        outputDataBuilder.putLong(Constants.KEY_TRANSPORTATION_ID, transportation.getId());
+        outputDataBuilder.putLong(Constants.KEY_INVOICE_ID, transportation.getInvoiceId());
+        outputDataBuilder.putLong(Constants.KEY_REQUEST_ID, transportation.getRequestId());
+        outputDataBuilder.putLong(Constants.KEY_COURIER_ID, transportation.getCourierId());
+        outputDataBuilder.putLong(Constants.KEY_PROVIDER_ID, transportation.getProviderId());
+        outputDataBuilder.putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportation.getTransportationStatusId());
+        outputDataBuilder.putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId());
+        outputDataBuilder.putLong(Constants.KEY_PAYMENT_STATUS_ID, transportation.getPaymentStatusId());
 
-        outputData.putLong(Constants.KEY_TRANSPORTATION_ID, transportation.getId());
-        outputData.putLong(Constants.KEY_INVOICE_ID, transportation.getInvoiceId());
-        outputData.putString(Constants.KEY_CITY_FROM, transportation.getCityFrom());
-        outputData.putString(Constants.KEY_CITY_TO, transportation.getCityTo());
-        outputData.putLong(Constants.KEY_COURIER_ID, transportation.getCourierId());
-        outputData.putLong(Constants.KEY_PROVIDER_ID, transportation.getProviderId());
-        outputData.putString(Constants.KEY_DIRECTION, transportation.getDirection());
-        outputData.putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportation.getTransportationStatusId());
-        outputData.putString(Constants.KEY_TRANSPORTATION_STATUS, transportation.getTransportationStatusName());
-        outputData.putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId());
-        outputData.putString(Constants.KEY_INSTRUCTIONS, transportation.getInstructions());
-        outputData.putString(Constants.KEY_ARRIVAL_DATE, transportation.getArrivalDate());
-        outputData.putString(Constants.KEY_TRACKING_CODE, transportation.getTrackingCode());
-        outputData.putString(Constants.KEY_QR_CODE, transportation.getQrCode());
-        outputData.putString(Constants.KEY_PARTY_QR_CODE, transportation.getPartyQrCode());
-        outputData.putLong(Constants.KEY_PAYMENT_STATUS_ID, transportation.getPaymentStatusId());
+        outputDataBuilder.putString(Constants.KEY_TRACKING_CODE, transportation.getTrackingCode());
+        outputDataBuilder.putString(Constants.KEY_CITY_FROM, transportation.getCityFrom());
+        outputDataBuilder.putString(Constants.KEY_CITY_TO, transportation.getCityTo());
+        outputDataBuilder.putString(Constants.KEY_PARTY_QR_CODE, transportation.getPartyQrCode());
+        outputDataBuilder.putString(Constants.KEY_INSTRUCTIONS, transportation.getInstructions());
+        outputDataBuilder.putString(Constants.KEY_DIRECTION, transportation.getDirection());
+        outputDataBuilder.putString(Constants.KEY_ARRIVAL_DATE, transportation.getArrivalDate());
+        outputDataBuilder.putString(Constants.KEY_TRANSPORTATION_STATUS, transportation.getTransportationStatusName());
 
-        return Result.success(outputData.build());
+        return Result.success(outputDataBuilder.build());
     }
 
     private static final String TAG = SearchTransportationWorker.class.toString();

@@ -21,10 +21,6 @@ public class ScanQrActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_qr);
 
-//        if (getIntent() != null) {
-//            resultValue = getIntent().getIntExtra(Constants.RESULT_VALUE, -1);
-//        }
-
         final IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setPrompt("Отсканируйте QR-код");
         integrator.setBeepEnabled(false);
@@ -41,7 +37,6 @@ public class ScanQrActivity extends AppCompatActivity {
                 finish();
             }
             else {
-                Toast.makeText(this, "Scanned", Toast.LENGTH_SHORT).show();
                 if (data != null) {
                     final String scannedData = data.getStringExtra("SCAN_RESULT");
                     if (scannedData != null) {

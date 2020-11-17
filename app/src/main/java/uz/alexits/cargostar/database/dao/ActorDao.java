@@ -43,4 +43,10 @@ public interface ActorDao {
 
     @Query("SELECT * FROM customer WHERE id == :userId")
     LiveData<Customer> selectCustomer(final long userId);
+
+    @Query("SELECT * FROM customer ORDER BY email DESC")
+    LiveData<List<Customer>> selectAllCustomers();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long[] insertSenderList(final List<Customer> senderList);
 }

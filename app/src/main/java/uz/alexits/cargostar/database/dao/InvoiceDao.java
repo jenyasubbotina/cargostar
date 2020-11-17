@@ -31,6 +31,9 @@ public interface InvoiceDao {
     @Query("SELECT * FROM invoice WHERE id == :invoiceId LIMIT 1")
     LiveData<Invoice> selectInvoiceById(final long invoiceId);
 
+    @Query("SELECT * FROM invoice WHERE id == :invoiceId LIMIT 1")
+    Invoice selectInvoiceByIdSync(final long invoiceId);
+
     @Update
     int updateInvoice(final Invoice invoice);
 
@@ -38,7 +41,7 @@ public interface InvoiceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertAddressBookEntry(final AddressBook addressBookEntry);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertAddressBookEntries(final List<AddressBook> addressBookList);
 
     @Query("SELECT * FROM address_book ORDER BY id ASC")
@@ -46,6 +49,11 @@ public interface InvoiceDao {
 
     @Query("SELECT * FROM address_book WHERE id == :addressBookId")
     LiveData<AddressBook> selectAddressBookEntryById(final long addressBookId);
+
+    @Query("SELECT * FROM address_book WHERE id IN " +
+            "(SELECT recipient_id OR payer_id FROM invoice WHERE sender_id == " +
+            "(SELECT id FROM customer WHERE email LIKE :senderEmail))")
+    LiveData<List<AddressBook>> selectAddressBookBySenderEmail(final String senderEmail);
 
     @Update
     int updateAddressBookEntry(final AddressBook addressBook);

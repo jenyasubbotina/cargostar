@@ -111,9 +111,8 @@ public class RetrofitClient {
         return apiService.getTransitPoints(perPage).execute();
     }
 
-    public void getAddressBook(final Callback<JsonElement> callback) {
-        final Call<JsonElement> call = apiService.getAddressBook();
-        call.enqueue(callback);
+    public Response<List<AddressBook>> getAddressBook(final int perPage) throws IOException {
+        return apiService.getAddressBook(perPage).execute();
     }
 
     /*Requests requests */
@@ -249,7 +248,8 @@ public class RetrofitClient {
     /* Invoice */
     public Response<CreateInvoiceResponse> createInvoice(@NonNull final CreateInvoiceParams createInvoiceParams) throws IOException {
         Log.i(TAG, "createInvoice: " + createInvoiceParams);
-        return apiService.createInvoice(createInvoiceParams).execute();
+        return null;
+//        return apiService.createInvoice(createInvoiceParams).execute();
     }
 
     public Response<Invoice> getInvoice(final long invoiceId) throws IOException {
@@ -258,11 +258,6 @@ public class RetrofitClient {
 
     public Response<List<Invoice>> getInvoiceList(final int perPage) throws IOException {
         return apiService.getInvoiceList(perPage).execute();
-    }
-
-    public void updateRequest(final long requestId, final Callback<JsonElement> callback) {
-//        final Call<JsonElement> call = apiService.updateRequest(requestId);
-//        call.enqueue(callback);
     }
 
     /* Transportation */
@@ -295,4 +290,8 @@ public class RetrofitClient {
 
 
     private static final String TAG = RetrofitClient.class.toString();
+
+    public Response<List<Customer>> getAllCustomers(final int perPage) throws IOException {
+        return apiService.getAllCustomers(perPage).execute();
+    }
 }

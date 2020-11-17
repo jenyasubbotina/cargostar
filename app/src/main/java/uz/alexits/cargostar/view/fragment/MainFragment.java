@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +67,8 @@ public class MainFragment extends Fragment {
     private ImageView scanParcelsImageView;
     private ImageView parcelDeliveryImageView;
 
+    private ProgressBar progressBar;
+
     private static long courierId = -1;
 
     public MainFragment() {
@@ -79,10 +82,10 @@ public class MainFragment extends Fragment {
         context = getContext();
         courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
 
-        SyncWorkRequest.fetchTransitPoints(context);
         SyncWorkRequest.fetchTransportationStatuses(context);
-        SyncWorkRequest.fetchRequestData(context);
-        SyncWorkRequest.fetchPackagingData(context, 100000);
+//        SyncWorkRequest.fetchTransitPoints(context);
+//        SyncWorkRequest.fetchRequestData(context);
+//        SyncWorkRequest.fetchPackagingData(context, 100000);
     }
 
     @Override
@@ -106,6 +109,7 @@ public class MainFragment extends Fragment {
         currentParcelsImageView = root.findViewById(R.id.current_parcels_image_view);
         scanParcelsImageView = root.findViewById(R.id.scan_parcels_image_view);
         parcelDeliveryImageView = root.findViewById(R.id.parcel_delivery_image_view);
+        progressBar = root.findViewById(R.id.progress_bar);
 
         return root;
     }
@@ -128,12 +132,13 @@ public class MainFragment extends Fragment {
         });
         //main content views
         publicRequestsImageView.setOnClickListener(v -> {
-            final MainFragmentDirections.ActionMainFragmentToPublicBidsFragment action = MainFragmentDirections.actionMainFragmentToPublicBidsFragment();
+            final MainFragmentDirections.ActionMainFragmentToPublicRequestsFragment action = MainFragmentDirections.actionMainFragmentToPublicRequestsFragment();
             action.setCourierId(courierId);
             NavHostFragment.findNavController(this).navigate(action);
         });
+
         myRequestsImageView.setOnClickListener(v -> {
-            final MainFragmentDirections.ActionMainFragmentToMyBidsFragment action = MainFragmentDirections.actionMainFragmentToMyBidsFragment();
+            final MainFragmentDirections.ActionMainFragmentToMyRequestsFragment action = MainFragmentDirections.actionMainFragmentToMyRequestsFragment();
             action.setCourierId(courierId);
             NavHostFragment.findNavController(this).navigate(action);
         });
@@ -143,19 +148,18 @@ public class MainFragment extends Fragment {
         });
 
         currentParcelsImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(MainFragment.this).navigate(R.id.action_mainFragment_to_currentParcelsFragment);
+            NavHostFragment.findNavController(MainFragment.this).navigate(R.id.action_mainFragment_to_currentTransportationsFragment);
         });
 
         scanParcelsImageView.setOnClickListener(v -> {
-//            NavHostFragment.findNavController(MainFragment.this).navigate(R.id.action_mainFragment_to_scanQrActivity);
             final Intent scanQrIntent = new Intent(context, ScanQrActivity.class);
             startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_MENU);
         });
 
         parcelDeliveryImageView.setOnClickListener(v -> {
             //TODO: select those current parcels with final destination equals to courier's transit point & status equala IN_TRANSIT
-            final MainFragmentDirections.ActionMainFragmentToCurrentParcelsFragment action =
-                    MainFragmentDirections.actionMainFragmentToCurrentParcelsFragment();
+            final MainFragmentDirections.ActionMainFragmentToCurrentTransportationsFragment action =
+                    MainFragmentDirections.actionMainFragmentToCurrentTransportationsFragment();
             action.setStatusFlag(IntentConstants.IN_TRANSIT);
             NavHostFragment.findNavController(this).navigate(action);
         });
@@ -173,19 +177,31 @@ public class MainFragment extends Fragment {
                 Log.i(TAG, "courier: " + courier);
             }
         });
+
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branche -> {
             if (branche != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branche.getName() + "\"");
             }
         });
+
         courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
         });
 
+        LocalCache.getInstance(context).actorDao().selectAllCustomers().observe(getViewLifecycleOwner(), senderList -> {
+            if (senderList != null) {
+                Log.i(TAG, "senderList: " + senderList);
+            }
+        });
+
         LocalCache.getInstance(context).invoiceDao().selectAllInvoices().observe(getViewLifecycleOwner(), invoiceList -> {
             Log.i(TAG, "invoiceList: " + invoiceList);
+        });
+
+        LocalCache.getInstance(context).invoiceDao().selectAllAddressBookEntries().observe(getViewLifecycleOwner(), addressBook -> {
+            Log.i(TAG, "addressBook: " + addressBook);
         });
 
         parcelSearchImageView.setOnClickListener(v -> {
@@ -205,6 +221,7 @@ public class MainFragment extends Fragment {
                     if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
                         Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
 
+                        progressBar.setVisibility(View.INVISIBLE);
                         parcelSearchEditText.setEnabled(true);
 
                         return;
@@ -218,29 +235,37 @@ public class MainFragment extends Fragment {
                         final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
                         final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
                         final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
+                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
                         final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
                         final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        final int deliveryType = outputData.getInt(Constants.KEY_DELIVERY_TYPE, 0);
+                        final String comment = outputData.getString(Constants.KEY_COMMENT);
+                        final int consignmentQuantity = outputData.getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0);
 
-                        final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
-                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
-                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
-                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, senderCityId);
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId);
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId);
-                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
-                        startActivity(mainIntent);
+                        final MainFragmentDirections.ActionMainFragmentToInvoiceDataFragment action = MainFragmentDirections.actionMainFragmentToInvoiceDataFragment();
+                        action.setRequestId(requestId);
+                        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
+                        action.setInvoiceId(invoiceId);
+                        action.setCourierId(courierId);
+                        action.setClientId(clientId);
+                        action.setSenderCountryId(senderCountryId);
+                        action.setSenderRegionId(senderRegionId);
+                        action.setSenderCityId(senderCityId);
+                        action.setRecipientCountryId(recipientCountryId);
+                        action.setRecipientCityId(recipientCityId);
+                        action.setProviderId(providerId);
+                        action.setDeliveryType(deliveryType);
+                        action.setComment(comment);
+                        action.setConsignmentQuantity(consignmentQuantity);
+                        NavHostFragment.findNavController(this).navigate(action);
 
+                        progressBar.setVisibility(View.INVISIBLE);
                         parcelSearchEditText.setEnabled(true);
 
                         return;
                     }
+                    progressBar.setVisibility(View.VISIBLE);
                     parcelSearchEditText.setEnabled(false);
                 });
             }
@@ -295,9 +320,60 @@ public class MainFragment extends Fragment {
         }
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
-                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
 
+                final String qr = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
 
+                WorkManager.getInstance(context).getWorkInfoByIdLiveData(SyncWorkRequest.searchTransportation(context, qr)).observe(getViewLifecycleOwner(), workInfo -> {
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Log.i(TAG, "found transportation with: " + qr);
+
+                        final long transportationId = workInfo.getOutputData().getLong(Constants.KEY_TRANSPORTATION_ID, 0);
+                        final long invoiceId = workInfo.getOutputData().getLong(Constants.KEY_INVOICE_ID, 0);
+                        final long requestId = workInfo.getOutputData().getLong(Constants.KEY_REQUEST_ID, 0);
+                        final long courierId = workInfo.getOutputData().getLong(Constants.KEY_COURIER_ID, 0);
+                        final long providerId = workInfo.getOutputData().getLong(Constants.KEY_PROVIDER_ID, 0);
+                        final long transportationStatusId = workInfo.getOutputData().getLong(Constants.KEY_TRANSPORTATION_STATUS_ID, 0);
+                        final long currentTransitPointId = workInfo.getOutputData().getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, 0);
+                        final long paymentStatusId = workInfo.getOutputData().getLong(Constants.KEY_PAYMENT_STATUS_ID, 0);
+
+                        final String qrCode = workInfo.getOutputData().getString(Constants.KEY_TRANSPORTATION_QR);
+                        final String trackingCode = workInfo.getOutputData().getString(Constants.KEY_TRACKING_CODE);
+                        final String cityFrom = workInfo.getOutputData().getString(Constants.KEY_CITY_FROM);
+                        final String cityTo = workInfo.getOutputData().getString(Constants.KEY_CITY_TO);
+                        final String partyQrCode = workInfo.getOutputData().getString(Constants.KEY_PARTY_QR_CODE);
+                        final String instruction = workInfo.getOutputData().getString(Constants.KEY_INSTRUCTIONS);
+                        final String direction = workInfo.getOutputData().getString(Constants.KEY_DIRECTION);
+                        final String arrivalDate = workInfo.getOutputData().getString(Constants.KEY_ARRIVAL_DATE);
+                        final String transportationStatusName = workInfo.getOutputData().getString(Constants.KEY_TRANSPORTATION_STATUS);
+
+                        final MainFragmentDirections.ActionMainFragmentToTransportationStatusFragment action =
+                                MainFragmentDirections.actionMainFragmentToTransportationStatusFragment(
+                                        qrCode, trackingCode, transportationStatusName, cityFrom, cityTo, partyQrCode, instruction, direction, arrivalDate);
+
+                        action.setTransportationId(transportationId);
+                        action.setInvoiceId(invoiceId);
+                        action.setRequestId(requestId);
+                        action.setTransportationStatusId(transportationStatusId);
+                        action.setTransportationStatusName(transportationStatusName);
+                        action.setPaymentStatusId(paymentStatusId);
+                        action.setTrackingCode(trackingCode);
+                        action.setQrCode(qrCode);
+                        action.setPartyQrCode(partyQrCode);
+                        action.setCurrentTransitPointId(currentTransitPointId);
+                        action.setCityFrom(cityFrom);
+                        action.setCityTo(cityTo);
+                        action.setCourierId(courierId);
+                        action.setProviderId(providerId);
+                        action.setInstructions(instruction);
+                        action.setArrivalDate(arrivalDate);
+                        action.setDirection(direction);
+
+                        NavHostFragment.findNavController(this).navigate(action);
+                    }
+                    if (workInfo.getState() == WorkInfo.State.CANCELLED || workInfo.getState() == WorkInfo.State.FAILED) {
+                        Toast.makeText(context, "QR код " + qr + " не найден", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     }

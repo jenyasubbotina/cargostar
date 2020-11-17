@@ -10,6 +10,7 @@ import androidx.lifecycle.Transformations;
 
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.Provider;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
@@ -18,16 +19,16 @@ import uz.alexits.cargostar.model.shipping.Consignment;
 import uz.alexits.cargostar.model.shipping.Invoice;
 import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.database.cache.Repository;
+import uz.alexits.cargostar.model.transportation.Transportation;
 
 import java.util.List;
 
 public class RequestsViewModel extends AndroidViewModel {
     private final Repository repository;
 
+    private final MutableLiveData<Long> courierId;
     private final MutableLiveData<Long> requestId;
     private final MutableLiveData<Long> invoiceId;
-    private final MutableLiveData<Long> providerId;
-    private final MutableLiveData<Long> courierId;
 
     /* sender data */
     private final MutableLiveData<Long> senderId;
@@ -47,17 +48,21 @@ public class RequestsViewModel extends AndroidViewModel {
     private final MutableLiveData<Long> payerRegionId;
     private final MutableLiveData<Long> payerCityId;
 
+    /* invoice data */
+    private final MutableLiveData<Long> providerId;
+    private final MutableLiveData<Long> tariffId;
+
     private final LiveData<List<Request>> requestList;
 
     public RequestsViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
+
         this.requestList = repository.selectAllRequests();
 
-        this.requestId = new MutableLiveData<>();
-        this.providerId = new MutableLiveData<>();
-        this.invoiceId = new MutableLiveData<>();
         this.courierId = new MutableLiveData<>();
+        this.requestId = new MutableLiveData<>();
+        this.invoiceId = new MutableLiveData<>();
 
         this.senderId = new MutableLiveData<>();
         this.senderCountryId = new MutableLiveData<>();
@@ -73,6 +78,10 @@ public class RequestsViewModel extends AndroidViewModel {
         this.payerCountryId = new MutableLiveData<>();
         this.payerRegionId = new MutableLiveData<>();
         this.payerCityId = new MutableLiveData<>();
+
+        this.providerId = new MutableLiveData<>();
+        this.tariffId =  new MutableLiveData<>();
+
     }
 
     public LiveData<List<Request>> getPublicRequests() {
@@ -104,6 +113,13 @@ public class RequestsViewModel extends AndroidViewModel {
             return;
         }
         this.providerId.setValue(providerId);
+    }
+
+    public void setTariffId(final Long tariffId) {
+        if (tariffId == null) {
+            return;
+        }
+        this.tariffId .setValue(tariffId);
     }
 
     public void setCourierId(final Long courierId) {
@@ -251,6 +267,14 @@ public class RequestsViewModel extends AndroidViewModel {
 
     public LiveData<City> getPayerCity() {
         return Transformations.switchMap(payerCityId, repository::selectCityById);
+    }
+
+    public LiveData<Packaging> getTariff() {
+        return Transformations.switchMap(tariffId, repository::selectPackagingById);
+    }
+
+    public LiveData<Transportation> getTransportation() {
+        return Transformations.switchMap(invoiceId, repository::selectTransportationByInvoiceId);
     }
 
     public LiveData<List<Consignment>> getConsignmentList() {

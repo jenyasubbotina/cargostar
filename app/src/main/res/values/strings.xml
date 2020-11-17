@@ -113,6 +113,8 @@
     <string name="save">Сохранить</string>
     <string name="cash">Наличными</string>
     <string name="terminal">Терминал</string>
+    <string name="transfer">Перечисление</string>
+    <string name="corporate">Корпоративная карта</string>
     <string name="create_invoice">Создать накладную</string>
     <string name="update_invoice">Редактировать накладную</string>
     <!-- notifications -->
@@ -202,4 +204,7 @@
     <string name="transportation_status_changed">Статус перевозки был изменен</string>
 
     <string name="rounded_total_price">%1$s сум</string>
+    <string name="choose_country">Выберите страну</string>
+    <string name="choose_region">Выберите страну</string>
+    <string name="choose_city">Выберите город</string>
 </resources>

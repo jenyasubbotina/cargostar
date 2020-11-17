@@ -15,7 +15,7 @@ import java.util.List;
 
 @Dao
 public abstract class RequestDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long insertRequest(final Request newRequest);
 
     @Query("DELETE FROM request")

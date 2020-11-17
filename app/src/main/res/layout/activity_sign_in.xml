@@ -117,17 +117,17 @@
         android:buttonTint="@color/colorBlue"
         android:translationX="-4dp"/>
 
-    <TextView
-        android:id="@+id/forgot_password_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/forgot_password"
-        app:layout_constraintTop_toTopOf="@id/keep_logging_check_box"
-        app:layout_constraintBottom_toBottomOf="@id/keep_logging_check_box"
-        app:layout_constraintEnd_toEndOf="@id/sign_in_btn"
-        android:textSize="14sp"
-        android:textColor="@color/colorBlue"
-        android:fontFamily="@font/geometria_actual"/>
+<!--    <TextView-->
+<!--        android:id="@+id/forgot_password_text_view"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/forgot_password"-->
+<!--        app:layout_constraintTop_toTopOf="@id/keep_logging_check_box"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/keep_logging_check_box"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/sign_in_btn"-->
+<!--        android:textSize="14sp"-->
+<!--        android:textColor="@color/colorBlue"-->
+<!--        android:fontFamily="@font/geometria_actual"/>-->
 
     <ImageView
         android:id="@+id/parcels_image_view"

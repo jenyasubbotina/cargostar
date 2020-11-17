@@ -1,32 +1,28 @@
-package uz.alexits.cargostar.workers.calculation;
+package uz.alexits.cargostar.workers.actor;
 
 import android.content.Context;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-
 import java.io.IOException;
 import java.util.List;
-
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.calculation.Zone;
-import uz.alexits.cargostar.model.calculation.ZoneCountry;
+import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
-public class FetchZoneCountriesWorker extends Worker {
+public class FetchAddressBookWorker extends Worker {
     private final int perPage;
     private String login;
     private String password;
 
-    public FetchZoneCountriesWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
+    public FetchAddressBookWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
@@ -42,29 +38,42 @@ public class FetchZoneCountriesWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
+            Log.i(TAG, "per-page: " + perPage);
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<ZoneCountry>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneCountries(perPage);
+            final Response<List<AddressBook>> response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(perPage);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchZoneCountries(): response=" + response.body());
-                    final List<ZoneCountry> zoneCountryList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZoneCountriesTransaction(zoneCountryList);
-                    return ListenableWorker.Result.success(new Data.Builder()
+                    Log.i(TAG, "fetchAddressBook(): response=" + response.body());
+                    final List<AddressBook> addressBook = response.body();
+
+                    if (addressBook == null) {
+                        Log.e(TAG, "fetchAddressBook(): sender is NULL");
+                        return Result.failure();
+                    }
+
+                    final long[] rowsInserted = LocalCache.getInstance(getApplicationContext()).invoiceDao().insertAddressBookEntries(addressBook);
+
+                    if (rowsInserted.length <= 0) {
+                        Log.e(TAG, "fetchAddressBook(): couldn't insert entries");
+                        return Result.failure();
+                    }
+                    Log.i(TAG, "fetchAddressBook(): successfully inserted entries");
+                    return Result.success(new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password).build());
                 }
             }
             else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
+                Log.e(TAG, "fetchAddressBook(): " + response.errorBody());
             }
             return ListenableWorker.Result.failure();
         }
         catch (IOException e) {
-            Log.e(TAG, "doWork(): ", e);
+            Log.e(TAG, "fetchAddressBook(): ", e);
             return ListenableWorker.Result.failure();
         }
     }
 
-    private static final String TAG = FetchZoneCountriesWorker.class.toString();
+    private static final String TAG = FetchAddressBookWorker.class.toString();
 }

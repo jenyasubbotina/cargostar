@@ -23,6 +23,7 @@ import android.widget.Toast;
 import java.util.UUID;
 
 import uz.alexits.cargostar.R;
+import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.utils.UiUtils;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
@@ -35,7 +36,7 @@ public class SignInActivity extends AppCompatActivity {
     private EditText passwordEditText;
     private Button signInBtn;
     private CheckBox keepLoggingCheckBox;
-    private TextView forgotPasswordTextView;
+//    private TextView forgotPasswordTextView;
     private ImageView passwordEyeImageView;
 
     private ProgressBar progressBar;
@@ -46,6 +47,18 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         initUI();
+
+        LocalCache.getInstance(this).actorDao().selectCustomer(95).observe(this, sender -> {
+            Log.i(TAG, "sender: " + sender);
+        });
+
+        LocalCache.getInstance(this).invoiceDao().selectAddressBookEntryById(223).observe(this, sender -> {
+            Log.i(TAG, "recipient: " + sender);
+        });
+
+        LocalCache.getInstance(this).invoiceDao().selectAddressBookEntryById(224).observe(this, sender -> {
+            Log.i(TAG, "payer: " + sender);
+        });
 
         signInBtn.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
@@ -69,11 +82,11 @@ public class SignInActivity extends AppCompatActivity {
                 Toast.makeText(this, "TOKEN iS EMPTY!!!", Toast.LENGTH_SHORT).show();
             }
 
-            final UUID fetchBranchesAndSignInWorkerId = SyncWorkRequest.fetchBranchesAndSignIn(this, 10000, login, password, token);
+            final UUID synchronizeFirstTime = SyncWorkRequest.synchronizeFirstTime(this, login, password, token);
 
             Log.i(TAG, "login=" + login + " password=" + password);
 
-            WorkManager.getInstance(this).getWorkInfoByIdLiveData(fetchBranchesAndSignInWorkerId).observe(this, workInfo -> {
+            WorkManager.getInstance(this).getWorkInfoByIdLiveData(synchronizeFirstTime).observe(this, workInfo -> {
                 if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                     progressBar.setVisibility(View.INVISIBLE);
                     signInBtn.setEnabled(true);
@@ -117,7 +130,6 @@ public class SignInActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password_edit_text);
         signInBtn = findViewById(R.id.sign_in_btn);
         keepLoggingCheckBox = findViewById(R.id.keep_logging_check_box);
-        forgotPasswordTextView = findViewById(R.id.forgot_password_text_view);
         passwordEyeImageView = findViewById(R.id.password_eye_image_view);
         progressBar = findViewById(R.id.progress_bar);
 

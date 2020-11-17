@@ -49,22 +49,23 @@ public class InitializationActivity extends AppCompatActivity {
             finish();
         }
         else {
-            final UUID fetchBranchesWorkId = SyncWorkRequest.fetchLocationData(this);
-
-            WorkManager.getInstance(this).getWorkInfoByIdLiveData(fetchBranchesWorkId).observe(this, workInfo -> {
-                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    startActivity(new Intent(this, SignInActivity.class));
-                    finish();
-                }
-                if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                    Log.e(TAG, "insertLocationData(): failed to insert location data");
-                    Toast.makeText(this, "Ошибка инициализации", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
-                    return;
-                }
-                progressBar.setVisibility(View.VISIBLE);
-            });
+//            final UUID fetchBranchesWorkId = SyncWorkRequest.fetchLocationData(this);
+//
+//            WorkManager.getInstance(this).getWorkInfoByIdLiveData(fetchBranchesWorkId).observe(this, workInfo -> {
+//                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+//                    progressBar.setVisibility(View.INVISIBLE);
+//
+//                }
+//                if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+//                    Log.e(TAG, "insertLocationData(): failed to insert location data");
+//                    Toast.makeText(this, "Ошибка инициализации", Toast.LENGTH_SHORT).show();
+//                    progressBar.setVisibility(View.INVISIBLE);
+//                    return;
+//                }
+//                progressBar.setVisibility(View.VISIBLE);
+//            });
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
         }
     }
 

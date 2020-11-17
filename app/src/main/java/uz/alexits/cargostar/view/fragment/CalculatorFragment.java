@@ -34,6 +34,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import uz.alexits.cargostar.BuildConfig;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
@@ -156,6 +157,9 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private static final List<Consignment> consignmentList = new ArrayList<>();
     private static final List<TariffPrice> tariffPriceList = new ArrayList<>();
 
+    private static int runCount;
+    private static boolean firstRun;
+
     public CalculatorFragment() {
         // Required empty public constructor
     }
@@ -165,6 +169,9 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         super.onCreate(savedInstanceState);
         context = getContext();
         activity = getActivity();
+
+        firstRun = true;
+        runCount = 0;
 
         consignmentList.clear();
 
@@ -774,22 +781,42 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
         /* countries */
         locationDataViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
-            countryArrayAdapter.clear();
-            countryArrayAdapter.addAll(countryList);
-            countryArrayAdapter.notifyDataSetChanged();
+            if (countryList != null) {
+                countryArrayAdapter.clear();
+                countryArrayAdapter.addAll(countryList);
+                countryArrayAdapter.notifyDataSetChanged();
+
+                srcCountrySpinner.post(() -> srcCountrySpinner.setSelection(191, false));
+                destCountrySpinner.post(() -> destCountrySpinner.setSelection(191, false));
+            }
         });
 
         /* cities */
         calculatorViewModel.getSrcCities().observe(getViewLifecycleOwner(), srcCityList -> {
-            srcCityArrayAdapter.clear();
-            srcCityArrayAdapter.addAll(srcCityList);
-            srcCityArrayAdapter.notifyDataSetChanged();
+            if (srcCityList != null) {
+                srcCityArrayAdapter.clear();
+                srcCityArrayAdapter.addAll(srcCityList);
+                srcCityArrayAdapter.notifyDataSetChanged();
+//                Log.i(TAG, "src city: " + runCount);
+//
+//                if (runCount++ <= 0) {
+//                    srcCitySpinner.post(() -> srcCitySpinner.setSelection(88, false));
+//                }
+            }
         });
 
         calculatorViewModel.getDestCities().observe(getViewLifecycleOwner(), destCityList -> {
-            destCityArrayAdapter.clear();
-            destCityArrayAdapter.addAll(destCityList);
-            destCityArrayAdapter.notifyDataSetChanged();
+            if (destCityList != null) {
+                destCityArrayAdapter.clear();
+                destCityArrayAdapter.addAll(destCityList);
+                destCityArrayAdapter.notifyDataSetChanged();
+//
+//                Log.i(TAG, "dest city: " + runCount);
+//
+//                if (runCount++ <= 0) {
+//                    destCitySpinner.post(() -> destCitySpinner.setSelection(55, false));
+//                }
+            }
         });
 
         /* calculation */
@@ -868,11 +895,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     }
 
     @Override
-    public void onSpinnerItemChanged(AdapterView<?> adapterView, View view, int i, long l) {
-        //do nothing
-    }
-
-    @Override
     public void onSpinnerEditTextItemSelected(int position, Object selectedObject) {
         //do nothing
     }
@@ -884,6 +906,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
     @Override
     public void onSecondSpinnerItemSelected(final int position, final City city) {
+        //do nothing
+    }
+
+    @Override
+    public void onBigSpinnerItemSelected(int position, Object entry) {
         //do nothing
     }
 

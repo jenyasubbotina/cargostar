@@ -85,10 +85,6 @@ public class CreateInvoiceParams {
 
     /* Recipient */
     @Expose
-    @SerializedName("recipient_signature")
-    private String recipientSignature;
-
-    @Expose
     @SerializedName("recipient_email")
     private String recipientEmail;
 
@@ -227,23 +223,23 @@ public class CreateInvoiceParams {
 
     /* Payment */
     @Expose
-    @SerializedName("account")
+    @SerializedName("payer_account")
     private String checkingAccount;
 
     @Expose
-    @SerializedName("bank")
+    @SerializedName("payer_bank")
     private String bank;
 
     @Expose
-    @SerializedName("code")
+    @SerializedName("payer_code")
     private String registrationCode;
 
     @Expose
-    @SerializedName("mfo")
+    @SerializedName("payer_mfo")
     private String mfo;
 
     @Expose
-    @SerializedName("oked")
+    @SerializedName("payer_oked")
     private String oked;
 
     /* Transportation */
@@ -272,10 +268,6 @@ public class CreateInvoiceParams {
     @Expose
     @SerializedName("total_volume")
     private double totalVolume;
-
-    @Expose
-    @SerializedName("price")
-    private double price;
 
     @Expose
     @SerializedName("packaging_id")
@@ -430,14 +422,6 @@ public class CreateInvoiceParams {
 
     public void setSenderPhone(String senderPhone) {
         this.senderPhone = senderPhone;
-    }
-
-    public String getRecipientSignature() {
-        return recipientSignature;
-    }
-
-    public void setRecipientSignature(String recipientSignature) {
-        this.recipientSignature = recipientSignature;
     }
 
     public String getRecipientEmail() {
@@ -744,14 +728,6 @@ public class CreateInvoiceParams {
         this.totalVolume = totalVolume;
     }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
     public long getPackagingId() {
         return packagingId;
     }
@@ -886,7 +862,6 @@ public class CreateInvoiceParams {
                 ", senderPhone='" + senderPhone + '\'' +
                 ", senderCompanyName='" + senderCompanyName + '\'' +
                 ", senderType=" + senderType +
-                ", recipientSignature='" + recipientSignature + '\'' +
                 ", recipientEmail='" + recipientEmail + '\'' +
                 ", recipientCargostarAccountNumber='" + recipientCargostarAccountNumber + '\'' +
                 ", recipientTntAccountNumber='" + recipientTntAccountNumber + '\'' +
@@ -932,7 +907,6 @@ public class CreateInvoiceParams {
                 ", consignmentQuantity=" + consignmentQuantity +
                 ", totalWeight=" + totalWeight +
                 ", totalVolume=" + totalVolume +
-                ", price=" + price +
                 ", packagingId=" + packagingId +
                 ", totalPrice=" + totalPrice +
                 ", providerId=" + providerId +

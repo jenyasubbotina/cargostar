@@ -19,21 +19,21 @@
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
-            android:id="@+id/action_mainFragment_to_myBidsFragment"
+            android:id="@+id/action_mainFragment_to_myRequestsFragment"
             app:destination="@id/myRequestsFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
-            android:id="@+id/action_mainFragment_to_publicBidsFragment"
+            android:id="@+id/action_mainFragment_to_publicRequestsFragment"
             app:destination="@id/publicBidsFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
         <action
-            android:id="@+id/action_mainFragment_to_currentParcelsFragment"
+            android:id="@+id/action_mainFragment_to_currentTransportationsFragment"
             app:destination="@id/currentParcelsFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
@@ -62,17 +62,15 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <action
-            android:id="@+id/action_mainFragment_to_parcelDataFragment"
-            app:destination="@id/parcelDataFragment"
+            android:id="@+id/action_mainFragment_to_invoiceDataFragment"
+            app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit">
-            <argument
-                android:name="parcel_id"
-                app:argType="long"
-                android:defaultValue="-1L"/>
-        </action>
+            app:popExitAnim="@anim/fragment_open_exit"/>
+        <action
+            android:id="@+id/action_mainFragment_to_transportationStatusFragment"
+            app:destination="@id/transportationStatusFragment" />
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"
@@ -94,7 +92,7 @@
         tools:layout="@layout/fragment_public_requests" >
         <action
             android:id="@+id/action_publicBidsFragment_to_parcelDataFragment"
-            app:destination="@id/parcelDataFragment"
+            app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -157,7 +155,7 @@
             app:popExitAnim="@anim/fragment_open_exit"/>
         <action
             android:id="@+id/action_myBidsFragment_to_parcelDataFragment"
-            app:destination="@id/parcelDataFragment"
+            app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -223,7 +221,7 @@
             app:popExitAnim="@anim/fragment_open_exit"/>
         <action
             android:id="@+id/action_currentParcelsFragment_to_parcelDataFragment"
-            app:destination="@id/parcelDataFragment"
+            app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -235,7 +233,7 @@
         android:label="activity_scan_qr"
         tools:layout="@layout/activity_scan_qr" />
     <fragment
-        android:id="@+id/parcelDataFragment"
+        android:id="@+id/invoiceDataFragment"
         android:name="uz.alexits.cargostar.view.fragment.InvoiceDataFragment"
         android:label="fragment_parcel_data"
         tools:layout="@layout/fragment_parcel_data" >
@@ -301,6 +299,19 @@
             android:name="recipient_city_id"
             app:argType="long"
             android:defaultValue="-1L"/>
+        <argument
+            android:name="consignment_quantity"
+            app:argType="integer"
+            android:defaultValue="0"/>
+        <argument
+            android:name="delivery_type"
+            app:argType="integer"
+            android:defaultValue="0"/>
+        <argument
+            android:name="comment"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
     </fragment>
     <fragment
         android:id="@+id/partyFragment"
@@ -316,7 +327,7 @@
             app:popExitAnim="@anim/fragment_open_exit"/>
         <action
             android:id="@+id/action_partyFragment_to_parcelDataFragment"
-            app:destination="@id/parcelDataFragment"
+            app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -343,7 +354,7 @@
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
             android:id="@+id/action_parcelStatusFragment_to_parcelDataFragment"
-            app:destination="@id/parcelDataFragment"
+            app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -419,6 +430,10 @@
             android:name="provider_id"
             app:argType="long"
             android:defaultValue="-1L"/>
+        <argument
+            android:name="request_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
     </fragment>
     <fragment
         android:id="@+id/partyStatusFragment"
@@ -434,7 +449,7 @@
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
             android:id="@+id/action_partyStatusFragment_to_parcelDataFragment"
-            app:destination="@id/parcelDataFragment"
+            app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -491,7 +506,7 @@
         tools:layout="@layout/fragment_notifications" >
         <action
             android:id="@+id/action_notificationsFragment_to_parcelDataFragment"
-            app:destination="@id/parcelDataFragment"
+            app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_close_exit"
             app:popEnterAnim="@anim/fragment_open_enter"

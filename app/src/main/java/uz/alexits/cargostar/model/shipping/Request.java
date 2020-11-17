@@ -120,6 +120,11 @@ public class Request {
     private Long recipientCityId;
 
     @Expose
+    @SerializedName("delivery_type")
+    @ColumnInfo(name = "delivery_type")
+    private int deliveryType;
+
+    @Expose
     @SerializedName("comment")
     @ColumnInfo(name = "comment")
     private String comment;
@@ -141,6 +146,26 @@ public class Request {
 
     @ColumnInfo(name = "is_new")
     private boolean isNew;
+
+    @Expose
+    @SerializedName("senderCity")
+    @ColumnInfo(name = "sender_city")
+    private String senderCity;
+
+    @Expose
+    @SerializedName("recipientCity")
+    @ColumnInfo(name = "recipient_city")
+    private String recipientCity;
+
+    @Expose
+    @SerializedName("count")
+    @ColumnInfo(name = "consignment_quantity")
+    private int consignmentQuantity;
+
+    @Expose
+    @SerializedName("payment_status")
+    @ColumnInfo(name = "payment_status")
+    private String paymentStatus;
 
     @Ignore
     public Request() {
@@ -167,7 +192,12 @@ public class Request {
                    final Long invoiceId,
                    final int status,
                    final Date createdAt,
-                   final Date updatedAt) {
+                   final Date updatedAt,
+                   final String senderCity,
+                   final String recipientCity,
+                   final int consignmentQuantity,
+                   final String paymentStatus,
+                   final int deliveryType) {
         this.id = id;
         this.senderFirstName = senderFirstName;
         this.senderMiddleName = senderMiddleName;
@@ -190,6 +220,19 @@ public class Request {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.isNew = true;
+        this.senderCity = senderCity;
+        this.recipientCity = recipientCity;
+        this.consignmentQuantity = consignmentQuantity;
+        this.paymentStatus = paymentStatus;
+        this.deliveryType = deliveryType;
+    }
+
+    public int getDeliveryType() {
+        return deliveryType;
+    }
+
+    public void setDeliveryType(int deliveryType) {
+        this.deliveryType = deliveryType;
     }
 
     public void setSenderCountryId(Long senderCountryId) {
@@ -394,6 +437,46 @@ public class Request {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setRecipientCountryId(Long recipientCountryId) {
+        this.recipientCountryId = recipientCountryId;
+    }
+
+    public void setRecipientCityId(Long recipientCityId) {
+        this.recipientCityId = recipientCityId;
+    }
+
+    public String getSenderCity() {
+        return senderCity;
+    }
+
+    public void setSenderCity(String senderCity) {
+        this.senderCity = senderCity;
+    }
+
+    public String getRecipientCity() {
+        return recipientCity;
+    }
+
+    public void setRecipientCity(String recipientCity) {
+        this.recipientCity = recipientCity;
+    }
+
+    public int getConsignmentQuantity() {
+        return consignmentQuantity;
+    }
+
+    public void setConsignmentQuantity(int consignmentQuantity) {
+        this.consignmentQuantity = consignmentQuantity;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 
     @NonNull

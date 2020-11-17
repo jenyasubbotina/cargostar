@@ -41,6 +41,11 @@ public class Transportation {
     private final Long invoiceId;
 
     @Expose
+    @SerializedName("request_id")
+    @ColumnInfo(name = "request_id")
+    private final Long requestId;
+
+    @Expose
     @SerializedName("status_transport")
     @ColumnInfo(name = "transportation_status_id")
     private final Long transportationStatusId;
@@ -119,6 +124,7 @@ public class Transportation {
                           final Long providerId,
                           final Long courierId,
                           final Long invoiceId,
+                          final Long requestId,
                           final Long transportationStatusId,
                           final Long paymentStatusId,
                           final Long currentTransitionPointId,
@@ -135,6 +141,7 @@ public class Transportation {
         this.providerId = providerId;
         this.courierId = courierId;
         this.invoiceId = invoiceId;
+        this.requestId = requestId;
         this.transportationStatusId = transportationStatusId;
         this.paymentStatusId = paymentStatusId;
         this.currentTransitionPointId = currentTransitionPointId;
@@ -251,6 +258,10 @@ public class Transportation {
 
     public void setTransportationStatusName(String transportationStatusName) {
         this.transportationStatusName = transportationStatusName;
+    }
+
+    public Long getRequestId() {
+        return requestId;
     }
 
     @NonNull

@@ -210,7 +210,6 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         });
         //init notificationList
         notificationsViewModel.selectAllNotifications().observe(getViewLifecycleOwner(), notificationList -> {
-            Log.i(NotificationsFragment.class.toString(), "notificationList=" + notificationList);
             notificationAdapter.setNotificationList(notificationList);
             notificationAdapter.notifyDataSetChanged();
         });
@@ -219,19 +218,12 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
 
     @Override
     public void onNotificationSelected(Notification currentItem, NotificationViewHolder holder) {
-        final String publicBids = getString(R.string.public_bids_one_line);
-        final String myBids = getString(R.string.my_bids_one_line);
-
-//        currentItem.setRead(true);
-//        notificationsViewModel.readNotification(currentItem.getId());
+        currentItem.setRead(true);
+        notificationsViewModel.readNotification(currentItem.getId());
 
         final Intent requestsIntent = new Intent(getContext(), MainActivity.class);
-        if (currentItem.getLink().equalsIgnoreCase(publicBids)) {
-            requestsIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_PUBLIC_REQUESTS);
-        }
-        else if (currentItem.getLink().equalsIgnoreCase(myBids)) {
-            requestsIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_MY_REQUESTS);
-        }
+        requestsIntent.putExtra(IntentConstants.INTENT_PUSH_KEY, currentItem.getLink());
         startActivity(requestsIntent);
+        activity.finish();
     }
 }

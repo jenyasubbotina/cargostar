@@ -91,9 +91,9 @@ public class Customer extends User {
 
     @Ignore
     public Customer(final long id,
-                    final long countryId,
-                    final long regionId,
-                    final long cityId,
+                    final Long countryId,
+                    final Long regionId,
+                    final Long cityId,
                     @NonNull final String firstName,
                     @Nullable final String middleName,
                     @NonNull final String lastName,
@@ -123,9 +123,9 @@ public class Customer extends User {
     }
 
     public Customer(final long id,
-                    final long countryId,
-                    final long regionId,
-                    final long cityId,
+                    final Long countryId,
+                    final Long regionId,
+                    final Long cityId,
                     @NonNull final String firstName,
                     @Nullable final String middleName,
                     @NonNull final String lastName,

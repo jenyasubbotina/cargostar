@@ -649,6 +649,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/payment_text_view"
                 app:layout_constraintStart_toStartOf="@id/payment_text_view"
+                app:layout_constraintEnd_toEndOf="@id/calculate_btn"
                 android:layout_marginTop="37dp"
                 android:orientation="horizontal"
                 android:checkedButton="@id/cash_radio_btn"
@@ -678,6 +679,33 @@
                     android:layout_weight="0.5"
                     android:buttonTint="@color/colorBlue"
                     android:gravity="center"/>
+
+                <RadioButton
+                    android:id="@+id/transfer_radio_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:enabled="true"
+                    android:text="@string/transfer"
+                    android:textColor="@color/colorBlack"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textSize="16sp"
+                    android:layout_weight="0.5"
+                    android:buttonTint="@color/colorBlue"
+                    android:visibility="invisible"
+                    android:gravity="center"/>
+
+                <RadioButton
+                    android:id="@+id/corporate_radio_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/corporate"
+                    android:textColor="@color/colorBlack"
+                    android:fontFamily="@font/geometria_actual"
+                    android:textSize="16sp"
+                    android:layout_weight="0.5"
+                    android:buttonTint="@color/colorBlue"
+                    android:visibility="invisible"
+                    android:gravity="center"/>
             </RadioGroup>
 
             <Button
@@ -687,6 +715,7 @@
                 app:layout_constraintTop_toBottomOf="@id/payment_method_radio_group"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="35dp"
                 android:layout_marginBottom="46dp"
                 android:text="@string/create_invoice"

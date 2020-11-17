@@ -21,45 +21,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if (getIntent() != null) {
-            if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_PUBLIC_REQUESTS) {
-                Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_publicBidsFragment);
-                return;
-            }
-            if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_MY_REQUESTS) {
-                Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_myBidsFragment);
-                return;
-            }
-            if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_FIND_INVOICE) {
-                final MainFragmentDirections.ActionMainFragmentToParcelDataFragment action =
-                        MainFragmentDirections.actionMainFragmentToParcelDataFragment();
-                action.setRequestId(getIntent().getLongExtra(Constants.KEY_REQUEST_ID, -1L));
-                action.setInvoiceId(getIntent().getLongExtra(Constants.KEY_INVOICE_ID, -1L));
-                action.setCourierId(getIntent().getLongExtra(Constants.KEY_COURIER_ID, -1L));
-                action.setClientId(getIntent().getLongExtra(Constants.KEY_CLIENT_ID, -1L));
-                action.setSenderCountryId(getIntent().getLongExtra(Constants.KEY_SENDER_COUNTRY_ID, -1L));
-                action.setSenderRegionId(getIntent().getLongExtra(Constants.KEY_SENDER_REGION_ID, -1L));
-                action.setSenderCityId(getIntent().getLongExtra(Constants.KEY_SENDER_CITY_ID, -1L));
-                action.setRecipientCountryId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
-                action.setRecipientCityId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_CITY_ID, -1L));
-                action.setProviderId(getIntent().getLongExtra(Constants.KEY_PROVIDER_ID, -1L));
-                action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
-                Navigation.findNavController(this, R.id.main_fragment_container).navigate(action);
-                return;
-            }
-
-            final String pushIntentKey = getIntent().getStringExtra(Constants.MAIN_ACTIVITY_FRAGMENT);
+            final String pushIntentKey = getIntent().getStringExtra(IntentConstants.INTENT_PUSH_KEY);
 
             if (pushIntentKey != null) {
-                if (pushIntentKey.equalsIgnoreCase(Constants.KEY_PUBLIC_REQUESTS)) {
-                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_publicBidsFragment);
+                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_PUBLIC_REQUESTS)) {
+                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_publicRequestsFragment);
                     return;
                 }
-                if (pushIntentKey.equalsIgnoreCase(Constants.KEY_MY_REQUESTS)) {
-                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_myBidsFragment);
+                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_MY_REQUESTS)) {
+                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_myRequestsFragment);
                     return;
                 }
-                if (pushIntentKey.equalsIgnoreCase(Constants.KEY_CURRENT_TRANSPORTATION)) {
-                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_currentParcelsFragment);
+                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_CURRENT_TRANSPORTATIONS)) {
+                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_currentTransportationsFragment);
+                    return;
+                }
+                if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_FIND_INVOICE) {
+                    final MainFragmentDirections.ActionMainFragmentToInvoiceDataFragment action =
+                            MainFragmentDirections.actionMainFragmentToInvoiceDataFragment();
+                    action.setRequestId(getIntent().getLongExtra(Constants.KEY_REQUEST_ID, -1L));
+                    action.setInvoiceId(getIntent().getLongExtra(Constants.KEY_INVOICE_ID, -1L));
+                    action.setCourierId(getIntent().getLongExtra(Constants.KEY_COURIER_ID, -1L));
+                    action.setClientId(getIntent().getLongExtra(Constants.KEY_CLIENT_ID, -1L));
+                    action.setSenderCountryId(getIntent().getLongExtra(Constants.KEY_SENDER_COUNTRY_ID, -1L));
+                    action.setSenderRegionId(getIntent().getLongExtra(Constants.KEY_SENDER_REGION_ID, -1L));
+                    action.setSenderCityId(getIntent().getLongExtra(Constants.KEY_SENDER_CITY_ID, -1L));
+                    action.setRecipientCountryId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
+                    action.setRecipientCityId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_CITY_ID, -1L));
+                    action.setProviderId(getIntent().getLongExtra(Constants.KEY_PROVIDER_ID, -1L));
+                    action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
+                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(action);
                 }
             }
         }

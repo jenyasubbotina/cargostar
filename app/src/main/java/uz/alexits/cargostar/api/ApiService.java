@@ -30,6 +30,7 @@ import uz.alexits.cargostar.model.calculation.Provider;
 import com.google.gson.JsonElement;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -143,7 +144,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("address-book")
-    Call<JsonElement> getAddressBook();
+    Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage);
 
     /* Transportation */
     @Headers("Content-Type: application/json; charset=utf-8;")
@@ -171,4 +172,8 @@ public interface ApiService {
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("consignment/invoice")
     Call<List<Consignment>> getCargoListByInvoiceId(@Query("id") final Long invoiceId);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("client")
+    Call<List<Customer>> getAllCustomers(@Query("per-page") final int perPage);
 }

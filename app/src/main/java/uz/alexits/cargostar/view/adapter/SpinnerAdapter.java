@@ -14,30 +14,25 @@ import uz.alexits.cargostar.R;
 import java.util.List;
 
 public class SpinnerAdapter<T> extends ArrayAdapter<T> {
-    private final int hintSize;
     private List<T> objectList;
 
     public SpinnerAdapter(@NonNull Context context, int resource, @NonNull T[] objects, final int hintSize) {
         super(context, resource, objects);
-        this.hintSize = hintSize;
     }
 
     public SpinnerAdapter(@NonNull Context context, int resource, @NonNull List<T> objects) {
         super(context, resource, objects);
         this.objectList = objects;
-        this.hintSize = 0;
+
     }
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        final View view = super.getDropDownView(position, convertView, parent);
-        final TextView selectedItem = (TextView) view;
-        selectedItem.setTextColor(getContext().getColor(R.color.colorBlack));
-        return view;
+        return super.getDropDownView(position, convertView, parent);
     }
 
     @Override
     public int getCount() {
-        return objectList == null ? 0: super.getCount() - hintSize;
+        return super.getCount();
     }
 }

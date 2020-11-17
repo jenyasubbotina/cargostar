@@ -65,8 +65,12 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"
-            android:enabled="false"/>
+            android:paddingVertical="17dp"
+            android:paddingHorizontal="36dp"
+            android:enabled="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
 
         <ImageView
             android:id="@+id/second_result_image_view"

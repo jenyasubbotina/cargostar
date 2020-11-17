@@ -77,4 +77,7 @@ public abstract class TransportationDao {
 
     @Query("SELECT * FROM transportation WHERE id == :transportationId")
     public abstract LiveData<Transportation> selectTransportationById(final long transportationId);
+
+    @Query("SELECT * FROM transportation WHERE invoice_id == :invoiceId LIMIT 1")
+    public abstract LiveData<Transportation> selectTransportationByInvoiceId(final long invoiceId);
 }

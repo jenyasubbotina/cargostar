@@ -29,28 +29,6 @@ public class PopulateViewModel extends AndroidViewModel {
         this.repository = Repository.getInstance(application);
     }
 
-    public void initAddressBook() {
-        RetrofitClient.getInstance(getApplication().getApplicationContext()).setServerData(
-                SharedPrefs.getInstance(getApplication().getApplicationContext()).getString(SharedPrefs.LOGIN),
-                SharedPrefs.getInstance(getApplication().getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
-        RetrofitClient.getInstance(getApplication().getApplicationContext()).getAddressBook(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(@NonNull Call<JsonElement> call, @NonNull Response<JsonElement> response) {
-                Log.i(TAG, "getAddressBook(): code=" + response.code());
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "getAddressBook(): response=" + response.body());
-                    return;
-                }
-                Log.e(TAG, "getAddressBook(): error=" + response.errorBody());
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<JsonElement> call, @NonNull Throwable t) {
-                Log.e(TAG, "getAddressBook(): ", t);
-            }
-        });
-    }
-
     /*Request queries*/
 //    public long createRequest(final Receipt newRequest) {
 //        return repository.createRequest(newRequest);

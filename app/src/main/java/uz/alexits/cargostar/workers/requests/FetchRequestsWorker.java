@@ -3,6 +3,7 @@ package uz.alexits.cargostar.workers.requests;
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -15,22 +16,31 @@ import uz.alexits.cargostar.model.shipping.Request;
 import java.io.IOException;
 import java.util.List;
 import retrofit2.Response;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchRequestsWorker extends Worker {
     private final int perPage;
+    private String login;
+    private String password;
 
     public FetchRequestsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
+        this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
+        this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+
+        if (login == null || password == null) {
+            this.login = getInputData().getString(Constants.KEY_LOGIN);
+            this.password = getInputData().getString(Constants.KEY_PASSWORD);
+        }
     }
 
     @NonNull
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
             final Response<List<Request>> response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(perPage);
 
             if (response.code() == 200) {
@@ -38,8 +48,10 @@ public class FetchRequestsWorker extends Worker {
                     Log.i(TAG, "fetchAllRequests(): response=" + response.body());
                     final List<Request> publicRequestList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).requestDao().dropAndInsertRequestList(publicRequestList);
-                    return ListenableWorker.Result.success();
+                    LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+                    return ListenableWorker.Result.success(new Data.Builder()
+                            .putString(Constants.KEY_LOGIN, login)
+                            .putString(Constants.KEY_PASSWORD, password).build());
                 }
             }
             else {

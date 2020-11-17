@@ -28,10 +28,15 @@ public class InsertRequestWorker extends Worker {
     private final String senderAddress;
     private final long recipientCountryId;
     private final long recipientCityId;
+    private final String cityFrom;
+    private final String cityTo;
+    private final int consigmentQuantity;
+    private final String paymentStatus;
     private final String comment;
     private final int status;
     private final long createdAt;
     private final long updatedAt;
+    private final int deliveryType;
 
     public InsertRequestWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -52,10 +57,15 @@ public class InsertRequestWorker extends Worker {
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
         this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
         this.recipientCityId = getInputData().getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
+        this.cityFrom = getInputData().getString(Constants.KEY_CITY_FROM);
+        this.cityTo = getInputData().getString(Constants.KEY_CITY_TO);
+        this.consigmentQuantity = getInputData().getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0);
+        this.paymentStatus = getInputData().getString(Constants.KEY_PAYMENT_STATUS);
         this.comment = getInputData().getString(Constants.KEY_COMMENT);
         this.status = getInputData().getInt(Constants.KEY_STATUS, -1);
         this.createdAt = getInputData().getLong(Constants.KEY_CREATED_AT, -1L);
         this.updatedAt = getInputData().getLong(Constants.KEY_UPDATED_AT, -1L);
+        this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
     }
 
     @NonNull
@@ -88,7 +98,12 @@ public class InsertRequestWorker extends Worker {
                     invoiceId != -1L ? invoiceId : null,
                     status,
                     new Date(createdAt),
-                    new Date(updatedAt));
+                    new Date(updatedAt),
+                    cityFrom,
+                    cityTo,
+                    consigmentQuantity,
+                    paymentStatus,
+                    deliveryType);
             final long rowInserted = LocalCache.getInstance(getApplicationContext()).requestDao().insertRequest(request);
 
             if (rowInserted > 0) {
