@@ -1,7 +1,6 @@
 package uz.alexits.cargostar.viewmodel;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,13 +10,6 @@ import androidx.lifecycle.Transformations;
 
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.database.cache.Repository;
-import uz.alexits.cargostar.model.calculation.CountryIdProviderId;
-import uz.alexits.cargostar.model.calculation.Packaging;
-import uz.alexits.cargostar.model.calculation.PackagingType;
-import uz.alexits.cargostar.model.calculation.Provider;
-import uz.alexits.cargostar.model.calculation.TypePackageIdList;
-import uz.alexits.cargostar.model.calculation.Zone;
-import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
@@ -46,6 +38,7 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
 
     /* address book */
     private final MutableLiveData<String> senderEmail;
+    private final MutableLiveData<Long> senderId;
 
     public CreateInvoiceViewModel(@NonNull Application application) {
         super(application);
@@ -66,6 +59,7 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
         this.payerCityId = new MutableLiveData<>();
 
         this.senderEmail = new MutableLiveData<>();
+        this.senderId = new MutableLiveData<>();
     }
 
     /* location data */
@@ -143,11 +137,19 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<AddressBook>> getSenderAddressBook() {
-        return Transformations.switchMap(senderEmail, repository::selectAddressBookBySenderEmail);
+        return Transformations.switchMap(senderId, repository::selectAddressBookBySenderId);
     }
 
-    public void setSenderEmail(final String senderEmail) {
-        this.senderEmail.setValue(senderEmail);
+    public LiveData<Long> getSenderId() {
+        return Transformations.switchMap(senderEmail, repository::selectSenderIdByEmail);
+    }
+
+    public void setSenderId(final long senderId) {
+        this.senderId.setValue(senderId);
+    }
+
+    public void setSenderEmail(final String email) {
+        this.senderEmail.setValue(email);
     }
 
     private static final String TAG = CreateInvoiceViewModel.class.toString();

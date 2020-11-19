@@ -20,7 +20,7 @@ public class CreateInvoiceSingleSpinnerViewHolder extends RecyclerView.ViewHolde
         spinner = itemView.findViewById(R.id.spinner);
     }
 
-    public void bindSpinner(final Context context, final CreateInvoiceCallback callback) {
+    public void bindSpinner(final Context context, final int position, final CreateInvoiceCallback callback) {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -33,7 +33,7 @@ public class CreateInvoiceSingleSpinnerViewHolder extends RecyclerView.ViewHolde
                         spinner.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
-                callback.onBigSpinnerItemSelected(i, selectedObject);
+                callback.onBigSpinnerItemSelected(position, selectedObject);
             }
 
             @Override
@@ -41,6 +41,7 @@ public class CreateInvoiceSingleSpinnerViewHolder extends RecyclerView.ViewHolde
 
             }
         });
+        spinner.setPrompt("Выберите запись...");
     }
 
     public void unbindSpinner() {

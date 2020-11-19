@@ -248,8 +248,7 @@ public class RetrofitClient {
     /* Invoice */
     public Response<CreateInvoiceResponse> createInvoice(@NonNull final CreateInvoiceParams createInvoiceParams) throws IOException {
         Log.i(TAG, "createInvoice: " + createInvoiceParams);
-        return null;
-//        return apiService.createInvoice(createInvoiceParams).execute();
+        return apiService.createInvoice(createInvoiceParams).execute();
     }
 
     public Response<Invoice> getInvoice(final long invoiceId) throws IOException {

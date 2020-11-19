@@ -150,15 +150,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private Long selectedCountryId = null;
     private Provider selectedProvider = null;
     private List<Packaging> tariffList = null;
-    private List<Long> selectedPackagingIdList = null;
+    private List<Long> selectedPackagingIdList = new ArrayList<>();
     private List<ZoneSettings> selectedZoneSettingsList = null;
     private Vat selectedVat = null;
 
     private static final List<Consignment> consignmentList = new ArrayList<>();
     private static final List<TariffPrice> tariffPriceList = new ArrayList<>();
-
-    private static int runCount;
-    private static boolean firstRun;
 
     public CalculatorFragment() {
         // Required empty public constructor
@@ -169,10 +166,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         super.onCreate(savedInstanceState);
         context = getContext();
         activity = getActivity();
-
-        firstRun = true;
-        runCount = 0;
-
         consignmentList.clear();
 
         SyncWorkRequest.fetchPackagingData(context, 100000);
@@ -810,12 +803,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 destCityArrayAdapter.clear();
                 destCityArrayAdapter.addAll(destCityList);
                 destCityArrayAdapter.notifyDataSetChanged();
-//
-//                Log.i(TAG, "dest city: " + runCount);
-//
-//                if (runCount++ <= 0) {
-//                    destCitySpinner.post(() -> destCitySpinner.setSelection(55, false));
-//                }
             }
         });
 
@@ -825,7 +812,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         });
 
         calculatorViewModel.getType().observe(getViewLifecycleOwner(), type -> {
-            if (type != null) {
+            if (type != null && !selectedPackagingIdList.isEmpty()) {
                 calculatorViewModel.setTypePackageIdList(type, selectedPackagingIdList);
             }
         });
@@ -885,17 +872,17 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     }
 
     @Override
-    public void afterFirstEditTextChanged(int position, Editable editable) {
+    public void afterFirstEditTextChanged(final int position, final CharSequence editable) {
         //do nothing
     }
 
     @Override
-    public void afterSecondEditTextChanged(int position, Editable editable) {
+    public void afterSecondEditTextChanged(final int position, final CharSequence editable) {
         //do nothing
     }
 
     @Override
-    public void onSpinnerEditTextItemSelected(int position, Object selectedObject) {
+    public void onSpinnerEditTextItemSelected(final int position, final Object selectedObject) {
         //do nothing
     }
 
@@ -910,7 +897,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     }
 
     @Override
-    public void onBigSpinnerItemSelected(int position, Object entry) {
+    public void onBigSpinnerItemSelected(final int position, final Object entry) {
         //do nothing
     }
 

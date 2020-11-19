@@ -53,9 +53,7 @@ public class FetchInvoiceListWorker extends Worker {
                     }
 
                     for (final Invoice invoice : invoiceList) {
-                        Log.i(TAG, "insertInvoice: " + invoice);
                         LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoice(invoice);
-                        Log.i(TAG, "insertInvoice: " + invoice);
                     }
 
                     return ListenableWorker.Result.success(new Data.Builder()

@@ -39,12 +39,12 @@ public class CreateInvoiceEditTextSpinnerViewHolder extends RecyclerView.ViewHol
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                callback.afterFirstEditTextChanged(position, charSequence);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                callback.afterFirstEditTextChanged(position, editable);
+
             }
         };
         editText.addTextChangedListener(textWatcher);

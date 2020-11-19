@@ -41,15 +41,15 @@ public class CreateInvoiceParams {
 
     @Expose
     @SerializedName("sender_country_id")
-    private long senderCountryId;
+    private String senderCountryId;
 
     @Expose
     @SerializedName("sender_region_id")
-    private long senderRegionId;
+    private String senderRegionId;
 
     @Expose
     @SerializedName("sender_city_id")
-    private long senderCityId;
+    private String senderCityId;
 
     @Expose
     @SerializedName("sender_address")
@@ -102,15 +102,15 @@ public class CreateInvoiceParams {
 
     @Expose
     @SerializedName("recipient_country_id")
-    private long recipientCountryId;
+    private String recipientCountryId;
 
     @Expose
     @SerializedName("recipient_region_id")
-    private long recipientRegionId;
+    private String recipientRegionId;
 
     @Expose
     @SerializedName("recipient_city_id")
-    private long recipientCityId;
+    private String recipientCityId;
 
     @Expose
     @SerializedName("recipient_address")
@@ -163,15 +163,15 @@ public class CreateInvoiceParams {
 
     @Expose
     @SerializedName("payer_country_id")
-    private long payerCountryId;
+    private String payerCountryId;
 
     @Expose
     @SerializedName("payer_region_id")
-    private long payerRegionId;
+    private String payerRegionId;
 
     @Expose
     @SerializedName("payer_city_id")
-    private long payerCityId;
+    private String payerCityId;
 
     @Expose
     @SerializedName("payer_address")
@@ -352,27 +352,27 @@ public class CreateInvoiceParams {
         this.senderFedexAccountNumber = senderFedexAccountNumber;
     }
 
-    public long getSenderCountryId() {
+    public String getSenderCountryId() {
         return senderCountryId;
     }
 
-    public void setSenderCountryId(long senderCountryId) {
+    public void setSenderCountryId(final String senderCountryId) {
         this.senderCountryId = senderCountryId;
     }
 
-    public long getSenderRegionId() {
+    public String getSenderRegionId() {
         return senderRegionId;
     }
 
-    public void setSenderRegionId(long senderRegionId) {
+    public void setSenderRegionId(final String senderRegionId) {
         this.senderRegionId = senderRegionId;
     }
 
-    public long getSenderCityId() {
+    public String getSenderCityId() {
         return senderCityId;
     }
 
-    public void setSenderCityId(long senderCityId) {
+    public void setSenderCityId(final String senderCityId) {
         this.senderCityId = senderCityId;
     }
 
@@ -456,27 +456,27 @@ public class CreateInvoiceParams {
         this.recipientFedexAccountNumber = recipientFedexAccountNumber;
     }
 
-    public long getRecipientCountryId() {
+    public String getRecipientCountryId() {
         return recipientCountryId;
     }
 
-    public void setRecipientCountryId(long recipientCountryId) {
+    public void setRecipientCountryId(final String recipientCountryId) {
         this.recipientCountryId = recipientCountryId;
     }
 
-    public long getRecipientRegionId() {
+    public String getRecipientRegionId() {
         return recipientRegionId;
     }
 
-    public void setRecipientRegionId(long recipientRegionId) {
+    public void setRecipientRegionId(final String recipientRegionId) {
         this.recipientRegionId = recipientRegionId;
     }
 
-    public long getRecipientCityId() {
+    public String getRecipientCityId() {
         return recipientCityId;
     }
 
-    public void setRecipientCityId(long recipientCityId) {
+    public void setRecipientCityId(final String recipientCityId) {
         this.recipientCityId = recipientCityId;
     }
 
@@ -560,27 +560,27 @@ public class CreateInvoiceParams {
         this.payerFedexAccountNumber = payerFedexAccountNumber;
     }
 
-    public long getPayerCountryId() {
+    public String getPayerCountryId() {
         return payerCountryId;
     }
 
-    public void setPayerCountryId(long payerCountryId) {
+    public void setPayerCountryId(final String payerCountryId) {
         this.payerCountryId = payerCountryId;
     }
 
-    public long getPayerRegionId() {
+    public String getPayerRegionId() {
         return payerRegionId;
     }
 
-    public void setPayerRegionId(long payerRegionId) {
+    public void setPayerRegionId(final String payerRegionId) {
         this.payerRegionId = payerRegionId;
     }
 
-    public long getPayerCityId() {
+    public String getPayerCityId() {
         return payerCityId;
     }
 
-    public void setPayerCityId(long payerCityId) {
+    public void setPayerCityId(final String payerCityId) {
         this.payerCityId = payerCityId;
     }
 

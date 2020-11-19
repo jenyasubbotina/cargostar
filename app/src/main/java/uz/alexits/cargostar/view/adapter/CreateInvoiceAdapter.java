@@ -3,7 +3,6 @@ package uz.alexits.cargostar.view.adapter;
 import android.content.Context;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,6 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.w3c.dom.Text;
 
 import uz.alexits.cargostar.R;
 
@@ -22,7 +19,6 @@ import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
-import uz.alexits.cargostar.view.viewholder.CalcItemViewHolder;
 import uz.alexits.cargostar.view.viewholder.CreateInvoiceButtonViewHolder;
 import uz.alexits.cargostar.view.viewholder.CreateInvoiceEditTextImageView;
 import uz.alexits.cargostar.view.viewholder.CreateInvoiceEditTextSpinnerViewHolder;
@@ -141,65 +137,56 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void setAddressBookEntries(final List<AddressBook> addressBookEntries) {
         this.addressBookEntries = addressBookEntries;
-        addressBookArrayAdapter.clear();;
+        addressBookArrayAdapter.clear();
         addressBookArrayAdapter.addAll(addressBookEntries);
-        addressBookArrayAdapter.notifyDataSetChanged();
     }
 
     public void setCountryList(final List<Country> countryList) {
         this.countryList = countryList;
         countryArrayAdapter.clear();
         countryArrayAdapter.addAll(countryList);
-        countryArrayAdapter.notifyDataSetChanged();
     }
 
     public void setSenderRegionList(final List<Region> senderRegionList) {
         this.senderRegionList = senderRegionList;
         senderRegionArrayAdapter.clear();
         senderRegionArrayAdapter.addAll(senderRegionList);
-        senderRegionArrayAdapter.notifyDataSetChanged();
     }
 
     public void setRecipientRegionList(final List<Region> recipientRegionList) {
         this.recipientRegionList = recipientRegionList;
         recipientRegionArrayAdapter.clear();
         recipientRegionArrayAdapter.addAll(recipientRegionList);
-        recipientRegionArrayAdapter.notifyDataSetChanged();
     }
 
     public void setPayerRegionList(final List<Region> payerRegionList) {
         this.payerRegionList = payerRegionList;
         payerRegionArrayAdapter.clear();
         payerRegionArrayAdapter.addAll(payerRegionList);
-        payerRegionArrayAdapter.notifyDataSetChanged();
     }
 
     public void setSenderCityList(final List<City> senderCityList) {
         this.senderCityList = senderCityList;
         senderCityArrayAdapter.clear();
         senderCityArrayAdapter.addAll(senderCityList);
-        senderCityArrayAdapter.notifyDataSetChanged();
     }
 
     public void setRecipientCityList(final List<City> recipientCityList) {
         this.recipientCityList = recipientCityList;
         recipientCityArrayAdapter.clear();
         recipientCityArrayAdapter.addAll(recipientCityList);
-        recipientCityArrayAdapter.notifyDataSetChanged();
     }
 
     public void setPayerCityList(final List<City> payerCityList) {
         this.payerCityList = payerCityList;
         payerCityArrayAdapter.clear();
         payerCityArrayAdapter.addAll(payerCityList);
-        payerCityArrayAdapter.notifyDataSetChanged();
     }
 
     public void setPackagingTypeList(final List<PackagingType> packagingTypeList) {
         this.packagingTypeList = packagingTypeList;
         packagingTypeArrayAdapter.clear();
         packagingTypeArrayAdapter.addAll(packagingTypeList);
-        packagingTypeArrayAdapter.notifyDataSetChanged();
     }
 
     public void setItemList(List<CreateInvoiceData> itemList) {
@@ -245,7 +232,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             return new CreateInvoiceSingleSpinnerViewHolder(root);
         }
         else {
-            root = LayoutInflater.from(context).inflate(R.layout.view_holder_parcel_data_stoke, parent, false);
+            root = LayoutInflater.from(context).inflate(R.layout.view_holder_invoice_data_stoke, parent, false);
             return new ParcelDataStrokeViewHolder(root);
         }
     }
@@ -323,6 +310,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             viewHolder.secondEditText.setOnFocusChangeListener((v, hasFocus) -> {
                 UiUtils.onFocusChanged(viewHolder.secondEditText, hasFocus);
             });
+            viewHolder.bindWatchers(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT) {
             final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
@@ -360,6 +348,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             viewHolder.firstEditText.setOnFocusChangeListener((v, hasFocus) -> {
                 UiUtils.onFocusChanged(viewHolder.firstEditText, hasFocus);
             });
+            viewHolder.bindWatchers(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
             final CreateInvoiceEditTextSpinnerViewHolder viewHolder = (CreateInvoiceEditTextSpinnerViewHolder) holder;
@@ -394,22 +383,22 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             else {
                 viewHolder.editText.setEnabled(false);
             }
-            viewHolder.editText.setOnFocusChangeListener((v, hasFocus) -> {
-                UiUtils.onFocusChanged(viewHolder.editText, hasFocus);
-            });
             /* country spinner */
             if (position == 7 || position == 16 || position == 26) {
                 if (!TextUtils.isEmpty(itemList.get(position).secondValue)) {
                     viewHolder.spinner.post(() -> {
                         viewHolder.spinner.setSelection(Integer.parseInt(itemList.get(position).secondValue), false);
                     });
-                    Log.i(TAG, "changeSpinner: " + itemList.get(position).secondValue);
                 }
                 if (viewHolder.spinner.getAdapter() == null) {
                     countryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     viewHolder.spinner.setAdapter(countryArrayAdapter);
                 }
             }
+            viewHolder.editText.setOnFocusChangeListener((v, hasFocus) -> {
+                UiUtils.onFocusChanged(viewHolder.editText, hasFocus);
+            });
+            viewHolder.bindWatcher(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
             final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
@@ -474,6 +463,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
                 viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_locked);
                 viewHolder.secondResultImageView.setVisibility(View.INVISIBLE);
             }
+            viewHolder.bindWatchers(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
             final CreateInvoiceEditTextImageView viewHolder = (CreateInvoiceEditTextImageView) holder;
@@ -521,6 +511,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             viewHolder.firstEditText.setOnFocusChangeListener((v, hasFocus) -> {
                 UiUtils.onFocusChanged(viewHolder.firstEditText, hasFocus);
             });
+            viewHolder.bindWatchers(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_BUTTON) {
             final CreateInvoiceButtonViewHolder viewHolder = (CreateInvoiceButtonViewHolder) holder;
@@ -542,15 +533,12 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_EDIT_TEXTS) {
             final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
-            viewHolder.bindWatchers(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT) {
             final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
-            viewHolder.bindWatchers(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
             final CreateInvoiceEditTextSpinnerViewHolder viewHolder = (CreateInvoiceEditTextSpinnerViewHolder) holder;
-            viewHolder.bindWatcher(position, callback);
             viewHolder.bindSpinner(context, position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
@@ -564,12 +552,10 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS) {
             final CreateInvoiceTwoImageEditTextsViewHolder viewHolder = (CreateInvoiceTwoImageEditTextsViewHolder) holder;
             viewHolder.bindImageViews(callback);
-            viewHolder.bindWatchers(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
             final CreateInvoiceEditTextImageView viewHolder = (CreateInvoiceEditTextImageView) holder;
             viewHolder.bindImageViews(callback);
-            viewHolder.bindWatchers(position, callback);
         }
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_BUTTON) {
             final CreateInvoiceButtonViewHolder viewHolder = (CreateInvoiceButtonViewHolder) holder;
@@ -578,7 +564,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         //address book spinner
         else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
             final CreateInvoiceSingleSpinnerViewHolder viewHolder = (CreateInvoiceSingleSpinnerViewHolder) holder;
-            viewHolder.bindSpinner(context, callback);
+            viewHolder.bindSpinner(context, position, callback);
         }
     }
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -38,10 +39,11 @@ import uz.alexits.cargostar.view.callback.TransportationCallback;
 import uz.alexits.cargostar.viewmodel.TransportationStatusViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
-public class TransportationStatusFragment extends Fragment implements TransportationCallback {
+public class TransportationStatusFragment extends Fragment {
     private Context context;
     private FragmentActivity activity;
 
+    private ConstraintLayout transportationItem;
     private TextView transportationIdTextView;
     private TextView transportationIdItemTextView;
     private TextView srcCityTextView;
@@ -68,6 +70,16 @@ public class TransportationStatusFragment extends Fragment implements Transporta
     private long courierId;
     private long providerId;
 
+    private long senderId;
+    private long senderCountryId;
+    private long senderRegionId;
+    private long senderCityId;
+    private long recipientCountryId;
+    private long recipientCityId;
+    private int deliveryType;
+    private int consignmentQuantity;
+    private String comment;
+
     private static TransportationStatus inTransitTransportationStatus;
     private static TransportationStatus onItsWayTransportationStatus;
     private static TransportationStatus deliveredTransportationStatus;
@@ -86,9 +98,9 @@ public class TransportationStatusFragment extends Fragment implements Transporta
         activity = getActivity();
 
         if (getArguments() != null) {
-            transportationId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationId();
-            invoiceId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInvoiceId();
             requestId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getRequestId();
+            invoiceId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInvoiceId();
+            transportationId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationId();
             courierId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCourierId();
             providerId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getProviderId();
 
@@ -113,8 +125,9 @@ public class TransportationStatusFragment extends Fragment implements Transporta
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.fragment_parcel_status, container, false);
+        final View root = inflater.inflate(R.layout.fragment_transportation_status, container, false);
 
+        transportationItem = root.findViewById(R.id.transportation_item);
         transportationIdTextView = root.findViewById(R.id.parcel_id_text_view);
         transportationIdItemTextView = root.findViewById(R.id.parcel_id_item_text_view);
         srcCityTextView = root.findViewById(R.id.from_text_view);
@@ -174,6 +187,26 @@ public class TransportationStatusFragment extends Fragment implements Transporta
                 submitStatusBtn.setEnabled(false);
             });
         });
+
+        transportationItem.setOnClickListener(v -> {
+            final TransportationStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action =
+                    TransportationStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
+            action.setRequestOrParcel(IntentConstants.INTENT_TRANSPORTATION);
+            action.setRequestId(requestId);
+            action.setInvoiceId(invoiceId);
+            action.setCourierId(courierId);
+            action.setProviderId(providerId);
+            action.setClientId(senderId);
+            action.setSenderCountryId(senderCountryId);
+            action.setSenderRegionId(senderRegionId);
+            action.setSenderCityId(senderCityId);
+            action.setRecipientCountryId(recipientCountryId);
+            action.setRecipientCityId(recipientCityId);
+            action.setDeliveryType(deliveryType);
+            action.setComment(comment);
+            action.setConsignmentQuantity(consignmentQuantity);
+            NavHostFragment.findNavController(this).navigate(action);
+        });
     }
 
     @Override
@@ -187,7 +220,6 @@ public class TransportationStatusFragment extends Fragment implements Transporta
 
         statusViewModel.getCurrentTransportation().observe(getViewLifecycleOwner(), transportation -> {
             if (transportation != null) {
-                Log.i(TAG, "currentTransportation: " + transportation);
                 currentTransportation = transportation;
                 statusViewModel.setCurrentTransitPointId(currentTransportation.getCurrentTransitionPointId());
 
@@ -227,17 +259,14 @@ public class TransportationStatusFragment extends Fragment implements Transporta
         });
 
         statusViewModel.getRoute().observe(getViewLifecycleOwner(), route -> {
-            Log.i(TAG, "route: " + route);
             Route currentPath = null;
             Route nextPath = null;
 
             if (currentTransportation != null) {
                 if (route != null && !route.isEmpty()) {
-                    Log.i(TAG, "route is not empty: ");
                     for (int i = 0; i < route.size(); i++) {
                         if (route.get(i).getTransitPointId().equals(currentTransportation.getCurrentTransitionPointId())) {
                             currentPath = route.get(i);
-                            Log.i(TAG, "currentPath: " + currentPath);
 
                             if (i == route.size() - 1) {
                                 nextPath = null;
@@ -249,10 +278,8 @@ public class TransportationStatusFragment extends Fragment implements Transporta
                         }
                     }
                     if (currentPath != null) {
-                        Log.i(TAG, "currentPath: " + currentPath);
                         if (currentTransportation.getTransportationStatusName() != null) {
                             if (nextPath != null) {
-                                Log.i(TAG, "nextPath: " + nextPath);
                                 if (currentTransportation.getTransportationStatusId() == onItsWayTransportationStatus.getId()) {
                                     statusViewModel.setNextTransportationStatus(inTransitTransportationStatus);
                                     statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
@@ -287,23 +314,16 @@ public class TransportationStatusFragment extends Fragment implements Transporta
                                 statusViewModel.setNextTransportationStatus(null);
                                 statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
                             }
-//                            if (currentTransportation.getTransportationStatusId() == inTransitTransportationStatus.getId()) {
-//                                statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
-//                                statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
-//                            }
-//                            if (currentTransportation.getTransportationStatusId() == deliveredTransportationStatus.getId()) {
-//                                statusViewModel.setNextTransportationStatus(null);
-//                            }
                         }
                     }
                 }
             }
         });
+
         statusViewModel.getNextStatus().observe(getViewLifecycleOwner(), nextTransportationStatus -> {
             nextStatus = nextTransportationStatus;
 
             if (nextStatus != null) {
-                Log.i(TAG, "next status: " + nextTransportationStatus);
                 submitStatusBtn.setText(nextStatus.getName());
                 submitStatusBtn.setBackgroundResource(R.drawable.btn_gradient_orange);
                 submitStatusBtn.setEnabled(true);
@@ -315,7 +335,6 @@ public class TransportationStatusFragment extends Fragment implements Transporta
 
         statusViewModel.getNextTransitPoint().observe(getViewLifecycleOwner(), nextTransitPoint -> {
             if (nextTransitPoint != null) {
-                Log.i(TAG, "next point: " + nextTransitPoint);
                 nextPoint = nextTransitPoint;
             }
         });
@@ -323,21 +342,23 @@ public class TransportationStatusFragment extends Fragment implements Transporta
         statusViewModel.getDestinationCountry().observe(getViewLifecycleOwner(), destinationCountry -> {
            if (destinationCountry != null) {
                this.destinationCountry = destinationCountry;
-               Log.i(TAG, "destinationCountry: " + destinationCountry);
            }
+        });
+
+        statusViewModel.getCurrentRequest().observe(getViewLifecycleOwner(), currentRequest -> {
+            if (currentRequest != null) {
+                senderId = currentRequest.getClientId() != null ? currentRequest.getClientId() : 0;
+                senderCountryId = currentRequest.getSenderCountryId() != null ? currentRequest.getSenderCountryId() : 0;
+                senderRegionId = currentRequest.getSenderRegionId() != null ? currentRequest.getSenderRegionId() : 0;
+                senderCityId = currentRequest.getSenderCityId() != null ? currentRequest.getSenderCityId() : 0;
+                recipientCountryId = currentRequest.getRecipientCountryId() != null ? currentRequest.getRecipientCountryId() : 0;
+                recipientCityId = currentRequest.getRecipientCityId() != null ? currentRequest.getRecipientCityId() : 0;
+                deliveryType = currentRequest.getDeliveryType();
+                comment = currentRequest.getComment();
+                consignmentQuantity = currentRequest.getConsignmentQuantity();
+            }
         });
     }
 
     private static final String TAG = TransportationStatusFragment.class.toString();
-
-    @Override
-    public void onTransportationSelected(Transportation currentItem) {
-        final TransportationStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action =
-                            TransportationStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
-        action.setRequestOrParcel(IntentConstants.INTENT_TRANSPORTATION);
-        action.setInvoiceId(invoiceId > 0 ? invoiceId : -1L);
-        action.setCourierId(courierId > 0 ? courierId : -1L);
-        action.setProviderId(providerId > 0 ? providerId : -1L);
-        NavHostFragment.findNavController(this).navigate(action);
-    }
 }

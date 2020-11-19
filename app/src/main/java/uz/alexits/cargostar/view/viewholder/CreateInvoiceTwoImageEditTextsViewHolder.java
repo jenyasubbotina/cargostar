@@ -62,12 +62,12 @@ public class CreateInvoiceTwoImageEditTextsViewHolder extends RecyclerView.ViewH
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                callback.afterFirstEditTextChanged(position, s);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                callback.afterFirstEditTextChanged(position, s);
+
             }
         };
 
@@ -79,12 +79,12 @@ public class CreateInvoiceTwoImageEditTextsViewHolder extends RecyclerView.ViewH
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                callback.afterSecondEditTextChanged(position, charSequence);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                callback.afterSecondEditTextChanged(position, editable);
+
             }
         };
         firstEditText.addTextChangedListener(firstTextWatcher);

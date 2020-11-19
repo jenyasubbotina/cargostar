@@ -40,9 +40,9 @@ public class SendInvoiceWorker extends Worker {
     private final String senderMiddleName;
     private final String senderLastName;
     private final String senderPhone;
-    private final long senderCountryId;
-    private final long senderRegionId;
-    private final long senderCityId;
+    private final String senderCountryId;
+    private final String senderRegionId;
+    private final String senderCityId;
     private final String senderAddress;
     private final String senderZip;
     private final String senderTnt;
@@ -57,9 +57,9 @@ public class SendInvoiceWorker extends Worker {
     private final String recipientLastName;
     private final String recipientPhone;
     private final String recipientAddress;
-    private final long recipientCountryId;
-    private final long recipientRegionId;
-    private final long recipientCityId;
+    private final String recipientCountryId;
+    private final String recipientRegionId;
+    private final String recipientCityId;
     private final String recipientZip;
     private final String recipientCargo;
     private final String recipientTnt;
@@ -74,9 +74,9 @@ public class SendInvoiceWorker extends Worker {
     private final String payerLastName;
     private final String payerPhone;
     private final String payerAddress;
-    private final long payerCountryId;
-    private final long payerRegionId;
-    private final long payerCityId;
+    private final String payerCountryId;
+    private final String payerRegionId;
+    private final String payerCityId;
     private final String payerZip;
     private final String payerCargostar;
     private final String payerTnt;
@@ -126,9 +126,9 @@ public class SendInvoiceWorker extends Worker {
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
         this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
         this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
-        this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-        this.senderRegionId = getInputData().getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-        this.senderCityId = getInputData().getLong(Constants.KEY_SENDER_CITY_ID, -1L);
+        this.senderCountryId = getInputData().getString(Constants.KEY_SENDER_COUNTRY_ID);
+        this.senderRegionId = getInputData().getString(Constants.KEY_SENDER_REGION_ID);
+        this.senderCityId = getInputData().getString(Constants.KEY_SENDER_CITY_ID);
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
         this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
         this.senderFirstName = getInputData().getString(Constants.KEY_SENDER_FIRST_NAME);
@@ -142,9 +142,9 @@ public class SendInvoiceWorker extends Worker {
         this.recipientCargo = getInputData().getString(Constants.KEY_RECIPIENT_CARGOSTAR);
         this.recipientTnt = getInputData().getString(Constants.KEY_RECIPIENT_TNT);
         this.recipientFedex = getInputData().getString(Constants.KEY_RECIPIENT_FEDEX);
-        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-        this.recipientRegionId = getInputData().getLong(Constants.KEY_RECIPIENT_REGION_ID, -1L);
-        this.recipientCityId = getInputData().getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
+        this.recipientCountryId = getInputData().getString(Constants.KEY_RECIPIENT_COUNTRY_ID);
+        this.recipientRegionId = getInputData().getString(Constants.KEY_RECIPIENT_REGION_ID);
+        this.recipientCityId = getInputData().getString(Constants.KEY_RECIPIENT_CITY_ID);
         this.recipientAddress = getInputData().getString(Constants.KEY_RECIPIENT_ADDRESS);
         this.recipientZip = getInputData().getString(Constants.RECIPIENT_ZIP);
         this.recipientFirstName = getInputData().getString(Constants.KEY_RECIPIENT_FIRST_NAME);
@@ -155,9 +155,9 @@ public class SendInvoiceWorker extends Worker {
         this.recipientType = getInputData().getInt(Constants.KEY_RECIPIENT_TYPE, 0);
 
         this.payerEmail = getInputData().getString(Constants.KEY_PAYER_EMAIL);
-        this.payerCountryId = getInputData().getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L);
-        this.payerRegionId = getInputData().getLong(Constants.KEY_PAYER_REGION_ID, -1L);
-        this.payerCityId = getInputData().getLong(Constants.KEY_PAYER_CITY_ID, -1L);
+        this.payerCountryId = getInputData().getString(Constants.KEY_PAYER_COUNTRY_ID);
+        this.payerRegionId = getInputData().getString(Constants.KEY_PAYER_REGION_ID);
+        this.payerCityId = getInputData().getString(Constants.KEY_PAYER_CITY_ID);
         this.payerAddress = getInputData().getString(Constants.KEY_PAYER_ADDRESS);
         this.payerZip = getInputData().getString(Constants.KEY_PAYER_ZIP);
         this.payerFirstName = getInputData().getString(Constants.KEY_PAYER_FIRST_NAME);

@@ -261,6 +261,10 @@ public class Repository {
         return actorDao.selectCustomer(clientId);
     }
 
+    public LiveData<Long> selectSenderIdByEmail(final String senderEmail) {
+        return actorDao.selectSenderIdByEmail(senderEmail);
+    }
+
     /*address book*/
     public long createAddressBookEntry(final AddressBook addressBook) {
         return invoiceDao.insertAddressBookEntry(addressBook);
@@ -278,8 +282,8 @@ public class Repository {
         return invoiceDao.selectAllAddressBookEntries();
     }
 
-    public LiveData<List<AddressBook>> selectAddressBookBySenderEmail(final String senderEmail) {
-        return invoiceDao.selectAddressBookBySenderEmail(senderEmail);
+    public LiveData<List<AddressBook>> selectAddressBookBySenderId(final long senderId) {
+        return invoiceDao.selectAddressBookBySenderId(senderId);
     }
 
     /* request data*/

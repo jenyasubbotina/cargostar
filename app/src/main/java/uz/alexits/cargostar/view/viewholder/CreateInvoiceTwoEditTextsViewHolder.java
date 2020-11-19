@@ -36,12 +36,12 @@ public class CreateInvoiceTwoEditTextsViewHolder extends RecyclerView.ViewHolder
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                callback.afterFirstEditTextChanged(position, charSequence);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                callback.afterFirstEditTextChanged(position, editable);
+
             }
         };
         secondTextWatcher = new TextWatcher() {
@@ -52,12 +52,12 @@ public class CreateInvoiceTwoEditTextsViewHolder extends RecyclerView.ViewHolder
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                callback.afterSecondEditTextChanged(position, s);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                callback.afterSecondEditTextChanged(position, s);
+
             }
         };
         firstEditText.addTextChangedListener(firstTextWatcher);

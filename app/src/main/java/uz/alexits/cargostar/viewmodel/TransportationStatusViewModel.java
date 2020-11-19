@@ -15,6 +15,7 @@ import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.TransitPoint;
+import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationData;
@@ -36,28 +37,36 @@ public class TransportationStatusViewModel extends AndroidViewModel {
     private final MutableLiveData<Long> nextTransitPointId;
 
     private final MutableLiveData<Long> requestId;
+    private final MutableLiveData<Request> currentRequest;
 
     public TransportationStatusViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
 
+        this.requestId = new MutableLiveData<>();
+        this.currentRequest = new MutableLiveData<>();
         this.transportationId = new MutableLiveData<>();
         this.currentTransitPointId = new MutableLiveData<>();
         this.currentCityId = new MutableLiveData<>();
+        this.nextTransportationStatus = new MutableLiveData<>();
+        this.nextTransitPointId = new MutableLiveData<>();
 
         this.inTransitStatus = repository.selectTransportationStatusById(3L);
         this.onItsWayStatus = repository.selectTransportationStatusById(4L);
         this.deliveredStatus = repository.selectTransportationStatusById(6L);
         this.leftCountryStatus = repository.selectTransportationStatusById(8L);
+    }
 
-        this.nextTransportationStatus = new MutableLiveData<>();
-        this.nextTransitPointId = new MutableLiveData<>();
+    /* Request */
+    public void setRequestId(final Long requestId) {
+        this.requestId.setValue(requestId);
+    }
 
-        this.requestId = new MutableLiveData<>();
+    public LiveData<Request> getCurrentRequest() {
+        return Transformations.switchMap(requestId, repository::selectRequest);
     }
 
     /* Transportation */
-
     public void setCurrentTransitPointId(final Long currentTransitPointId) {
         this.currentTransitPointId.setValue(currentTransitPointId);
     }
@@ -68,10 +77,6 @@ public class TransportationStatusViewModel extends AndroidViewModel {
 
     public void setCurrentCityId(final Long cityId) {
         this.currentCityId.setValue(cityId);
-    }
-
-    public void setRequestId(final Long requestId) {
-        this.requestId.setValue(requestId);
     }
 
     public void setNextTransportationStatus(final TransportationStatus transportationStatus) {

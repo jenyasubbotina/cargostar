@@ -309,7 +309,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
         /* transportation view model */
         transportationViewModel.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
-            Log.i(TAG, "onActivityCreated(): " + transitPointList);
             if (transitPointList != null) {
                 this.transitPointList = transitPointList;
                 initCitySpinner(transitPointList);
@@ -319,14 +318,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         transportationViewModel.getCurrentTransportationList().observe(getViewLifecycleOwner(), transportationList -> {
             transportationAdapter.setTransportationList(transportationList);
             transportationAdapter.notifyDataSetChanged();
-
-            for (final Transportation transportation : transportationList) {
-                Log.i(TAG, "transportation: " + transportation);
-            }
-        });
-
-        Repository.getInstance(getActivity().getApplication()).selectAllTransportation().observe(getViewLifecycleOwner(), transportationList -> {
-            Log.i(TAG, "all: " + transportationList);
         });
     }
 
@@ -446,8 +437,8 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     @Override
     public void onTransportationSelected(Transportation currentItem) {
         Log.i(TAG, "currentItem: " + currentItem);
-        final CurrentTransportationsFragmentDirections.ActionCurrentParcelsFragmentToParcelStatusFragment action =
-                CurrentTransportationsFragmentDirections.actionCurrentParcelsFragmentToParcelStatusFragment(
+        final CurrentTransportationsFragmentDirections.ActionCurrentTransportationsFragmentToTransportationStatusFragment action =
+                CurrentTransportationsFragmentDirections.actionCurrentTransportationsFragmentToTransportationStatusFragment(
                         currentItem.getQrCode(),
                         currentItem.getTrackingCode(),
                         currentItem.getTransportationStatusName(),
@@ -494,11 +485,60 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         }
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
-                final CurrentTransportationsFragmentDirections.ActionCurrentParcelsFragmentToParcelDataFragment action =
-                        CurrentTransportationsFragmentDirections.actionCurrentParcelsFragmentToParcelDataFragment();
-                action.setRequestId(1);
-                action.setRequestOrParcel(IntentConstants.INTENT_TRANSPORTATION);
-                NavHostFragment.findNavController(this).navigate(action);
+
+                final String qr = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+
+                WorkManager.getInstance(context).getWorkInfoByIdLiveData(SyncWorkRequest.searchTransportation(context, qr)).observe(getViewLifecycleOwner(), workInfo -> {
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Log.i(TAG, "found transportation with: " + qr);
+
+                        final long transportationId = workInfo.getOutputData().getLong(Constants.KEY_TRANSPORTATION_ID, 0);
+                        final long invoiceId = workInfo.getOutputData().getLong(Constants.KEY_INVOICE_ID, 0);
+                        final long requestId = workInfo.getOutputData().getLong(Constants.KEY_REQUEST_ID, 0);
+                        final long courierId = workInfo.getOutputData().getLong(Constants.KEY_COURIER_ID, 0);
+                        final long providerId = workInfo.getOutputData().getLong(Constants.KEY_PROVIDER_ID, 0);
+                        final long transportationStatusId = workInfo.getOutputData().getLong(Constants.KEY_TRANSPORTATION_STATUS_ID, 0);
+                        final long currentTransitPointId = workInfo.getOutputData().getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, 0);
+                        final long paymentStatusId = workInfo.getOutputData().getLong(Constants.KEY_PAYMENT_STATUS_ID, 0);
+
+                        final String qrCode = workInfo.getOutputData().getString(Constants.KEY_TRANSPORTATION_QR);
+                        final String trackingCode = workInfo.getOutputData().getString(Constants.KEY_TRACKING_CODE);
+                        final String cityFrom = workInfo.getOutputData().getString(Constants.KEY_CITY_FROM);
+                        final String cityTo = workInfo.getOutputData().getString(Constants.KEY_CITY_TO);
+                        final String partyQrCode = workInfo.getOutputData().getString(Constants.KEY_PARTY_QR_CODE);
+                        final String instruction = workInfo.getOutputData().getString(Constants.KEY_INSTRUCTIONS);
+                        final String direction = workInfo.getOutputData().getString(Constants.KEY_DIRECTION);
+                        final String arrivalDate = workInfo.getOutputData().getString(Constants.KEY_ARRIVAL_DATE);
+                        final String transportationStatusName = workInfo.getOutputData().getString(Constants.KEY_TRANSPORTATION_STATUS);
+
+                        final CurrentTransportationsFragmentDirections.ActionCurrentTransportationsFragmentToTransportationStatusFragment action =
+                                CurrentTransportationsFragmentDirections.actionCurrentTransportationsFragmentToTransportationStatusFragment(
+                                        qrCode, trackingCode, transportationStatusName, cityFrom, cityTo, partyQrCode, instruction, direction, arrivalDate);
+
+                        action.setTransportationId(transportationId);
+                        action.setInvoiceId(invoiceId);
+                        action.setRequestId(requestId);
+                        action.setTransportationStatusId(transportationStatusId);
+                        action.setTransportationStatusName(transportationStatusName);
+                        action.setPaymentStatusId(paymentStatusId);
+                        action.setTrackingCode(trackingCode);
+                        action.setQrCode(qrCode);
+                        action.setPartyQrCode(partyQrCode);
+                        action.setCurrentTransitPointId(currentTransitPointId);
+                        action.setCityFrom(cityFrom);
+                        action.setCityTo(cityTo);
+                        action.setCourierId(courierId);
+                        action.setProviderId(providerId);
+                        action.setInstructions(instruction);
+                        action.setArrivalDate(arrivalDate);
+                        action.setDirection(direction);
+
+                        NavHostFragment.findNavController(this).navigate(action);
+                    }
+                    if (workInfo.getState() == WorkInfo.State.CANCELLED || workInfo.getState() == WorkInfo.State.FAILED) {
+                        Toast.makeText(context, "QR код " + qr + " не найден", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     }

@@ -82,7 +82,7 @@ public class MainFragment extends Fragment {
         context = getContext();
         courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
 
-        SyncWorkRequest.fetchTransportationStatuses(context);
+//        SyncWorkRequest.fetchTransportationStatuses(context);
 //        SyncWorkRequest.fetchTransitPoints(context);
 //        SyncWorkRequest.fetchRequestData(context);
 //        SyncWorkRequest.fetchPackagingData(context, 100000);
@@ -202,6 +202,10 @@ public class MainFragment extends Fragment {
 
         LocalCache.getInstance(context).invoiceDao().selectAllAddressBookEntries().observe(getViewLifecycleOwner(), addressBook -> {
             Log.i(TAG, "addressBook: " + addressBook);
+        });
+
+        LocalCache.getInstance(context).transportationDao().selectAllTransportation().observe(getViewLifecycleOwner(), transportationList -> {
+            Log.i(TAG, "transportationList: " + transportationList);
         });
 
         parcelSearchImageView.setOnClickListener(v -> {

@@ -202,13 +202,24 @@ public class SyncWorkRequest {
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
+        /* fetch transportation status list from server */
+        final OneTimeWorkRequest fetchTransportationStatusesRequest = new OneTimeWorkRequest.Builder(FetchTransportationStatusesWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        /* fetch transportation list from server */
+        final OneTimeWorkRequest fetchTransportationsRequest = new OneTimeWorkRequest.Builder(FetchTransportationsWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
         /* last one -> sign in */
         final OneTimeWorkRequest signInRequest = new OneTimeWorkRequest.Builder(SignInWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
-        //todo: add transportation worker request
         WorkManager.getInstance(context)
                 .beginWith(fetchCountriesRequest)
                 .then(fetchRegionsRequest)
@@ -226,7 +237,8 @@ public class SyncWorkRequest {
                 .then(fetchSenderListRequest)
                 .then(fetchAddressBookRequest)
                 .then(fetchInvoicesRequest)
-//                .then(fetchTransportationD)
+                .then(fetchTransportationStatusesRequest)
+                .then(fetchTransportationsRequest)
                 .then(signInRequest)
                 .enqueue();
 
@@ -744,9 +756,9 @@ public class SyncWorkRequest {
                                    final String senderEmail,
                                    final String senderTnt,
                                    final String senderFedex,
-                                   final long senderCountryId,
-                                   final long senderRegionId,
-                                   final long senderCityId,
+                                   final String senderCountryId,
+                                   final String senderRegionId,
+                                   final String senderCityId,
                                    final String senderAddress,
                                    final String senderZip,
                                    final String senderFirstName,
@@ -759,9 +771,9 @@ public class SyncWorkRequest {
                                    final String recipientCargo,
                                    final String recipientTnt,
                                    final String recipientFedex,
-                                   final long recipientCountryId,
-                                   final long recipientRegionId,
-                                   final long recipientCityId,
+                                   final String recipientCountryId,
+                                   final String recipientRegionId,
+                                   final String recipientCityId,
                                    final String recipientAddress,
                                    final String recipientZip,
                                    final String recipientFirstName,
@@ -771,9 +783,9 @@ public class SyncWorkRequest {
                                    final String recipientCompanyName,
                                    final int recipientType,
                                    final String payerEmail,
-                                   final long payerCountryId,
-                                   final long payerRegionId,
-                                   final long payerCityId,
+                                   final String payerCountryId,
+                                   final String payerRegionId,
+                                   final String payerCityId,
                                    final String payerAddress,
                                    final String payerZip,
                                    final String payerFirstName,
@@ -820,9 +832,9 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_SENDER_EMAIL, senderEmail)
                 .putString(Constants.KEY_SENDER_TNT, senderTnt)
                 .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
-                .putLong(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
-                .putLong(Constants.KEY_SENDER_REGION_ID, senderRegionId)
-                .putLong(Constants.KEY_SENDER_CITY_ID, senderCityId)
+                .putString(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
+                .putString(Constants.KEY_SENDER_REGION_ID, senderRegionId)
+                .putString(Constants.KEY_SENDER_CITY_ID, senderCityId)
                 .putString(Constants.KEY_SENDER_ADDRESS, senderAddress)
                 .putString(Constants.KEY_SENDER_ZIP, senderZip)
                 .putString(Constants.KEY_SENDER_FIRST_NAME, senderFirstName)
@@ -836,9 +848,9 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_RECIPIENT_CARGOSTAR, recipientCargo)
                 .putString(Constants.KEY_RECIPIENT_TNT, recipientTnt)
                 .putString(Constants.KEY_RECIPIENT_FEDEX, recipientFedex)
-                .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
-                .putLong(Constants.KEY_RECIPIENT_REGION_ID, recipientRegionId)
-                .putLong(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId)
+                .putString(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
+                .putString(Constants.KEY_RECIPIENT_REGION_ID, recipientRegionId)
+                .putString(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId)
                 .putString(Constants.KEY_RECIPIENT_ADDRESS, recipientAddress)
                 .putString(Constants.RECIPIENT_ZIP, recipientZip)
                 .putString(Constants.KEY_RECIPIENT_FIRST_NAME, recipientFirstName)
@@ -849,9 +861,9 @@ public class SyncWorkRequest {
                 .putInt(Constants.KEY_RECIPIENT_TYPE, recipientType)
 
                 .putString(Constants.KEY_PAYER_EMAIL, payerEmail)
-                .putLong(Constants.KEY_PAYER_COUNTRY_ID, payerCountryId)
-                .putLong(Constants.KEY_PAYER_REGION_ID, payerRegionId)
-                .putLong(Constants.KEY_PAYER_CITY_ID, payerCityId)
+                .putString(Constants.KEY_PAYER_COUNTRY_ID, payerCountryId)
+                .putString(Constants.KEY_PAYER_REGION_ID, payerRegionId)
+                .putString(Constants.KEY_PAYER_CITY_ID, payerCityId)
                 .putString(Constants.KEY_PAYER_ADDRESS, payerAddress)
                 .putString(Constants.KEY_PAYER_ZIP, payerZip)
                 .putString(Constants.KEY_PAYER_FIRST_NAME, payerFirstName)

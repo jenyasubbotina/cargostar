@@ -41,15 +41,15 @@ public class InvoiceDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View root;
         if (viewType == TYPE_HEADING) {
-            root = LayoutInflater.from(context).inflate(R.layout.view_holder_parcel_data_heading, parent, false);
+            root = LayoutInflater.from(context).inflate(R.layout.view_holder_invoice_data_heading, parent, false);
             return new ParcelDataHeadingViewHolder(root);
         }
         else if (viewType == TYPE_ITEM) {
-            root = LayoutInflater.from(context).inflate(R.layout.view_holder_parcel_data_item, parent, false);
+            root = LayoutInflater.from(context).inflate(R.layout.view_holder_invoice_data_item, parent, false);
             return new ParcelDataItemViewHolder(root);
         }
         else {
-            root = LayoutInflater.from(context).inflate(R.layout.view_holder_parcel_data_stoke, parent, false);
+            root = LayoutInflater.from(context).inflate(R.layout.view_holder_invoice_data_stoke, parent, false);
             return new ParcelDataStrokeViewHolder(root);
         }
     }

@@ -34,7 +34,7 @@
             app:popExitAnim="@anim/fragment_open_exit"/>
         <action
             android:id="@+id/action_mainFragment_to_currentTransportationsFragment"
-            app:destination="@id/currentParcelsFragment"
+            app:destination="@id/currentTransportationsFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
@@ -168,37 +168,25 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
-<!--        <argument-->
-<!--            android:name="party_id"-->
-<!--            app:argType="long"-->
-<!--            android:defaultValue="-1L"/>-->
         <argument
             android:name="courier_id"
             app:argType="long"
             android:defaultValue="-1L"/>
-<!--        <argument-->
-<!--            android:name="parcel_quantity"-->
-<!--            app:argType="integer"-->
-<!--            android:defaultValue="-1"/>-->
-<!--        <argument-->
-<!--            android:name="parcel_id"-->
-<!--            app:argType="long"-->
-<!--            android:defaultValue="-1L"/>-->
     </fragment>
     <fragment
-        android:id="@+id/currentParcelsFragment"
+        android:id="@+id/currentTransportationsFragment"
         android:name="uz.alexits.cargostar.view.fragment.CurrentTransportationsFragment"
         android:label="fragment_current_parcels"
         tools:layout="@layout/fragment_current_parcels" >
         <action
-            android:id="@+id/action_currentParcelsFragment_to_calculatorFragment"
+            android:id="@+id/action_currentTransportationsFragment_to_calculatorFragment"
             app:destination="@id/calculatorFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
         <action
-            android:id="@+id/action_currentParcelsFragment_to_parcelStatusFragment"
+            android:id="@+id/action_currentTransportationsFragment_to_transportationStatusFragment"
             app:destination="@id/transportationStatusFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
@@ -206,21 +194,21 @@
             app:popExitAnim="@anim/fragment_open_exit">
         </action>
         <action
-            android:id="@+id/action_currentParcelsFragment_to_partyStatusFragment"
+            android:id="@+id/action_currentTransportationsFragment_to_partyStatusFragment"
             app:destination="@id/partyStatusFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit" />
         <action
-            android:id="@+id/action_currentParcelsFragment_to_profileFragment"
+            android:id="@+id/action_currentTransportationsFragment_to_profileFragment"
             app:destination="@id/profileFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
         <action
-            android:id="@+id/action_currentParcelsFragment_to_parcelDataFragment"
+            android:id="@+id/action_currentTransportationsFragment_to_invoiceDataFragment"
             app:destination="@id/invoiceDataFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
@@ -344,7 +332,7 @@
         android:id="@+id/transportationStatusFragment"
         android:name="uz.alexits.cargostar.view.fragment.TransportationStatusFragment"
         android:label="fragment_parcel_status"
-        tools:layout="@layout/fragment_parcel_status" >
+        tools:layout="@layout/fragment_transportation_status" >
         <action
             android:id="@+id/action_parcelStatusFragment_to_calculatorFragment"
             app:destination="@id/calculatorFragment"

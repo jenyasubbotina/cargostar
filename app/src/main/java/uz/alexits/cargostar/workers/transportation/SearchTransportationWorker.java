@@ -40,13 +40,13 @@ public class SearchTransportationWorker extends Worker {
         }
 
         outputDataBuilder.putLong(Constants.KEY_TRANSPORTATION_ID, transportation.getId());
-        outputDataBuilder.putLong(Constants.KEY_INVOICE_ID, transportation.getInvoiceId());
-        outputDataBuilder.putLong(Constants.KEY_REQUEST_ID, transportation.getRequestId());
-        outputDataBuilder.putLong(Constants.KEY_COURIER_ID, transportation.getCourierId());
-        outputDataBuilder.putLong(Constants.KEY_PROVIDER_ID, transportation.getProviderId());
-        outputDataBuilder.putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportation.getTransportationStatusId());
-        outputDataBuilder.putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId());
-        outputDataBuilder.putLong(Constants.KEY_PAYMENT_STATUS_ID, transportation.getPaymentStatusId());
+        outputDataBuilder.putLong(Constants.KEY_INVOICE_ID, transportation.getInvoiceId() != null ? transportation.getInvoiceId() : 0);
+        outputDataBuilder.putLong(Constants.KEY_REQUEST_ID, transportation.getRequestId() != null ? transportation.getRequestId() : 0);
+        outputDataBuilder.putLong(Constants.KEY_COURIER_ID, transportation.getCourierId() != null ? transportation.getCourierId() : 0);
+        outputDataBuilder.putLong(Constants.KEY_PROVIDER_ID, transportation.getProviderId() != null ? transportation.getProviderId() : 0);
+        outputDataBuilder.putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportation.getTransportationStatusId() != null ? transportation.getTransportationStatusId() : 0);
+        outputDataBuilder.putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId() != null ? transportation.getCurrentTransitionPointId() : 0);
+        outputDataBuilder.putLong(Constants.KEY_PAYMENT_STATUS_ID, transportation.getPaymentStatusId() != null ? transportation.getPaymentStatusId() : 0);
 
         outputDataBuilder.putString(Constants.KEY_TRACKING_CODE, transportation.getTrackingCode());
         outputDataBuilder.putString(Constants.KEY_CITY_FROM, transportation.getCityFrom());

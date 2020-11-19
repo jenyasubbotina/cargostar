@@ -50,10 +50,8 @@ public interface InvoiceDao {
     @Query("SELECT * FROM address_book WHERE id == :addressBookId")
     LiveData<AddressBook> selectAddressBookEntryById(final long addressBookId);
 
-    @Query("SELECT * FROM address_book WHERE id IN " +
-            "(SELECT recipient_id OR payer_id FROM invoice WHERE sender_id == " +
-            "(SELECT id FROM customer WHERE email LIKE :senderEmail))")
-    LiveData<List<AddressBook>> selectAddressBookBySenderEmail(final String senderEmail);
+    @Query("SELECT * FROM address_book WHERE user_id == :senderId")
+    LiveData<List<AddressBook>> selectAddressBookBySenderId(final long senderId);
 
     @Update
     int updateAddressBookEntry(final AddressBook addressBook);

@@ -60,7 +60,7 @@ public class Provider {
     @Expose
     @SerializedName("fuel")
     @ColumnInfo(name = "fuel")
-    private int fuel;
+    private double fuel;
 
     @Expose
     @SerializedName("status")
@@ -86,7 +86,7 @@ public class Provider {
                     @Nullable final String description,
                     @Nullable final String descriptionEn,
                     @Nullable final String descriptionUz,
-                    final int fuel,
+                    final double fuel,
                     final int status,
                     @Nullable final Date createdAt,
                     @Nullable final Date updatedAt) {
@@ -175,11 +175,11 @@ public class Provider {
         this.descriptionUz = descriptionUz;
     }
 
-    public int getFuel() {
+    public double getFuel() {
         return fuel;
     }
 
-    public void setFuel(int fuel) {
+    public void setFuel(double fuel) {
         this.fuel = fuel;
     }
 

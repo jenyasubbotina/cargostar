@@ -63,6 +63,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/package_text_view"
         app:layout_constraintStart_toStartOf="@id/package_text_view"
+        app:layout_constraintEnd_toStartOf="@id/weight_value_text_view"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/geometria_medium"
         android:textSize="16sp"

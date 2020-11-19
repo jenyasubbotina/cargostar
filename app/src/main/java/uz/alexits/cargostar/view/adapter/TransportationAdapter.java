@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
-
 import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.model.transportation.TransportationStatus;
 import uz.alexits.cargostar.view.callback.TransportationCallback;
 import uz.alexits.cargostar.view.viewholder.TransportationViewHolder;
 
@@ -18,9 +16,8 @@ import java.util.List;
 
 public class TransportationAdapter extends RecyclerView.Adapter<TransportationViewHolder> {
     private final Context context;
+    private final TransportationCallback callback;
     private List<Transportation> transportationList;
-
-    private TransportationCallback callback;
 
     public TransportationAdapter(final Context context, final TransportationCallback callback) {
         this.context = context;
@@ -38,7 +35,7 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
     @NonNull
     @Override
     public TransportationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View root = LayoutInflater.from(context).inflate(R.layout.view_holder_current_parcel, parent, false);
+        final View root = LayoutInflater.from(context).inflate(R.layout.view_holder_transportation, parent, false);
         return new TransportationViewHolder(root);
     }
 
@@ -75,12 +72,10 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
                     holder.statusTextView.setBackgroundResource(R.drawable.bg_red);
                 }
             }
-
-            holder.bind(currentTransportation, callback);
-
             if (invoiceId != null) {
                 holder.transportationIdTextView.setText(String.valueOf(invoiceId));
             }
+            holder.bind(currentTransportation, callback);
         }
     }
 

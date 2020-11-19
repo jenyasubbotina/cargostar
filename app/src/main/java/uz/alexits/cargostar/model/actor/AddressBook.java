@@ -21,12 +21,16 @@ import uz.alexits.cargostar.model.location.Region;
                 @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = {"country_id"}), @Index(value = "region_id"), @Index(value = "city_id")})
+        indices = {@Index(value = {"country_id"}), @Index(value = "region_id"), @Index(value = "city_id"), @Index(value = "user_id")})
 public class AddressBook {
     @Expose
     @SerializedName("id")
     @PrimaryKey
     @ColumnInfo(name = "id") private final long id;
+
+    @Expose
+    @SerializedName("user_id")
+    @ColumnInfo(name = "user_id") private final long userId;
 
     @Expose
     @SerializedName("country_id")
@@ -129,6 +133,7 @@ public class AddressBook {
     @ColumnInfo(name = "updated_at") private final Date updatedAt;
 
     public AddressBook(final long id,
+                       final long userId,
                        final Long countryId,
                        final Long regionId,
                        final Long cityId,
@@ -155,6 +160,7 @@ public class AddressBook {
                        final Date createdAt,
                        final Date updatedAt) {
         this.id = id;
+        this.userId = userId;
         this.countryId = countryId;
         this.regionId = regionId;
         this.cityId = cityId;
@@ -286,38 +292,13 @@ public class AddressBook {
         return updatedAt;
     }
 
-
+    public long getUserId() {
+        return userId;
+    }
 
     @NonNull
     @Override
     public String toString() {
-        return "AddressBook{" +
-                "id=" + id +
-                ", countryId=" + countryId +
-                ", regionId=" + regionId +
-                ", cityId=" + cityId +
-                ", address='" + address + '\'' +
-                ", zip='" + zip + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", cargostarAccountNumber='" + cargostarAccountNumber + '\'' +
-                ", tntAccountNumber='" + tntAccountNumber + '\'' +
-                ", fedexAccountNumber='" + fedexAccountNumber + '\'' +
-                ", company='" + company + '\'' +
-                ", inn='" + inn + '\'' +
-                ", checkingAccount='" + checkingAccount + '\'' +
-                ", bank='" + bank + '\'' +
-                ", registrataionCode='" + registrationCode + '\'' +
-                ", mfo='" + mfo + '\'' +
-                ", oked='" + oked + '\'' +
-                ", passportSerial='" + passportSerial + '\'' +
-                ", type=" + type +
-                ", status=" + status +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return firstName + " " + lastName + ", " + address;
     }
 }
