@@ -47,9 +47,12 @@ public interface ActorDao {
     @Query("SELECT * FROM customer ORDER BY email DESC")
     LiveData<List<Customer>> selectAllCustomers();
 
-    @Query("SELECT id FROM customer WHERE email LIKE :senderEmail LIMIT 1")
-    LiveData<Long> selectSenderIdByEmail(final String senderEmail);
+    @Query("SELECT user_id FROM customer WHERE email LIKE :senderEmail LIMIT 1")
+    LiveData<Long> selectSenderUserIdByEmail(final String senderEmail);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertSenderList(final List<Customer> senderList);
+
+    @Query("SELECT * FROM customer WHERE email LIKE :email LIMIT 1")
+    LiveData<Customer> selectSenderByEmail(final String email);
 }

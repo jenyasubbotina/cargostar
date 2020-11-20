@@ -249,7 +249,6 @@ public class MainFragment extends Fragment {
 
                         final MainFragmentDirections.ActionMainFragmentToInvoiceDataFragment action = MainFragmentDirections.actionMainFragmentToInvoiceDataFragment();
                         action.setRequestId(requestId);
-                        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
                         action.setInvoiceId(invoiceId);
                         action.setCourierId(courierId);
                         action.setClientId(clientId);

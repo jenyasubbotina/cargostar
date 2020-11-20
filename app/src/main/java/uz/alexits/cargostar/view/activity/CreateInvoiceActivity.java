@@ -35,6 +35,7 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.TariffPrice;
 import uz.alexits.cargostar.model.actor.AddressBook;
+import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.calculation.Provider;
@@ -198,21 +199,60 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     private long existingTariffId;
     private String existingTotalPrice;
 
+    private EditText courierIdEditText;
+
+    /* sender data */
+    private EditText senderEmailEditText;
+    private EditText senderSignatureEditText;
+    private EditText senderFirstNameEditText;
+    private EditText senderLastNameEditText;
+    private EditText senderMiddleNameEditText;
+    private EditText senderPhoneEditText;
+    private EditText senderAddressEditText;
+    private EditText senderZipEditText;
+    private EditText senderCompanyEditText;
+    private EditText senderTntEditText;
+    private EditText senderFedexEditText;
+
+    /* recipient data */
+    private EditText recipientEmailEditText;
+    private EditText recipientFirstNameEditText;
+    private EditText recipientLastNameEditText;
+    private EditText recipientMiddleNameEditText;
+    private EditText recipientAddressEditText;
+    private EditText recipientZipEditText;
+    private EditText recipientPhoneEditText;
+    private EditText recipientCargoEditText;
+    private EditText recipientTntEditText;
+    private EditText recipientFedexEditText;
+    private EditText recipientCompanyEditText;
+
+    /* payer data */
+    private EditText payerEmailEditText;
+    private EditText payerFirstNameEditText;
+    private EditText payerLastNameEditText;
+    private EditText payerMiddleNameEditText;
+    private EditText payerAddressEditText;
+    private EditText payerZipEditText;
+    private EditText payerPhoneEditText;
+    private EditText discountEditText;
+
+    private EditText payerCargoEditText;
+    private EditText payerTntEditText;
+    private EditText payerTntTaxIdEditText;
+    private EditText payerFedexEditText;
+    private EditText payerFedexTaxIdEditText;
+    private EditText payerInnEditText;
+    private EditText payerCompanyEditText;
+    private EditText checkingAccountEditText;
+    private EditText bankEditText;
+    private EditText registrationCodeEditText;
+    private EditText mfoEditText;
+    private EditText okedEditText;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_invoice);
-
-        context = this;
-        itemList = new ArrayList<>();
-        consignmentList = new ArrayList<>();
-
-        initUI();
-
-        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
-        requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
-        createInvoiceViewModel = new ViewModelProvider(this).get(CreateInvoiceViewModel.class);
-        calculatorViewModel = new ViewModelProvider(this).get(CalculatorViewModel.class);
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         if (getIntent() != null && getIntent().getExtras() != null) {
             final long requestId = getIntent().getLongExtra(Constants.KEY_REQUEST_ID, -1L);
@@ -251,6 +291,23 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         else {
             createInvoiceBtn.setText(R.string.create_invoice);
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_invoice);
+
+        context = this;
+        itemList = new ArrayList<>();
+        consignmentList = new ArrayList<>();
+
+        initUI();
+
+        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
+        requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
+        createInvoiceViewModel = new ViewModelProvider(this).get(CreateInvoiceViewModel.class);
+        calculatorViewModel = new ViewModelProvider(this).get(CalculatorViewModel.class);
 
         /* header view model */
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(this, courier -> {
@@ -304,10 +361,29 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             }
         });
 
-        createInvoiceViewModel.getSenderId().observe(this, senderId -> {
+        createInvoiceViewModel.getSenderData().observe(this, sender -> {
+            if (sender != null) {
+                this.itemList.get(4).firstValue = sender.getEmail();
+                this.itemList.get(4).secondValue = sender.getSignatureUrl();
+                this.itemList.get(5).firstValue = sender.getFirstName();
+                this.itemList.get(5).secondValue = sender.getLastName();
+                this.itemList.get(6).firstValue = sender.getMiddleName();
+                this.itemList.get(6).secondValue = sender.getPhone();
+                this.itemList.get(7).firstValue = sender.getAddress();
+
+                this.itemList.get(9).firstValue = sender.getZip();
+                this.itemList.get(9).secondValue = sender.getCompany();
+                this.itemList.get(10).firstValue = sender.getTntAccountNumber();
+                this.itemList.get(10).secondValue = sender.getFedexAccountNumber();
+
+                this.adapter.notifyItemRangeChanged(4, 4);
+                this.adapter.notifyItemRangeChanged(9, 2);
+            }
+        });
+
+        createInvoiceViewModel.getSenderUserId().observe(this, senderId -> {
             if (senderId != null) {
-                Log.i(TAG, "senderId=" + senderId);
-                createInvoiceViewModel.setSenderId(senderId);
+                createInvoiceViewModel.setSenderUserId(senderId);
             }
         });
 
@@ -549,8 +625,10 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         itemRecyclerView = findViewById(R.id.calculations_recycler_view);
         calculatorAdapter = new CalculatorAdapter(context, consignmentList, this);
+
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
+
         itemRecyclerView.setLayoutManager(layoutManager);
         itemRecyclerView.setAdapter(calculatorAdapter);
 
@@ -654,10 +732,16 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         contentRecyclerView = findViewById(R.id.content_recycler_view);
         adapter = new CreateInvoiceAdapter(context, this);
-        contentRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        linearLayoutManager.setOrientation(RecyclerView.VERTICAL);
+        contentRecyclerView.setHasFixedSize(true);
+
+        contentRecyclerView.setLayoutManager(linearLayoutManager);
         contentRecyclerView.setAdapter(adapter);
+
         adapter.setItemList(itemList);
-        adapter.notifyDataSetChanged();
+
         //below recycler view
         totalQuantityTextView = findViewById(R.id.total_quantity_value_text_view);
         totalWeightTextView = findViewById(R.id.total_weight_value_text_view);
@@ -850,139 +934,11 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
             }
         });
 
-        requestsViewModel.getSender().observe(this, sender -> {
-            if (sender != null) {
-                this.itemList.get(4).firstValue = sender.getEmail();
-                this.itemList.get(4).secondValue = sender.getSignatureUrl();
-                this.itemList.get(5).firstValue = sender.getFirstName();
-                this.itemList.get(5).secondValue = sender.getLastName();
-                this.itemList.get(6).firstValue = sender.getMiddleName();
-                this.itemList.get(6).secondValue = sender.getPhone();
-                this.itemList.get(7).firstValue = sender.getAddress();
-                this.adapter.notifyItemRangeChanged(4, 4);
+        requestsViewModel.getSender().observe(this, this::updateSenderData);
 
-                this.itemList.get(9).firstValue = sender.getZip();
-                this.itemList.get(9).secondValue = sender.getCompany();
-                this.itemList.get(10).firstValue = sender.getTntAccountNumber();
-                this.itemList.get(10).secondValue = sender.getFedexAccountNumber();
-                this.adapter.notifyItemRangeChanged(9, 2);
-            }
-        });
+        requestsViewModel.getRecipient().observe(this, this::updateRecipientData);
 
-        requestsViewModel.getSenderCountry().observe(this, senderCountry -> {
-            if (senderCountry != null) {
-                this.itemList.get(7).secondValue = String.valueOf(senderCountry.getId());
-                this.adapter.notifyItemChanged(7);
-            }
-        });
-        
-        requestsViewModel.getSenderRegion().observe(this, senderRegion -> {
-            if (senderRegion != null) {
-                this.itemList.get(8).firstValue = String.valueOf(senderRegion.getId());
-                this.adapter.notifyItemChanged(8);
-            }
-        });
-        
-        requestsViewModel.getSenderCity().observe(this, senderCity -> {
-            if (senderCity != null) {
-                this.itemList.get(8).secondValue = String.valueOf(senderCity.getId());
-                this.adapter.notifyItemChanged(8);
-            }
-        });
-
-        requestsViewModel.getRecipient().observe(this, recipient -> {
-            if (recipient != null) {
-                requestsViewModel.setRecipientRegionId(recipient.getRegionId());
-                this.itemList.get(14).firstValue = recipient.getEmail();
-                this.itemList.get(14).secondValue = recipient.getFirstName();
-                this.itemList.get(15).firstValue = recipient.getLastName();
-                this.itemList.get(15).secondValue = recipient.getMiddleName();
-                this.itemList.get(16).firstValue = recipient.getAddress();
-                this.adapter.notifyItemRangeChanged(14, 3);
-                this.itemList.get(18).firstValue = recipient.getZip();
-                this.itemList.get(18).secondValue = recipient.getPhone();
-                this.itemList.get(19).firstValue = recipient.getCargostarAccountNumber();
-                this.itemList.get(19).secondValue = recipient.getTntAccountNumber();
-                this.itemList.get(20).firstValue = recipient.getFedexAccountNumber();
-                this.itemList.get(20).secondValue = recipient.getCompany();
-                this.adapter.notifyItemRangeChanged(18, 3);
-            }
-        });
-
-        requestsViewModel.getRecipientCountry().observe(this, recipientCountry -> {
-            if (recipientCountry != null) {
-                this.itemList.get(16).secondValue = String.valueOf(recipientCountry.getId());
-                this.adapter.notifyItemChanged(16);
-            }
-        });
-
-        requestsViewModel.getRecipientRegion().observe(this, recipientRegion -> {
-            if (recipientRegion != null) {
-                this.itemList.get(17).firstValue = String.valueOf(recipientRegion);
-                this.adapter.notifyItemChanged(17);
-            }
-        });
-
-        requestsViewModel.getRecipientCity().observe(this, recipientCity -> {
-            if (recipientCity != null) {
-                this.itemList.get(17).secondValue = String.valueOf(recipientCity.getId());
-                this.adapter.notifyItemChanged(17);
-            }
-        });
-
-        requestsViewModel.getPayer().observe(this, payer -> {
-            if (payer != null) {
-                requestsViewModel.setPayerCountryId(payer.getCountryId());
-                requestsViewModel.setPayerRegionId(payer.getRegionId());
-                requestsViewModel.setPayerCityId(payer.getCityId());
-
-                this.itemList.get(24).firstValue = payer.getEmail();
-                this.itemList.get(24).secondValue = payer.getFirstName();
-                this.itemList.get(25).firstValue = payer.getLastName();
-                this.itemList.get(25).secondValue = payer.getMiddleName();
-                this.itemList.get(26).firstValue = payer.getAddress();
-                this.adapter.notifyItemRangeChanged(24, 3);
-                this.adapter.notifyItemChanged(24);
-                this.itemList.get(28).firstValue = payer.getZip();
-                this.itemList.get(28).secondValue = payer.getPhone();
-                this.adapter.notifyItemChanged(28);
-
-                this.itemList.get(31).firstValue = payer.getCargostarAccountNumber();
-                this.itemList.get(32).firstValue = payer.getTntAccountNumber();
-                this.itemList.get(33).firstValue = payer.getFedexAccountNumber();
-                this.adapter.notifyItemRangeChanged(31, 3);
-
-                this.itemList.get(36).firstValue = payer.getInn();
-                this.itemList.get(36).secondValue = payer.getCompany();
-                this.itemList.get(37).firstValue = payer.getCheckingAccount();
-                this.itemList.get(37).secondValue = payer.getBank();
-                this.itemList.get(38).firstValue = payer.getRegistrationCode();
-                this.itemList.get(38).secondValue = payer.getMfo();
-                this.itemList.get(39).firstValue = payer.getOked();
-                this.adapter.notifyItemRangeChanged(36, 4);
-            }
-        });
-
-        requestsViewModel.getPayerCountry().observe(this, payerCountry -> {
-            if (payerCountry != null) {
-                this.itemList.get(26).secondValue = String.valueOf(payerCountry.getId());
-                this.adapter.notifyItemChanged(26);
-            }
-        });
-
-        requestsViewModel.getPayerRegion().observe(this, payerRegion -> {
-            if (payerRegion != null) {
-                this.itemList.get(27).firstValue = String.valueOf(payerRegion.getId());
-                this.adapter.notifyItemChanged(27);
-            }
-        });
-
-        requestsViewModel.getPayerCity().observe(this, payerCity -> {
-            if (payerCity != null) {
-                this.itemList.get(27).secondValue = String.valueOf(payerCity.getId());
-                this.adapter.notifyItemChanged(27);
-            }
-        });
+        requestsViewModel.getPayer().observe(this, this::updatePayerData);
 
         requestsViewModel.getTransportation().observe(this, transportation -> {
             if (transportation != null) {
@@ -992,6 +948,9 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         requestsViewModel.getConsignmentList().observe(this, consignments -> {
             if (consignments != null) {
+                for (final Consignment consignment : consignments) {
+                    consignment.setPackagingType(consignment.getPackagingId() != null ? String.valueOf(consignment.getPackagingId()) : null);
+                }
                 consignmentList = consignments;
                 calculatorAdapter.setItemList(consignmentList);
                 calculatorAdapter.notifyDataSetChanged();
@@ -1009,6 +968,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         final String length = lengthEditText.getText().toString().trim();
         final String width = widthEditText.getText().toString().trim();
         final String height = heightEditText.getText().toString().trim();
+        final String dimensions = length + "x" + width + "x" + height;
         final String consignmentQr = cargoQrEditText.getText().toString().trim();
 
         /* check for empty fields */
@@ -1073,6 +1033,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         consignmentList.add(new Consignment(
                 -1,
                 requestId,
+                packagingType.getId(),
                 String.valueOf(packagingType.getId()),
                 name,
                 description,
@@ -1081,7 +1042,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 !TextUtils.isEmpty(width) ? Double.parseDouble(width) : 0,
                 !TextUtils.isEmpty(height) ? Double.parseDouble(height) : 0,
                 !TextUtils.isEmpty(weight) ? Double.parseDouble(weight) : 0,
-                -1,
+                dimensions,
                 consignmentQr));
         calculatorAdapter.notifyItemInserted(consignmentList.size() - 1);
     }
@@ -1183,72 +1144,71 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     }
 
     private void createInvoice() {
+        final String courierId = courierIdEditText.getText().toString();
+
         /* sender data */
-        final String courierId = itemList.get(1).firstValue;
-        final String senderEmail = itemList.get(4).firstValue;
-        final String senderSignature = itemList.get(4).secondValue;
-        final String senderFirstName = itemList.get(5).firstValue;
-        final String senderLastName = itemList.get(5).secondValue;
-        final String senderMiddleName = itemList.get(6).firstValue;
-        final String senderPhone = itemList.get(6).secondValue;
-        final String senderAddress = itemList.get(7).firstValue;
+        final String senderEmail = senderEmailEditText.getText().toString().trim();
+        final String senderSignature = senderSignatureEditText.getText().toString().trim();
+        final String senderFirstName = senderFirstNameEditText.getText().toString().trim();
+        final String senderLastName = senderLastNameEditText.getText().toString().trim();
+        final String senderMiddleName = senderMiddleNameEditText.getText().toString().trim();
+        final String senderPhone = senderPhoneEditText.getText().toString().trim();
+        final String senderAddress = senderAddressEditText.getText().toString().trim();
         final String senderCountryId = senderCountry != null ? String.valueOf(senderCountry.getId()) : null;
         final String senderRegionId = senderRegion != null ? String.valueOf(senderRegion.getId()) : null;
         final String senderCityId = senderCity != null ? String.valueOf(senderCity.getId()) : null;
-        final String senderZip = itemList.get(9).firstValue;
-        final String senderCompanyName = itemList.get(9).secondValue;
-        final String senderTnt = itemList.get(10).firstValue;
-        final String senderFedex = itemList.get(10).secondValue;
+        final String senderZip = senderZipEditText.getText().toString().trim();
+        final String senderCompanyName = senderCompanyEditText.getText().toString().trim();
+        final String senderTnt = senderTntEditText.getText().toString().trim();
+        final String senderFedex = senderFedexEditText.getText().toString().trim();
         int senderType = 0;
 
         /* recipient data */
-        final String recipientEmail = itemList.get(14).firstValue;
-        final String recipientFirstName = itemList.get(14).secondValue;
-        final String recipientLastName = itemList.get(15).firstValue;
-        final String recipientMiddleName = itemList.get(15).secondValue;
-        final String recipientAddress = itemList.get(16).firstValue;
+        final String recipientEmail = recipientEmailEditText.getText().toString().trim();
+        final String recipientFirstName = recipientFirstNameEditText.getText().toString().trim();
+        final String recipientLastName = recipientLastNameEditText.getText().toString().trim();
+        final String recipientMiddleName = recipientMiddleNameEditText.getText().toString().trim();
+        final String recipientAddress = recipientAddressEditText.getText().toString().trim();
         final String recipientCountryId = recipientCountry != null ? String.valueOf(recipientCountry.getId()) : null;
         final String recipientRegionId = recipientRegion != null ? String.valueOf(recipientRegion.getId()) : null;
         final String recipientCityId = recipientCity != null ? String.valueOf(recipientCity.getId()) : null;
-        final String recipientZip = itemList.get(18).firstValue;
-        final String recipientPhone = itemList.get(18).secondValue;
-        final String recipientCargo = itemList.get(19).firstValue;
-        final String recipientTnt = itemList.get(19).secondValue;
-        final String recipientFedex = itemList.get(20).firstValue;
-        final String recipientCompanyName = itemList.get(20).secondValue;
+        final String recipientZip = recipientZipEditText.getText().toString().trim();
+        final String recipientPhone = recipientPhoneEditText.getText().toString().trim();
+        final String recipientCargo = recipientCargoEditText.getText().toString().trim();
+        final String recipientTnt = recipientTntEditText.getText().toString().trim();
+        final String recipientFedex = recipientFedexEditText.getText().toString().trim();
+        final String recipientCompanyName = recipientCompanyEditText.getText().toString().trim();
         int recipientType = 0;
 
         /* payer data */
-        final String payerEmail = itemList.get(24).firstValue;
-        final String payerFirstName = itemList.get(24).secondValue;
-        final String payerLastName = itemList.get(25).firstValue;
-        final String payerMiddleName = itemList.get(25).secondValue;
-        final String payerAddress = itemList.get(26).firstValue;
+        final String payerEmail = payerEmailEditText.getText().toString().trim();
+        final String payerFirstName = payerFirstNameEditText.getText().toString().trim();
+        final String payerLastName = payerLastNameEditText.getText().toString().trim();
+        final String payerMiddleName = payerMiddleNameEditText.getText().toString().trim();
+        final String payerAddress = payerAddressEditText.getText().toString().trim();
         final String payerCountryId = payerCountry != null ? String.valueOf(payerCountry.getId()) : null;
         final String payerRegionId = payerRegion != null ? String.valueOf(payerRegion.getId()) : null;
         final String payerCityId = payerCity != null ? String.valueOf(payerCity.getId()) : null;
-        final String payerZip = itemList.get(28).firstValue;
-        final String payerPhone = itemList.get(28).secondValue;
-        final String payerDiscount = itemList.get(29).firstValue;
+        final String payerZip = payerZipEditText.getText().toString().trim();
+        final String payerPhone = payerPhoneEditText.getText().toString().trim();
+        final String payerDiscount = discountEditText.getText().toString().trim();
         int payerType = 0;
 
-        /* payment data */
-        final String payerCargo = itemList.get(31).firstValue;
-        final String payerTnt = itemList.get(32).firstValue;
-        final String payerTntTaxId = itemList.get(32).secondValue;
-        final String payerFedex = itemList.get(33).firstValue;
-        final String payerFedexTaxId = itemList.get(33).secondValue;
-        final String payerInn = itemList.get(36).firstValue;
-        final String payerCompanyName = itemList.get(36).secondValue;
-        final String checkingAccount = itemList.get(37).firstValue;
-        final String bank = itemList.get(37).secondValue;
-        final String registrationCode = itemList.get(33).firstValue;
-        final String mfo = itemList.get(38).secondValue;
-        final String oked = itemList.get(39).firstValue;
+        final String payerCargo = payerCargoEditText.getText().toString().trim();
+        final String payerTnt = payerTntEditText.getText().toString().trim();
+        final String payerTntTax = payerTntTaxIdEditText.getText().toString().trim();
+        final String payerFedex = payerFedexEditText.getText().toString().trim();
+        final String payerFedexTax = payerFedexTaxIdEditText.getText().toString().trim();
+        final String payerInn = payerInnEditText.getText().toString().trim();
+        final String payerCompany = payerCompanyEditText.getText().toString().trim();
+        final String checkingAccount = checkingAccountEditText.getText().toString().trim();
+        final String bank = bankEditText.getText().toString().trim();
+        final String registrationCode = registrationCodeEditText.getText().toString().trim();
+        final String mfo = mfoEditText.getText().toString().trim();
+        final String oked = okedEditText.getText().toString().trim();
 
         final String instructions = instructionsEditText.getText().toString().trim();
 
-        //sender data
         if (TextUtils.isEmpty(courierId)) {
             Log.e(TAG, "courierId empty");
             Toast.makeText(context, "Пустой ID курьера", Toast.LENGTH_SHORT).show();
@@ -1396,7 +1356,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         else {
             recipientType = 1;
         }
-        if (!TextUtils.isEmpty(payerCompanyName)) {
+        if (!TextUtils.isEmpty(payerCompany)) {
             payerType = 2;
         }
         else {
@@ -1452,7 +1412,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
         try {
             if (!TextUtils.isEmpty(totalWeightText)) {
-                //todo: assign totalWeight & totalVolume
                 totalWeight = Double.parseDouble(totalWeightText);
             }
             if (!TextUtils.isEmpty(totalVolumeText)) {
@@ -1486,7 +1445,7 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 context,
                 requestId,
                 invoiceId,
-                courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId) : -1L,
+                !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId) : -1L,
                 !TextUtils.isEmpty(senderSignature) ? senderSignature : null,
                 invoiceId > 0,
                 senderEmail,
@@ -1531,11 +1490,11 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 payerCargo,
                 payerTnt,
                 payerFedex,
-                payerTntTaxId,
-                payerFedexTaxId,
-                payerCompanyName,
+                payerTntTax,
+                payerFedexTax,
+                payerCompany,
                 payerType,
-                payerDiscount != null && !TextUtils.isEmpty(payerDiscount) ? Double.parseDouble(payerDiscount) : -1,
+                !TextUtils.isEmpty(payerDiscount) ? Double.parseDouble(payerDiscount) : -1,
                 payerInn,
                 checkingAccount,
                 bank,
@@ -1589,6 +1548,138 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
     }
 
     @Override
+    public void bindEditTextSpinner(int position, EditText editText) {
+        if (position == 7) {
+            //senderAddress
+            senderAddressEditText = editText;
+            return;
+        }
+        if (position == 16) {
+            //recipientAddress
+            recipientAddressEditText = editText;
+            return;
+        }
+        if (position == 26) {
+            //payerAddress
+            payerAddressEditText = editText;
+        }
+    }
+
+    @Override
+    public void bindEditTextImageView(int position, final EditText firstEditText, final EditText secondEditText) {
+        if (position == 4) {
+            senderEmailEditText = firstEditText;
+            senderSignatureEditText = secondEditText;
+        }
+    }
+
+    @Override
+    public void bindTwoEditTexts(int position, final EditText firstEditText, final EditText secondEditText) {
+        if (position == 1) {
+            courierIdEditText = firstEditText;
+            return;
+        }
+        if (position == 5) {
+            senderFirstNameEditText = firstEditText;
+            senderLastNameEditText = secondEditText;
+            return;
+        }
+        if (position == 6) {
+            senderMiddleNameEditText = firstEditText;
+            senderPhoneEditText = secondEditText;
+            return;
+        }
+        if (position == 9) {
+            senderZipEditText = firstEditText;
+            senderCompanyEditText = secondEditText;
+            return;
+        }
+        if (position == 10) {
+            senderTntEditText = firstEditText;
+            senderFedexEditText = secondEditText;
+            return;
+        }
+        if (position == 14) {
+            recipientEmailEditText = firstEditText;
+            recipientFirstNameEditText = secondEditText;
+            return;
+        }
+        if (position == 15) {
+            recipientLastNameEditText = firstEditText;
+            recipientMiddleNameEditText = secondEditText;
+            return;
+        }
+        if (position == 18) {
+            recipientZipEditText = firstEditText;
+            recipientPhoneEditText = secondEditText;
+            return;
+        }
+        if (position == 19) {
+            recipientCargoEditText = firstEditText;
+            recipientTntEditText = secondEditText;
+            return;
+        }
+        if (position == 20) {
+            recipientFedexEditText = firstEditText;
+            recipientCompanyEditText = secondEditText;
+            return;
+        }
+        if (position == 24) {
+            payerEmailEditText = firstEditText;
+            payerFirstNameEditText = secondEditText;
+            return;
+        }
+        if (position == 25) {
+            payerLastNameEditText = firstEditText;
+            payerMiddleNameEditText = secondEditText;
+            return;
+        }
+        if (position == 28) {
+            payerZipEditText = firstEditText;
+            payerPhoneEditText = secondEditText;
+            return;
+        }
+        if (position == 29) {
+            //discount
+            discountEditText = firstEditText;
+            return;
+        }
+        if (position == 31) {
+            //payerCargo
+            payerCargoEditText = firstEditText;
+            return;
+        }
+        if (position == 32) {
+            payerTntEditText = firstEditText;
+            payerTntTaxIdEditText = secondEditText;
+            return;
+        }
+        if (position == 33) {
+            payerFedexEditText = firstEditText;
+            payerFedexTaxIdEditText = secondEditText;
+            return;
+        }
+        if (position == 36) {
+            payerInnEditText = firstEditText;
+            payerCompanyEditText = secondEditText;
+            return;
+        }
+        if (position == 37) {
+            checkingAccountEditText = firstEditText;
+            bankEditText = secondEditText;
+            return;
+        }
+        if (position == 38) {
+            registrationCodeEditText = firstEditText;
+            mfoEditText = secondEditText;
+        }
+        if (position == 39) {
+            //payer oked
+            okedEditText = firstEditText;
+        }
+    }
+
+    @Override
     public void onSenderSignatureClicked() {
         startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_SENDER_SIGNATURE);
     }
@@ -1600,243 +1691,33 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
 
     @Override
     public void afterFirstEditTextChanged(final int position, final CharSequence editable) {
-        switch (position) {
-            case 1: {
-                //courierId
-                itemList.get(1).firstValue = editable.toString();
-                break;
-            }
-            case 4: {
-                //senderEmail
-                final String senderEmail = editable.toString();
-                itemList.get(4).firstValue = senderEmail;
+        if (position == 4) {
+            //senderEmail
+            final String senderEmail = editable.toString();
+            itemList.get(4).firstValue = senderEmail;
 
-                if (createInvoiceViewModel != null) {
-                    createInvoiceViewModel.setSenderEmail(senderEmail);
-                }
-                break;
-            }
-            case 5: {
-                //senderFirstName
-                itemList.get(5).firstValue = editable.toString();
-            }
-            case 6: {
-                //senderMiddleName
-                itemList.get(6).firstValue = editable.toString();
-                break;
-            }
-            case 7: {
-                //senderAddress
-                itemList.get(7).firstValue = editable.toString();
-                break;
-            }
-            case 9: {
-                //senderZip
-                itemList.get(9).firstValue = editable.toString();
-                break;
-            }
-            case 10: {
-                //senderTnt
-                itemList.get(10).firstValue = editable.toString();
-                break;
-            }
-            case 14: {
-                //recipientEmail
-                itemList.get(14).firstValue = editable.toString();
-                break;
-            }
-            case 15: {
-                //recipientLastName
-                itemList.get(15).firstValue = editable.toString();
-                break;
-            }
-            case 16: {
-                //recipientAddress
-                itemList.get(16).firstValue = editable.toString();
-                break;
-            }
-            case 18: {
-                //recipientZip
-                itemList.get(18).firstValue = editable.toString();
-                break;
-            }
-            case 19: {
-                //recipientCargo
-                itemList.get(19).firstValue = editable.toString();
-                break;
-            }
-            case 20: {
-                //recipientFedex
-                itemList.get(20).firstValue = editable.toString();
-                break;
-            }
-            case 24: {
-                //payerEmail
-                itemList.get(24).firstValue = editable.toString();
-                break;
-            }
-            case 25: {
-                //payerLastName
-                itemList.get(25).firstValue = editable.toString();
-                break;
-            }
-            case 26: {
-                //payerAddress
-                itemList.get(26).firstValue = editable.toString();
-                break;
-            }
-            case 28: {
-                //payerZip
-                itemList.get(28).firstValue = editable.toString();
-                break;
-            }
-            case 29: {
-                //discount
-                itemList.get(29).firstValue = editable.toString();
-                break;
-            }
-            case 31: {
-                //payerCargostar
-                itemList.get(31).firstValue = editable.toString();
-                break;
-            }
-            case 32: {
-                //payerTnt
-                itemList.get(32).firstValue = editable.toString();
-                break;
-            }
-            case 33: {
-                //payerFedex
-                itemList.get(33).firstValue = editable.toString();
-                break;
-            }
-            case 36: {
-                //payerInn
-                itemList.get(36).firstValue = editable.toString();
-                break;
-            }
-            case 37: {
-                //checkingAccount
-                itemList.get(37).firstValue = editable.toString();
-                break;
-            }
-            case 38: {
-                //registrationCode
-                itemList.get(38).firstValue = editable.toString();
-                break;
-            }
-            case 39: {
-                //oked
-                itemList.get(39).firstValue = editable.toString();
-                break;
+            if (createInvoiceViewModel != null) {
+                createInvoiceViewModel.setSenderEmail(senderEmail);
             }
         }
     }
 
     @Override
     public void afterSecondEditTextChanged(final int position, final CharSequence editable) {
-        switch (position) {
-            case 4: {
-                //senderSignature
-                itemList.get(4).secondValue = editable.toString();
-                break;
+        if (position == 36) {
+            //payerCompanyName
+            itemList.get(36).secondValue = editable.toString();
+            if (TextUtils.isEmpty(itemList.get(36).secondValue)) {
+                cashRadioBtn.setVisibility(View.VISIBLE);
+                terminalRadioBtn.setVisibility(View.VISIBLE);
+                transferRadioBtn.setVisibility(View.INVISIBLE);
+                corporateRadioBtn.setVisibility(View.INVISIBLE);
             }
-            case 5: {
-                //senderLastName
-                itemList.get(5).secondValue = editable.toString();
-                break;
-            }
-            case 6: {
-                //senderPhone
-                itemList.get(6).secondValue = editable.toString();
-                break;
-            }
-            case 9: {
-                //senderCompanyName
-                itemList.get(9).secondValue = editable.toString();
-                break;
-            }
-            case 10: {
-                //senderFedex
-                itemList.get(10).secondValue = editable.toString();
-                break;
-            }
-            case 14: {
-                //recipientFirstName
-                itemList.get(14).secondValue = editable.toString();
-                break;
-            }
-            case 15: {
-                //recipientMiddleName
-                itemList.get(15).secondValue = editable.toString();
-                break;
-            }
-            case 18: {
-                //recipientPhone
-                itemList.get(18).secondValue = editable.toString();
-                break;
-            }
-            case 19: {
-                //recipientTnt
-                itemList.get(19).secondValue = editable.toString();
-                break;
-            }
-            case 20: {
-                //recipientCompanyName
-                itemList.get(20).secondValue = editable.toString();
-                break;
-            }
-            case 24: {
-                //payerFirstName
-                itemList.get(24).secondValue = editable.toString();
-                break;
-            }
-            case 25: {
-                //payerMiddleName
-                itemList.get(25).secondValue = editable.toString();
-                break;
-            }
-            case 28: {
-                //payerPhone
-                itemList.get(28).secondValue = editable.toString();
-                break;
-            }
-            case 32: {
-                //payerTntTaxId
-                itemList.get(32).secondValue = editable.toString();
-                break;
-            }
-            case 33: {
-                //payerFedexTaxId
-                itemList.get(33).secondValue = editable.toString();
-                break;
-            }
-            case 36: {
-                //payerCompanyName
-                itemList.get(36).secondValue = editable.toString();
-                if (TextUtils.isEmpty(itemList.get(36).secondValue)) {
-                    cashRadioBtn.setVisibility(View.VISIBLE);
-                    terminalRadioBtn.setVisibility(View.VISIBLE);
-                    transferRadioBtn.setVisibility(View.INVISIBLE);
-                    corporateRadioBtn.setVisibility(View.INVISIBLE);
-                }
-                else {
-                    cashRadioBtn.setVisibility(View.INVISIBLE);
-                    terminalRadioBtn.setVisibility(View.INVISIBLE);
-                    transferRadioBtn.setVisibility(View.VISIBLE);
-                    corporateRadioBtn.setVisibility(View.VISIBLE);
-                }
-                break;
-            }
-            case 37: {
-                //bank
-                itemList.get(37).secondValue = editable.toString();
-                break;
-            }
-            case 38: {
-                //mfo
-                itemList.get(38).secondValue = editable.toString();
-                break;
+            else {
+                cashRadioBtn.setVisibility(View.INVISIBLE);
+                terminalRadioBtn.setVisibility(View.INVISIBLE);
+                transferRadioBtn.setVisibility(View.VISIBLE);
+                corporateRadioBtn.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -1866,7 +1747,6 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
                 return;
             }
             if (resultCode == RESULT_OK && data != null) {
-                Log.i(TAG, "onActivityResult: " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
                 itemList.get(4).secondValue = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
                 adapter.notifyItemChanged(4);
             }
@@ -1892,101 +1772,84 @@ public class CreateInvoiceActivity extends AppCompatActivity implements CreateIn
         }
     }
 
-    private void updateRecipientData(final AddressBook entry) {
-        if (entry != null) {
-//            itemList.get(14).firstValue = entry.getEmail();
-//            itemList.get(14).secondValue = entry.getFirstName();
-//            itemList.get(15).firstValue = entry.getLastName();
-//            itemList.get(15).secondValue = entry.getMiddleName();
-//            itemList.get(16).firstValue = entry.getAddress();
-//            itemList.get(16).secondValue = entry.getCountryId();
-//            itemList.get(17).firstValue = entry.getRegionId();
-//            itemList.get(17).firstValue = entry.getCityId();
-//            itemList.get(18).firstValue = entry.getZip();
-//            itemList.get(18).secondValue = entry.getPhone();
-//            itemList.get(19).firstValue = entry.getCargostarAccountNumber();
-//            itemList.get(19).secondValue = entry.getTntAccountNumber();
-//            itemList.get(20).firstValue = entry.getFedexAccountNumber();
-//            itemList.get(20).secondValue = entry.getCompany();
+    private void updateSenderData(final Customer sender) {
+        if (sender != null) {
+            requestsViewModel.setSenderCountryId(sender.getCountryId());
+            requestsViewModel.setSenderRegionId(sender.getRegionId());
+            requestsViewModel.setSenderCityId(sender.getCityId());
 
-            /* sender data */
-            itemList.set(14, new CreateInvoiceData(getString(R.string.email), getString(R.string.first_name), entry.getEmail(), entry.getFirstName(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_TEXT, true, true));
-            itemList.set(15, new CreateInvoiceData(getString(R.string.last_name), getString(R.string.middle_name), entry.getLastName(), entry.getMiddleName(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-            itemList.set(16, new CreateInvoiceData(getString(R.string.delivery_address), getString(R.string.country), entry.getAddress(), null,
-                    TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, -1, true, true));
-            itemList.set(18, new CreateInvoiceData(getString(R.string.post_index), getString(R.string.phone_number), entry.getZip(), entry.getPhone(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_PHONE, true, true));
+            itemList.get(4).firstValue = sender.getEmail();
+            itemList.get(4).secondValue = sender.getSignatureUrl();
+            itemList.get(5).firstValue = sender.getFirstName();
+            itemList.get(5).secondValue = sender.getLastName();
+            itemList.get(6).firstValue = sender.getMiddleName();
+            itemList.get(6).secondValue = sender.getPhone();
+            itemList.get(7).firstValue = sender.getAddress();
+            itemList.get(7).secondValue = String.valueOf(sender.getCountryId());
+            itemList.get(8).firstValue = String.valueOf(sender.getRegionId());
+            itemList.get(8).secondValue = String.valueOf(sender.getCityId());
+            itemList.get(9).firstValue = sender.getZip();
+            itemList.get(9).secondValue = sender.getCompany();
+            itemList.get(10).firstValue = sender.getTntAccountNumber();
+            itemList.get(10).secondValue = sender.getFedexAccountNumber();
 
-            itemList.set(19, new CreateInvoiceData(getString(R.string.cargostar_account_number), getString(R.string.tnt_account_number),
-                    entry.getCargostarAccountNumber(), entry.getTntAccountNumber(), TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_NUMBER, -1, true, false));
-            itemList.set(20, new CreateInvoiceData(getString(R.string.fedex_account_number), getString(R.string.company_name),
-                    entry.getFedexAccountNumber(), entry.getCompany(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-
-            adapter.notifyItemRangeChanged(14, 3);
-            adapter.notifyItemChanged(18);
-            adapter.notifyItemRangeChanged(19, 2);
+            adapter.notifyItemRangeChanged(4, 7);
         }
     }
 
-    private void updatePayerData(final AddressBook entry) {
-        if (entry != null) {
-//            itemList.get(24).firstValue = entry.getEmail();
-//            itemList.get(24).secondValue = entry.getFirstName();
-//            itemList.get(25).firstValue = entry.getLastName();
-//            itemList.get(25).secondValue = entry.getMiddleName();
-//            itemList.get(26).firstValue = entry.getAddress();
-//            itemList.get(26).secondValue = entry.getCountryId();
-//            itemList.get(27).firstValue = entry.getRegionId();
-//            itemList.get(27).firstValue = entry.getCityId();
-//            itemList.get(28).firstValue = entry.getZip();
-//            itemList.get(28).secondValue = entry.getPhone();
-//            itemList.get(31).firstValue = entry.getCargostarAccountNumber();
-//            itemList.get(32).firstValue = entry.getTntAccountNumber();
-//            itemList.get(33).firstValue = entry.getFedexAccountNumber();
-//
-//            itemList.get(36).firstValue = entry.getInn();
-//            itemList.get(36).secondValue = entry.getCompany();
-//            itemList.get(37).firstValue = entry.getCheckingAccount();
-//            itemList.get(37).secondValue = entry.getBank();
-//            itemList.get(38).firstValue = entry.getRegistrationCode();
-//            itemList.get(38).secondValue = entry.getMfo();
-//            itemList.get(39).firstValue = entry.getOked();
+    private void updateRecipientData(final AddressBook recipient) {
+        if (recipient != null) {
+            requestsViewModel.setRecipientCountryId(recipient.getCountryId());
+            requestsViewModel.setRecipientRegionId(recipient.getRegionId());
+            requestsViewModel.setRecipientCityId(recipient.getCityId());
 
-            /* payer data */
-            itemList.set(24, new CreateInvoiceData(getString(R.string.email), getString(R.string.first_name), entry.getEmail(), entry.getFirstName(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_EMAIL, INPUT_TYPE_TEXT, true, true));
-            itemList.set(25, new CreateInvoiceData(getString(R.string.last_name), getString(R.string.middle_name), entry.getLastName(), entry.getMiddleName(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_TEXT, INPUT_TYPE_TEXT, true, true));
-            itemList.set(26, new CreateInvoiceData(getString(R.string.payer_address), getString(R.string.country), entry.getAddress(), null,
-                    TYPE_EDIT_TEXT_SPINNER, INPUT_TYPE_TEXT, -1, true, true));
-            itemList.set(28, new CreateInvoiceData(getString(R.string.post_index), getString(R.string.phone_number), entry.getZip(), entry.getPhone(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_PHONE, true, true));
+            itemList.get(14).firstValue = recipient.getEmail();
+            itemList.get(14).secondValue = recipient.getFirstName();
+            itemList.get(15).firstValue = recipient.getLastName();
+            itemList.get(15).secondValue = recipient.getMiddleName();
+            itemList.get(16).firstValue = recipient.getAddress();
+            itemList.get(16).secondValue = String.valueOf(recipient.getCountryId());
+            itemList.get(17).firstValue = String.valueOf(recipient.getRegionId());
+            itemList.get(17).secondValue = String.valueOf(recipient.getCityId());
+            itemList.get(18).firstValue = recipient.getZip();
+            itemList.get(18).secondValue = recipient.getPhone();
+            itemList.get(19).firstValue = recipient.getCargostarAccountNumber();
+            itemList.get(19).secondValue = recipient.getTntAccountNumber();
+            itemList.get(20).firstValue = recipient.getFedexAccountNumber();
+            itemList.get(20).secondValue = recipient.getCompany();
 
-            /* account numbers */
-            itemList.set(31, new CreateInvoiceData(getString(R.string.cargostar_account_number), null, entry.getCargostarAccountNumber(), null,
-                    TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_NUMBER, -1, true, false));
-            itemList.set(32, new CreateInvoiceData(getString(R.string.tnt_account_number), getString(R.string.tax_id), entry.getTntAccountNumber(), null,
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-            itemList.set(33, new CreateInvoiceData(getString(R.string.fedex_account_number), getString(R.string.tax_id), entry.getFedexAccountNumber(), null,
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
+            adapter.notifyItemRangeChanged(14, 7);
+        }
+    }
 
-            /* payment data */
-            itemList.set(36, new CreateInvoiceData(getString(R.string.INN), getString(R.string.company_name),entry.getInn(), entry.getCompany(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
-            itemList.set(37, new CreateInvoiceData(getString(R.string.checking_account), getString(R.string.bank),entry.getCheckingAccount(),entry.getBank(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_TEXT, true, true));
-            itemList.set(38, new CreateInvoiceData(getString(R.string.payer_registration_code), getString(R.string.mfo), entry.getRegistrationCode(), entry.getMfo(),
-                    TYPE_TWO_EDIT_TEXTS, INPUT_TYPE_NUMBER, INPUT_TYPE_NUMBER, true, true));
-            itemList.set(39, new CreateInvoiceData(getString(R.string.oked), null, entry.getOked(), null,
-                    TYPE_SINGLE_EDIT_TEXT, INPUT_TYPE_NUMBER, -1, true, false));
+    private void updatePayerData(final AddressBook payer) {
+        if (payer != null) {
+            requestsViewModel.setPayerCountryId(payer.getCountryId());
+            requestsViewModel.setPayerRegionId(payer.getRegionId());
+            requestsViewModel.setPayerCityId(payer.getCityId());
 
-            adapter.notifyItemRangeChanged(24, 3);
-            adapter.notifyItemChanged(28);
-            adapter.notifyItemRangeChanged(31, 3);
-            adapter.notifyItemRangeChanged(36, 4);
+            itemList.get(24).firstValue = payer.getEmail();
+            itemList.get(24).secondValue = payer.getFirstName();
+            itemList.get(25).firstValue = payer.getLastName();
+            itemList.get(25).secondValue = payer.getMiddleName();
+            itemList.get(26).firstValue = payer.getAddress();
+            itemList.get(26).secondValue = String.valueOf(payer.getCountryId());
+            itemList.get(27).firstValue = String.valueOf(payer.getRegionId());
+            itemList.get(27).secondValue = String.valueOf(payer.getCityId());
+            itemList.get(28).firstValue = payer.getZip();
+            itemList.get(28).secondValue = payer.getPhone();
+            itemList.get(31).firstValue = payer.getCargostarAccountNumber();
+            itemList.get(32).firstValue = payer.getTntAccountNumber();
+            itemList.get(33).firstValue = payer.getFedexAccountNumber();
+            itemList.get(36).firstValue = payer.getInn();
+            itemList.get(36).secondValue = payer.getCompany();
+            itemList.get(37).firstValue = payer.getCheckingAccount();
+            itemList.get(37).secondValue = payer.getBank();
+            itemList.get(38).firstValue = payer.getRegistrationCode();
+            itemList.get(38).secondValue = payer.getMfo();
+            itemList.get(39).firstValue = payer.getOked();
+
+            this.adapter.notifyItemRangeChanged(24, 16);
         }
     }
 

@@ -1,6 +1,8 @@
 package uz.alexits.cargostar.view.fragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -35,7 +37,7 @@ import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
 import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.view.callback.TransportationCallback;
+import uz.alexits.cargostar.view.activity.SignatureActivity;
 import uz.alexits.cargostar.viewmodel.TransportationStatusViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -154,46 +156,21 @@ public class TransportationStatusFragment extends Fragment {
                 Toast.makeText(context, "Идет синхронинзация данных", Toast.LENGTH_SHORT).show();
                 return;
             }
-            final UUID updateTransportationStatusId = SyncWorkRequest.updateTransportationStatus(context,
-                    currentTransportation.getId(), nextStatus.getId(), nextPoint);
+            if (currentTransportation.getTransportationStatusId() == deliveredTransportationStatus.getId()) {
+                startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_SENDER_SIGNATURE);
+                return;
+            }
+            updateTransportationStatus(context, transportationId, nextStatus.getId(), nextPoint);
 
-            WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateTransportationStatusId).observe(getViewLifecycleOwner(), workInfo -> {
-                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                    final Drawable drawable = checkImageView.getDrawable();
-                    checkImageView.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.INVISIBLE);
-
-                    if (drawable instanceof AnimatedVectorDrawableCompat) {
-                        vectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
-                        vectorDrawableCompat.start();
-                        return;
-                    }
-                    if (drawable instanceof AnimatedVectorDrawable) {
-                        vectorDrawable = (AnimatedVectorDrawable) drawable;
-                        vectorDrawable.start();
-                    }
-                    return;
-                }
-                if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    checkImageView.setVisibility(View.INVISIBLE);
-
-                    Toast.makeText(context, "Произошла ошибка при обновлении статуса", Toast.LENGTH_SHORT).show();
-
-                    return;
-                }
-                progressBar.setVisibility(View.VISIBLE);
-                checkImageView.setVisibility(View.INVISIBLE);
-                submitStatusBtn.setEnabled(false);
-            });
         });
 
         transportationItem.setOnClickListener(v -> {
             final TransportationStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action =
                     TransportationStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
-            action.setRequestOrParcel(IntentConstants.INTENT_TRANSPORTATION);
             action.setRequestId(requestId);
             action.setInvoiceId(invoiceId);
+            action.setIsPublic(false);
+            action.setIsRequest(false);
             action.setCourierId(courierId);
             action.setProviderId(providerId);
             action.setClientId(senderId);
@@ -357,6 +334,106 @@ public class TransportationStatusFragment extends Fragment {
                 comment = currentRequest.getComment();
                 consignmentQuantity = currentRequest.getConsignmentQuantity();
             }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == IntentConstants.REQUEST_RECIPIENT_SIGNATURE) {
+            if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(context, "Отправьте подпись получателя", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                final String recipientSignatureFilePath = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                updateStatusDelivered(context, invoiceId, recipientSignatureFilePath, transportationId, nextStatus.getId(), nextPoint);
+                return;
+            }
+            Toast.makeText(context, "Произошла ошибка", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateTransportationStatus(@NonNull final Context context,
+                                            final long transportationId,
+                                            final long nextStatusId,
+                                            final long nextPointId) {
+        final UUID updateTransportationStatusId = SyncWorkRequest.updateTransportationStatus(context,
+                transportationId, nextStatusId, nextPointId);
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateTransportationStatusId).observe(getViewLifecycleOwner(), workInfo -> {
+            if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                final Drawable drawable = checkImageView.getDrawable();
+                checkImageView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+
+                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                    vectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
+                    vectorDrawableCompat.start();
+                    return;
+                }
+                if (drawable instanceof AnimatedVectorDrawable) {
+                    vectorDrawable = (AnimatedVectorDrawable) drawable;
+                    vectorDrawable.start();
+                }
+                return;
+            }
+            if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                progressBar.setVisibility(View.INVISIBLE);
+                checkImageView.setVisibility(View.INVISIBLE);
+
+                Toast.makeText(context, "Произошла ошибка при обновлении статуса", Toast.LENGTH_SHORT).show();
+
+                return;
+            }
+            progressBar.setVisibility(View.VISIBLE);
+            checkImageView.setVisibility(View.INVISIBLE);
+            submitStatusBtn.setEnabled(false);
+        });
+    }
+
+    private void updateStatusDelivered(@NonNull final Context context,
+                                       final long invoiceId,
+                                       final String recipientSignatureFilePath,
+                                       final long transportationId,
+                                       final long nextStatusId,
+                                       final long nextPointId) {
+        final UUID sendSignatureAndUpdateDelivered = SyncWorkRequest.sendRecipientSignatureAndUpdateStatusDelivered(
+                context,
+                invoiceId,
+                recipientSignatureFilePath,
+                transportationId,
+                nextStatusId,
+                nextPointId);
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(sendSignatureAndUpdateDelivered).observe(getViewLifecycleOwner(), workInfo -> {
+            if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                final Drawable drawable = checkImageView.getDrawable();
+                checkImageView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+
+                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                    vectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
+                    vectorDrawableCompat.start();
+                    return;
+                }
+                if (drawable instanceof AnimatedVectorDrawable) {
+                    vectorDrawable = (AnimatedVectorDrawable) drawable;
+                    vectorDrawable.start();
+                }
+                return;
+            }
+            if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                progressBar.setVisibility(View.INVISIBLE);
+                checkImageView.setVisibility(View.INVISIBLE);
+
+                Toast.makeText(context, "Произошла ошибка при обновлении статуса", Toast.LENGTH_SHORT).show();
+
+                return;
+            }
+            progressBar.setVisibility(View.VISIBLE);
+            checkImageView.setVisibility(View.INVISIBLE);
+            submitStatusBtn.setEnabled(false);
         });
     }
 

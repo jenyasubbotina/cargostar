@@ -213,7 +213,7 @@ public class SendInvoiceWorker extends Worker {
 
         /* sender data */
         if (senderSignature != null && !TextUtils.isEmpty(senderSignature)) {
-            createInvoiceParams.setSenderSignature(isSenderSignatureLocal ? ImageSerializer.fileToBase64(senderSignature) : senderSignature);
+            createInvoiceParams.setSenderSignature(isSenderSignatureLocal ? senderSignature : ImageSerializer.fileToBase64(senderSignature));
         }
         createInvoiceParams.setSenderEmail(senderEmail);
         createInvoiceParams.setSenderTntAccountNumber(senderTnt);

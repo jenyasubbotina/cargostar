@@ -24,13 +24,18 @@ import uz.alexits.cargostar.model.location.Region;
         @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
         @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
         indices = {
-        @Index(value = {"country_id"}), @Index(value = {"region_id"}), @Index(value = {"city_id"})})
+        @Index(value = {"country_id"}), @Index(value = {"region_id"}), @Index(value = {"city_id"}), @Index(value = "email")})
 public abstract class User {
     @Expose
     @SerializedName("id")
     @PrimaryKey
     @ColumnInfo(name = "id")
     protected final long id;
+
+    @Expose
+    @SerializedName("user_id")
+    @ColumnInfo(name = "user_id")
+    protected final long userId;
 
     @Expose
     @SerializedName("country_id")
@@ -103,6 +108,7 @@ public abstract class User {
     @Nullable protected Date updatedAt;
 
     public User(final long id,
+                final long userId,
                 final Long countryId,
                 final Long regionId,
                 final Long cityId,
@@ -118,6 +124,7 @@ public abstract class User {
                 @Nullable final Date createdAt,
                 @Nullable final Date updatedAt) {
         this.id = id;
+        this.userId = userId;
         this.countryId = countryId;
         this.regionId = regionId;
         this.cityId = cityId;
@@ -233,11 +240,16 @@ public abstract class User {
         this.email = email;
     }
 
+    public long getUserId() {
+        return userId;
+    }
+
     @NonNull
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", userId=" + userId +
                 ", countryId=" + countryId +
                 ", regionId=" + regionId +
                 ", cityId=" + cityId +

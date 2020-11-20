@@ -30,9 +30,19 @@ public class Consignment {
     private final Long requestId;
 
     @Expose
+    @SerializedName("packaging_id")
+    @ColumnInfo(name = "packaging_id")
+    private final Long packagingId;
+
+    @Expose
+    @SerializedName("pack")
+    @ColumnInfo(name = "dimensions")
+    private final String dimensions;
+
+    @Expose
     @SerializedName("packaging-type")
     @ColumnInfo(name = "packaging_type")
-    private final String packagingType;
+    private String packagingType;
 
     @Expose
     @SerializedName("name")
@@ -69,17 +79,13 @@ public class Consignment {
     @ColumnInfo(name = "weight", defaultValue = "-1")
     private final double weight;
 
-    @Expose
-    @SerializedName("dimensions")
-    @ColumnInfo(name = "dimensions")
-    private final double dimensions;
-
     @SerializedName("qr")
     @ColumnInfo(name = "qr")
     private String qr;
 
     public Consignment(final long id,
                        final Long requestId,
+                       final Long packagingId,
                        final String packagingType,
                        final String name,
                        final String description,
@@ -88,10 +94,11 @@ public class Consignment {
                        final double width,
                        final double height,
                        final double weight,
-                       final double dimensions,
+                       final String dimensions,
                        final String qr) {
         this.id = id;
         this.requestId = requestId;
+        this.packagingId = packagingId;
         this.packagingType = packagingType;
         this.name = name;
         this.description = description;
@@ -144,7 +151,7 @@ public class Consignment {
         return weight;
     }
 
-    public double getDimensions() {
+    public String getDimensions() {
         return dimensions;
     }
 
@@ -154,6 +161,14 @@ public class Consignment {
 
     public void setQr(String qr) {
         this.qr = qr;
+    }
+
+    public Long getPackagingId() {
+        return packagingId;
+    }
+
+    public void setPackagingType(String packagingType) {
+        this.packagingType = packagingType;
     }
 
     @NonNull

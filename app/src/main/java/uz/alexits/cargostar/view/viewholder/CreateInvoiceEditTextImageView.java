@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import javax.security.auth.callback.Callback;
+
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 
@@ -25,7 +27,6 @@ public class CreateInvoiceEditTextImageView extends RecyclerView.ViewHolder {
     public ImageView secondResultImageView;
 
     private TextWatcher firstTextWatcher;
-    private TextWatcher secondTextWatcher;
 
     public CreateInvoiceEditTextImageView(@NonNull View itemView) {
         super(itemView);
@@ -44,7 +45,7 @@ public class CreateInvoiceEditTextImageView extends RecyclerView.ViewHolder {
         });
     }
 
-    public void bindWatchers(final int position, final CreateInvoiceCallback callback) {
+    public void bindWatcherForFirstEditText(final int position, final CreateInvoiceCallback callback) {
         firstTextWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -53,38 +54,22 @@ public class CreateInvoiceEditTextImageView extends RecyclerView.ViewHolder {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                callback.afterFirstEditTextChanged(position, s);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
-            }
-        };
-
-        secondTextWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                callback.afterSecondEditTextChanged(position, charSequence);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
+                callback.afterFirstEditTextChanged(position, s);
             }
         };
         firstEditText.addTextChangedListener(firstTextWatcher);
-        secondEditText.addTextChangedListener(secondTextWatcher);
+    }
+
+    public void bindEditTextImageView(final int position, final CreateInvoiceCallback callback) {
+        callback.bindEditTextImageView(position, firstEditText, secondEditText);
     }
 
     public void unbindWatchers() {
         firstEditText.removeTextChangedListener(firstTextWatcher);
-        secondEditText.removeTextChangedListener(secondTextWatcher);
     }
 
     public void unbindImageViews() {

@@ -73,20 +73,6 @@ public class SignatureActivity extends AppCompatActivity {
         return b;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_CANCELED) {
-            Log.i(TAG, "onActivityResult(): canceled");
-            return;
-        }
-        if (resultCode == RESULT_OK && data != null) {
-            if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
-                Log.i(TAG, "onActivityResult(): " + data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
-            }
-        }
-    }
 
     private static final String TAG = SignatureActivity.class.toString();
 }

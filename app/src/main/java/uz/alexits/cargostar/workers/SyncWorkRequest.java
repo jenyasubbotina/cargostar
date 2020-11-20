@@ -1062,6 +1062,60 @@ public class SyncWorkRequest {
         return fetchTransportationRouteRequest.getId();
     }
 
+    public static UUID sendRecipientSignatureAndUpdateStatusDelivered(@NonNull final Context context,
+                                                                      final long invoiceId,
+                                                                      final String recipientSignature,
+                                                                      final long transportationId,
+                                                                      final long transportationStatusId,
+                                                                      final long transitPointId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data sendSignatureData = new Data.Builder()
+                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
+                .putString(Constants.KEY_RECIPIENT_SIGNATURE, recipientSignature)
+                .build();
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
+                .putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportationStatusId)
+                .putLong(Constants.KEY_TRANSIT_POINT_ID, transitPointId)
+                .build();
+
+        final OneTimeWorkRequest sendRecipientSignatureRequest = new OneTimeWorkRequest.Builder(SendRecipientSignatureWorker.class)
+                .setConstraints(constraints)
+                .setInputData(sendSignatureData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest updateTransportationStatusRequest = new OneTimeWorkRequest.Builder(UpdateTransportationStatusWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchTransportationDataRequest = new OneTimeWorkRequest.Builder(FetchTransportationDataWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchTransportationRouteRequest = new OneTimeWorkRequest.Builder(FetchTransportationRouteWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context)
+                .beginWith(sendRecipientSignatureRequest)
+                .then(updateTransportationStatusRequest)
+                .then(fetchTransportationDataRequest)
+                .then(fetchTransportationRouteRequest)
+                .enqueue();
+
+        return fetchTransportationRouteRequest.getId();
+    }
+
+
     /* Cargo */
     public static UUID fetchCargoList(@NonNull final Context context, final Long requestId) {
         final Constraints constraints = new Constraints.Builder()

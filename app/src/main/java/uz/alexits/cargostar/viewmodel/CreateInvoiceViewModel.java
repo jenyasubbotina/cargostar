@@ -10,6 +10,7 @@ import androidx.lifecycle.Transformations;
 
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.database.cache.Repository;
+import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
@@ -38,7 +39,7 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
 
     /* address book */
     private final MutableLiveData<String> senderEmail;
-    private final MutableLiveData<Long> senderId;
+    private final MutableLiveData<Long> senderUserId;
 
     public CreateInvoiceViewModel(@NonNull Application application) {
         super(application);
@@ -59,7 +60,7 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
         this.payerCityId = new MutableLiveData<>();
 
         this.senderEmail = new MutableLiveData<>();
-        this.senderId = new MutableLiveData<>();
+        this.senderUserId = new MutableLiveData<>();
     }
 
     /* location data */
@@ -137,15 +138,19 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<AddressBook>> getSenderAddressBook() {
-        return Transformations.switchMap(senderId, repository::selectAddressBookBySenderId);
+        return Transformations.switchMap(senderUserId, repository::selectAddressBookBySenderId);
     }
 
-    public LiveData<Long> getSenderId() {
-        return Transformations.switchMap(senderEmail, repository::selectSenderIdByEmail);
+    public LiveData<Long> getSenderUserId() {
+        return Transformations.switchMap(senderEmail, repository::selectSenderUserIdByEmail);
     }
 
-    public void setSenderId(final long senderId) {
-        this.senderId.setValue(senderId);
+    public void setSenderUserId(final long senderUserId) {
+        this.senderUserId.setValue(senderUserId);
+    }
+
+    public LiveData<Customer> getSenderData() {
+        return Transformations.switchMap(senderEmail, repository::selectSenderByEmail);
     }
 
     public void setSenderEmail(final String email) {

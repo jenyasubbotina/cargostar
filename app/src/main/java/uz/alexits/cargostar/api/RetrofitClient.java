@@ -11,6 +11,7 @@ import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceResponse;
+import uz.alexits.cargostar.api.params.RecipientSignatureParams;
 import uz.alexits.cargostar.api.params.SignInParams;
 import uz.alexits.cargostar.api.params.TransportationStatusParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
@@ -257,6 +258,10 @@ public class RetrofitClient {
 
     public Response<List<Invoice>> getInvoiceList(final int perPage) throws IOException {
         return apiService.getInvoiceList(perPage).execute();
+    }
+
+    public Response<RecipientSignatureParams> sendRecipientSignature(final long invoiceId, final String recipientSignature) throws IOException {
+        return apiService.sendRecipientSignature(new RecipientSignatureParams(invoiceId, recipientSignature)).execute();
     }
 
     /* Transportation */

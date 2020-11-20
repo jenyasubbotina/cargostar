@@ -9,11 +9,9 @@ public class CreateInvoiceData {
     public static final int TYPE_STROKE = 4;
     public static final int TYPE_SINGLE_EDIT_TEXT = 5;
 
-    public static final int TYPE_TWO_IMAGE_EDIT_TEXTS = 6;
     public static final int TYPE_EDIT_TEXT_IMAGE_VIEW = 7;
 
     public static final int TYPE_BUTTON = 9;
-//    public static final int TYPE_CALCULATOR_ITEM = 10;
     public static final int TYPE_SINGLE_SPINNER = 11;
     public static final int TYPE_TWO_SPINNERS = 14;
 

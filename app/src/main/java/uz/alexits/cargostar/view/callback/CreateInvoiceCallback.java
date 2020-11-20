@@ -3,6 +3,7 @@ package uz.alexits.cargostar.view.callback;
 import android.text.Editable;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -21,4 +22,8 @@ public interface CreateInvoiceCallback {
     void onSecondSpinnerItemSelected(final int position, final City city);
     void onBigSpinnerItemSelected(final int position, final Object entry);
     void onDeleteItemClicked(final int position);
+
+    void bindEditTextSpinner(final int position, final EditText editText);
+    void bindEditTextImageView(final int position, final EditText firstEditText, final EditText secondEditText);
+    void bindTwoEditTexts(final int position, final EditText firstEditText, final EditText secondEditText);
 }

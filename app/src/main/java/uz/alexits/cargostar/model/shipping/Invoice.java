@@ -91,9 +91,6 @@ public class Invoice {
     @ColumnInfo(name = "updated_at")
     private final Date updatedAt;
 
-    //todo: payment & payment_status
-
-
     public Invoice(final long id,
                    final String number,
                    final Long senderId,

@@ -5,6 +5,7 @@ import uz.alexits.cargostar.api.params.BindRequestParams;
 import uz.alexits.cargostar.api.params.CreateClientParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceResponse;
+import uz.alexits.cargostar.api.params.RecipientSignatureParams;
 import uz.alexits.cargostar.api.params.SignInParams;
 import uz.alexits.cargostar.api.params.TransportationStatusParams;
 import uz.alexits.cargostar.api.params.UpdateCourierParams;
@@ -167,6 +168,10 @@ public interface ApiService {
     @Headers("Content-Type: application/json; charset=utf-8;")
     @POST("transportation-status/create")
     Call<Transportation> updateTransportationStatus(@Body TransportationStatusParams transportationStatusParams);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @POST("")
+    Call<RecipientSignatureParams> sendRecipientSignature(@Body RecipientSignatureParams recipientSignatureParams);
 
     /* Cargo */
     @Headers("Content-Type: application/json; charset=utf-8;")

@@ -190,10 +190,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
             initParcels(inTransitCheckBox.isChecked(), onTheWayCheckBox.isChecked(), deliveredCheckBox.isChecked(), lostCheckBox.isChecked(), b);
         });
 
-        //default checkBox values
-//        inTransitCheckBox.setChecked(true);
-//        onTheWayCheckBox.setChecked(true);
-
         //main content views
         transitPointSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -234,11 +230,13 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                 fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
             }
         });
+
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
             }
         });
+
         courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));

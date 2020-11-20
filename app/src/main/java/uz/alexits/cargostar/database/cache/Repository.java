@@ -2,7 +2,6 @@ package uz.alexits.cargostar.database.cache;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
-import androidx.room.Query;
 
 import uz.alexits.cargostar.database.dao.ActorDao;
 import uz.alexits.cargostar.database.dao.InvoiceDao;
@@ -261,8 +260,12 @@ public class Repository {
         return actorDao.selectCustomer(clientId);
     }
 
-    public LiveData<Long> selectSenderIdByEmail(final String senderEmail) {
-        return actorDao.selectSenderIdByEmail(senderEmail);
+    public LiveData<Long> selectSenderUserIdByEmail(final String senderEmail) {
+        return actorDao.selectSenderUserIdByEmail(senderEmail);
+    }
+
+    public LiveData<Customer> selectSenderByEmail(final String email) {
+        return actorDao.selectSenderByEmail(email);
     }
 
     /*address book*/

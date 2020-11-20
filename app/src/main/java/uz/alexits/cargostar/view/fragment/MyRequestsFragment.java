@@ -231,7 +231,8 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
 
         final MyRequestsFragmentDirections.ActionMyBidsFragmentToParcelDataFragment action = MyRequestsFragmentDirections.actionMyBidsFragmentToParcelDataFragment();
         action.setRequestId(currentItem.getId());
-        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
+        action.setIsPublic(false);
+        action.setIsRequest(true);
         action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
         action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
         action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : -1L);

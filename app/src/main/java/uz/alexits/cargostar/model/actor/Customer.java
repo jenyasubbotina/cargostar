@@ -91,6 +91,7 @@ public class Customer extends User {
 
     @Ignore
     public Customer(final long id,
+                    final long userId,
                     final Long countryId,
                     final Long regionId,
                     final Long cityId,
@@ -105,24 +106,11 @@ public class Customer extends User {
                     final int status,
                     @Nullable final Date createdAt,
                     @Nullable final Date updatedAt) {
-        super(id,
-                countryId,
-                regionId,
-                cityId,
-                firstName,
-                middleName,
-                lastName,
-                phone,
-                email,
-                address,
-                geo,
-                zip,
-                status,
-                createdAt,
-                updatedAt);
+        super(id, userId, countryId, regionId, cityId, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
     }
 
     public Customer(final long id,
+                    final long userId,
                     final Long countryId,
                     final Long regionId,
                     final Long cityId,
@@ -152,8 +140,7 @@ public class Customer extends User {
                     @Nullable final String oked,
                     @Nullable final String checkingAccount,
                     @Nullable final String registrationCode) {
-        super(id, countryId, regionId, cityId, firstName, middleName,
-                lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
+        super(id, userId, countryId, regionId, cityId, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
         this.cargostarAccountNumber = cargostarAccountNumber;
         this.tntAccountNumber = tntAccountNumber;
         this.fedexAccountNumber = fedexAccountNumber;

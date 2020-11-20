@@ -243,7 +243,8 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
 
         final PublicRequestsFragmentDirections.ActionPublicBidsFragmentToParcelDataFragment action = PublicRequestsFragmentDirections.actionPublicBidsFragmentToParcelDataFragment();
         action.setRequestId(currentItem.getId());
-        action.setRequestOrParcel(IntentConstants.INTENT_REQUEST);
+        action.setIsPublic(true);
+        action.setIsRequest(true);
         action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
         action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
         action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : -1L);

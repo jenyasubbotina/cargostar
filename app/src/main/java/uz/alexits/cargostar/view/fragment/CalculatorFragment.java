@@ -913,12 +913,28 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         Log.i(TAG, "itemCount=" + calculatorAdapter.getItemCount());
     }
 
+    @Override
+    public void bindEditTextSpinner(int position, EditText editText) {
+        //do nothing
+    }
+
+    @Override
+    public void bindEditTextImageView(int position, EditText firstEditText, EditText secondEditText) {
+        //do nothing
+    }
+
+    @Override
+    public void bindTwoEditTexts(int position, EditText firstEditText, EditText secondEditText) {
+        //do nothing
+    }
+
     private void addCargoToInvoice() {
         final PackagingType packagingType = (PackagingType) packagingTypeSpinner.getSelectedItem();
         final String weight = weightEditText.getText().toString().trim();
         final String length = lengthEditText.getText().toString().trim();
         final String width = widthEditText.getText().toString().trim();
         final String height = heightEditText.getText().toString().trim();
+        final String dimensions = length + "x" + width + "x" + height;
 
         /* check for empty fields */
         if (packagingType == null) {
@@ -963,6 +979,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         consignmentList.add(new Consignment(
                 -1,
                 -1L,
+                packagingType.getId(),
                 packagingType.getName(),
                 null,
                 null,
@@ -971,7 +988,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 !TextUtils.isEmpty(width) ? Double.parseDouble(width) : 0,
                 !TextUtils.isEmpty(height) ? Double.parseDouble(height) : 0,
                 !TextUtils.isEmpty(weight) ? Double.parseDouble(weight) : 0,
-                -1,
+                dimensions,
                 null));
         calculatorAdapter.notifyItemInserted(consignmentList.size() - 1);
     }
@@ -1030,19 +1047,17 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         for (final ZoneSettings zoneSettings : selectedZoneSettingsList) {
             for (final Packaging packaging : tariffList) {
                 if (packaging.getId() == zoneSettings.getPackagingId()) {
-                    if (packaging != null) {
-                        final int volumex = packaging.getVolumex();
+                    final int volumex = packaging.getVolumex();
 
-                        if (volumex > 0) {
-                            final double volumexWeight = totalVolume / volumex;
+                    if (volumex > 0) {
+                        final double volumexWeight = totalVolume / volumex;
 
-                            if (volumexWeight > totalWeight) {
-                                totalWeight = volumexWeight;
-                            }
+                        if (volumexWeight > totalWeight) {
+                            totalWeight = volumexWeight;
                         }
-                        if (totalWeight > zoneSettings.getWeightFrom() && totalWeight <= zoneSettings.getWeightTo()) {
-                            zoneSettingsTariffMap.put(zoneSettings, packaging);
-                        }
+                    }
+                    if (totalWeight > zoneSettings.getWeightFrom() && totalWeight <= zoneSettings.getWeightTo()) {
+                        zoneSettingsTariffMap.put(zoneSettings, packaging);
                     }
                 }
             }

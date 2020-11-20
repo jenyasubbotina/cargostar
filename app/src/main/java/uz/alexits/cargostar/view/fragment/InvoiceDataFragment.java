@@ -106,10 +106,11 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
     //main content views
     private RecyclerView dataRecyclerView;
     private InvoiceDataAdapter adapter;
-    private ImageView editParcelImageView;
+    private ImageView editInvoiceImageView;
 
     private static long requestId = -1L;
-    private static int requestOrParcel = -1;
+    private static boolean isPublic = true;
+    private static boolean isRequest = true;
     private static long invoiceId = -1L;
     private static long providerId = -1L;
     private static long courierId = -1L;
@@ -147,7 +148,8 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         if (getArguments() != null) {
             //parcelId can be requestId
             requestId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRequestId();
-            requestOrParcel = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRequestOrParcel();
+            isPublic = InvoiceDataFragmentArgs.fromBundle(getArguments()).getIsPublic();
+            isRequest = InvoiceDataFragmentArgs.fromBundle(getArguments()).getIsRequest();
             invoiceId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getInvoiceId();
             senderId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getClientId();
             courierId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getCourierId();
@@ -161,10 +163,10 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             comment = InvoiceDataFragmentArgs.fromBundle(getArguments()).getComment();
             consignmentQuantity = InvoiceDataFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
 
-            if (invoiceId > 0 && senderId > 0 && requestOrParcel == IntentConstants.INTENT_REQUEST) {
+            if (invoiceId > 0 && senderId > 0 && isRequest) {
                 SyncWorkRequest.fetchInvoiceData(context, invoiceId, senderId);
             }
-            else if (invoiceId > 0 && requestOrParcel == IntentConstants.INTENT_TRANSPORTATION) {
+            else if (invoiceId > 0 && !isRequest) {
                 SyncWorkRequest.fetchInvoiceData(context, invoiceId);
             }
         }
@@ -190,7 +192,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         adapter = new InvoiceDataAdapter(context, this);
         dataRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         dataRecyclerView.setAdapter(adapter);
-        editParcelImageView = root.findViewById(R.id.edit_parcel_image_view);
+        editInvoiceImageView = root.findViewById(R.id.edit_parcel_image_view);
 
         initItemList();
 
@@ -536,14 +538,14 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
         /* consignment data */
         requestsViewModel.getConsignmentList().observe(getViewLifecycleOwner(), consignmentList -> {
-//            Log.i(TAG, "consignmentList: " + consignmentList);
             //for each cargo
             int i = 0;
             for (final Consignment consignment : consignmentList) {
+                consignment.setPackagingType(consignment.getPackagingId() != null ? String.valueOf(consignment.getPackagingId()) : null);
                 itemList.set(81 + i, new InvoiceData(getString(R.string.cargo_name), consignment.getName(), InvoiceData.TYPE_ITEM));
                 itemList.set(82 + i, new InvoiceData(getString(R.string.cargo_description), consignment.getDescription(), InvoiceData.TYPE_ITEM));
                 itemList.set(83 + i, new InvoiceData(getString(R.string.cargo_price), consignment.getCost(), InvoiceData.TYPE_ITEM));
-                itemList.set(84 + i, new InvoiceData(getString(R.string.package_type), consignment.getPackagingType(), InvoiceData.TYPE_ITEM));
+                itemList.set(84 + i, new InvoiceData(getString(R.string.package_type), String.valueOf(consignment.getPackagingId()), InvoiceData.TYPE_ITEM));
                 itemList.set(85 + i, new InvoiceData(getString(R.string.length), String.valueOf(consignment.getLength()), InvoiceData.TYPE_ITEM));
                 itemList.set(86 + i, new InvoiceData(getString(R.string.width), String.valueOf(consignment.getWidth()), InvoiceData.TYPE_ITEM));
                 itemList.set(87 + i, new InvoiceData(getString(R.string.height), String.valueOf(consignment.getHeight()), InvoiceData.TYPE_ITEM));
@@ -554,7 +556,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 forEachCargoList.add(new InvoiceData(getString(R.string.cargo_name), consignment.getName(), InvoiceData.TYPE_ITEM));
                 forEachCargoList.add(new InvoiceData(getString(R.string.cargo_description), consignment.getDescription(), InvoiceData.TYPE_ITEM));
                 forEachCargoList.add(new InvoiceData(getString(R.string.cargo_price), consignment.getCost(), InvoiceData.TYPE_ITEM));
-                forEachCargoList.add(new InvoiceData(getString(R.string.package_type), consignment.getPackagingType(), InvoiceData.TYPE_ITEM));
+                forEachCargoList.add(new InvoiceData(getString(R.string.package_type), String.valueOf(consignment.getPackagingType()), InvoiceData.TYPE_ITEM));
                 forEachCargoList.add(new InvoiceData(getString(R.string.length), String.valueOf(consignment.getLength()), InvoiceData.TYPE_ITEM));
                 forEachCargoList.add(new InvoiceData(getString(R.string.width), String.valueOf(consignment.getWidth()), InvoiceData.TYPE_ITEM));
                 forEachCargoList.add(new InvoiceData(getString(R.string.height), String.valueOf(consignment.getHeight()), InvoiceData.TYPE_ITEM));
@@ -564,12 +566,13 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             }
         });
 
-        editParcelImageView.setVisibility(View.VISIBLE);
+        if (!isPublic) {
+            editInvoiceImageView.setVisibility(View.VISIBLE);
+        }
 
-        editParcelImageView.setOnClickListener(v -> {
+        editInvoiceImageView.setOnClickListener(v -> {
             final Intent createInvoiceIntent = new Intent(getContext(), CreateInvoiceActivity.class);
             createInvoiceIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_EDIT_INVOICE);
-            createInvoiceIntent.putExtra(IntentConstants.INTENT_REQUEST_OR_PARCEL, requestOrParcel);
             createInvoiceIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
             createInvoiceIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
             createInvoiceIntent.putExtra(Constants.KEY_SENDER_ID, senderId);

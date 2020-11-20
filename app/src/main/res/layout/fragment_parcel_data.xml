@@ -46,7 +46,8 @@
             android:src="@drawable/ic_edit_black"
             android:contentDescription="@string/parcel_data"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true" />
+            android:clickable="true"
+            android:visibility="invisible"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/data_recycler_view"

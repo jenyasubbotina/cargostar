@@ -43,6 +43,7 @@ public class Courier extends User {
     @Nullable private String photoUrl;
 
     public Courier(final long id,
+                   final long userId,
                    final Long countryId,
                    final Long regionId,
                    final Long cityId,
@@ -61,6 +62,7 @@ public class Courier extends User {
                    @NonNull final String login,
                    @Nullable final String photoUrl) {
         super(id,
+                userId,
                 countryId,
                 regionId,
                 cityId,

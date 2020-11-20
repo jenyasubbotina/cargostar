@@ -3,6 +3,7 @@ package uz.alexits.cargostar.view.adapter;
 import android.content.Context;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +19,8 @@ import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
+import uz.alexits.cargostar.utils.UiUtils;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
-import uz.alexits.cargostar.view.viewholder.CreateInvoiceButtonViewHolder;
 import uz.alexits.cargostar.view.viewholder.CreateInvoiceEditTextImageView;
 import uz.alexits.cargostar.view.viewholder.CreateInvoiceEditTextSpinnerViewHolder;
 import uz.alexits.cargostar.view.viewholder.CreateInvoiceHeadingViewHolder;
@@ -28,7 +29,6 @@ import uz.alexits.cargostar.view.viewholder.CreateInvoiceTwoEditTextsViewHolder;
 import uz.alexits.cargostar.view.viewholder.CreateInvoiceTwoImageEditTextsViewHolder;
 import uz.alexits.cargostar.view.viewholder.CreateInvoiceTwoSpinnersViewHolder;
 import uz.alexits.cargostar.view.viewholder.ParcelDataStrokeViewHolder;
-import uz.alexits.cargostar.utils.UiUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -191,6 +191,7 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void setItemList(List<CreateInvoiceData> itemList) {
         this.itemList = itemList;
+        this.notifyDataSetChanged();
     }
 
 
@@ -215,17 +216,9 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             root = LayoutInflater.from(context).inflate(R.layout.view_holder_create_invoice_two_spinners, parent, false);
             return new CreateInvoiceTwoSpinnersViewHolder(root);
         }
-        else if (viewType == CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS) {
-            root = LayoutInflater.from(context).inflate(R.layout.view_holder_create_invoice_two_image_edit_texts, parent, false);
-            return new CreateInvoiceTwoImageEditTextsViewHolder(root);
-        }
         else if (viewType == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
             root = LayoutInflater.from(context).inflate(R.layout.view_holder_create_invoice_one_image_edit_text, parent, false);
             return new CreateInvoiceEditTextImageView(root);
-        }
-        else if (viewType == CreateInvoiceData.TYPE_BUTTON) {
-            root = LayoutInflater.from(context).inflate(R.layout.view_holder_create_invoice_button, parent, false);
-            return new CreateInvoiceButtonViewHolder(root);
         }
         else if (viewType == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
             root = LayoutInflater.from(context).inflate(R.layout.view_holder_create_invoice_single_spinner, parent, false);
@@ -244,26 +237,13 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         if (getItemViewType(position) == CreateInvoiceData.TYPE_HEADING) {
             final CreateInvoiceHeadingViewHolder viewHolder = (CreateInvoiceHeadingViewHolder) holder;
             viewHolder.headingTextView.setText(itemList.get(position).firstKey);
+            return;
         }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_EDIT_TEXTS) {
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_EDIT_TEXTS) {
             final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
             viewHolder.firstTextView.setText(itemList.get(position).firstKey);
             viewHolder.secondTextView.setText(itemList.get(position).secondKey);
 
-            if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
-                viewHolder.firstEditText.setText(itemList.get(position).firstValue);
-                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(itemList.get(position).secondValue)) {
-                viewHolder.secondEditText.setText(itemList.get(position).secondValue);
-                viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
             if (itemList.get(position).firstEnabled) {
                 if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_EMAIL) {
                     viewHolder.firstEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -304,19 +284,6 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             else {
                 viewHolder.secondEditText.setEnabled(false);
             }
-            viewHolder.firstEditText.setOnFocusChangeListener((v, hasFocus) -> {
-                UiUtils.onFocusChanged(viewHolder.firstEditText, hasFocus);
-            });
-            viewHolder.secondEditText.setOnFocusChangeListener((v, hasFocus) -> {
-                UiUtils.onFocusChanged(viewHolder.secondEditText, hasFocus);
-            });
-            viewHolder.bindWatchers(position, callback);
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT) {
-            final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
-            viewHolder.secondTextView.setVisibility(View.INVISIBLE);
-            viewHolder.secondEditText.setVisibility(View.INVISIBLE);
-            viewHolder.firstTextView.setText(itemList.get(position).firstKey);
 
             if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
                 viewHolder.firstEditText.setText(itemList.get(position).firstValue);
@@ -325,6 +292,34 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             else {
                 viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
+            if (!TextUtils.isEmpty(itemList.get(position).secondValue)) {
+                viewHolder.secondEditText.setText(itemList.get(position).secondValue);
+                viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_active);
+            }
+            else {
+                viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
+
+            viewHolder.firstEditText.setOnFocusChangeListener((v, hasFocus) -> {
+                UiUtils.onFocusChanged(viewHolder.firstEditText, hasFocus);
+            });
+            viewHolder.secondEditText.setOnFocusChangeListener((v, hasFocus) -> {
+                UiUtils.onFocusChanged(viewHolder.secondEditText, hasFocus);
+            });
+
+            if (position == 36) {
+                viewHolder.bindWatcherForSecondEditText(position, callback);
+            }
+
+            viewHolder.bindTwoEditTexts(position, callback);
+            return;
+        }
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT) {
+            final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
+            viewHolder.secondTextView.setVisibility(View.INVISIBLE);
+            viewHolder.secondEditText.setVisibility(View.INVISIBLE);
+            viewHolder.firstTextView.setText(itemList.get(position).firstKey);
+
             if (itemList.get(position).firstEnabled) {
                 if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_EMAIL) {
                     viewHolder.firstEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -345,24 +340,28 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             else {
                 viewHolder.firstEditText.setEnabled(false);
             }
+
+            if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
+                viewHolder.firstEditText.setText(itemList.get(position).firstValue);
+                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_active);
+            }
+            else {
+                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
+
             viewHolder.firstEditText.setOnFocusChangeListener((v, hasFocus) -> {
                 UiUtils.onFocusChanged(viewHolder.firstEditText, hasFocus);
             });
-            viewHolder.bindWatchers(position, callback);
+
+            viewHolder.bindTwoEditTexts(position, callback);
+            return;
         }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
             final CreateInvoiceEditTextSpinnerViewHolder viewHolder = (CreateInvoiceEditTextSpinnerViewHolder) holder;
             viewHolder.firstTextView.setText(itemList.get(position).firstKey);
             viewHolder.editText.setText(itemList.get(position).firstValue);
             viewHolder.secondTextView.setText(itemList.get(position).secondKey);
 
-            if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
-                viewHolder.editText.setText(itemList.get(position).firstValue);
-                viewHolder.editText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                viewHolder.editText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
             if (itemList.get(position).firstEnabled) {
                 if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_EMAIL) {
                     viewHolder.firstTextView.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -383,6 +382,15 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             else {
                 viewHolder.editText.setEnabled(false);
             }
+
+            if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
+                viewHolder.editText.setText(itemList.get(position).firstValue);
+                viewHolder.editText.setBackgroundResource(R.drawable.edit_text_active);
+            }
+            else {
+                viewHolder.editText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
+
             /* country spinner */
             if (position == 7 || position == 16 || position == 26) {
                 if (!TextUtils.isEmpty(itemList.get(position).secondValue)) {
@@ -395,12 +403,14 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
                     viewHolder.spinner.setAdapter(countryArrayAdapter);
                 }
             }
+
             viewHolder.editText.setOnFocusChangeListener((v, hasFocus) -> {
                 UiUtils.onFocusChanged(viewHolder.editText, hasFocus);
             });
-            viewHolder.bindWatcher(position, callback);
+            viewHolder.bindEditTextSpinner(position, callback);
+            return;
         }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
             final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
             viewHolder.regionTextView.setText(itemList.get(position).firstKey);
             viewHolder.cityTextView.setText(itemList.get(position).secondKey);
@@ -432,51 +442,22 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             if (itemList.get(position).secondValue != null && TextUtils.isEmpty(itemList.get(position).secondValue)) {
                 viewHolder.citySpinner.setSelection(Integer.parseInt(itemList.get(position).secondValue), false);
             }
+            return;
         }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_STROKE) {
-            final ParcelDataStrokeViewHolder viewHolder = (ParcelDataStrokeViewHolder) holder;
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS) {
-            final CreateInvoiceTwoImageEditTextsViewHolder viewHolder = (CreateInvoiceTwoImageEditTextsViewHolder) holder;
-            viewHolder.firstTextView.setText(itemList.get(position).firstKey);
-            viewHolder.secondTextView.setText(itemList.get(position).secondKey);
+        //address book spinner
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
+            final CreateInvoiceSingleSpinnerViewHolder viewHolder = (CreateInvoiceSingleSpinnerViewHolder) holder;
+            viewHolder.textView.setText(itemList.get(position).firstKey);
 
-            if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
-                viewHolder.firstEditText.setText(itemList.get(position).firstValue);
-                viewHolder.firstResultImageView.setImageResource(R.drawable.ic_image_green);
-                viewHolder.firstResultImageView.setVisibility(View.VISIBLE);
-                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                viewHolder.firstResultImageView.setImageResource(R.drawable.ic_image_red);
-                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_locked);
-                viewHolder.firstResultImageView.setVisibility(View.INVISIBLE);
-            }
-            if (!TextUtils.isEmpty(itemList.get(position).secondValue)) {
-                viewHolder.secondEditText.setText(itemList.get(position).secondValue);
-                viewHolder.secondResultImageView.setImageResource(R.drawable.ic_image_green);
-                viewHolder.secondResultImageView.setVisibility(View.VISIBLE);
-                viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                viewHolder.secondResultImageView.setImageResource(R.drawable.ic_image_red);
-                viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_locked);
-                viewHolder.secondResultImageView.setVisibility(View.INVISIBLE);
-            }
-            viewHolder.bindWatchers(position, callback);
+            addressBookArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+            viewHolder.spinner.setAdapter(addressBookArrayAdapter);
+            return;
         }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
             final CreateInvoiceEditTextImageView viewHolder = (CreateInvoiceEditTextImageView) holder;
             viewHolder.firstTextView.setText(itemList.get(position).firstKey);
             viewHolder.secondTextView.setText(itemList.get(position).secondKey);
 
-            if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
-                viewHolder.firstEditText.setText(itemList.get(position).firstValue);
-                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
             if (itemList.get(position).firstEnabled) {
                 if (itemList.get(position).firstInputType == CreateInvoiceData.INPUT_TYPE_EMAIL) {
                     viewHolder.firstEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -497,6 +478,15 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
             else {
                 viewHolder.firstEditText.setEnabled(false);
             }
+
+            if (!TextUtils.isEmpty(itemList.get(position).firstValue)) {
+                viewHolder.firstEditText.setText(itemList.get(position).firstValue);
+                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_active);
+            }
+            else {
+                viewHolder.firstEditText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
+
             if (!TextUtils.isEmpty(itemList.get(position).secondValue)) {
                 viewHolder.secondEditText.setText(itemList.get(position).secondValue);
                 viewHolder.secondResultImageView.setImageResource(R.drawable.ic_image_green);
@@ -508,22 +498,15 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
                 viewHolder.secondEditText.setBackgroundResource(R.drawable.edit_text_locked);
                 viewHolder.secondResultImageView.setVisibility(View.INVISIBLE);
             }
+
             viewHolder.firstEditText.setOnFocusChangeListener((v, hasFocus) -> {
                 UiUtils.onFocusChanged(viewHolder.firstEditText, hasFocus);
             });
-            viewHolder.bindWatchers(position, callback);
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_BUTTON) {
-            final CreateInvoiceButtonViewHolder viewHolder = (CreateInvoiceButtonViewHolder) holder;
-            viewHolder.button.setText(itemList.get(position).firstKey);
-        }
-        //address book spinner
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
-            final CreateInvoiceSingleSpinnerViewHolder viewHolder = (CreateInvoiceSingleSpinnerViewHolder) holder;
-            viewHolder.textView.setText(itemList.get(position).firstKey);
 
-            addressBookArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
-            viewHolder.spinner.setAdapter(addressBookArrayAdapter);
+            if (position == 4) {
+                viewHolder.bindWatcherForFirstEditText(position, callback);
+            }
+            viewHolder.bindEditTextImageView(position, callback);
         }
     }
 
@@ -531,38 +514,27 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
     public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
 
-        if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_EDIT_TEXTS) {
-            final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_EDIT_TEXT) {
-            final CreateInvoiceTwoEditTextsViewHolder viewHolder = (CreateInvoiceTwoEditTextsViewHolder) holder;
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_SPINNER) {
             final CreateInvoiceEditTextSpinnerViewHolder viewHolder = (CreateInvoiceEditTextSpinnerViewHolder) holder;
             viewHolder.bindSpinner(context, position, callback);
+            return;
         }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_SPINNERS) {
             final CreateInvoiceTwoSpinnersViewHolder viewHolder = (CreateInvoiceTwoSpinnersViewHolder) holder;
             /* sender location data */
             if (position == 8 || position == 17 || position == 27) {
                 viewHolder.bindFirstSpinner(context, position, callback);
                 viewHolder.bindSecondSpinner(context, position, callback);
             }
+            return;
         }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS) {
-            final CreateInvoiceTwoImageEditTextsViewHolder viewHolder = (CreateInvoiceTwoImageEditTextsViewHolder) holder;
-            viewHolder.bindImageViews(callback);
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
             final CreateInvoiceEditTextImageView viewHolder = (CreateInvoiceEditTextImageView) holder;
             viewHolder.bindImageViews(callback);
-        }
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_BUTTON) {
-            final CreateInvoiceButtonViewHolder viewHolder = (CreateInvoiceButtonViewHolder) holder;
-            viewHolder.bindBtn(callback);
+            return;
         }
         //address book spinner
-        else if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
+        if (getItemViewType(position) == CreateInvoiceData.TYPE_SINGLE_SPINNER) {
             final CreateInvoiceSingleSpinnerViewHolder viewHolder = (CreateInvoiceSingleSpinnerViewHolder) holder;
             viewHolder.bindSpinner(context, position, callback);
         }
@@ -632,9 +604,6 @@ public class CreateInvoiceAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         if (itemList.get(position).type == CreateInvoiceData.TYPE_STROKE) {
             return CreateInvoiceData.TYPE_STROKE;
-        }
-        if (itemList.get(position).type == CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS) {
-            return CreateInvoiceData.TYPE_TWO_IMAGE_EDIT_TEXTS;
         }
         else if (itemList.get(position).type == CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW) {
             return CreateInvoiceData.TYPE_EDIT_TEXT_IMAGE_VIEW;

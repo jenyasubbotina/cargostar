@@ -48,11 +48,10 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalcItemViewHolder> 
 
         if (currentItem != null) {
             final String index = (position + 1) + ".";
-            final String dimensions = currentItem.getLength() + "x" + currentItem.getWidth() + "x" + currentItem.getHeight();
             holder.indexTextView.setText(index);
-            holder.packageTypeTextView.setText(currentItem.getPackagingType());
+            holder.packageTypeTextView.setText(currentItem.getPackagingId() != null ? String.valueOf(currentItem.getPackagingId()) : "");
             holder.weightTextView.setText(String.valueOf(currentItem.getWeight()));
-            holder.dimensionsTextView.setText(dimensions);
+            holder.dimensionsTextView.setText(currentItem.getDimensions());
             holder.bind(position, callback);
         }
     }

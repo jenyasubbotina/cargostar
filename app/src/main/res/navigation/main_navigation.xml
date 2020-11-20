@@ -260,9 +260,13 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
-            android:name="request_or_parcel"
-            app:argType="integer"
-            android:defaultValue="-1"/>
+            android:name="is_public"
+            app:argType="boolean"
+            android:defaultValue="true"/>
+        <argument
+            android:name="is_request"
+            app:argType="boolean"
+            android:defaultValue="true"/>
         <argument
             android:name="sender_country_id"
             app:argType="long"
