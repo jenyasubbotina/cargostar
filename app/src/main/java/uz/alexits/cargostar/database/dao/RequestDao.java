@@ -8,8 +8,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
-import retrofit2.http.DELETE;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 
 import java.util.List;
 
@@ -38,6 +37,9 @@ public abstract class RequestDao {
 
     @Query("SELECT * FROM request WHERE id == :requestId")
     public abstract LiveData<Request> selectRequestById(final long requestId);
+
+    @Query("SELECT * FROM request WHERE id == :requestId")
+    public abstract Request searchRequestById(final long requestId);
 
     @Update
     public abstract int updateRequest(final Request updatedRequest);

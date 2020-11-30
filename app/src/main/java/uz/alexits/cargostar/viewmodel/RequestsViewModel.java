@@ -15,9 +15,9 @@ import uz.alexits.cargostar.model.calculation.Provider;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.shipping.Consignment;
-import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.transportation.Transportation;
 

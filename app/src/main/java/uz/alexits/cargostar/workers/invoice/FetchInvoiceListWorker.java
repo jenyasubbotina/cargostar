@@ -14,7 +14,7 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.shipping.Invoice;
+import uz.alexits.cargostar.model.transportation.Invoice;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -22,12 +22,14 @@ public class FetchInvoiceListWorker extends Worker {
     private final int perPage;
     private String login;
     private String password;
+    private final String token;
 
     public FetchInvoiceListWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+        this.token = getInputData().getString(Constants.KEY_TOKEN);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
@@ -58,7 +60,9 @@ public class FetchInvoiceListWorker extends Worker {
 
                     return ListenableWorker.Result.success(new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password).build());
+                            .putString(Constants.KEY_PASSWORD, password)
+                            .putString(Constants.KEY_TOKEN, token)
+                            .build());
                 }
             }
             else {

@@ -2,25 +2,19 @@ package uz.alexits.cargostar.workers.requests;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.gson.JsonElement;
-
 import java.io.IOException;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.actor.Courier;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 
 public class BindRequestWorker extends Worker {

@@ -41,32 +41,15 @@ public class InitializationActivity extends AppCompatActivity {
         obtainFcmToken(this);
 
         if (SharedPrefs.getInstance(this).getBoolean(SharedPrefs.KEEP_LOGGED) &&
-//                SharedPrefs.getInstance(this).getString(SharedPrefs.ID) != null &&
                 SharedPrefs.getInstance(this).getString(SharedPrefs.LOGIN) != null &&
                 SharedPrefs.getInstance(this).getString(SharedPrefs.PASSWORD_HASH) != null &&
                 SharedPrefs.getInstance(this).getString(SharedPrefs.TOKEN) != null) {
             startActivity(new Intent(this, MainActivity.class));
-            finish();
         }
         else {
-//            final UUID fetchBranchesWorkId = SyncWorkRequest.fetchLocationData(this);
-//
-//            WorkManager.getInstance(this).getWorkInfoByIdLiveData(fetchBranchesWorkId).observe(this, workInfo -> {
-//                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-//                    progressBar.setVisibility(View.INVISIBLE);
-//
-//                }
-//                if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-//                    Log.e(TAG, "insertLocationData(): failed to insert location data");
-//                    Toast.makeText(this, "Ошибка инициализации", Toast.LENGTH_SHORT).show();
-//                    progressBar.setVisibility(View.INVISIBLE);
-//                    return;
-//                }
-//                progressBar.setVisibility(View.VISIBLE);
-//            });
             startActivity(new Intent(this, SignInActivity.class));
-            finish();
         }
+        finish();
     }
 
     private void obtainFcmToken(@NonNull final Context context) {

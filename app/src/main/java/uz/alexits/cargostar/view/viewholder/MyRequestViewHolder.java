@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.view.callback.RequestCallback;
 
 public class MyRequestViewHolder extends RecyclerView.ViewHolder {

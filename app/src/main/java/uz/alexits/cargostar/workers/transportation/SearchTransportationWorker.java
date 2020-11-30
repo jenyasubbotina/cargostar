@@ -9,10 +9,8 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.shipping.Request;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.workers.invoice.GetInvoiceHeaderWorker;
 
 public class SearchTransportationWorker extends Worker {
     private final String transportationQr;

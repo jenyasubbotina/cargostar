@@ -11,35 +11,41 @@ import androidx.lifecycle.Transformations;
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.model.calculation.Provider;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.location.Region;
+import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.model.transportation.Transportation;
 
 import java.util.List;
 
 public class CreateInvoiceViewModel extends AndroidViewModel {
     private final Repository repository;
-
     private final LiveData<List<Country>> countryList;
 
     /* sender data */
     private final MutableLiveData<Long> senderCountryId;
-    private final MutableLiveData<Long> senderRegionId;
-    private final MutableLiveData<Long> senderCityId;
 
     /* recipient data */
     private final MutableLiveData<Long> recipientCountryId;
-    private final MutableLiveData<Long> recipientRegionId;
-    private final MutableLiveData<Long> recipientCityId;
 
     /* payer data */
     private final MutableLiveData<Long> payerCountryId;
-    private final MutableLiveData<Long> payerRegionId;
-    private final MutableLiveData<Long> payerCityId;
 
     /* address book */
     private final MutableLiveData<String> senderEmail;
     private final MutableLiveData<Long> senderUserId;
+
+    private final MutableLiveData<Long> senderId;
+    private final MutableLiveData<Long> recipientId;
+    private final MutableLiveData<Long> payerId;
+
+    private final MutableLiveData<Long> courierId;
+    private final MutableLiveData<Long> requestId;
+    private final MutableLiveData<Long> invoiceId;
+
+    private final MutableLiveData<Long> providerId;
+    private final MutableLiveData<Long> tariffId;
 
     public CreateInvoiceViewModel(@NonNull Application application) {
         super(application);
@@ -48,19 +54,22 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
         this.countryList = repository.selectAllCountries();
 
         this.senderCountryId = new MutableLiveData<>();
-        this.senderRegionId = new MutableLiveData<>();
-        this.senderCityId = new MutableLiveData<>();
-
         this.recipientCountryId = new MutableLiveData<>();
-        this.recipientRegionId = new MutableLiveData<>();
-        this.recipientCityId = new MutableLiveData<>();
-
         this.payerCountryId = new MutableLiveData<>();
-        this.payerRegionId = new MutableLiveData<>();
-        this.payerCityId = new MutableLiveData<>();
 
         this.senderEmail = new MutableLiveData<>();
         this.senderUserId = new MutableLiveData<>();
+
+        this.senderId = new MutableLiveData<>();
+        this.recipientId = new MutableLiveData<>();
+        this.payerId = new MutableLiveData<>();
+
+        this.courierId = new MutableLiveData<>();
+        this.requestId = new MutableLiveData<>();
+        this.invoiceId = new MutableLiveData<>();
+
+        this.providerId = new MutableLiveData<>();
+        this.tariffId = new MutableLiveData<>();
     }
 
     /* location data */
@@ -68,28 +77,16 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
         return countryList;
     }
 
-    public LiveData<List<Region>> getSenderRegionList() {
-        return Transformations.switchMap(senderCountryId, repository::selectRegionsByCountryId);
-    }
-
-    public LiveData<List<Region>> getRecipientRegionList() {
-        return Transformations.switchMap(recipientCountryId, repository::selectRegionsByCountryId);
-    }
-
-    public LiveData<List<Region>> getPayerRegionList() {
-        return Transformations.switchMap(payerCountryId, repository::selectRegionsByCountryId);
-    }
-
     public LiveData<List<City>> getSenderCityList() {
-        return Transformations.switchMap(senderRegionId, repository::selectCitiesByRegionId);
+        return Transformations.switchMap(senderCountryId, repository::selectCitiesByCountryId);
     }
 
     public LiveData<List<City>> getRecipientCityList() {
-        return Transformations.switchMap(recipientRegionId, repository::selectCitiesByRegionId);
+        return Transformations.switchMap(recipientCountryId, repository::selectCitiesByCountryId);
     }
 
     public LiveData<List<City>> getPayerCityList() {
-        return Transformations.switchMap(payerRegionId, repository::selectCitiesByRegionId);
+        return Transformations.switchMap(payerCountryId, repository::selectCitiesByCountryId);
     }
 
     public void setSenderCountryId(final long senderCountryId) {
@@ -104,57 +101,85 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
         this.payerCountryId.setValue(payerCountryId);
     }
 
-    public void setSenderRegionId(final long senderRegionId) {
-        this.senderRegionId.setValue(senderRegionId);
-    }
-
-    public void setRecipientRegionId(final long recipientRegionId) {
-        this.recipientRegionId.setValue(recipientRegionId);
-    }
-
-    public void setPayerRegionId(final long payerRegionId) {
-        this.payerRegionId.setValue(payerRegionId);
-    }
-
-    public void setSenderCityId(final long senderCityId) {
-        this.senderCityId.setValue(senderCityId);
-    }
-
-    public void setRecipientCityId(final long recipientCityId) {
-        this.recipientCityId.setValue(recipientCityId);
-    }
-
-    public void setPayerCityId(final long payerCityId) {
-        this.payerCityId.setValue(payerCityId);
-    }
-
     /* address book data*/
-    public LiveData<AddressBook> selectAddressBookEntryById(final long id) {
-        return repository.selectAddressBookEntryById(id);
-    }
-
-    public LiveData<List<AddressBook>> selectAddressBookEntries() {
-        return repository.selectAddressBookEntries();
-    }
-
     public LiveData<List<AddressBook>> getSenderAddressBook() {
         return Transformations.switchMap(senderUserId, repository::selectAddressBookBySenderId);
     }
 
-    public LiveData<Long> getSenderUserId() {
-        return Transformations.switchMap(senderEmail, repository::selectSenderUserIdByEmail);
+    public void setSenderEmail(final String email) {
+        this.senderEmail.setValue(email);
+    }
+
+    public LiveData<Customer> getSender() {
+        return Transformations.switchMap(senderEmail, repository::selectSenderByEmail);
     }
 
     public void setSenderUserId(final long senderUserId) {
         this.senderUserId.setValue(senderUserId);
     }
 
-    public LiveData<Customer> getSenderData() {
-        return Transformations.switchMap(senderEmail, repository::selectSenderByEmail);
+    public LiveData<Invoice> getInvoice() {
+        return Transformations.switchMap(invoiceId, repository::selectInvoiceById);
     }
 
-    public void setSenderEmail(final String email) {
-        this.senderEmail.setValue(email);
+    public LiveData<Provider> getProvider() {
+        return Transformations.switchMap(providerId, repository::selectProviderById);
+    }
+
+    public LiveData<Transportation> getTransportation() {
+        return Transformations.switchMap(invoiceId, repository::selectTransportationByInvoiceId);
+    }
+
+    public void setTariffId(final Long tariffId) {
+        if (tariffId == null) {
+            return;
+        }
+        this.tariffId .setValue(tariffId);
+    }
+
+    public void setRecipientId(final Long recipientId) {
+        if (recipientId == null) {
+            return;
+        }
+        this.recipientId.setValue(recipientId);
+    }
+
+    public void setPayerId(final Long payerId) {
+        if (payerId == null) {
+            return;
+        }
+        this.payerId.setValue(payerId);
+    }
+
+    public void setRequestId(final Long requestId) {
+        this.requestId.setValue(requestId);
+    }
+
+    public void setInvoiceId(final Long invoiceId) {
+        if (invoiceId == null) {
+            return;
+        }
+        this.invoiceId.setValue(invoiceId);
+    }
+
+    public void setProviderId(final Long providerId) {
+        if (providerId == null) {
+            return;
+        }
+        this.providerId.setValue(providerId);
+    }
+    public void setCourierId(final Long courierId) {
+        if (courierId == null) {
+            return;
+        }
+        this.courierId.setValue(courierId);
+    }
+
+    public void setSenderId(final Long senderId) {
+        if (senderId == null) {
+            return;
+        }
+        this.senderId.setValue(senderId);
     }
 
     private static final String TAG = CreateInvoiceViewModel.class.toString();

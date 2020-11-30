@@ -29,7 +29,7 @@ import uz.alexits.cargostar.workers.invoice.FetchPayerDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchRecipientDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchSenderDataWorker;
 import uz.alexits.cargostar.workers.invoice.FetchSenderListData;
-import uz.alexits.cargostar.workers.invoice.GetInvoiceHeaderWorker;
+import uz.alexits.cargostar.workers.invoice.SearchLocalRequestWorker;
 import uz.alexits.cargostar.workers.invoice.InsertInvoiceWorker;
 import uz.alexits.cargostar.workers.invoice.SendInvoiceWorker;
 import uz.alexits.cargostar.workers.location.FetchBranchesWorker;
@@ -37,7 +37,6 @@ import uz.alexits.cargostar.workers.calculation.FetchPackagingTypesWorker;
 import uz.alexits.cargostar.workers.calculation.FetchPackagingWorker;
 import uz.alexits.cargostar.workers.location.FetchCitiesWorker;
 import uz.alexits.cargostar.workers.location.FetchCountriesWorker;
-import uz.alexits.cargostar.workers.location.FetchLocationDataWorker;
 import uz.alexits.cargostar.workers.location.FetchRegionsWorker;
 import uz.alexits.cargostar.workers.location.FetchTransitPointsWorker;
 import uz.alexits.cargostar.workers.login.SignInWorker;
@@ -106,7 +105,7 @@ public class SyncWorkRequest {
                 .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
                 .putString(Constants.KEY_LOGIN, login)
                 .putString(Constants.KEY_PASSWORD, password)
-                .putString(SharedPrefs.TOKEN, token)
+                .putString(Constants.KEY_TOKEN, token)
                 .build();
         /* fetch location data from server*/
         final OneTimeWorkRequest fetchCountriesRequest = new OneTimeWorkRequest.Builder(FetchCountriesWorker.class)
@@ -116,18 +115,18 @@ public class SyncWorkRequest {
                 .build();
         final OneTimeWorkRequest fetchRegionsRequest = new OneTimeWorkRequest.Builder(FetchRegionsWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         final OneTimeWorkRequest fetchCitiesRequest = new OneTimeWorkRequest.Builder(FetchCitiesWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch branches from server */
         final OneTimeWorkRequest fetchBranchesRequest = new OneTimeWorkRequest.Builder(FetchBranchesWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch transit points from server */
@@ -139,43 +138,43 @@ public class SyncWorkRequest {
         /* fetch provider data from server */
         final OneTimeWorkRequest fetchProviderListRequest = new OneTimeWorkRequest.Builder(FetchProvidersWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch packaging data from server */
         final OneTimeWorkRequest fetchPackagingRequest = new OneTimeWorkRequest.Builder(FetchPackagingWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch packaging type data from server */
         final OneTimeWorkRequest fetchPackagingTypesRequest = new OneTimeWorkRequest.Builder(FetchPackagingTypesWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch zone data from server */
         final OneTimeWorkRequest fetchZonesRequest = new OneTimeWorkRequest.Builder(FetchZonesWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch zone country data from server */
         final OneTimeWorkRequest fetchZoneCountriesRequest = new OneTimeWorkRequest.Builder(FetchZoneCountriesWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch zone settings data from server */
         final OneTimeWorkRequest fetchZoneSettingsRequest = new OneTimeWorkRequest.Builder(FetchZoneSettingsWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch vat data from server */
         final OneTimeWorkRequest fetchVatRequest = new OneTimeWorkRequest.Builder(FetchVatWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
         /* fetch request data from server */
@@ -526,7 +525,6 @@ public class SyncWorkRequest {
                                   final String lastName,
                                   final String phone,
                                   final String country,
-                                  final String region,
                                   final String city,
                                   final String address,
                                   final String geolocation,
@@ -541,7 +539,6 @@ public class SyncWorkRequest {
                                   final String oked,
                                   final String checkingAccount,
                                   final String vat,
-                                  final String photoUrl,
                                   final String signatureUrl) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -561,7 +558,6 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_LAST_NAME, lastName)
                 .putString(Constants.KEY_PHONE, phone)
                 .putString(Constants.KEY_COUNTRY, country)
-                .putString(Constants.KEY_REGION, region)
                 .putString(Constants.KEY_CITY, city)
                 .putString(Constants.KEY_ADDRESS, address)
                 .putString(Constants.KEY_GEOLOCATION, geolocation)
@@ -571,12 +567,11 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_PASSPORT_SERIAL, passportSerial)
                 .putString(Constants.KEY_INN, inn)
                 .putString(Constants.KEY_COMPANY, company)
-                .putString(Constants.KEY_BANK, bank)
-                .putString(Constants.KEY_MFO, mfo)
-                .putString(Constants.KEY_OKED, oked)
-                .putString(Constants.KEY_CHECKING_ACCOUNT, checkingAccount)
+                .putString(Constants.KEY_PAYER_BANK, bank)
+                .putString(Constants.KEY_PAYER_MFO, mfo)
+                .putString(Constants.KEY_PAYER_OKED, oked)
+                .putString(Constants.KEY_PAYER_CHECKING_ACCOUNT, checkingAccount)
                 .putString(Constants.KEY_VAT, vat)
-                .putString(Constants.KEY_PHOTO, photoUrl)
                 .putString(Constants.KEY_SIGNATURE, signatureUrl)
                 .build();
 
@@ -602,9 +597,6 @@ public class SyncWorkRequest {
                                          final String lastName,
                                          final String phone,
                                          final String photoUrl) {
-
-        Log.i(TAG, "password= " + password);
-
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .setRequiresCharging(false)
@@ -636,7 +628,7 @@ public class SyncWorkRequest {
     }
 
     /* Invoice */
-    public static UUID fetchInvoiceData(@NonNull final Context context, final long invoiceId, final long senderId) {
+    public static UUID fetchInvoiceData(@NonNull final Context context, final long invoiceId, final long senderId, final int consignmentQuantity) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .setRequiresCharging(false)
@@ -647,6 +639,7 @@ public class SyncWorkRequest {
         final Data inputData = new Data.Builder()
                 .putLong(Constants.KEY_INVOICE_ID, invoiceId)
                 .putLong(Constants.KEY_SENDER_ID, senderId)
+                .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, consignmentQuantity)
                 .build();
 
         final OneTimeWorkRequest fetchSenderDataRequest = new OneTimeWorkRequest.Builder(FetchSenderDataWorker.class)
@@ -674,77 +667,31 @@ public class SyncWorkRequest {
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
-        final OneTimeWorkRequest fetchCargoListRequest = new OneTimeWorkRequest.Builder(FetchCargoListWorker.class)
+        final OneTimeWorkRequest fetchConsignmentListRequest = new OneTimeWorkRequest.Builder(FetchCargoListWorker.class)
                 .setConstraints(constraints)
-                .setInputData(inputData)
+                .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
 
+        if (senderId <= 0 && invoiceId <= 0) {
+            //both are empty, return success or failure
+            return null;
+        }
+        if (invoiceId <= 0) {
+            //senderId > 0, fetch sender and return sender
+            WorkManager.getInstance(context).enqueue(fetchSenderDataRequest);
+            return fetchSenderDataRequest.getId();
+        }
+        //invoiceId > 0, fetch invoice data and return
         WorkManager.getInstance(context)
                 .beginWith(fetchSenderDataRequest)
                 .then(fetchInvoiceRequest)
                 .then(fetchRecipientDataRequest)
                 .then(fetchPayerDataRequest)
                 .then(insertInvoiceRequest)
-                .then(fetchCargoListRequest)
+                .then(fetchConsignmentListRequest)
                 .enqueue();
-
-        return insertInvoiceRequest.getId();
-    }
-
-    public static UUID fetchInvoiceData(@NonNull final Context context, final long invoiceId) {
-        final Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresCharging(false)
-                .setRequiresStorageNotLow(false)
-                .setRequiresDeviceIdle(false)
-                .build();
-
-        final Data inputData = new Data.Builder()
-                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
-                .build();
-
-        final OneTimeWorkRequest fetchInvoiceRequest = new OneTimeWorkRequest.Builder(FetchInvoiceWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-        final OneTimeWorkRequest fetchSenderDataRequest = new OneTimeWorkRequest.Builder(FetchSenderDataWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-        final OneTimeWorkRequest fetchRecipientDataRequest = new OneTimeWorkRequest.Builder(FetchRecipientDataWorker.class)
-                .setConstraints(constraints)
-                .setInputMerger(OverwritingInputMerger.class)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-        final OneTimeWorkRequest fetchPayerDataRequest = new OneTimeWorkRequest.Builder(FetchPayerDataWorker.class)
-                .setConstraints(constraints)
-                .setInputMerger(OverwritingInputMerger.class)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-        final OneTimeWorkRequest insertInvoiceRequest = new OneTimeWorkRequest.Builder(InsertInvoiceWorker.class)
-                .setConstraints(constraints)
-                .setInputMerger(OverwritingInputMerger.class)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-        final OneTimeWorkRequest fetchCargoListRequest = new OneTimeWorkRequest.Builder(FetchCargoListWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-
-        WorkManager.getInstance(context)
-                .beginWith(fetchSenderDataRequest)
-                .then(fetchInvoiceRequest)
-                .then(fetchRecipientDataRequest)
-                .then(fetchPayerDataRequest)
-                .then(insertInvoiceRequest)
-                .then(fetchCargoListRequest)
-                .enqueue();
-
-        return insertInvoiceRequest.getId();
+        return fetchConsignmentListRequest.getId();
     }
 
     public static UUID sendInvoice(@NonNull final Context context,
@@ -757,7 +704,6 @@ public class SyncWorkRequest {
                                    final String senderTnt,
                                    final String senderFedex,
                                    final String senderCountryId,
-                                   final String senderRegionId,
                                    final String senderCityId,
                                    final String senderAddress,
                                    final String senderZip,
@@ -772,7 +718,6 @@ public class SyncWorkRequest {
                                    final String recipientTnt,
                                    final String recipientFedex,
                                    final String recipientCountryId,
-                                   final String recipientRegionId,
                                    final String recipientCityId,
                                    final String recipientAddress,
                                    final String recipientZip,
@@ -784,7 +729,6 @@ public class SyncWorkRequest {
                                    final int recipientType,
                                    final String payerEmail,
                                    final String payerCountryId,
-                                   final String payerRegionId,
                                    final String payerCityId,
                                    final String payerAddress,
                                    final String payerZip,
@@ -833,7 +777,6 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_SENDER_TNT, senderTnt)
                 .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
                 .putString(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
-                .putString(Constants.KEY_SENDER_REGION_ID, senderRegionId)
                 .putString(Constants.KEY_SENDER_CITY_ID, senderCityId)
                 .putString(Constants.KEY_SENDER_ADDRESS, senderAddress)
                 .putString(Constants.KEY_SENDER_ZIP, senderZip)
@@ -849,10 +792,9 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_RECIPIENT_TNT, recipientTnt)
                 .putString(Constants.KEY_RECIPIENT_FEDEX, recipientFedex)
                 .putString(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
-                .putString(Constants.KEY_RECIPIENT_REGION_ID, recipientRegionId)
                 .putString(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId)
                 .putString(Constants.KEY_RECIPIENT_ADDRESS, recipientAddress)
-                .putString(Constants.RECIPIENT_ZIP, recipientZip)
+                .putString(Constants.KEY_RECIPIENT_ZIP, recipientZip)
                 .putString(Constants.KEY_RECIPIENT_FIRST_NAME, recipientFirstName)
                 .putString(Constants.KEY_RECIPIENT_MIDDLE_NAME, recipientMiddleName)
                 .putString(Constants.KEY_RECIPIENT_LAST_NAME, recipientLastName)
@@ -862,7 +804,6 @@ public class SyncWorkRequest {
 
                 .putString(Constants.KEY_PAYER_EMAIL, payerEmail)
                 .putString(Constants.KEY_PAYER_COUNTRY_ID, payerCountryId)
-                .putString(Constants.KEY_PAYER_REGION_ID, payerRegionId)
                 .putString(Constants.KEY_PAYER_CITY_ID, payerCityId)
                 .putString(Constants.KEY_PAYER_ADDRESS, payerAddress)
                 .putString(Constants.KEY_PAYER_ZIP, payerZip)
@@ -880,11 +821,11 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_PAYER_INN, payerInn)
                 .putDouble(Constants.KEY_DISCOUNT, discount)
 
-                .putString(Constants.KEY_CHECKING_ACCOUNT, checkingAccount)
-                .putString(Constants.KEY_BANK, bank)
-                .putString(Constants.KEY_MFO, mfo)
-                .putString(Constants.KEY_OKED, oked)
-                .putString(Constants.KEY_REGISTRATION_CODE, registrationCode)
+                .putString(Constants.KEY_PAYER_CHECKING_ACCOUNT, checkingAccount)
+                .putString(Constants.KEY_PAYER_BANK, bank)
+                .putString(Constants.KEY_PAYER_MFO, mfo)
+                .putString(Constants.KEY_PAYER_OKED, oked)
+                .putString(Constants.KEY_PAYER_REGISTRATION_CODE, registrationCode)
 
                 .putString(Constants.KEY_INSTRUCTIONS, instructions)
 
@@ -908,7 +849,7 @@ public class SyncWorkRequest {
         return sendInvoiceRequest.getId();
     }
 
-    public static UUID searchInvoice(@NonNull final Context context, final long invoiceId) {
+    public static UUID searchRequest(@NonNull final Context context, final long requestId) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
                 .setRequiresCharging(false)
@@ -917,10 +858,10 @@ public class SyncWorkRequest {
                 .build();
 
         final Data inputData = new Data.Builder()
-                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
+                .putLong(Constants.KEY_REQUEST_ID, requestId)
                 .build();
 
-        final OneTimeWorkRequest getInvoiceRequest = new OneTimeWorkRequest.Builder(GetInvoiceHeaderWorker.class)
+        final OneTimeWorkRequest getInvoiceRequest = new OneTimeWorkRequest.Builder(SearchLocalRequestWorker.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
@@ -1024,7 +965,8 @@ public class SyncWorkRequest {
     public static UUID updateTransportationStatus(@NonNull final Context context,
                                                   final long transportationId,
                                                   final long transportationStatusId,
-                                                  final long transitPointId) {
+                                                  final long transitPointId,
+                                                  final long partialId) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .setRequiresCharging(false)
@@ -1036,6 +978,7 @@ public class SyncWorkRequest {
                 .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
                 .putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportationStatusId)
                 .putLong(Constants.KEY_TRANSIT_POINT_ID, transitPointId)
+                .putLong(Constants.KEY_PARTIAL_ID, partialId)
                 .build();
 
         final OneTimeWorkRequest updateTransportationStatusRequest = new OneTimeWorkRequest.Builder(UpdateTransportationStatusWorker.class)
@@ -1067,7 +1010,8 @@ public class SyncWorkRequest {
                                                                       final String recipientSignature,
                                                                       final long transportationId,
                                                                       final long transportationStatusId,
-                                                                      final long transitPointId) {
+                                                                      final long transitPointId,
+                                                                      final long partial) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .setRequiresCharging(false)
@@ -1083,6 +1027,7 @@ public class SyncWorkRequest {
                 .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
                 .putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportationStatusId)
                 .putLong(Constants.KEY_TRANSIT_POINT_ID, transitPointId)
+                .putLong(Constants.KEY_PARTIAL_ID, partial)
                 .build();
 
         final OneTimeWorkRequest sendRecipientSignatureRequest = new OneTimeWorkRequest.Builder(SendRecipientSignatureWorker.class)

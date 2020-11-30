@@ -17,7 +17,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.UUID;
@@ -25,7 +24,7 @@ import java.util.UUID;
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.utils.UiUtils;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class SignInActivity extends AppCompatActivity {

@@ -9,9 +9,9 @@ import androidx.room.Update;
 
 import java.util.List;
 import uz.alexits.cargostar.model.actor.AddressBook;
-import uz.alexits.cargostar.model.shipping.Consignment;
-import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.model.transportation.Request;
 
 @Dao
 public interface InvoiceDao {

@@ -32,16 +32,12 @@ import java.util.UUID;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.view.activity.CalculatorActivity;
-import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.activity.NotificationsActivity;
-import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.PublicRequestAdapter;
 import uz.alexits.cargostar.view.callback.RequestCallback;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
@@ -54,8 +50,9 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
-    private EditText parcelSearchEditText;
-    private ImageView parcelSearchImageView;
+    private TextView courierIdTextView;
+    private EditText requestSearchEditText;
+    private ImageView requestSearchImageView;
     private ImageView profileImageView;
     private ImageView editImageView;
     private ImageView createUserImageView;
@@ -95,8 +92,9 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         //header views
         fullNameTextView = activity.findViewById(R.id.full_name_text_view);
         branchTextView = activity.findViewById(R.id.branch_text_view);
-        parcelSearchEditText = activity.findViewById(R.id.search_edit_text);
-        parcelSearchImageView = activity.findViewById(R.id.search_btn);
+        courierIdTextView = activity.findViewById(R.id.courier_id_text_view);
+        requestSearchEditText = activity.findViewById(R.id.search_edit_text);
+        requestSearchImageView = activity.findViewById(R.id.search_btn);
         profileImageView = activity.findViewById(R.id.profile_image_view);
         editImageView = activity.findViewById(R.id.edit_image_view);
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
@@ -124,19 +122,23 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         super.onViewCreated(view, savedInstanceState);
         //header views
         profileImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, MainActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
         });
-        editImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, ProfileActivity.class));
-        });
+
         createUserImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CreateUserActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
         });
+
         notificationsImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, NotificationsActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
         });
+
         calculatorImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CalculatorActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+        });
+
+        editImageView.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
         });
     }
 
@@ -154,12 +156,13 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         //header views
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
-                fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
+                fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
+                courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
             }
         });
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
-                branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
+                branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
             }
         });
         courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
@@ -168,11 +171,11 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
             }
         });
 
-        parcelSearchImageView.setOnClickListener(v -> {
-            final String invoiceIdStr = parcelSearchEditText.getText().toString();
+        requestSearchImageView.setOnClickListener(v -> {
+            final String invoiceIdStr = requestSearchEditText.getText().toString();
 
             if (TextUtils.isEmpty(invoiceIdStr)) {
-                Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Введите ID заявки", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
@@ -180,13 +183,12 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                 return;
             }
             try {
-                final UUID searchInvoiceUUID = SyncWorkRequest.searchInvoice(context, Long.parseLong(invoiceIdStr));
+                final UUID searchInvoiceUUID = SyncWorkRequest.searchRequest(context, Long.parseLong(invoiceIdStr));
+
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                        Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-
-                        parcelSearchEditText.setEnabled(true);
-
+                        Toast.makeText(context, "Заявки не существует", Toast.LENGTH_SHORT).show();
+                        requestSearchEditText.setEnabled(true);
                         return;
                     }
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
@@ -203,11 +205,10 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
                         mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
                         mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
@@ -217,11 +218,11 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                         mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
                         startActivity(mainIntent);
 
-                        parcelSearchEditText.setEnabled(true);
+                        requestSearchEditText.setEnabled(true);
 
                         return;
                     }
-                    parcelSearchEditText.setEnabled(false);
+                    requestSearchEditText.setEnabled(false);
                 });
             }
             catch (Exception e) {
@@ -247,13 +248,22 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         action.setIsRequest(true);
         action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
         action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
+        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
+
         action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : -1L);
+        action.setSenderFirstName(currentItem.getSenderFirstName());
+        action.setSenderLastName(currentItem.getSenderLastName());
+        action.setSenderMiddleName(currentItem.getSenderMiddleName());
+        action.setSenderEmail(currentItem.getSenderEmail());
+        action.setSenderPhone(currentItem.getSenderPhone());
+        action.setSenderAddress(currentItem.getSenderAddress());
         action.setSenderCountryId(currentItem.getSenderCountryId() != null ? currentItem.getSenderCountryId() : -1L);
         action.setSenderRegionId(currentItem.getSenderRegionId() != null ? currentItem.getSenderRegionId() : -1L);
         action.setSenderCityId(currentItem.getSenderCityId() != null ? currentItem.getSenderCityId() : -1L);
+
         action.setRecipientCountryId(currentItem.getRecipientCountryId() != null ? currentItem.getRecipientCountryId() : -1L);
         action.setRecipientCityId(currentItem.getRecipientCityId() != null ? currentItem.getRecipientCityId() : -1L);
-        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
+
         action.setDeliveryType(currentItem.getDeliveryType());
         action.setComment(currentItem.getComment());
         action.setConsignmentQuantity(currentItem.getConsignmentQuantity());

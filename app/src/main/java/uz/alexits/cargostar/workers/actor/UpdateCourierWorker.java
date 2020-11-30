@@ -16,7 +16,7 @@ import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.utils.ImageSerializer;
+import uz.alexits.cargostar.utils.Serializer;
 
 public class UpdateCourierWorker extends Worker {
     private final long courierId;
@@ -54,7 +54,7 @@ public class UpdateCourierWorker extends Worker {
 
         try {
             if (!TextUtils.isEmpty(photoUrl)) {
-                serializedPhoto = ImageSerializer.bitmapToBase64(getApplicationContext(), photoUrl);
+                serializedPhoto = Serializer.bitmapToBase64(getApplicationContext(), photoUrl);
             }
 
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),

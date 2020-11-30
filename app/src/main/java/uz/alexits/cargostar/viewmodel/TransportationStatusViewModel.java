@@ -10,12 +10,11 @@ import androidx.lifecycle.Transformations;
 
 import java.util.List;
 
-import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationData;
@@ -37,14 +36,14 @@ public class TransportationStatusViewModel extends AndroidViewModel {
     private final MutableLiveData<Long> nextTransitPointId;
 
     private final MutableLiveData<Long> requestId;
-    private final MutableLiveData<Request> currentRequest;
+    private final MutableLiveData<Long> partialId;
 
     public TransportationStatusViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
 
         this.requestId = new MutableLiveData<>();
-        this.currentRequest = new MutableLiveData<>();
+        this.partialId = new MutableLiveData<>();
         this.transportationId = new MutableLiveData<>();
         this.currentTransitPointId = new MutableLiveData<>();
         this.currentCityId = new MutableLiveData<>();
@@ -87,8 +86,11 @@ public class TransportationStatusViewModel extends AndroidViewModel {
         this.nextTransitPointId.setValue(nextTransitPointId);
     }
 
-    public LiveData<Transportation> getCurrentTransportation() {
-        return Transformations.switchMap(transportationId, repository::selectTransportationById);
+    public void setPartialId(final Long partialId) {
+        if (partialId == null) {
+            return;
+        }
+        this.partialId.setValue(partialId);
     }
 
     public LiveData<List<Route>> getRoute() {
@@ -131,5 +133,9 @@ public class TransportationStatusViewModel extends AndroidViewModel {
 
     public LiveData<Country> getDestinationCountry() {
         return Transformations.switchMap(requestId, repository::selectDestinationCountryByRequestId);
+    }
+
+    public LiveData<List<Transportation>> getPartialTransportationList() {
+        return Transformations.switchMap(partialId, repository::selectTransportationsByPartialId);
     }
 }

@@ -7,9 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
-
-import uz.alexits.cargostar.model.shipping.Cargo;
-import uz.alexits.cargostar.model.shipping.Consignment;
+import uz.alexits.cargostar.model.transportation.Consignment;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.view.viewholder.CalcItemViewHolder;
 

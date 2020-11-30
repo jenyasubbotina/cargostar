@@ -55,4 +55,7 @@ public interface ActorDao {
 
     @Query("SELECT * FROM customer WHERE email LIKE :email LIMIT 1")
     LiveData<Customer> selectSenderByEmail(final String email);
+
+    @Query("SELECT id FROM customer WHERE email LIKE :email LIMIT 1")
+    LiveData<Long> selectSenderIdByEmail(final String email);
 }

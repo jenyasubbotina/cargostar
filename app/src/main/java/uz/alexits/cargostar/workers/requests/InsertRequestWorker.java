@@ -7,7 +7,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import java.util.Date;
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 
 public class InsertRequestWorker extends Worker {

@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import uz.alexits.cargostar.model.shipping.Consignment;
+import uz.alexits.cargostar.model.transportation.Consignment;
 
 public class CreateInvoiceParams {
     @Expose
@@ -42,10 +42,6 @@ public class CreateInvoiceParams {
     @Expose
     @SerializedName("sender_country_id")
     private String senderCountryId;
-
-    @Expose
-    @SerializedName("sender_region_id")
-    private String senderRegionId;
 
     @Expose
     @SerializedName("sender_city_id")
@@ -105,10 +101,6 @@ public class CreateInvoiceParams {
     private String recipientCountryId;
 
     @Expose
-    @SerializedName("recipient_region_id")
-    private String recipientRegionId;
-
-    @Expose
     @SerializedName("recipient_city_id")
     private String recipientCityId;
 
@@ -164,10 +156,6 @@ public class CreateInvoiceParams {
     @Expose
     @SerializedName("payer_country_id")
     private String payerCountryId;
-
-    @Expose
-    @SerializedName("payer_region_id")
-    private String payerRegionId;
 
     @Expose
     @SerializedName("payer_city_id")
@@ -360,14 +348,6 @@ public class CreateInvoiceParams {
         this.senderCountryId = senderCountryId;
     }
 
-    public String getSenderRegionId() {
-        return senderRegionId;
-    }
-
-    public void setSenderRegionId(final String senderRegionId) {
-        this.senderRegionId = senderRegionId;
-    }
-
     public String getSenderCityId() {
         return senderCityId;
     }
@@ -464,14 +444,6 @@ public class CreateInvoiceParams {
         this.recipientCountryId = recipientCountryId;
     }
 
-    public String getRecipientRegionId() {
-        return recipientRegionId;
-    }
-
-    public void setRecipientRegionId(final String recipientRegionId) {
-        this.recipientRegionId = recipientRegionId;
-    }
-
     public String getRecipientCityId() {
         return recipientCityId;
     }
@@ -566,14 +538,6 @@ public class CreateInvoiceParams {
 
     public void setPayerCountryId(final String payerCountryId) {
         this.payerCountryId = payerCountryId;
-    }
-
-    public String getPayerRegionId() {
-        return payerRegionId;
-    }
-
-    public void setPayerRegionId(final String payerRegionId) {
-        this.payerRegionId = payerRegionId;
     }
 
     public String getPayerCityId() {
@@ -852,7 +816,6 @@ public class CreateInvoiceParams {
                 ", senderTntAccountNumber='" + senderTntAccountNumber + '\'' +
                 ", senderFedexAccountNumber='" + senderFedexAccountNumber + '\'' +
                 ", senderCountryId=" + senderCountryId +
-                ", senderRegionId=" + senderRegionId +
                 ", senderCityId=" + senderCityId +
                 ", senderAddress='" + senderAddress + '\'' +
                 ", senderZip='" + senderZip + '\'' +
@@ -867,7 +830,6 @@ public class CreateInvoiceParams {
                 ", recipientTntAccountNumber='" + recipientTntAccountNumber + '\'' +
                 ", recipientFedexAccountNumber='" + recipientFedexAccountNumber + '\'' +
                 ", recipientCountryId=" + recipientCountryId +
-                ", recipientRegionId=" + recipientRegionId +
                 ", recipientCityId=" + recipientCityId +
                 ", recipientAddress='" + recipientAddress + '\'' +
                 ", recipientZip='" + recipientZip + '\'' +
@@ -882,7 +844,6 @@ public class CreateInvoiceParams {
                 ", payerTntAccountNumber='" + payerTntAccountNumber + '\'' +
                 ", payerFedexAccountNumber='" + payerFedexAccountNumber + '\'' +
                 ", payerCountryId=" + payerCountryId +
-                ", payerRegionId=" + payerRegionId +
                 ", payerCityId=" + payerCityId +
                 ", payerAddress='" + payerAddress + '\'' +
                 ", payerZip='" + payerZip + '\'' +

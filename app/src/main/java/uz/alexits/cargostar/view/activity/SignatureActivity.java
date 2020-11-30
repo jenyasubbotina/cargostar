@@ -1,13 +1,11 @@
 package uz.alexits.cargostar.view.activity;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -15,7 +13,7 @@ import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.FileManager;
 import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.utils.PaintView;
+import uz.alexits.cargostar.view.PaintView;
 
 public class SignatureActivity extends AppCompatActivity {
     private PaintView paintView;
@@ -27,12 +25,6 @@ public class SignatureActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signature);
-
-        int resultValue = -1;
-
-        if (getIntent() != null) {
-            resultValue = getIntent().getIntExtra(IntentConstants.INTENT_RESULT_VALUE, -1);
-        }
 
         paintView = findViewById(R.id.paint_view);
         final DisplayMetrics metrics = new DisplayMetrics();
@@ -61,7 +53,6 @@ public class SignatureActivity extends AppCompatActivity {
                 finish();
                 return;
             }
-            Log.i(SignatureActivity.class.toString(), "makeScreenshot(): error occurred while was trying to make a screenshot");
         });
     }
 

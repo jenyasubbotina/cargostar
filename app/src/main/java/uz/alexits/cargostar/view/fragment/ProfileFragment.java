@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.work.Data;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -36,11 +37,8 @@ import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.utils.UiUtils;
-import uz.alexits.cargostar.view.activity.CalculatorActivity;
-import uz.alexits.cargostar.view.activity.CreateUserActivity;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.activity.NotificationsActivity;
 import uz.alexits.cargostar.view.activity.SignInActivity;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
@@ -52,8 +50,9 @@ public class ProfileFragment extends Fragment {
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
-    private EditText parcelSearchEditText;
-    private ImageView parcelSearchImageView;
+    private TextView courierIdTextView;
+    private EditText requestSearchEditText;
+    private ImageView requestSearchImageView;
     private ImageView profileImageView;
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
@@ -111,17 +110,21 @@ public class ProfileFragment extends Fragment {
 
         //header views
         profileImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, MainActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
         });
+
         createUserImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CreateUserActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
         });
+
         notificationsImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, NotificationsActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
         });
+
         calculatorImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CalculatorActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
         });
+
         //main content views
         userIdEditText.setOnFocusChangeListener((v, hasFocus) -> {
             UiUtils.onFocusChanged(userIdEditText, hasFocus);
@@ -266,8 +269,13 @@ public class ProfileFragment extends Fragment {
             if (courier != null) {
                 currentCourier = courier;
                 courierViewModel.setCourierCountryId(courier.getCountryId());
-                courierViewModel.setCourierRegionId(courier.getRegionId());
-                courierViewModel.setCourierCityId(courier.getCityId());
+
+                if (courier.getRegionId() != null) {
+                    courierViewModel.setCourierRegionId(courier.getRegionId());
+                }
+                if (courier.getCityId() != null) {
+                    courierViewModel.setCourierCityId(courier.getCityId());
+                }
 
                 userIdEditText.setText(String.valueOf(courier.getId()));
                 userIdEditText.setBackgroundResource(R.drawable.edit_text_active);
@@ -334,14 +342,15 @@ public class ProfileFragment extends Fragment {
                 else {
                     photoEditText.setBackgroundResource(R.drawable.edit_text_locked);
                 }
-                fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
+                fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
+                courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
             }
         });
 
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             Log.i(ProfileFragment.class.toString(), "branch" + branch);
             if (branch != null) {
-                branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
+                branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
                 //branch data
                 addressEditText.setText(branch.getAddress());
                 addressEditText.setBackgroundResource(R.drawable.edit_text_active);
@@ -392,11 +401,11 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        parcelSearchImageView.setOnClickListener(v -> {
-            final String invoiceIdStr = parcelSearchEditText.getText().toString();
+        requestSearchImageView.setOnClickListener(v -> {
+            final String invoiceIdStr = requestSearchEditText.getText().toString();
 
             if (TextUtils.isEmpty(invoiceIdStr)) {
-                Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Введите ID заявки", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
@@ -404,13 +413,12 @@ public class ProfileFragment extends Fragment {
                 return;
             }
             try {
-                final UUID searchInvoiceUUID = SyncWorkRequest.searchInvoice(context, Long.parseLong(invoiceIdStr));
+                final UUID searchInvoiceUUID = SyncWorkRequest.searchRequest(context, Long.parseLong(invoiceIdStr));
+
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                        Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-
-                        parcelSearchEditText.setEnabled(true);
-
+                        Toast.makeText(context, "Заявки не существует", Toast.LENGTH_SHORT).show();
+                        requestSearchEditText.setEnabled(true);
                         return;
                     }
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
@@ -427,11 +435,10 @@ public class ProfileFragment extends Fragment {
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
                         mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
                         mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
@@ -441,11 +448,11 @@ public class ProfileFragment extends Fragment {
                         mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
                         startActivity(mainIntent);
 
-                        parcelSearchEditText.setEnabled(true);
+                        requestSearchEditText.setEnabled(true);
 
                         return;
                     }
-                    parcelSearchEditText.setEnabled(false);
+                    requestSearchEditText.setEnabled(false);
                 });
             }
             catch (Exception e) {
@@ -459,8 +466,9 @@ public class ProfileFragment extends Fragment {
         //header views
         fullNameTextView = activity.findViewById(R.id.full_name_text_view);
         branchTextView = activity.findViewById(R.id.branch_text_view);
-        parcelSearchEditText = activity.findViewById(R.id.search_edit_text);
-        parcelSearchImageView = activity.findViewById(R.id.search_btn);
+        courierIdTextView = activity.findViewById(R.id.courier_id_text_view);
+        requestSearchEditText = activity.findViewById(R.id.search_edit_text);
+        requestSearchImageView = activity.findViewById(R.id.search_btn);
         profileImageView = activity.findViewById(R.id.profile_image_view);
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);

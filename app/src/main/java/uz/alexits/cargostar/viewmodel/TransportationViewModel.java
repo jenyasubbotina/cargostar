@@ -51,13 +51,15 @@ public class TransportationViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Transportation>> getCurrentTransportationList() {
-        return Transformations.switchMap(statusArrayTransitPoint, input ->
-                repository.selectCurrentTransportations(input.getStatusArray(), input.getTransitPoint()));
+//        if (fragmentType == ) {
+            return Transformations.switchMap(statusArrayTransitPoint, input ->
+                    repository.selectCurrentTransportations(input.getStatusArray(), input.getTransitPoint()));
+//        }
+//        if (fragmentType == ) {
+//            return Transformations.switchMap(statusArrayTransitPoint, input ->
+//                    repository.selectTransportationDelivery(input.getStatusArray(), input.getTransitPoint()));
+//        }
     }
-
-//    public LiveData<List<Transportation>> getTransportationListByTransitPointId() {
-//
-//    }
 
     /*Transit points*/
     public LiveData<List<TransitPoint>> selectAllTransitPoints() {

@@ -3,6 +3,7 @@ package uz.alexits.cargostar.workers.invoice;
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -52,7 +53,26 @@ public class FetchSenderDataWorker extends Worker {
                         return Result.failure();
                     }
                     Log.i(TAG, "fetchSenderData(): successfully inserted entry " + sender);
-                    return Result.success();
+
+                    final Data outputData = new Data.Builder()
+                            .putLong(Constants.KEY_SENDER_ID, sender.getId())
+                            .putString(Constants.KEY_SENDER_EMAIL, sender.getEmail())
+                            .putString(Constants.KEY_SENDER_SIGNATURE, sender.getSignatureUrl())
+                            .putString(Constants.KEY_SENDER_FIRST_NAME, sender.getFirstName())
+                            .putString(Constants.KEY_SENDER_LAST_NAME, sender.getLastName())
+                            .putString(Constants.KEY_SENDER_MIDDLE_NAME, sender.getMiddleName())
+                            .putString(Constants.KEY_SENDER_PHONE, sender.getPhone())
+                            .putString(Constants.KEY_SENDER_ADDRESS, sender.getAddress())
+                            .putLong(Constants.KEY_SENDER_COUNTRY_ID, sender.getCountryId() != null ? sender.getCountryId() : -1L)
+                            .putLong(Constants.KEY_SENDER_REGION_ID, sender.getRegionId() != null ? sender.getRegionId() : -1L)
+                            .putLong(Constants.KEY_SENDER_CITY_ID, sender.getCityId() != null ? sender.getCityId() : -1L)
+                            .putString(Constants.KEY_SENDER_ZIP, sender.getZip())
+                            .putString(Constants.KEY_SENDER_COMPANY_NAME, sender.getCompany())
+                            .putString(Constants.KEY_SENDER_CARGOSTAR, sender.getCargostarAccountNumber())
+                            .putString(Constants.KEY_SENDER_TNT, sender.getTntAccountNumber())
+                            .putString(Constants.KEY_SENDER_FEDEX, sender.getFedexAccountNumber())
+                            .build();
+                    return Result.success(outputData);
                 }
             }
             else {

@@ -10,24 +10,18 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.api.params.CreateInvoiceParams;
 import uz.alexits.cargostar.api.params.CreateInvoiceResponse;
-import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.actor.AddressBook;
-import uz.alexits.cargostar.model.actor.Customer;
-import uz.alexits.cargostar.model.shipping.Consignment;
-import uz.alexits.cargostar.model.shipping.Invoice;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.transportation.Consignment;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.utils.ImageSerializer;
+import uz.alexits.cargostar.utils.Serializer;
 
 public class SendInvoiceWorker extends Worker {
     private final Gson gson;
@@ -41,7 +35,6 @@ public class SendInvoiceWorker extends Worker {
     private final String senderLastName;
     private final String senderPhone;
     private final String senderCountryId;
-    private final String senderRegionId;
     private final String senderCityId;
     private final String senderAddress;
     private final String senderZip;
@@ -58,7 +51,6 @@ public class SendInvoiceWorker extends Worker {
     private final String recipientPhone;
     private final String recipientAddress;
     private final String recipientCountryId;
-    private final String recipientRegionId;
     private final String recipientCityId;
     private final String recipientZip;
     private final String recipientCargo;
@@ -75,7 +67,6 @@ public class SendInvoiceWorker extends Worker {
     private final String payerPhone;
     private final String payerAddress;
     private final String payerCountryId;
-    private final String payerRegionId;
     private final String payerCityId;
     private final String payerZip;
     private final String payerCargostar;
@@ -127,7 +118,6 @@ public class SendInvoiceWorker extends Worker {
         this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
         this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
         this.senderCountryId = getInputData().getString(Constants.KEY_SENDER_COUNTRY_ID);
-        this.senderRegionId = getInputData().getString(Constants.KEY_SENDER_REGION_ID);
         this.senderCityId = getInputData().getString(Constants.KEY_SENDER_CITY_ID);
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
         this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
@@ -143,10 +133,9 @@ public class SendInvoiceWorker extends Worker {
         this.recipientTnt = getInputData().getString(Constants.KEY_RECIPIENT_TNT);
         this.recipientFedex = getInputData().getString(Constants.KEY_RECIPIENT_FEDEX);
         this.recipientCountryId = getInputData().getString(Constants.KEY_RECIPIENT_COUNTRY_ID);
-        this.recipientRegionId = getInputData().getString(Constants.KEY_RECIPIENT_REGION_ID);
         this.recipientCityId = getInputData().getString(Constants.KEY_RECIPIENT_CITY_ID);
         this.recipientAddress = getInputData().getString(Constants.KEY_RECIPIENT_ADDRESS);
-        this.recipientZip = getInputData().getString(Constants.RECIPIENT_ZIP);
+        this.recipientZip = getInputData().getString(Constants.KEY_RECIPIENT_ZIP);
         this.recipientFirstName = getInputData().getString(Constants.KEY_RECIPIENT_FIRST_NAME);
         this.recipientMiddleName = getInputData().getString(Constants.KEY_RECIPIENT_MIDDLE_NAME);
         this.recipientLastName = getInputData().getString(Constants.KEY_RECIPIENT_LAST_NAME);
@@ -156,7 +145,6 @@ public class SendInvoiceWorker extends Worker {
 
         this.payerEmail = getInputData().getString(Constants.KEY_PAYER_EMAIL);
         this.payerCountryId = getInputData().getString(Constants.KEY_PAYER_COUNTRY_ID);
-        this.payerRegionId = getInputData().getString(Constants.KEY_PAYER_REGION_ID);
         this.payerCityId = getInputData().getString(Constants.KEY_PAYER_CITY_ID);
         this.payerAddress = getInputData().getString(Constants.KEY_PAYER_ADDRESS);
         this.payerZip = getInputData().getString(Constants.KEY_PAYER_ZIP);
@@ -175,11 +163,11 @@ public class SendInvoiceWorker extends Worker {
         this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, -1);
         this.payerInn = getInputData().getString(Constants.KEY_PAYER_INN);
         this.payerCompanyName = getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME);
-        this.checkingAccount = getInputData().getString(Constants.KEY_CHECKING_ACCOUNT);
-        this.bank = getInputData().getString(Constants.KEY_BANK);
-        this.mfo = getInputData().getString(Constants.KEY_MFO);
-        this.oked = getInputData().getString(Constants.KEY_OKED);
-        this.registrationCode = getInputData().getString(Constants.KEY_REGISTRATION_CODE);
+        this.checkingAccount = getInputData().getString(Constants.KEY_PAYER_CHECKING_ACCOUNT);
+        this.bank = getInputData().getString(Constants.KEY_PAYER_BANK);
+        this.mfo = getInputData().getString(Constants.KEY_PAYER_MFO);
+        this.oked = getInputData().getString(Constants.KEY_PAYER_OKED);
+        this.registrationCode = getInputData().getString(Constants.KEY_PAYER_REGISTRATION_CODE);
 
         this.instructions = getInputData().getString(Constants.KEY_INSTRUCTIONS);
 
@@ -213,14 +201,13 @@ public class SendInvoiceWorker extends Worker {
 
         /* sender data */
         if (senderSignature != null && !TextUtils.isEmpty(senderSignature)) {
-            createInvoiceParams.setSenderSignature(isSenderSignatureLocal ? senderSignature : ImageSerializer.fileToBase64(senderSignature));
+            createInvoiceParams.setSenderSignature(isSenderSignatureLocal ? senderSignature : Serializer.fileToBase64(senderSignature));
         }
         createInvoiceParams.setSenderEmail(senderEmail);
         createInvoiceParams.setSenderTntAccountNumber(senderTnt);
         createInvoiceParams.setSenderFedexAccountNumber(senderFedex);
         createInvoiceParams.setSenderAddress(senderAddress);
         createInvoiceParams.setSenderCountryId(senderCountryId);
-        createInvoiceParams.setSenderRegionId(senderRegionId);
         createInvoiceParams.setSenderCityId(senderCityId);
         createInvoiceParams.setSenderZip(senderZip);
         createInvoiceParams.setSenderFirstName(senderFirstName);
@@ -237,7 +224,6 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setRecipientFedexAccountNumber(recipientFedex);
         createInvoiceParams.setRecipientAddress(recipientAddress);
         createInvoiceParams.setRecipientCountryId(recipientCountryId);
-        createInvoiceParams.setRecipientRegionId(recipientRegionId);
         createInvoiceParams.setRecipientCityId(recipientCityId);
         createInvoiceParams.setRecipientZip(recipientZip);
         createInvoiceParams.setRecipientFirstName(recipientFirstName);
@@ -250,7 +236,6 @@ public class SendInvoiceWorker extends Worker {
         /* payer data */
         createInvoiceParams.setPayerEmail(payerEmail);
         createInvoiceParams.setPayerCountryId(payerCountryId);
-        createInvoiceParams.setPayerRegionId(payerRegionId);
         createInvoiceParams.setPayerCityId(payerCityId);
         createInvoiceParams.setPayerAddress(payerAddress);
         createInvoiceParams.setPayerZip(payerZip);
@@ -279,7 +264,7 @@ public class SendInvoiceWorker extends Worker {
 
         createInvoiceParams.setProviderId(providerId);
 
-        final List<Consignment> consignmentList = deserializeConsignmentList(serializedConsignmentList);
+        final List<Consignment> consignmentList = Serializer.deserializeConsignmentList(serializedConsignmentList);
 
         createInvoiceParams.setConsignmentList(consignmentList);
 
@@ -293,6 +278,8 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setPaymentMethod(paymentMethod);
 
         try {
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
             final Response<CreateInvoiceResponse> response = RetrofitClient.getInstance(getApplicationContext()).createInvoice(createInvoiceParams);
             if (response.code() == 200 || response.code() == 201) {
                 if (response.isSuccessful()) {
@@ -314,13 +301,6 @@ public class SendInvoiceWorker extends Worker {
             Log.e(TAG, "sendInvoice(): ", e);
             return Result.failure();
         }
-    }
-
-    private List<Consignment> deserializeConsignmentList(final String serializedConsignmentList) {
-        if (serializedConsignmentList == null) {
-            return null;
-        }
-        return gson.fromJson(serializedConsignmentList, new TypeToken<List<Consignment>>(){}.getType());
     }
 
     private static final String TAG = SendInvoiceWorker.class.toString();

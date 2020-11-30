@@ -10,13 +10,13 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,7 +34,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import uz.alexits.cargostar.BuildConfig;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
@@ -48,18 +47,15 @@ import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.calculation.PackagingType;
 import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.shipping.Consignment;
+import uz.alexits.cargostar.model.transportation.Consignment;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.view.adapter.TariffPriceAdapter;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.utils.UiUtils;
-import uz.alexits.cargostar.view.activity.CreateUserActivity;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.activity.NotificationsActivity;
-import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.CalculatorAdapter;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
@@ -79,12 +75,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
-    private EditText parcelSearchEditText;
-    private ImageView parcelSearchImageView;
+    private TextView courierIdTextView;
+    private EditText requestSearchEditText;
+    private ImageView requestSearchImageView;
     private ImageView profileImageView;
     private ImageView editImageView;
     private ImageView createUserImageView;
-    private ImageView calculatorImageView;
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
     //main content views
@@ -157,6 +153,10 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private static final List<Consignment> consignmentList = new ArrayList<>();
     private static final List<TariffPrice> tariffPriceList = new ArrayList<>();
 
+    private static volatile boolean countryFirstRun = true;
+    private static volatile boolean srcCityFirstRun = true;
+    private static volatile boolean destCityFirstRun = true;
+
     public CalculatorFragment() {
         // Required empty public constructor
     }
@@ -164,8 +164,14 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        countryFirstRun = true;
+        srcCityFirstRun = true;
+        destCityFirstRun = true;
+
         context = getContext();
         activity = getActivity();
+
         consignmentList.clear();
 
         SyncWorkRequest.fetchPackagingData(context, 100000);
@@ -177,12 +183,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         //header views
         fullNameTextView = activity.findViewById(R.id.full_name_text_view);
         branchTextView = activity.findViewById(R.id.branch_text_view);
-        parcelSearchEditText = activity.findViewById(R.id.search_edit_text);
-        parcelSearchImageView = activity.findViewById(R.id.search_btn);
+        courierIdTextView = activity.findViewById(R.id.courier_id_text_view);
+        requestSearchEditText = activity.findViewById(R.id.search_edit_text);
+        requestSearchImageView = activity.findViewById(R.id.search_btn);
         profileImageView = activity.findViewById(R.id.profile_image_view);
         editImageView = activity.findViewById(R.id.edit_image_view);
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
-        calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
@@ -262,17 +268,20 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         super.onViewCreated(view, savedInstanceState);
 
         //header views
-        profileImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, MainActivity.class));
-        });
         editImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, ProfileActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
         });
+
         createUserImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CreateUserActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
         });
+
         notificationsImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, NotificationsActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
+        });
+
+        profileImageView.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
         });
 
         weightEditText.setOnFocusChangeListener((v, hasFocus) -> {
@@ -305,28 +314,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                         itemTextView.setTextColor(context.getColor(R.color.colorBlack));
                         srcCountryField.setBackgroundResource(R.drawable.edit_text_active);
                     }
-                }
-
-                //country & null = hide all
-                if (destCountrySpinner.getSelectedItem() == null) {
-                    selectedCountryId = null;
-                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
-
-                    firstCardRadioBtn.setChecked(false);
-                    secondCardRadioBtn.setChecked(false);
-
-                    firstCardRadioBtn.setText(null);
-                    secondCardRadioBtn.setText(null);
-
-                    firstCardRadioBtn.setVisibility(View.INVISIBLE);
-                    firstCardImageView.setVisibility(View.INVISIBLE);
-                    firstCard.setVisibility(View.INVISIBLE);
-
-                    secondCardRadioBtn.setVisibility(View.INVISIBLE);
-                    secondCardImageView.setVisibility(View.INVISIBLE);
-                    secondCard.setVisibility(View.INVISIBLE);
-
-                    return;
                 }
 
                 final Country destCountry = (Country) destCountrySpinner.getSelectedItem();
@@ -431,27 +418,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                         itemTextView.setTextColor(context.getColor(R.color.colorBlack));
                         destCountryField.setBackgroundResource(R.drawable.edit_text_active);
                     }
-                }
-
-                //country & null = hide all
-                if (srcCitySpinner.getSelectedItem() == null) {
-                    selectedCountryId = null;
-                    calculatorViewModel.setCountryIdProviderId(selectedCountryId, selectedProvider != null ? selectedProvider.getId() : null);
-
-                    firstCardRadioBtn.setChecked(false);
-                    secondCardRadioBtn.setChecked(false);
-
-                    firstCardRadioBtn.setText(null);
-                    secondCardRadioBtn.setText(null);
-
-                    firstCardRadioBtn.setVisibility(View.INVISIBLE);
-                    firstCardImageView.setVisibility(View.INVISIBLE);
-                    firstCard.setVisibility(View.INVISIBLE);
-
-                    secondCardRadioBtn.setVisibility(View.INVISIBLE);
-                    secondCardImageView.setVisibility(View.INVISIBLE);
-                    secondCard.setVisibility(View.INVISIBLE);
-                    return;
                 }
 
                 final Country srcCountry = (Country) srcCountrySpinner.getSelectedItem();
@@ -660,8 +626,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 final TextView itemTextView = (TextView) view;
                 final PackagingType selectedPackagingType = (PackagingType) adapterView.getSelectedItem();
 
-                Log.i(TAG, "onItemSelected(): packagingType=" + selectedPackagingType + "packagingId=" + selectedPackagingType.getPackagingId());
-
                 if (itemTextView != null) {
                     if (i < adapterView.getCount()) {
                         itemTextView.setTextColor(context.getColor(R.color.colorBlack));
@@ -693,12 +657,13 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
-                fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
+                fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
+                courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
             }
         });
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
-                branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
+                branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
             }
         });
         courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
@@ -707,11 +672,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             }
         });
 
-        parcelSearchImageView.setOnClickListener(v -> {
-            final String invoiceIdStr = parcelSearchEditText.getText().toString();
+        requestSearchImageView.setOnClickListener(v -> {
+            final String invoiceIdStr = requestSearchEditText.getText().toString();
 
             if (TextUtils.isEmpty(invoiceIdStr)) {
-                Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Введите ID заявки", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
@@ -719,13 +684,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 return;
             }
             try {
-                final UUID searchInvoiceUUID = SyncWorkRequest.searchInvoice(context, Long.parseLong(invoiceIdStr));
+                final UUID searchInvoiceUUID = SyncWorkRequest.searchRequest(context, Long.parseLong(invoiceIdStr));
+
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                        Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-
-                        parcelSearchEditText.setEnabled(true);
-
+                        Toast.makeText(context, "Заявки не существует", Toast.LENGTH_SHORT).show();
+                        requestSearchEditText.setEnabled(true);
                         return;
                     }
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
@@ -733,6 +697,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
                         final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
                         final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
+                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
                         final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
                         final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
                         final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
@@ -742,12 +707,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
+                        mainIntent.putExtra(Constants.KEY_COURIER_ID, courierId);
                         mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
                         mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
                         mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, senderCityId);
@@ -756,11 +721,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                         mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
                         startActivity(mainIntent);
 
-                        parcelSearchEditText.setEnabled(true);
+                        requestSearchEditText.setEnabled(true);
 
                         return;
                     }
-                    parcelSearchEditText.setEnabled(false);
+                    requestSearchEditText.setEnabled(false);
                 });
             }
             catch (Exception e) {
@@ -777,10 +742,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             if (countryList != null) {
                 countryArrayAdapter.clear();
                 countryArrayAdapter.addAll(countryList);
-                countryArrayAdapter.notifyDataSetChanged();
 
-                srcCountrySpinner.post(() -> srcCountrySpinner.setSelection(191, false));
-                destCountrySpinner.post(() -> destCountrySpinner.setSelection(191, false));
+                if (countryFirstRun) {
+                    countryFirstRun = false;
+                    srcCountrySpinner.post(() -> srcCountrySpinner.setSelection(191, false));
+                    destCountrySpinner.post(() -> destCountrySpinner.setSelection(191, false));
+                }
             }
         });
 
@@ -789,12 +756,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             if (srcCityList != null) {
                 srcCityArrayAdapter.clear();
                 srcCityArrayAdapter.addAll(srcCityList);
-                srcCityArrayAdapter.notifyDataSetChanged();
-//                Log.i(TAG, "src city: " + runCount);
-//
-//                if (runCount++ <= 0) {
-//                    srcCitySpinner.post(() -> srcCitySpinner.setSelection(88, false));
-//                }
+
+                if (srcCityFirstRun) {
+                    srcCityFirstRun = false;
+                    srcCitySpinner.post(() -> srcCitySpinner.setSelection(88, false));
+                }
             }
         });
 
@@ -802,7 +768,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             if (destCityList != null) {
                 destCityArrayAdapter.clear();
                 destCityArrayAdapter.addAll(destCityList);
-                destCityArrayAdapter.notifyDataSetChanged();
+
+                if (destCityFirstRun) {
+                    destCityFirstRun = false;
+                    destCitySpinner.post(() -> destCitySpinner.setSelection(55, false));
+                }
             }
         });
 
@@ -819,7 +789,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
         calculatorViewModel.getPackagingIds().observe(getViewLifecycleOwner(), packagingIds -> {
             selectedPackagingIdList = packagingIds;
-            Log.i(TAG, "packagingIdList: " + selectedPackagingIdList);
             if (packageTypeRadioGroup.getCheckedRadioButtonId() == docTypeRadioBtn.getId()) {
                 calculatorViewModel.setTypePackageIdList(1, packagingIds);
             }
@@ -847,12 +816,10 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         });
 
         calculatorViewModel.getZoneSettingsList().observe(getViewLifecycleOwner(), zoneSettingsList -> {
-            Log.i(TAG, "zoneSettingsList: " + zoneSettingsList);
             selectedZoneSettingsList = zoneSettingsList;
         });
 
         calculatorViewModel.getVat().observe(getViewLifecycleOwner(), vat -> {
-            Log.i(TAG, "vat=" + vat);
             selectedVat = vat;
         });
 
@@ -906,11 +873,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         if (consignmentList.size() <= 0) {
             return;
         }
-        Log.i(TAG, "position=" + position + " size" + consignmentList.size());
         consignmentList.remove(position);
         calculatorAdapter.notifyDataSetChanged();
-
-        Log.i(TAG, "itemCount=" + calculatorAdapter.getItemCount());
     }
 
     @Override
@@ -1023,18 +987,10 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         int totalQuantity = consignmentList.size();
         double totalVolume = 0.0;
         double totalWeight = 0.0;
-        double totalLength = 0.0;
-        double totalWidth = 0.0;
-        double totalHeight = 0.0;
 
         for (final Consignment item : consignmentList) {
             totalWeight += item.getWeight();
-            totalLength += item.getLength();
-            totalWidth += item.getWidth();
-            totalHeight += item.getHeight();
-        }
-        if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
-            totalVolume = totalLength * totalWidth * totalHeight;
+            totalVolume += item.getLength() * item.getWidth() * item.getHeight();
         }
 
         if (selectedZoneSettingsList.isEmpty()) {
@@ -1088,7 +1044,9 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                     totalPrice *= (selectedVat.getVat() + 100) / 100;
                 }
             }
-            tariffPriceList.add(new TariffPrice(correspondingTariff.getName(), String.valueOf((int) totalPrice), correspondingTariff.getId()));
+            if (correspondingTariff != null) {
+                tariffPriceList.add(new TariffPrice(correspondingTariff.getName(), String.valueOf((int) totalPrice + 1), correspondingTariff.getId()));
+            }
         }
         totalQuantityTextView.setText(String.valueOf(totalQuantity));
         totalWeightTextView.setText(String.valueOf(new BigDecimal(Double.toString(totalWeight)).setScale(2, RoundingMode.HALF_UP).doubleValue()));

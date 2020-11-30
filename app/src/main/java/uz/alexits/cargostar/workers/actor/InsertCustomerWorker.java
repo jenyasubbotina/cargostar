@@ -16,7 +16,7 @@ import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.utils.ImageSerializer;
+import uz.alexits.cargostar.utils.Serializer;
 
 public class InsertCustomerWorker extends Worker {
     private final String email;
@@ -29,7 +29,6 @@ public class InsertCustomerWorker extends Worker {
     private final String lastName;
     private final String phone;
     private final String country;
-    private final String region;
     private final String city;
     private final String address;
     private final String geolocation;
@@ -44,7 +43,6 @@ public class InsertCustomerWorker extends Worker {
     private final String oked;
     private final String checkingAccount;
     private final String vat;
-    private final String photoUrl;
     private final String signatureUrl;
 
     public InsertCustomerWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -59,7 +57,6 @@ public class InsertCustomerWorker extends Worker {
         this.lastName = getInputData().getString(Constants.KEY_LAST_NAME);
         this.phone = getInputData().getString(Constants.KEY_PHONE);
         this.country = getInputData().getString(Constants.KEY_COUNTRY);
-        this.region = getInputData().getString(Constants.KEY_REGION);
         this.city = getInputData().getString(Constants.KEY_CITY);
         this.address = getInputData().getString(Constants.KEY_ADDRESS);
         this.geolocation = getInputData().getString(Constants.KEY_GEOLOCATION);
@@ -69,12 +66,11 @@ public class InsertCustomerWorker extends Worker {
         this.passportSerial = getInputData().getString(Constants.KEY_PASSPORT_SERIAL);
         this.inn = getInputData().getString(Constants.KEY_INN);
         this.company = getInputData().getString(Constants.KEY_COMPANY);
-        this.bank = getInputData().getString(Constants.KEY_BANK);
-        this.mfo = getInputData().getString(Constants.KEY_MFO);
-        this.oked = getInputData().getString(Constants.KEY_OKED);
-        this.checkingAccount = getInputData().getString(Constants.KEY_CHECKING_ACCOUNT);
+        this.bank = getInputData().getString(Constants.KEY_PAYER_BANK);
+        this.mfo = getInputData().getString(Constants.KEY_PAYER_MFO);
+        this.oked = getInputData().getString(Constants.KEY_PAYER_OKED);
+        this.checkingAccount = getInputData().getString(Constants.KEY_PAYER_CHECKING_ACCOUNT);
         this.vat = getInputData().getString(Constants.KEY_VAT);
-        this.photoUrl = getInputData().getString(Constants.KEY_PHOTO);
         this.signatureUrl = getInputData().getString(Constants.KEY_SIGNATURE);
     }
 
@@ -86,16 +82,10 @@ public class InsertCustomerWorker extends Worker {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
 
-            String photoBytesStr = null;
-
-            if (!TextUtils.isEmpty(photoUrl)) {
-                photoBytesStr = ImageSerializer.bitmapToBase64(getApplicationContext(), photoUrl);
-            }
-
             String signatureBytesStr = null;
 
             if (!TextUtils.isEmpty(signatureUrl)) {
-                signatureBytesStr = ImageSerializer.fileToBase64(signatureUrl);
+                signatureBytesStr = Serializer.fileToBase64(signatureUrl);
             }
 
             final Response<Customer> response = RetrofitClient.getInstance(getApplicationContext())
@@ -111,7 +101,6 @@ public class InsertCustomerWorker extends Worker {
                             lastName,
                             phone,
                             country,
-                            region,
                             city,
                             address,
                             geolocation,
@@ -126,7 +115,6 @@ public class InsertCustomerWorker extends Worker {
                             oked,
                             checkingAccount,
                             vat,
-                            photoBytesStr,
                             signatureBytesStr);
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
@@ -138,7 +126,6 @@ public class InsertCustomerWorker extends Worker {
                     }
                     newCustomer.setEmail(email);
                     newCustomer.setSignatureUrl(signatureUrl);
-                    newCustomer.setPhotoUrl(photoUrl);
 
                     Log.i(TAG, "createUser(): " + newCustomer);
 

@@ -52,7 +52,13 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
 
             holder.fromTextView.setText(currentTransportation.getCityFrom());
             holder.toTextView.setText(currentTransportation.getCityTo());
-            holder.transportationTypeTextView.setText(R.string.parcel);
+
+            if (currentTransportation.getPartialId() == null || currentTransportation.getPartialId() <= 0) {
+                holder.transportationTypeTextView.setText(R.string.transportation);
+            }
+            else {
+                holder.transportationTypeTextView.setText(R.string.partial);
+            }
 
             if (!TextUtils.isEmpty(currentTransportation.getTransportationStatusName())) {
                 if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.in_transit))) {

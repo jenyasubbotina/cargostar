@@ -20,9 +20,9 @@ import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.shipping.Consignment;
-import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
 import uz.alexits.cargostar.push.Notification;
@@ -260,12 +260,12 @@ public class Repository {
         return actorDao.selectCustomer(clientId);
     }
 
-    public LiveData<Long> selectSenderUserIdByEmail(final String senderEmail) {
-        return actorDao.selectSenderUserIdByEmail(senderEmail);
+    public LiveData<Customer> selectSenderByEmail(final String senderEmail) {
+        return actorDao.selectSenderByEmail(senderEmail);
     }
 
-    public LiveData<Customer> selectSenderByEmail(final String email) {
-        return actorDao.selectSenderByEmail(email);
+    public LiveData<Long> selectSenderIdByEmail(final String senderEmail) {
+        return actorDao.selectSenderIdByEmail(senderEmail);
     }
 
     /*address book*/
@@ -328,8 +328,16 @@ public class Repository {
         return transportationDao.selectCurrentTransportations(statusArray, transitPointId);
     }
 
+//    public LiveData<List<Transportation>> selectTransportationDelivery(final List<Long> statusArray, final Long transitPointId) {
+//        return transportationDao.selectCurrentTransportations(statusArray, transitPointId);
+//    }
+
     public LiveData<Transportation> selectTransportationByInvoiceId(final long invoiceId) {
         return transportationDao.selectTransportationByInvoiceId(invoiceId);
+    }
+
+    public LiveData<List<Transportation>> selectTransportationsByPartialId(final long partialId) {
+        return transportationDao.selectTransportationsByPartialId(partialId);
     }
 
     /* transportation status */

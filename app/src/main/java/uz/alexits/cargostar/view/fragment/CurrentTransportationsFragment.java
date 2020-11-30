@@ -31,7 +31,6 @@ import android.widget.Toast;
 
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.transportation.Transportation;
@@ -39,14 +38,10 @@ import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.viewmodel.TransportationViewModel;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.view.activity.CalculatorActivity;
-import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.activity.NotificationsActivity;
-import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
 import uz.alexits.cargostar.view.adapter.TransportationAdapter;
-import uz.alexits.cargostar.view.adapter.SpinnerAdapter;
+import uz.alexits.cargostar.view.adapter.CustomArrayAdapter;
 import uz.alexits.cargostar.view.callback.TransportationCallback;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -60,23 +55,21 @@ import static android.app.Activity.RESULT_OK;
 public class CurrentTransportationsFragment extends Fragment implements TransportationCallback {
     private Context context;
     private FragmentActivity activity;
-    //viewModel
-    private CourierViewModel courierViewModel;
-    private TransportationViewModel transportationViewModel;
-   //header views
+
+    //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
-    private EditText parcelSearchEditText;
-    private ImageView parcelSearchImageView;
+    private TextView courierIdTextView;
+    private EditText requestSearchEditText;
+    private ImageView requestSearchImageView;
     private ImageView profileImageView;
     private ImageView editImageView;
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
-    //main content views
-    private int statusFlag;
 
+    //main content views
     private CheckBox inTransitCheckBox;
     private CheckBox onTheWayCheckBox;
     private CheckBox deliveredCheckBox;
@@ -85,16 +78,24 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
     private RelativeLayout transitPointField;
     private Spinner transitPointSpinner;
-    private List<TransitPoint> transitPointList;
 
     private EditText qrCodeEditText;
     private ImageView scanQrImageView;
 
-    private RecyclerView currentParcelsRecyclerView;
+    private RecyclerView currentTransportationListRecyclerView;
     private TransportationAdapter transportationAdapter;
 
+    //view model
+    private CourierViewModel courierViewModel;
+    private TransportationViewModel transportationViewModel;
+
     private static final List<Long> selectedStatusArray = new ArrayList<>();
-    private static Long selectedTransitPointId = -1L;
+    private static volatile long selectedTransitPointId = -1;
+    private static volatile long courierBrancheId = -1;
+    private static volatile int statusFlag = -1;
+
+    private static volatile boolean isFirstCheckBoxPick = true;
+    private static volatile boolean isFirstSpinnerPick = true;
 
     public CurrentTransportationsFragment() {
         // Required empty public constructor
@@ -106,8 +107,12 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         context = getContext();
         activity = getActivity();
 
+        isFirstCheckBoxPick = true;
+        isFirstSpinnerPick = true;
+
         if (getArguments() != null) {
-            statusFlag = getArguments().getInt(IntentConstants.STATUS_FLAG);
+            statusFlag = CurrentTransportationsFragmentArgs.fromBundle(getArguments()).getStatusFlag();
+            courierBrancheId = CurrentTransportationsFragmentArgs.fromBundle(getArguments()).getCourierBranchId();
         }
 
         SyncWorkRequest.fetchTransportationList(context);
@@ -120,8 +125,9 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         //header views
         fullNameTextView = activity.findViewById(R.id.full_name_text_view);
         branchTextView = activity.findViewById(R.id.branch_text_view);
-        parcelSearchEditText = activity.findViewById(R.id.search_edit_text);
-        parcelSearchImageView = activity.findViewById(R.id.search_btn);
+        courierIdTextView = activity.findViewById(R.id.courier_id_text_view);
+        requestSearchEditText = activity.findViewById(R.id.search_edit_text);
+        requestSearchImageView = activity.findViewById(R.id.search_btn);
         profileImageView = activity.findViewById(R.id.profile_image_view);
         editImageView = activity.findViewById(R.id.edit_image_view);
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
@@ -139,12 +145,13 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         scanQrImageView = root.findViewById(R.id.camera_image_view);
         transitPointField = root.findViewById(R.id.city_field);
         transitPointSpinner = root.findViewById(R.id.city_spinner);
-        currentParcelsRecyclerView = root.findViewById(R.id.current_parcels_recycler_view);
+        currentTransportationListRecyclerView = root.findViewById(R.id.current_parcels_recycler_view);
 
         transportationAdapter = new TransportationAdapter(context, this);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        currentParcelsRecyclerView.setLayoutManager(layoutManager);
-        currentParcelsRecyclerView.setAdapter(transportationAdapter);
+        currentTransportationListRecyclerView.setLayoutManager(layoutManager);
+        currentTransportationListRecyclerView.setHasFixedSize(true);
+        currentTransportationListRecyclerView.setAdapter(transportationAdapter);
 
         return root;
     }
@@ -156,17 +163,25 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         profileImageView.setOnClickListener(v -> {
             startActivity(new Intent(context, MainActivity.class));
         });
-        editImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, ProfileActivity.class));
+
+        profileImageView.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
         });
+
         createUserImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CreateUserActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
         });
+
         notificationsImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, NotificationsActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
         });
+
         calculatorImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CalculatorActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+        });
+
+        editImageView.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
         });
 
         /* main content views */
@@ -227,13 +242,14 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
-                fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
+                fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
+                courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
             }
         });
 
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
-                branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
+                branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
             }
         });
 
@@ -243,11 +259,11 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
             }
         });
 
-        parcelSearchImageView.setOnClickListener(v -> {
-            final String invoiceIdStr = parcelSearchEditText.getText().toString();
+        requestSearchImageView.setOnClickListener(v -> {
+            final String invoiceIdStr = requestSearchEditText.getText().toString();
 
             if (TextUtils.isEmpty(invoiceIdStr)) {
-                Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Введите ID заявки", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
@@ -255,13 +271,12 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                 return;
             }
             try {
-                final UUID searchInvoiceUUID = SyncWorkRequest.searchInvoice(context, Long.parseLong(invoiceIdStr));
+                final UUID searchInvoiceUUID = SyncWorkRequest.searchRequest(context, Long.parseLong(invoiceIdStr));
+
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                        Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-
-                        parcelSearchEditText.setEnabled(true);
-
+                        Toast.makeText(context, "Заявки не существует", Toast.LENGTH_SHORT).show();
+                        requestSearchEditText.setEnabled(true);
                         return;
                     }
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
@@ -269,6 +284,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
                         final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
                         final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
+                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
                         final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
                         final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
                         final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
@@ -278,12 +294,12 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
+                        mainIntent.putExtra(Constants.KEY_COURIER_ID, courierId);
                         mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
                         mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
                         mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, senderCityId);
@@ -292,11 +308,11 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                         mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
                         startActivity(mainIntent);
 
-                        parcelSearchEditText.setEnabled(true);
+                        requestSearchEditText.setEnabled(true);
 
                         return;
                     }
-                    parcelSearchEditText.setEnabled(false);
+                    requestSearchEditText.setEnabled(false);
                 });
             }
             catch (Exception e) {
@@ -308,14 +324,39 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         /* transportation view model */
         transportationViewModel.selectAllTransitPoints().observe(getViewLifecycleOwner(), transitPointList -> {
             if (transitPointList != null) {
-                this.transitPointList = transitPointList;
                 initCitySpinner(transitPointList);
+
+                if (isFirstSpinnerPick) {
+                    isFirstSpinnerPick = false;
+
+                    for (int i = 0; i < transitPointList.size(); i++) {
+                        if (transitPointList.get(i).getBrancheId().compareTo(courierBrancheId) == 0) {
+                            transitPointSpinner.setSelection(i);
+                            return;
+                        }
+                    }
+                }
             }
         });
 
         transportationViewModel.getCurrentTransportationList().observe(getViewLifecycleOwner(), transportationList -> {
-            transportationAdapter.setTransportationList(transportationList);
-            transportationAdapter.notifyDataSetChanged();
+            if (transportationList != null) {
+                transportationAdapter.setTransportationList(transportationList);
+                transportationAdapter.notifyDataSetChanged();
+
+                if (isFirstCheckBoxPick) {
+                    isFirstCheckBoxPick = false;
+
+                    if (statusFlag == IntentConstants.FRAGMENT_CURRENT_TRANSPORT) {
+                        inTransitCheckBox.setChecked(true);
+                        onTheWayCheckBox.setChecked(true);
+                        return;
+                    }
+                    if (statusFlag == IntentConstants.FRAGMENT_DELIVERY_TRANSPORT) {
+                        deliveredCheckBox.setChecked(true);
+                    }
+                }
+            }
         });
     }
 
@@ -453,6 +494,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         action.setTransportationStatusId(currentItem.getTransportationStatusId() != null ? currentItem.getTransportationStatusId() : -1L);
         action.setTransportationStatusName(currentItem.getTransportationStatusName());
         action.setPaymentStatusId(currentItem.getPaymentStatusId() != null ? currentItem.getPaymentStatusId() : -1L);
+        action.setPartialId(currentItem.getPartialId() != null ? currentItem.getPartialId() : -1L);
         action.setTrackingCode(currentItem.getTrackingCode());
         action.setQrCode(currentItem.getQrCode());
         action.setPartyQrCode(currentItem.getPartyQrCode());
@@ -469,7 +511,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     }
 
     private void initCitySpinner(final List<TransitPoint> transitPointList) {
-        final SpinnerAdapter<TransitPoint> cityAdapter = new SpinnerAdapter<>(context, R.layout.spinner_item, transitPointList);
+        final CustomArrayAdapter<TransitPoint> cityAdapter = new CustomArrayAdapter<>(context, R.layout.spinner_item, transitPointList);
         cityAdapter.setDropDownViewResource(R.layout.spinner_item);
         transitPointSpinner.setAdapter(cityAdapter);
         cityAdapter.notifyDataSetChanged();

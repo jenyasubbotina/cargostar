@@ -13,9 +13,9 @@ import java.util.List;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.view.callback.InvoiceDataCallback;
-import uz.alexits.cargostar.view.viewholder.ParcelDataHeadingViewHolder;
-import uz.alexits.cargostar.view.viewholder.ParcelDataItemViewHolder;
-import uz.alexits.cargostar.view.viewholder.ParcelDataStrokeViewHolder;
+import uz.alexits.cargostar.view.viewholder.InvoiceDataHeadingViewHolder;
+import uz.alexits.cargostar.view.viewholder.InvoiceDataItemViewHolder;
+import uz.alexits.cargostar.view.viewholder.InvoiceDataStrokeViewHolder;
 
 import static uz.alexits.cargostar.view.adapter.InvoiceData.TYPE_HEADING;
 import static uz.alexits.cargostar.view.adapter.InvoiceData.TYPE_ITEM;
@@ -42,22 +42,22 @@ public class InvoiceDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         View root;
         if (viewType == TYPE_HEADING) {
             root = LayoutInflater.from(context).inflate(R.layout.view_holder_invoice_data_heading, parent, false);
-            return new ParcelDataHeadingViewHolder(root);
+            return new InvoiceDataHeadingViewHolder(root);
         }
         else if (viewType == TYPE_ITEM) {
             root = LayoutInflater.from(context).inflate(R.layout.view_holder_invoice_data_item, parent, false);
-            return new ParcelDataItemViewHolder(root);
+            return new InvoiceDataItemViewHolder(root);
         }
         else {
             root = LayoutInflater.from(context).inflate(R.layout.view_holder_invoice_data_stoke, parent, false);
-            return new ParcelDataStrokeViewHolder(root);
+            return new InvoiceDataStrokeViewHolder(root);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == TYPE_HEADING) {
-            final ParcelDataHeadingViewHolder viewHolder = (ParcelDataHeadingViewHolder) holder;
+            final InvoiceDataHeadingViewHolder viewHolder = (InvoiceDataHeadingViewHolder) holder;
             viewHolder.headingTextView.setText(itemList.get(position).key);
             viewHolder.bindArrow(callback, position);
 
@@ -69,7 +69,7 @@ public class InvoiceDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
         else if (getItemViewType(position) == TYPE_ITEM) {
-            final ParcelDataItemViewHolder viewHolder = ((ParcelDataItemViewHolder) holder);
+            final InvoiceDataItemViewHolder viewHolder = ((InvoiceDataItemViewHolder) holder);
             viewHolder.itemKeyTextView.setText(itemList.get(position).key);
 
             if (!TextUtils.isEmpty(itemList.get(position).value)) {
@@ -82,7 +82,7 @@ public class InvoiceDataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
         else {
-            final ParcelDataStrokeViewHolder viewHolder = ((ParcelDataStrokeViewHolder) holder);
+            final InvoiceDataStrokeViewHolder viewHolder = ((InvoiceDataStrokeViewHolder) holder);
         }
     }
 

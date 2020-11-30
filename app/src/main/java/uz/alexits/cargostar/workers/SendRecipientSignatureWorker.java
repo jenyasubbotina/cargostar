@@ -12,7 +12,7 @@ import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.api.params.RecipientSignatureParams;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.utils.ImageSerializer;
+import uz.alexits.cargostar.utils.Serializer;
 
 public class SendRecipientSignatureWorker extends Worker {
     private final long invoiceId;
@@ -42,7 +42,7 @@ public class SendRecipientSignatureWorker extends Worker {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
             final Response<RecipientSignatureParams> response = RetrofitClient.getInstance(getApplicationContext())
-                    .sendRecipientSignature(invoiceId, ImageSerializer.fileToBase64(recipientSignatureFilePath));
+                    .sendRecipientSignature(invoiceId, Serializer.fileToBase64(recipientSignatureFilePath));
 
             if (response.code() == 200 || response.code() == 201) {
                 if (response.isSuccessful()) {

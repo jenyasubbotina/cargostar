@@ -9,8 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.PaymentStatus;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.view.callback.RequestCallback;
 import uz.alexits.cargostar.view.viewholder.PublicRequestViewHolder;
 
@@ -56,12 +55,13 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
             holder.parcelIdTextView.setText(requestId);
             holder.fromTextView.setText(currentRequest.getSenderCity());
 
-            if (currentRequest.isNew()) {
-                holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
-            }
-            else {
-                holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
-            }
+            holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
+
+//            if (currentRequest.isNew()) {
+//                holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
+//            }
+//            else {
+//            }
             if (currentRequest.getPaymentStatus() != null && currentRequest.getPaymentStatus().equalsIgnoreCase("succeeded")) {
                 holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
             }

@@ -11,7 +11,7 @@ import androidx.work.WorkerParameters;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,12 +23,14 @@ public class FetchRequestsWorker extends Worker {
     private final int perPage;
     private String login;
     private String password;
+    private final String token;
 
     public FetchRequestsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+        this.token = getInputData().getString(Constants.KEY_TOKEN);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
@@ -48,10 +50,12 @@ public class FetchRequestsWorker extends Worker {
                     Log.i(TAG, "fetchAllRequests(): response=" + response.body());
                     final List<Request> publicRequestList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+                    LocalCache.getInstance(getApplicationContext()).requestDao().dropAndInsertRequestList(publicRequestList);
                     return ListenableWorker.Result.success(new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password).build());
+                            .putString(Constants.KEY_PASSWORD, password)
+                            .putString(Constants.KEY_TOKEN, token)
+                            .build());
                 }
             }
             else {

@@ -41,9 +41,6 @@ public class CreateClientParams {
     @SerializedName("country")
     private final String country;
 
-    @SerializedName("region")
-    private final String region;
-
     @SerializedName("city")
     private final String city;
 
@@ -58,9 +55,6 @@ public class CreateClientParams {
 
     @SerializedName("discount")
     private final double discount;
-
-    @SerializedName("photo")
-    private final String photoUrl;
 
     @SerializedName("signature")
     private final String signatureUrl;
@@ -92,7 +86,6 @@ public class CreateClientParams {
 
     @SerializedName("code")
     private final String registrationCode;
-//    private final String contractUrl;
 
 
     public CreateClientParams(final String login,
@@ -106,7 +99,6 @@ public class CreateClientParams {
                               final String lastName,
                               final String phone,
                               final String country,
-                              final String region,
                               final String city,
                               final String address,
                               final String geolocation,
@@ -121,7 +113,6 @@ public class CreateClientParams {
                               final String oked,
                               final String checkingAccount,
                               final String registrationCode,
-                              final String photoUrl,
                               final String signatureUrl) {
         this.login = login;
         this.password = password;
@@ -135,13 +126,11 @@ public class CreateClientParams {
         this.lastName = lastName;
         this.phone = phone;
         this.country = country;
-        this.region = region;
         this.city = city;
         this.address = address;
         this.geolocation = geolocation;
         this.zip = zip;
         this.discount = discount;
-        this.photoUrl = photoUrl;
         this.signatureUrl = signatureUrl;
         this.userType = userType;
         this.passportSerial = passportSerial;
@@ -198,10 +187,6 @@ public class CreateClientParams {
         return country;
     }
 
-    public String getRegion() {
-        return region;
-    }
-
     public String getCity() {
         return city;
     }
@@ -220,10 +205,6 @@ public class CreateClientParams {
 
     public double getDiscount() {
         return discount;
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
     }
 
     public String getSignatureUrl() {
@@ -285,13 +266,11 @@ public class CreateClientParams {
                 ", lastName='" + lastName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", country='" + country + '\'' +
-                ", region='" + region + '\'' +
                 ", city='" + city + '\'' +
                 ", address='" + address + '\'' +
                 ", geolocation='" + geolocation + '\'' +
                 ", zip='" + zip + '\'' +
                 ", discount=" + discount +
-                ", photoUrl='" + photoUrl + '\'' +
                 ", signatureUrl='" + signatureUrl + '\'' +
                 ", userType=" + userType +
                 ", passportSerial='" + passportSerial + '\'' +

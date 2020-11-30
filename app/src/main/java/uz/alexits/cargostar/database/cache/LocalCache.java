@@ -28,9 +28,10 @@ import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.shipping.Consignment;
-import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.model.transportation.Partial;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.model.actor.AddressBook;
@@ -42,10 +43,6 @@ import uz.alexits.cargostar.model.calculation.Provider;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationData;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Database(entities = {
         User.class,
@@ -71,7 +68,7 @@ import java.util.List;
         TransportationStatus.class,
         TransportationData.class,
         Route.class,
-        Vat.class}, version = 86, exportSchema = false)
+        Vat.class}, version = 88, exportSchema = false)
 @TypeConverters({ PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";

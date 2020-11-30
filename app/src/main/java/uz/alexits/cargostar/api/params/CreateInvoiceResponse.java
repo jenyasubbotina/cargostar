@@ -9,7 +9,7 @@ import java.util.List;
 
 import uz.alexits.cargostar.model.actor.AddressBook;
 import uz.alexits.cargostar.model.actor.Customer;
-import uz.alexits.cargostar.model.shipping.Consignment;
+import uz.alexits.cargostar.model.transportation.Consignment;
 
 public class CreateInvoiceResponse {
     @Expose

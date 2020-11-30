@@ -34,7 +34,7 @@ public class SignInWorker extends Worker {
         super(context, workerParams);
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
-        this.token = getInputData().getString(SharedPrefs.TOKEN);
+        this.token = getInputData().getString(Constants.KEY_TOKEN);
     }
 
     @NonNull
@@ -53,8 +53,6 @@ public class SignInWorker extends Worker {
                         return Result.failure();
                     }
                     courier.setPassword(password);
-                    //todo: get local path for photo / signature
-//                    courier.setPhotoUrl(null);
 
                     Log.i(TAG, "signIn(): " + courier);
 

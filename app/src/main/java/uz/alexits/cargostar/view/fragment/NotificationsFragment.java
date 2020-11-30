@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
@@ -34,10 +35,7 @@ import uz.alexits.cargostar.view.viewholder.NotificationViewHolder;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.NotificationsViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.view.activity.CalculatorActivity;
-import uz.alexits.cargostar.view.activity.CreateUserActivity;
 import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.activity.ProfileActivity;
 import uz.alexits.cargostar.view.adapter.NotificationAdapter;
 import uz.alexits.cargostar.view.callback.NotificationCallback;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
@@ -47,7 +45,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class NotificationsFragment extends Fragment implements NotificationCallback {
-    private static final String TAG = NotificationsFragment.class.toString();
     private FragmentActivity activity;
     private Context context;
     //viewModel
@@ -56,8 +53,9 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     //header views
     private TextView fullNameTextView;
     private TextView branchTextView;
-    private EditText parcelSearchEditText;
-    private ImageView parcelSearchImageView;
+    private TextView courierIdTextView;
+    private EditText requestSearchEditText;
+    private ImageView requestSearchImageView;
     private ImageView editImageView;
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
@@ -68,6 +66,9 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     private RecyclerView notificationRecyclerView;
     private NotificationAdapter notificationAdapter;
 
+    private static volatile long courierId = -1;
+    private static volatile long courierBranchId = -1;
+
     public NotificationsFragment() {
         // Required empty public constructor
     }
@@ -77,6 +78,10 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         super.onCreate(savedInstanceState);
         activity = getActivity();
         context = getContext();
+
+        new Thread(() -> {
+            courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
+        }).start();
     }
 
     @Override
@@ -86,8 +91,9 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         //header views
         fullNameTextView = activity.findViewById(R.id.full_name_text_view);
         branchTextView = activity.findViewById(R.id.branch_text_view);
-        parcelSearchEditText = activity.findViewById(R.id.search_edit_text);
-        parcelSearchImageView = activity.findViewById(R.id.search_btn);
+        courierIdTextView = activity.findViewById(R.id.courier_id_text_view);
+        requestSearchEditText = activity.findViewById(R.id.search_edit_text);
+        requestSearchImageView = activity.findViewById(R.id.search_btn);
         editImageView = activity.findViewById(R.id.edit_image_view);
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
@@ -99,7 +105,6 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         notificationAdapter = new NotificationAdapter(this.getContext(), notificationList, this);
         notificationRecyclerView.setHasFixedSize(false);
-        notificationRecyclerView.setNestedScrollingEnabled(false);
         notificationRecyclerView.setLayoutManager(layoutManager);
         notificationRecyclerView.setAdapter(notificationAdapter);
 
@@ -110,17 +115,21 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //header views
-        editImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, ProfileActivity.class));
-        });
-        createUserImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CreateUserActivity.class));
-        });
+
         profileImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, MainActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
         });
+
+        createUserImageView.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
+        });
+
         calculatorImageView.setOnClickListener(v -> {
-            startActivity(new Intent(context, CalculatorActivity.class));
+            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+        });
+
+        editImageView.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
         });
     }
 
@@ -133,20 +142,23 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
 
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
-                fullNameTextView.setText(courier.getFirstName() + " " + courier.getLastName());
+                fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
+                courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
+                courierBranchId = courier.getBrancheId();
             }
         });
+
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
-                branchTextView.setText(getString(R.string.branch) + " \"" + branch.getName() + "\"");
+                branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
             }
         });
 
-        parcelSearchImageView.setOnClickListener(v -> {
-            final String invoiceIdStr = parcelSearchEditText.getText().toString();
+        requestSearchImageView.setOnClickListener(v -> {
+            final String invoiceIdStr = requestSearchEditText.getText().toString();
 
             if (TextUtils.isEmpty(invoiceIdStr)) {
-                Toast.makeText(context, "Введите ID перевозки или номер накладной", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Введите ID заявки", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
@@ -154,13 +166,12 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
                 return;
             }
             try {
-                final UUID searchInvoiceUUID = SyncWorkRequest.searchInvoice(context, Long.parseLong(invoiceIdStr));
+                final UUID searchInvoiceUUID = SyncWorkRequest.searchRequest(context, Long.parseLong(invoiceIdStr));
+
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                        Toast.makeText(context, "Накладной не существует", Toast.LENGTH_SHORT).show();
-
-                        parcelSearchEditText.setEnabled(true);
-
+                        Toast.makeText(context, "Заявки не существует", Toast.LENGTH_SHORT).show();
+                        requestSearchEditText.setEnabled(true);
                         return;
                     }
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
@@ -177,11 +188,10 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
                         final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_INVOICE);
+                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
                         mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, requestId);
                         mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
                         mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
                         mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
@@ -191,11 +201,11 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
                         mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
                         startActivity(mainIntent);
 
-                        parcelSearchEditText.setEnabled(true);
+                        requestSearchEditText.setEnabled(true);
 
                         return;
                     }
-                    parcelSearchEditText.setEnabled(false);
+                    requestSearchEditText.setEnabled(false);
                 });
             }
             catch (Exception e) {
@@ -203,6 +213,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
                 Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
         courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
@@ -221,9 +232,29 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         currentItem.setRead(true);
         notificationsViewModel.readNotification(currentItem.getId());
 
-        final Intent requestsIntent = new Intent(getContext(), MainActivity.class);
-        requestsIntent.putExtra(IntentConstants.INTENT_PUSH_KEY, currentItem.getLink());
-        startActivity(requestsIntent);
-        activity.finish();
+        if (currentItem.getLink().equalsIgnoreCase(IntentConstants.REQUEST_PUBLIC_REQUESTS)) {
+            final NotificationsFragmentDirections.ActionNotificationsFragmentToPublicBidsFragment action = NotificationsFragmentDirections.actionNotificationsFragmentToPublicBidsFragment();
+            action.setCourierId(courierId);
+            NavHostFragment.findNavController(this).navigate(action);
+            return;
+        }
+        if (currentItem.getLink().equalsIgnoreCase(IntentConstants.REQUEST_MY_REQUESTS)) {
+            final NotificationsFragmentDirections.ActionNotificationsFragmentToMyRequestsFragment action = NotificationsFragmentDirections.actionNotificationsFragmentToMyRequestsFragment();
+            action.setCourierId(courierId);
+            NavHostFragment.findNavController(this).navigate(action);
+            return;
+        }
+        if (currentItem.getLink().equalsIgnoreCase(IntentConstants.REQUEST_CURRENT_TRANSPORTATIONS)) {
+            if (courierBranchId <= 0) {
+                Toast.makeText(activity, "Подождите...", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            final NotificationsFragmentDirections.ActionNotificationsFragmentToCurrentTransportationsFragment action = NotificationsFragmentDirections.actionNotificationsFragmentToCurrentTransportationsFragment();
+            action.setStatusFlag(IntentConstants.FRAGMENT_CURRENT_TRANSPORT);
+            action.setCourierBranchId(courierBranchId);
+            NavHostFragment.findNavController(this).navigate(action);
+        }
     }
+
+    private static final String TAG = NotificationsFragment.class.toString();
 }

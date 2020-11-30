@@ -75,9 +75,9 @@ public class Country {
     }
 
     @Ignore
-    public Country(@NonNull final String name, @Nullable final String code) {
+    public Country(@NonNull final String name) {
         this.name = name;
-        this.code = code;
+        this.code = null;
     }
 
     @NonNull

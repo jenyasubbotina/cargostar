@@ -23,10 +23,10 @@ public class Constants {
     public static final String KEY_PASSPORT_SERIAL = "passport_serial";
     public static final String KEY_INN = "inn";
     public static final String KEY_COMPANY = "company";
-    public static final String KEY_BANK = "bank";
-    public static final String KEY_MFO = "mfo";
-    public static final String KEY_OKED = "oked";
-    public static final String KEY_CHECKING_ACCOUNT = "checking_account";
+    public static final String KEY_PAYER_BANK = "bank";
+    public static final String KEY_PAYER_MFO = "mfo";
+    public static final String KEY_PAYER_OKED = "oked";
+    public static final String KEY_PAYER_CHECKING_ACCOUNT = "checking_account";
     public static final String KEY_VAT = "vat";
     public static final String KEY_PHOTO = "photo";
     public static final String KEY_SIGNATURE = "signature";
@@ -82,6 +82,7 @@ public class Constants {
     public static final String KEY_TRANSPORTATION_STATUS = "status_transportation";
     public static final String KEY_PAYMENT_STATUS_ID = "status_payment";
     public static final String KEY_CURRENT_TRANSIT_POINT_ID = "current_point";
+    public static final String KEY_PARTIAL_ID = "partial_id";
     public static final String KEY_ARRIVAL_DATE = "date";
     public static final String KEY_TRACKING_CODE = "tracking_code";
     public static final String KEY_QR_CODE = "qr_code";
@@ -113,7 +114,7 @@ public class Constants {
     public static final String KEY_RECIPIENT_FEDEX = "recipient_fedex";
     public static final String KEY_RECIPIENT_REGION_ID = "recipient_region_id";
     public static final String KEY_RECIPIENT_ADDRESS = "recipient_address";
-    public static final String RECIPIENT_ZIP = "recipient_zip";
+    public static final String KEY_RECIPIENT_ZIP = "recipient_zip";
     public static final String KEY_RECIPIENT_FIRST_NAME = "recipient_first_name";
     public static final String KEY_RECIPIENT_MIDDLE_NAME = "recipient_middle_name";
     public static final String KEY_RECIPIENT_LAST_NAME = "recipient_last_name";
@@ -133,7 +134,7 @@ public class Constants {
     public static final String KEY_PAYER_LAST_NAME = "payer_last_name";
     public static final String KEY_PAYER_PHONE = "payer_phone";
 
-    public static final String KEY_REGISTRATION_CODE = "registration_code";
+    public static final String KEY_PAYER_REGISTRATION_CODE = "registration_code";
     public static final String KEY_TRANSPORTATION_QR = "transportation_qr";
     public static final String KEY_PACKAGING_ID = "packaging_id";
     public static final String KEY_PAYMENT_METHOD = "payment_method";
@@ -157,4 +158,5 @@ public class Constants {
     public static final String KEY_PAYMENT_STATUS = "payment_status";
     public static final String KEY_CONSIGNMENT_QUANTITY = "count";
     public static final String KEY_IS_SENDER_SIGNATURE_LOCAL = "is_sender_signature_local";
+    public static final String KEY_TOKEN = "push_token";
 }

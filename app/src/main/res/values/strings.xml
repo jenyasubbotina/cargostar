@@ -17,8 +17,8 @@
     <string name="forgot_password">Забыли пароль?</string>
     <!-- main -->
     <string name="search">Поиск</string>
-    <string name="full_name_example">Андроид Ким</string>
-    <string name="branch">филиал</string>
+<!--    <string name="full_name_example">Андроид Ким</string>-->
+<!--    <string name="branch">филиал</string>-->
     <string name="bids">Заявки</string>
     <string name="parcels">Перевозки</string>
     <string name="public_bids">Общие"\n"заявки</string>
@@ -36,6 +36,7 @@
     <string name="invoice_number">Номер накладной</string>
     <string name="service_provider">Поставщик услуг</string>
     <string name="courier_id">ID курьера</string>
+    <string name="courier_id_placeholder">ID курьера: %1$d</string>
     <string name="operator_id">ID оператора</string>
     <string name="accountant_id">ID бухгалтера</string>
     <string name="sender_data">Данные об отправителе</string>
@@ -60,6 +61,8 @@
     <string name="email">Email</string>
     <string name="receiver_data">Данные о получателе</string>
     <string name="payer_data">Данные о плательщике</string>
+    <string name="payer_is_sender">Плательщик - отправитель</string>
+    <string name="payer_is_recipient">Плательщик - получатель</string>
     <string name="sale_15_percent">Скидка 15%</string>
     <string name="individual">Физическое лицо</string>
     <string name="checking_account">Расчетный счет</string>
@@ -161,8 +164,8 @@
     <string name="delivered">Доставлена</string>
     <string name="lost">Утеряна</string>
     <string name="all">Все</string>
-    <string name="parcel">Перевозка</string>
-    <string name="party">Партия</string>
+    <string name="transportation">Перевозка</string>
+    <string name="partial">Партия</string>
     <string name="cost">Стоимость</string>
     <string name="fuel_tax">Топливная надбавка</string>
     <string name="current_location">Текущее местоположение</string>
@@ -207,4 +210,11 @@
     <string name="choose_country">Выберите страну</string>
     <string name="choose_region">Выберите страну</string>
     <string name="choose_city">Выберите город</string>
+
+    <string name="header_courier_full_name">%1$s %2$s</string>
+    <string name="header_branch_name">филиал \"%1$s\"</string>
+
+    <string name="choose_recipient_from_address_book">Выберите получателя</string>
+    <string name="choose_payer_from_address_book">Выберите плательщика</string>
+    <string name="request_id">ID заявки</string>
 </resources>

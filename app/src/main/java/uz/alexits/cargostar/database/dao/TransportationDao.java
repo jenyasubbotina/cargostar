@@ -45,6 +45,9 @@ public abstract class TransportationDao {
     @Query("SELECT * FROM transportation WHERE current_transition_point_id == :transitPointId AND transportation_status_id IN (:statusArray) ORDER BY id DESC")
     public abstract LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId);
 
+//    @Query("SELECT * FROM transportation WHERE  == :transitPointId AND transportation_status_id IN (:statusArray) ORDER BY id DESC")
+//    public abstract LiveData<List<Transportation>> selectTransportationDelivery(final List<Long> statusArray, final Long transitPointId);
+
     @Query("DELETE FROM transportation WHERE id == :transportationId")
     public abstract void deleteTransportation(final long transportationId);
 
@@ -80,4 +83,7 @@ public abstract class TransportationDao {
 
     @Query("SELECT * FROM transportation WHERE invoice_id == :invoiceId LIMIT 1")
     public abstract LiveData<Transportation> selectTransportationByInvoiceId(final long invoiceId);
+
+    @Query("SELECT * FROM transportation WHERE partial_id == :partialId ORDER BY id")
+    public abstract LiveData<List<Transportation>> selectTransportationsByPartialId(final long partialId);
 }

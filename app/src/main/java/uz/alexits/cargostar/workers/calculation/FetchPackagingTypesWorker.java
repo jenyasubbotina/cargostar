@@ -21,11 +21,13 @@ import uz.alexits.cargostar.utils.Constants;
 public class FetchPackagingTypesWorker extends Worker {
     private String login;
     private String password;
+    private final String token;
 
     public FetchPackagingTypesWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+        this.token = getInputData().getString(Constants.KEY_TOKEN);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
@@ -47,7 +49,9 @@ public class FetchPackagingTypesWorker extends Worker {
                     LocalCache.getInstance(getApplicationContext()).packagingDao().insertPackagingTypeListTransaction(packagingTypeList);
                     return ListenableWorker.Result.success(new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password).build());
+                            .putString(Constants.KEY_PASSWORD, password)
+                            .putString(Constants.KEY_TOKEN, token)
+                            .build());
                 }
             }
             else {

@@ -6,6 +6,7 @@
     tools:context="uz.alexits.cargostar.view.fragment.NotificationsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:overScrollMode="never"
     android:fillViewport="true"
     android:fitsSystemWindows="true"
     android:background="#FFF">

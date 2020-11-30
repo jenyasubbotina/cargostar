@@ -23,15 +23,13 @@ import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
-import uz.alexits.cargostar.model.shipping.Consignment;
-import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.model.transportation.Partial;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.model.calculation.Provider;
 
-import com.google.gson.JsonElement;
-
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -153,6 +151,10 @@ public interface ApiService {
     Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("partial")
+    Call<List<Partial>> getPartialData(@Query("per-page") final int perPage);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("status-transport")
     Call<List<TransportationStatus>> getTransportationStatusList(@Query("per-page") final int perPage);
 
@@ -170,7 +172,11 @@ public interface ApiService {
     Call<Transportation> updateTransportationStatus(@Body TransportationStatusParams transportationStatusParams);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
-    @POST("")
+    @POST("partial/status")
+    Call<Transportation> updatePartialStatus(@Body TransportationStatusParams transportationStatusParams);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @POST("invoice/recipient")
     Call<RecipientSignatureParams> sendRecipientSignature(@Body RecipientSignatureParams recipientSignatureParams);
 
     /* Cargo */

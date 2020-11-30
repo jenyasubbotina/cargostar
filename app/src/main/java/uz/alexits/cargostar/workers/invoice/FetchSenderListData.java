@@ -21,12 +21,14 @@ public class FetchSenderListData extends Worker {
     private final int perPage;
     private String login;
     private String password;
+    private final String token;
 
     public FetchSenderListData(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+        this.token = getInputData().getString(Constants.KEY_TOKEN);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
@@ -60,7 +62,9 @@ public class FetchSenderListData extends Worker {
                     Log.i(TAG, "fetchAllCustomers(): successfully inserted entries");
                     return Result.success(new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password).build());
+                            .putString(Constants.KEY_PASSWORD, password)
+                            .putString(Constants.KEY_TOKEN, token)
+                            .build());
                 }
             }
             else {

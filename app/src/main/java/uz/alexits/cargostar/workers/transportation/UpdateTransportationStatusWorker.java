@@ -25,12 +25,14 @@ public class UpdateTransportationStatusWorker extends Worker {
     private final long transportationId;
     private final long transportationStatusId;
     private final long transitPointId;
+    private final long partialId;
 
     public UpdateTransportationStatusWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.transportationId = getInputData().getLong(Constants.KEY_TRANSPORTATION_ID, -1L);
         this.transportationStatusId = getInputData().getLong(Constants.KEY_TRANSPORTATION_STATUS_ID, -1L);
         this.transitPointId = getInputData().getLong(Constants.KEY_TRANSIT_POINT_ID, -1L);
+        this.partialId = getInputData().getLong(Constants.KEY_PARTIAL_ID, -1L);
     }
 
     @NonNull
@@ -54,12 +56,27 @@ public class UpdateTransportationStatusWorker extends Worker {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
-            final Response<Transportation> response = RetrofitClient.getInstance(getApplicationContext())
-                    .updateTransportationStatus(transportationId, transitPointId, transportationStatusId);
+
+            final Response<Transportation> response;
+
+            if (partialId <= 0) {
+                response = RetrofitClient.getInstance(getApplicationContext()).updateTransportationStatus(transportationId, transitPointId, transportationStatusId);
+            }
+            else {
+                response = RetrofitClient.getInstance(getApplicationContext()).updatePartialStatus(transportationId, transitPointId, transportationStatusId);
+            }
+
+            final Data outputData = new Data.Builder()
+                    .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
+                    .build();
 
             if (response.code() == 200 || response.code() == 201) {
                 if (response.isSuccessful()) {
                     final Transportation transportation = response.body();
+
+                    if (response.body() == null) {
+                        return Result.success(outputData);
+                    }
 
                     Log.i(TAG, "updateTransportationStatus(): response=" + transportation);
 
@@ -70,9 +87,7 @@ public class UpdateTransportationStatusWorker extends Worker {
                         return Result.failure();
                     }
 
-                    final Data outputData = new Data.Builder()
-                            .putLong(Constants.KEY_TRANSPORTATION_ID, transportation.getId())
-                            .build();
+
                     return Result.success(outputData);
                 }
             }

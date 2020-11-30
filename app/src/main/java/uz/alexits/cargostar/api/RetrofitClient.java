@@ -29,21 +29,19 @@ import uz.alexits.cargostar.model.calculation.Zone;
 import uz.alexits.cargostar.model.calculation.ZoneSettings;
 import uz.alexits.cargostar.model.calculation.Packaging;
 import uz.alexits.cargostar.model.calculation.PackagingType;
-import uz.alexits.cargostar.model.shipping.Consignment;
-import uz.alexits.cargostar.model.shipping.Invoice;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.model.calculation.Provider;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -166,7 +164,6 @@ public class RetrofitClient {
                                            final String lastName,
                                            final String phone,
                                            final String country,
-                                           final String region,
                                            final String city,
                                            final String address,
                                            final String geolocation,
@@ -181,7 +178,6 @@ public class RetrofitClient {
                                            final String oked,
                                            final String checkingAccount,
                                            final String registrationCode,
-                                           final String photoUrl,
                                            final String signatureUrl) throws IOException {
         final CreateClientParams clientParams = new CreateClientParams(
                 login,
@@ -195,7 +191,6 @@ public class RetrofitClient {
                 lastName,
                 phone,
                 country,
-                region,
                 city,
                 address,
                 geolocation,
@@ -210,7 +205,6 @@ public class RetrofitClient {
                 oked,
                 checkingAccount,
                 registrationCode,
-                photoUrl,
                 signatureUrl);
         return apiService.createClient(clientParams).execute();
     }
@@ -237,7 +231,6 @@ public class RetrofitClient {
                                                @Nullable final String photo) throws IOException {
         final UpdateCourierParams updateCourierParams = new UpdateCourierParams(
                 password, firstName, middleName, lastName, phone, photo);
-        Log.i(TAG, "updateCourierData(): " + updateCourierParams);
         return apiService.updateCourierData(courierId, updateCourierParams).execute();
     }
 
@@ -285,6 +278,12 @@ public class RetrofitClient {
                                                                            final Long transitPointId,
                                                                            final Long transportationStatusId) throws IOException {
         return apiService.updateTransportationStatus(new TransportationStatusParams(transportationId, transitPointId, transportationStatusId)).execute();
+    }
+
+    public Response<Transportation> updatePartialStatus(final Long transportationId,
+                                                               final Long transitPointId,
+                                                               final Long transportationStatusId) throws IOException {
+        return apiService.updatePartialStatus(new TransportationStatusParams(transportationId, transitPointId, transportationStatusId)).execute();
     }
 
     /* Cargo */

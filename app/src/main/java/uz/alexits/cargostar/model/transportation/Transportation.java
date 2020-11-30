@@ -10,7 +10,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 import uz.alexits.cargostar.model.calculation.Provider;
-import uz.alexits.cargostar.model.shipping.Invoice;
 
 @Entity(tableName = "transportation",
         foreignKeys = {
@@ -59,6 +58,11 @@ public class Transportation {
     @SerializedName("current_point")
     @ColumnInfo(name = "current_transition_point_id")
     private final Long currentTransitionPointId;
+
+    @Expose
+    @SerializedName("party_id")
+    @ColumnInfo(name = "partial_id")
+    private final Long partialId;
 
     @Expose
     @SerializedName("date")
@@ -128,6 +132,7 @@ public class Transportation {
                           final Long transportationStatusId,
                           final Long paymentStatusId,
                           final Long currentTransitionPointId,
+                          final Long partialId,
                           final String arrivalDate,
                           final String trackingCode,
                           final String qrCode,
@@ -145,6 +150,7 @@ public class Transportation {
         this.transportationStatusId = transportationStatusId;
         this.paymentStatusId = paymentStatusId;
         this.currentTransitionPointId = currentTransitionPointId;
+        this.partialId = partialId;
         this.arrivalDate = arrivalDate;
         this.trackingCode = trackingCode;
         this.qrCode = qrCode;
@@ -178,6 +184,10 @@ public class Transportation {
 
     public Long getPaymentStatusId() {
         return paymentStatusId;
+    }
+
+    public Long getPartialId() {
+        return partialId;
     }
 
     public String getTrackingCode() {
@@ -275,6 +285,7 @@ public class Transportation {
                 ", transportationStatusId=" + transportationStatusId +
                 ", paymentStatusId=" + paymentStatusId +
                 ", currentTransitionPointId=" + currentTransitionPointId +
+                ", partialId=" + partialId +
                 ", arrivalDate='" + arrivalDate + '\'' +
                 ", trackingCode='" + trackingCode + '\'' +
                 ", qrCode='" + qrCode + '\'' +

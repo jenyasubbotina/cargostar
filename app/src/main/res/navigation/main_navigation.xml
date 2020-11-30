@@ -39,17 +39,10 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit">
-            <argument
-                android:name="status_flag"
-                android:defaultValue="-1"
-                app:argType="integer" />
         </action>
         <action
             android:id="@+id/action_mainFragment_to_scanQrActivity"
             app:destination="@id/scanQrActivity" />
-        <action
-            android:id="@+id/action_mainFragment_to_partyStatusFragment"
-            app:destination="@id/partyStatusFragment" />
         <action
             android:id="@+id/action_mainFragment_to_profileFragment"
             app:destination="@id/profileFragment"
@@ -71,6 +64,333 @@
         <action
             android:id="@+id/action_mainFragment_to_transportationStatusFragment"
             app:destination="@id/transportationStatusFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_createInvoiceFragment"
+            app:destination="@id/createInvoiceFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit"/>
+        <action
+            android:id="@+id/action_mainFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createInvoiceFragment"
+        android:name="uz.alexits.cargostar.view.fragment.CreateInvoiceFragment"
+        android:label="fragment_create_invoice"
+        tools:layout="@layout/fragment_create_invoice">
+        <action
+            android:id="@+id/action_createInvoiceFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit"/>
+        <argument
+            android:name="request_key"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <argument
+            android:name="request_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="invoice_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="invoice_number"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
+        <argument
+            android:name="provider_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="tariff_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="courier_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="consignment_quantity"
+            app:argType="integer"
+            android:defaultValue="0"/>
+        <argument
+            android:name="delivery_type"
+            app:argType="integer"
+            android:defaultValue="0"/>
+        <argument
+            android:name="comment"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="price"
+            app:argType="float"
+            android:defaultValue="0.0"/>
+        <argument
+            android:name="sender_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="sender_email"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_signature"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_first_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_last_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_middle_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_phone"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_address"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_country_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="sender_region_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="sender_city_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="sender_zip"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_company"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_cargo"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_tnt"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_fedex"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+
+        <argument
+            android:name="recipient_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_email"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_first_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_last_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_middle_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_phone"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_address"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_country_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_region_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_city_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_zip"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_company"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_cargo"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_tnt"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_fedex"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+
+        <argument
+            android:name="payer_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="payer_email"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_first_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_last_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_middle_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_phone"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_address"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_country_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="payer_region_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="payer_city_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="payer_zip"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_company"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_cargo"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_tnt"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_fedex"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_inn"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_bank"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_checking_account"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_registration_code"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_mfo"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_oked"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="serialized_consignment_list"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <action
+            android:id="@+id/action_createInvoiceFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
     </fragment>
     <fragment
         android:id="@+id/calculatorFragment"
@@ -84,6 +404,9 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
+        <action
+            android:id="@+id/action_calculatorFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
     </fragment>
     <fragment
         android:id="@+id/publicBidsFragment"
@@ -97,22 +420,6 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit">
-        </action>
-        <action
-            android:id="@+id/action_publicBidsFragment_to_partyFragment"
-            app:destination="@id/partyFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit">
-            <argument
-                android:name="party_id"
-                app:argType="long"
-                android:defaultValue="-1L"/>
-            <argument
-                android:name="parcel_quantity"
-                app:argType="integer"
-                android:defaultValue="-1"/>
         </action>
         <action
             android:id="@+id/action_publicBidsFragment_to_calculatorFragment"
@@ -132,20 +439,15 @@
             android:name="courier_id"
             app:argType="long"
             android:defaultValue="-1L"/>
+        <action
+            android:id="@+id/action_publicBidsFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
     </fragment>
     <fragment
         android:id="@+id/myRequestsFragment"
         android:name="uz.alexits.cargostar.view.fragment.MyRequestsFragment"
         android:label="fragment_my_bids"
         tools:layout="@layout/fragment_my_requests" >
-        <action
-            android:id="@+id/action_myBidsFragment_to_partyFragment"
-            app:destination="@id/partyFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit">
-        </action>
         <action
             android:id="@+id/action_myBidsFragment_to_calculatorFragment"
             app:destination="@id/calculatorFragment"
@@ -172,12 +474,15 @@
             android:name="courier_id"
             app:argType="long"
             android:defaultValue="-1L"/>
+        <action
+            android:id="@+id/action_myRequestsFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
     </fragment>
     <fragment
         android:id="@+id/currentTransportationsFragment"
         android:name="uz.alexits.cargostar.view.fragment.CurrentTransportationsFragment"
         android:label="fragment_current_parcels"
-        tools:layout="@layout/fragment_current_parcels" >
+        tools:layout="@layout/fragment_current_parcels">
         <action
             android:id="@+id/action_currentTransportationsFragment_to_calculatorFragment"
             app:destination="@id/calculatorFragment"
@@ -194,13 +499,6 @@
             app:popExitAnim="@anim/fragment_open_exit">
         </action>
         <action
-            android:id="@+id/action_currentTransportationsFragment_to_partyStatusFragment"
-            app:destination="@id/partyStatusFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
             android:id="@+id/action_currentTransportationsFragment_to_profileFragment"
             app:destination="@id/profileFragment"
             app:enterAnim="@anim/fragment_open_enter"
@@ -214,6 +512,17 @@
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
             app:popExitAnim="@anim/fragment_open_exit"/>
+        <argument
+            android:name="status_flag"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="courier_branch_id"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <action
+            android:id="@+id/action_currentTransportationsFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
     </fragment>
     <activity
         android:id="@+id/scanQrActivity"
@@ -224,7 +533,14 @@
         android:id="@+id/invoiceDataFragment"
         android:name="uz.alexits.cargostar.view.fragment.InvoiceDataFragment"
         android:label="fragment_parcel_data"
-        tools:layout="@layout/fragment_parcel_data" >
+        tools:layout="@layout/fragment_invoice_data" >
+        <action
+            android:id="@+id/action_invoiceDataFragment_to_createInvoiceFragment"
+            app:destination="@id/createInvoiceFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit"/>
         <action
             android:id="@+id/action_parcelDataFragment_to_calculatorFragment"
             app:destination="@id/calculatorFragment"
@@ -300,37 +616,43 @@
             app:argType="integer"
             android:defaultValue="0"/>
         <argument
+            android:name="sender_first_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_last_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_middle_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_email"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_phone"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_address"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
             android:name="comment"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null" />
-    </fragment>
-    <fragment
-        android:id="@+id/partyFragment"
-        android:name="uz.alexits.cargostar.view.fragment.PartyFragment"
-        android:label="fragment_party"
-        tools:layout="@layout/fragment_party" >
         <action
-            android:id="@+id/action_partyFragment_to_calculatorFragment"
-            app:destination="@id/calculatorFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"/>
-        <action
-            android:id="@+id/action_partyFragment_to_parcelDataFragment"
-            app:destination="@id/invoiceDataFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
-            android:id="@+id/action_partyFragment_to_profileFragment"
-            app:destination="@id/profileFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"/>
+            android:id="@+id/action_invoiceDataFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
     </fragment>
     <fragment
         android:id="@+id/transportationStatusFragment"
@@ -426,36 +748,13 @@
             android:name="request_id"
             app:argType="long"
             android:defaultValue="-1L"/>
-    </fragment>
-    <fragment
-        android:id="@+id/partyStatusFragment"
-        android:name="uz.alexits.cargostar.view.fragment.PartyStatusFragment"
-        android:label="fragment_party_status"
-        tools:layout="@layout/fragment_party_status" >
+        <argument
+            android:name="partial_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
         <action
-            android:id="@+id/action_partyStatusFragment_to_calculatorFragment"
-            app:destination="@id/calculatorFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
-            android:id="@+id/action_partyStatusFragment_to_parcelDataFragment"
-            app:destination="@id/invoiceDataFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
-        <action
-            android:id="@+id/action_partyStatusFragment_to_parcelStatusFragment"
-            app:destination="@id/transportationStatusFragment" />
-        <action
-            android:id="@+id/action_partyStatusFragment_to_profileFragment"
-            app:destination="@id/profileFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit"/>
+            android:id="@+id/action_transportationStatusFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -485,23 +784,59 @@
             android:name="city_id"
             app:argType="long"
             android:defaultValue="-1L"/>
+        <action
+            android:id="@+id/action_profileFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
     </fragment>
-    <activity
-        android:id="@+id/notificationsActivity"
-        android:name="uz.alexits.cargostar.view.activity.NotificationsActivity"
-        android:label="activity_notifications"
-        tools:layout="@layout/activity_notifications" />
     <fragment
         android:id="@+id/notificationsFragment"
         android:name="uz.alexits.cargostar.view.fragment.NotificationsFragment"
         android:label="fragment_notifications"
         tools:layout="@layout/fragment_notifications" >
         <action
-            android:id="@+id/action_notificationsFragment_to_parcelDataFragment"
-            app:destination="@id/invoiceDataFragment"
+            android:id="@+id/action_notificationsFragment_to_publicBidsFragment"
+            app:destination="@id/publicBidsFragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_close_exit"
             app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_close_exit" />
+            app:popExitAnim="@anim/fragment_close_exit"/>
+        <action
+            android:id="@+id/action_notificationsFragment_to_myRequestsFragment"
+            app:destination="@id/myRequestsFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_close_exit"/>
+        <action
+            android:id="@+id/action_notificationsFragment_to_currentTransportationsFragment"
+            app:destination="@id/currentTransportationsFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit">
+        </action>
+        <action
+            android:id="@+id/action_notificationsFragment_to_transportationStatusFragment"
+            app:destination="@id/transportationStatusFragment" />
+        <action
+            android:id="@+id/action_notificationsFragment_to_createUserFragment"
+            app:destination="@id/createUserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createUserFragment"
+        android:name="uz.alexits.cargostar.view.fragment.CreateUserFragment"
+        android:label="CreateUserFragment" >
+        <action
+            android:id="@+id/action_createUserFragment_to_calculatorFragment"
+            app:destination="@id/calculatorFragment" />
+        <action
+            android:id="@+id/action_createUserFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_createUserFragment_to_notificationsFragment"
+            app:destination="@id/notificationsFragment" />
+        <action
+            android:id="@+id/action_createUserFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 </navigation>

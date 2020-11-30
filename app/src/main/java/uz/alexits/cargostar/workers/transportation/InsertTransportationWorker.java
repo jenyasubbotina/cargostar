@@ -10,7 +10,7 @@
 //import java.util.Date;
 //
 //import uz.alexits.cargostar.database.cache.LocalCache;
-//import uz.alexits.cargostar.model.shipping.Request;
+//import uz.alexits.cargostar.model.transportation.Request;
 //import uz.alexits.cargostar.utils.Constants;
 //import uz.alexits.cargostar.workers.requests.InsertRequestWorker;
 //

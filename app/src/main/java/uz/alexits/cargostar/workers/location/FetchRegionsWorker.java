@@ -26,12 +26,14 @@ public class FetchRegionsWorker extends Worker {
     private final int perPage;
     @Nullable private final String login;
     @Nullable private final String password;
+    private final String token;
 
     public FetchRegionsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
+        this.token = getInputData().getString(Constants.KEY_TOKEN);
     }
 
     @NonNull
@@ -54,7 +56,9 @@ public class FetchRegionsWorker extends Worker {
                     return ListenableWorker.Result.success(
                             new Data.Builder()
                                     .putString(Constants.KEY_LOGIN, login)
-                                    .putString(Constants.KEY_PASSWORD, password).build());
+                                    .putString(Constants.KEY_PASSWORD, password)
+                                    .putString(Constants.KEY_TOKEN, token)
+                                    .build());
                 }
             }
             else {

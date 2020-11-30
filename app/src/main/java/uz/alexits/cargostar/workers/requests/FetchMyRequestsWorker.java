@@ -15,7 +15,7 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.shipping.Request;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -41,7 +41,7 @@ public class FetchMyRequestsWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchMyRequests(): response=" + response.body());
                     final List<Request> myRequestsList = response.body();
-                  LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(myRequestsList);
+                  LocalCache.getInstance(getApplicationContext()).requestDao().dropAndInsertRequestList(myRequestsList);
                     return ListenableWorker.Result.success();
                 }
             }

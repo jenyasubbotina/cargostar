@@ -27,7 +27,7 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="36dp"
             android:layout_marginStart="36dp"
-            android:text="@string/parcel"
+            android:text="@string/transportation"
             android:textSize="18sp"
             android:textColor="@color/colorBlack"
             android:fontFamily="@font/geometria_actual" />
@@ -45,101 +45,25 @@
             android:textColor="@color/colorBlack"
             android:fontFamily="@font/geometria_bold"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/transportation_item"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/transportation_list_recycler_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/parcel_text_view"
+            app:layout_constraintTop_toBottomOf="@id/parcel_id_text_view"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <TextView
-                android:id="@+id/index_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginVertical="25dp"
-                android:layout_marginStart="36dp"
-                android:fontFamily="@font/geometria_bold"
-                android:textSize="21sp"
-                android:textColor="#0052A6"
-                android:text="1." />
-
-            <TextView
-                android:id="@+id/parcel_id_item_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/index_text_view"
-                app:layout_constraintBottom_toBottomOf="@id/index_text_view"
-                app:layout_constraintStart_toEndOf="@id/index_text_view"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/geometria_medium"
-                android:textSize="16sp"
-                android:textColor="@color/colorBlack"
-                android:text="# C123456789012"/>
-
-            <TextView
-                android:id="@+id/from_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/parcel_id_item_text_view"
-                app:layout_constraintStart_toStartOf="@id/parcel_id_item_text_view"
-                android:layout_marginTop="12dp"
-                android:textSize="16sp"
-                android:textColor="#A5ABC0"
-                android:fontFamily="@font/geometria_bold"
-                android:text="@string/tas"/>
-
-            <ImageView
-                android:id="@+id/path_item_image_view"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/from_text_view"
-                app:layout_constraintBottom_toBottomOf="@id/from_text_view"
-                app:layout_constraintStart_toEndOf="@id/from_text_view"
-                android:layout_marginStart="10dp"
-                android:contentDescription="@string/new_bid"
-                android:src="@drawable/ic_path"/>
-
-            <TextView
-                android:id="@+id/to_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/from_text_view"
-                app:layout_constraintBottom_toBottomOf="@id/from_text_view"
-                app:layout_constraintStart_toEndOf="@id/path_item_image_view"
-                android:layout_marginStart="10dp"
-                android:textSize="16sp"
-                android:textColor="#A5ABC0"
-                android:fontFamily="@font/geometria_bold"
-                android:text="@string/sam"/>
-
-            <ImageView
-                android:id="@+id/next_image_view"
-                android:layout_width="10dp"
-                android:layout_height="20dp"
-                app:layout_constraintTop_toTopOf="@id/parcel_id_item_text_view"
-                app:layout_constraintBottom_toBottomOf="@id/from_text_view"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintDimensionRatio="1:1"
-                android:layout_marginEnd="41dp"
-                android:scaleType="fitCenter"
-                android:contentDescription="@string/new_bid"
-                android:src="@drawable/ic_next_arrow"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"/>
 
         <TextView
             android:id="@+id/source_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@+id/parcel_text_view"
-            app:layout_constraintTop_toBottomOf="@id/transportation_item"
+            app:layout_constraintTop_toBottomOf="@id/transportation_list_recycler_view"
             android:layout_marginTop="95dp"
             android:textSize="19sp"
             android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_bold"
-            android:text="Tas."/>
+            android:fontFamily="@font/geometria_bold" />
 
         <ImageView
             android:id="@+id/path_image_view"
@@ -150,7 +74,7 @@
             app:layout_constraintStart_toEndOf="@id/source_text_view"
             app:layout_constraintEnd_toStartOf="@id/destination_text_view"
             android:layout_marginHorizontal="12dp"
-            android:contentDescription="@string/parcel"
+            android:contentDescription="@string/transportation"
             android:src="@drawable/img_path"/>
 
         <TextView
@@ -175,14 +99,13 @@
             android:layout_marginEnd="35dp"
             android:textSize="19sp"
             android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_bold"
-            android:text="Buh."/>
+            android:fontFamily="@font/geometria_bold" />
 
         <Button
             android:id="@+id/submit_status_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/current_point_text_view"
+            app:layout_constraintTop_toBottomOf="@id/source_text_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@drawable/btn_gradient_orange"
