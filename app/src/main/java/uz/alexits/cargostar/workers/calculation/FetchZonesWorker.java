@@ -50,12 +50,15 @@ public class FetchZonesWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllZones(): response=" + response.body());
                     final List<Zone> zoneList = response.body();
+
                     LocalCache.getInstance(getApplicationContext()).packagingDao().insertZonesTransaction(zoneList);
-                    return ListenableWorker.Result.success(new Data.Builder()
+
+                    final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)
                             .putString(Constants.KEY_TOKEN, token)
-                            .build());
+                            .putInt(Constants.KEY_PROGRESS, 50).build();
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
             else {

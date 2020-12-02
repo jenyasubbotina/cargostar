@@ -752,6 +752,10 @@
             android:name="partial_id"
             app:argType="long"
             android:defaultValue="-1L"/>
+        <argument
+            android:name="branche_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
         <action
             android:id="@+id/action_transportationStatusFragment_to_createUserFragment"
             app:destination="@id/createUserFragment" />

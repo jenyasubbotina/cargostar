@@ -52,13 +52,17 @@ public class FetchTransportationStatusesWorker extends Worker {
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<TransportationStatus> transportationStatusList = response.body();
+
                     LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationStatusList(transportationStatusList);
 
-                    return ListenableWorker.Result.success(new Data.Builder()
+                    final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)
                             .putString(Constants.KEY_TOKEN, token)
-                            .build());
+                            .putInt(Constants.KEY_PROGRESS, 90)
+                            .build();
+
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
             else {

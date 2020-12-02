@@ -66,27 +66,27 @@ public class UpdateTransportationStatusWorker extends Worker {
                 response = RetrofitClient.getInstance(getApplicationContext()).updatePartialStatus(transportationId, transitPointId, transportationStatusId);
             }
 
-            final Data outputData = new Data.Builder()
-                    .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
-                    .build();
-
             if (response.code() == 200 || response.code() == 201) {
                 if (response.isSuccessful()) {
                     final Transportation transportation = response.body();
 
-                    if (response.body() == null) {
-                        return Result.success(outputData);
+                    if (transportation == null) {
+                        return Result.success(new Data.Builder().putLong(Constants.KEY_TRANSPORTATION_ID, transportationId).build());
                     }
+                    final int rowId = LocalCache.getInstance(getApplicationContext()).transportationDao().updateTransportation(transportation);
 
                     Log.i(TAG, "updateTransportationStatus(): response=" + transportation);
-
-                    final int rowId = LocalCache.getInstance(getApplicationContext()).transportationDao().updateTransportation(transportation);
 
                     if (rowId <= 0) {
                         Log.e(TAG, "updateTransportationStatus(): couldn't insert " + transportation);
                         return Result.failure();
                     }
-
+                    final Data outputData = new Data.Builder()
+                            .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
+                            .putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId())
+                            .putLong(Constants.KEY_CURRENT_STATUS_ID, transportation.getTransportationStatusId())
+                            .putString(Constants.KEY_CURRENT_STATUS_NAME, transportation.getTransportationStatusName())
+                            .build();
 
                     return Result.success(outputData);
                 }

@@ -9,7 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -17,18 +17,19 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
+import androidx.work.Data;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.SignatureActivity;
 import uz.alexits.cargostar.view.adapter.PartialAdapter;
@@ -65,6 +67,8 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
     private AnimatedVectorDrawable vectorDrawable;
     private AnimatedVectorDrawableCompat vectorDrawableCompat;
 
+    private SeekBar pathSeekBar;
+
     private RecyclerView transportationListRecyclerView;
     private PartialAdapter partialAdapter;
 
@@ -72,6 +76,27 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
     private static volatile TransportationStatus onItsWayTransportationStatus = null;
     private static volatile TransportationStatus deliveredTransportationStatus = null;
     private static volatile TransportationStatus leftCountryTransportationStatus = null;
+
+    private static volatile long transportationId = -1;
+    private static volatile long currentPointId = -1;
+    private static volatile long currentStatusId = -1;
+    private static volatile String currentStatusName = null;
+    private static volatile long partialId = -1;
+    private static volatile String cityFrom = null;
+    private static volatile String cityTo = null;
+
+    private static volatile long requestId = -1;
+    private static volatile long invoiceId = -1;
+    private static volatile long brancheId = -1;
+    private static volatile long courierId = -1;
+    private static volatile long providerId = -1;
+    private static volatile long paymentStatusId = -1;
+    private static volatile String trackingCode = null;
+    private static volatile String qrCode = null;
+    private static volatile String partyQRCode = null;
+    private static volatile String instructions = null;
+    private static volatile String arrivalDate = null;
+    private static volatile String direction = null;
 
     private static volatile long senderId = -1;
     private static volatile long senderCountryId = -1;
@@ -83,11 +108,14 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
     private static volatile int consignmentQuantity = -1;
     private static volatile String comment = null;
 
-    private static volatile Transportation currentTransportation = null;
-
     private static volatile long nextPoint = -1;
     private static volatile TransportationStatus nextStatus = null;
     private static volatile Country destinationCountry = null;
+
+    private static volatile int pointsQuantity = 0;
+    private static volatile int currentPosition = 0;
+
+    private TransportationStatusViewModel statusViewModel;
 
     public TransportationStatusFragment() {
         // Required empty public constructor
@@ -99,52 +127,70 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
         context = getContext();
         activity = getActivity();
 
+        transportationId = -1;
+        currentPointId = -1;
+        currentStatusId = -1;
+        currentStatusName = null;
+        partialId = -1;
+        cityFrom = null;
+        cityTo = null;
+
+        requestId = -1;
+        invoiceId = -1;
+        brancheId = -1;
+        courierId = -1;
+        providerId = -1;
+        paymentStatusId = -1;
+        trackingCode = null;
+        qrCode = null;
+        partyQRCode = null;
+        instructions = null;
+        arrivalDate = null;
+        direction = null;
+
+        senderId = -1;
+        senderCountryId = -1;
+        senderRegionId = -1;
+        senderCityId = -1;
+        recipientCountryId = -1;
+        recipientCityId = -1;
+        deliveryType = -1;
+        consignmentQuantity = -1;
+        comment = null;
+
+        nextPoint = -1;
+        nextStatus = null;
+        destinationCountry = null;
+        pointsQuantity = 0;
+        currentPosition = 0;
+
         if (getArguments() != null) {
-            final long requestId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getRequestId();
-            final long invoiceId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInvoiceId();
-            final long transportationId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationId();
-            final long courierId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCourierId();
-            final long providerId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getProviderId();
-            final long partialId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getPartialId();
-            final long statusId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationStatusId();
-            final long paymentStatusId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getPaymentStatusId();
-            final long currentTransitPointId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCurrentTransitPointId();
+            transportationId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationId();
+            cityFrom = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCityFrom();
+            cityTo = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCityTo();
+            partialId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getPartialId();
+            currentStatusId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationStatusId();
+            currentPointId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCurrentTransitPointId();
+            currentStatusName = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationStatusName();
 
-            final String statusName = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTransportationStatusName();
-            final String trackingCode = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTrackingCode();
-            final String qrCode = TransportationStatusFragmentArgs.fromBundle(getArguments()).getQrCode();
-            final String partyQRCode = TransportationStatusFragmentArgs.fromBundle(getArguments()).getPartyQrCode();
-            final String cityFrom = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCityFrom();
-            final String cityTo = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCityTo();
-            final String instructions = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInstructions();
-            final String arrivalDate = TransportationStatusFragmentArgs.fromBundle(getArguments()).getArrivalDate();
-            final String direction = TransportationStatusFragmentArgs.fromBundle(getArguments()).getDirection();
+            requestId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getRequestId();
+            invoiceId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInvoiceId();
+            brancheId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getBrancheId();
+            courierId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getCourierId();
+            providerId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getProviderId();
 
-            currentTransportation = new Transportation(
-                    transportationId,
-                    providerId,
-                    courierId,
-                    invoiceId,
-                    requestId,
-                    statusId,
-                    paymentStatusId,
-                    currentTransitPointId,
-                    partialId,
-                    arrivalDate,
-                    trackingCode,
-                    qrCode,
-                    partyQRCode,
-                    instructions,
-                    direction,
-                    1,
-                    new Date(),
-                    new Date());
-            currentTransportation.setCityFrom(cityFrom);
-            currentTransportation.setCityTo(cityTo);
-            currentTransportation.setTransportationStatusName(statusName);
+            paymentStatusId = TransportationStatusFragmentArgs.fromBundle(getArguments()).getPaymentStatusId();
+
+            trackingCode = TransportationStatusFragmentArgs.fromBundle(getArguments()).getTrackingCode();
+            qrCode = TransportationStatusFragmentArgs.fromBundle(getArguments()).getQrCode();
+            partyQRCode = TransportationStatusFragmentArgs.fromBundle(getArguments()).getPartyQrCode();
+
+            instructions = TransportationStatusFragmentArgs.fromBundle(getArguments()).getInstructions();
+            arrivalDate = TransportationStatusFragmentArgs.fromBundle(getArguments()).getArrivalDate();
+            direction = TransportationStatusFragmentArgs.fromBundle(getArguments()).getDirection();
+
+            SyncWorkRequest.fetchTransportationRoute(context, transportationId);
         }
-        SyncWorkRequest.fetchTransportationData(context, currentTransportation.getId());
-        SyncWorkRequest.fetchTransportationRoute(context, currentTransportation.getId());
     }
 
     @Override
@@ -158,6 +204,8 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
         progressBar = root.findViewById(R.id.progress_bar);
         transportationListRecyclerView = root.findViewById(R.id.transportation_list_recycler_view);
         currentPointTextView = root.findViewById(R.id.current_point_text_view);
+
+        pathSeekBar = root.findViewById(R.id.path_seek_bar);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -174,8 +222,30 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        pathSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        pathSeekBar.setOnTouchListener((v, event) -> true);
+
         submitStatusBtn.setOnClickListener(v -> {
-            if (currentTransportation == null) {
+            if (currentPointId <= 0) {
                 Toast.makeText(context, "Подождите, данные синхронизируются", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -191,7 +261,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
                 startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_RECIPIENT_SIGNATURE);
                 return;
             }
-            updateTransportationStatus(context, currentTransportation.getId(), nextStatus.getId(), nextPoint, currentTransportation.getPartialId());
+            updateTransportationStatus(context, -1L,null, transportationId, nextStatus.getId(), nextPoint, partialId);
         });
     }
 
@@ -199,24 +269,43 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        final TransportationStatusViewModel statusViewModel = new ViewModelProvider(this).get(TransportationStatusViewModel.class);
+        statusViewModel = new ViewModelProvider(this).get(TransportationStatusViewModel.class);
 
-        statusViewModel.setTransportationId(currentTransportation.getId());
-        statusViewModel.setRequestId(currentTransportation.getRequestId());
-        statusViewModel.setCurrentTransitPointId(currentTransportation.getCurrentTransitionPointId());
+        statusViewModel.setTransportationId(transportationId);
+        statusViewModel.setRequestId(requestId);
+        statusViewModel.setCurrentPointId(currentPointId);
 
-        if (currentTransportation.getPartialId() <= 0) {
+        if (partialId <= 0) {
             final List<Transportation> transportationList = new ArrayList<>();
-            transportationList.add(currentTransportation);
+            transportationList.add(new Transportation(
+                    transportationId,
+                    providerId,
+                    courierId,
+                    invoiceId,
+                    requestId,
+                    brancheId,
+                    currentStatusId,
+                    paymentStatusId,
+                    currentPointId,
+                    partialId,
+                    arrivalDate,
+                    trackingCode,
+                    qrCode,
+                    partyQRCode,
+                    instructions,
+                    direction,
+                    1,
+                    new Date(),
+                    new Date()));
             partialAdapter.setTransportationList(transportationList);
             partialAdapter.notifyDataSetChanged();
         }
         else {
-            statusViewModel.setPartialId(currentTransportation.getPartialId());
+            statusViewModel.setPartialId(partialId);
         }
 
-        sourceTextView.setText(currentTransportation.getCityFrom());
-        destinationTextView.setText(currentTransportation.getCityTo());
+        sourceTextView.setText(cityFrom);
+        destinationTextView.setText(cityTo);
 
         statusViewModel.getInTransitStatus().observe(getViewLifecycleOwner(), inTransitStatus -> {
             inTransitTransportationStatus = inTransitStatus;
@@ -242,7 +331,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
 
         statusViewModel.getCurrentCity().observe(getViewLifecycleOwner(), currentCity -> {
             if (currentCity != null) {
-                currentPointTextView.setText(currentCity.getName());
+                currentPointTextView.setText(getString(R.string.current_location, currentCity.getName()));
             }
         });
 
@@ -250,11 +339,32 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
             Route currentPath = null;
             Route nextPath = null;
 
-            if (currentTransportation != null) {
+            if (currentStatusId <= 0) {
+                return;
+            }
+            if (inTransitTransportationStatus == null) {
+                return;
+            }
+            if (onItsWayTransportationStatus == null) {
+                return;
+            }
+            if (deliveredTransportationStatus == null) {
+                return;
+            }
+            if (leftCountryTransportationStatus == null) {
+                return;
+            }
+
+            if (currentPointId > 0) {
                 if (route != null && !route.isEmpty()) {
+                    //get Route and Current Transit Point
+                    pointsQuantity = route.size();
+
                     for (int i = 0; i < route.size(); i++) {
-                        if (route.get(i).getTransitPointId().equals(currentTransportation.getCurrentTransitionPointId())) {
+                        if (route.get(i).getTransitPointId().equals(currentPointId)) {
+
                             currentPath = route.get(i);
+                            currentPosition = i + 1;
 
                             if (i == route.size() - 1) {
                                 nextPath = null;
@@ -266,57 +376,54 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
                         }
                     }
                     if (currentPath != null) {
-                        if (currentTransportation.getTransportationStatusId() == null) {
+                        if (currentStatusId == onItsWayTransportationStatus.getId()) {
+                            statusViewModel.setNextStatus(inTransitTransportationStatus);
+                            statusViewModel.setNextPoint(currentPath.getTransitPointId());
+                            pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.blue_bubble));
+
+                            final int temp = pointsQuantity * 2 - 1;
+                            final float temp2 = (float) currentPosition / temp;
+                            final float progress = temp2 * 100;
+                            pathSeekBar.setProgress((int) progress, true);
+
                             return;
                         }
-                        if (inTransitTransportationStatus == null) {
-                            return;
-                        }
-                        if (onItsWayTransportationStatus == null) {
-                            return;
-                        }
-                        if (deliveredTransportationStatus == null) {
-                            return;
-                        }
-                        if (leftCountryTransportationStatus == null) {
-                            return;
-                        }
-                        if (nextPath != null) {
-                            if (currentTransportation.getTransportationStatusId() == onItsWayTransportationStatus.getId()) {
-                                statusViewModel.setNextTransportationStatus(inTransitTransportationStatus);
-                                statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
-                                return;
+                        if (currentStatusId == inTransitTransportationStatus.getId()) {
+                            if (nextPath != null) {
+                                statusViewModel.setNextStatus(onItsWayTransportationStatus);
+                                statusViewModel.setNextPoint(nextPath.getTransitPointId());
+                                pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.purple_bubble));
                             }
-                            if (currentTransportation.getTransportationStatusId() == inTransitTransportationStatus.getId()) {
-                                statusViewModel.setNextTransportationStatus(onItsWayTransportationStatus);
-                                statusViewModel.setNextTransitPointId(nextPath.getTransitPointId());
-                            }
-                            return;
-                        }
-                        if (currentTransportation.getTransportationStatusId() == onItsWayTransportationStatus.getId()) {
-                            statusViewModel.setNextTransportationStatus(inTransitTransportationStatus);
-                            statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
-                            return;
-                        }
-                        if (currentTransportation.getTransportationStatusId() == inTransitTransportationStatus.getId()) {
-                            if (destinationCountry != null) {
-                                if (destinationCountry.getId() == 191) {
-                                    //delivered
-                                    statusViewModel.setNextTransportationStatus(deliveredTransportationStatus);
-                                    statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
-                                    return;
+                            else {
+                                if (destinationCountry != null) {
+                                    if (destinationCountry.getId() == 191) {
+                                        //delivered
+                                        statusViewModel.setNextStatus(deliveredTransportationStatus);
+                                    }
+                                    else {//left country
+                                        statusViewModel.setNextStatus(leftCountryTransportationStatus);
+                                    }
+                                    statusViewModel.setNextPoint(currentPath.getTransitPointId());
                                 }
-                                //left country
-                                statusViewModel.setNextTransportationStatus(leftCountryTransportationStatus);
-                                statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
                             }
+                            return;
                         }
-                        if (currentTransportation.getTransportationStatusId() == deliveredTransportationStatus.getId()
-                                || currentTransportation.getTransportationStatusId() == leftCountryTransportationStatus.getId()) {
-                            statusViewModel.setNextTransportationStatus(null);
-                            statusViewModel.setNextTransitPointId(currentPath.getTransitPointId());
+                        if (currentStatusId == deliveredTransportationStatus.getId() || currentStatusId == leftCountryTransportationStatus.getId()) {
+                            statusViewModel.setNextStatus(null);
+                            statusViewModel.setNextPoint(currentPath.getTransitPointId());
+                            pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.green_bubble));
+                            pathSeekBar.setProgress(100, true);
                         }
                     }
+                }
+                if (currentStatusId == deliveredTransportationStatus.getId() || currentStatusId == leftCountryTransportationStatus.getId()) {
+                    pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.green_bubble));
+                    pathSeekBar.setProgress(100, true);
+                    return;
+                }
+                if (currentStatusId == inTransitTransportationStatus.getId()) {
+                    pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.purple_bubble));
+                    pathSeekBar.setProgress(0, true);
                 }
             }
         });
@@ -362,9 +469,17 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
 
         statusViewModel.getPartialTransportationList().observe(getViewLifecycleOwner(), partialTransportationList -> {
             if (partialTransportationList != null) {
-                Log.i(TAG, "partialTransport: " + partialTransportationList);
                 partialAdapter.setTransportationList(partialTransportationList);
                 partialAdapter.notifyDataSetChanged();
+            }
+        });
+
+        statusViewModel.getCurrentTransportation().observe(getViewLifecycleOwner(), currentTransportation -> {
+            if (currentTransportation != null) {
+                Log.i(TAG, "getTransportation(): " + currentTransportation);
+                currentStatusId = currentTransportation.getTransportationStatusId();
+                currentPointId = currentTransportation.getCurrentTransitionPointId();
+                statusViewModel.setCurrentPointId(currentPointId);
             }
         });
     }
@@ -380,7 +495,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
             }
             if (resultCode == Activity.RESULT_OK && data != null) {
                 final String recipientSignatureFilePath = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
-                updateStatusDelivered(context, currentTransportation.getInvoiceId(), recipientSignatureFilePath, currentTransportation.getId(), nextStatus.getId(), nextPoint, currentTransportation.getPartialId());
+                updateTransportationStatus(context, invoiceId, recipientSignatureFilePath, transportationId, nextStatus.getId(), nextPoint, partialId);
                 return;
             }
             Toast.makeText(context, "Произошла ошибка", Toast.LENGTH_SHORT).show();
@@ -388,15 +503,47 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
     }
 
     private void updateTransportationStatus(@NonNull final Context context,
+                                            final long invoiceId,
+                                            final String recipientSignatureFilePath,
                                             final long transportationId,
                                             final long nextStatusId,
                                             final long nextPointId,
                                             final long partialId) {
-        final UUID updateTransportationStatusId = SyncWorkRequest.updateTransportationStatus(context,
-                transportationId, nextStatusId, nextPointId, partialId);
+        UUID updateStatusWork = null;
 
-        WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateTransportationStatusId).observe(getViewLifecycleOwner(), workInfo -> {
+        if (invoiceId <= 0) {
+            updateStatusWork = SyncWorkRequest.updateTransportationStatus(context, transportationId, nextStatusId, nextPointId, partialId);
+        }
+        else if (recipientSignatureFilePath == null) {
+            return;
+        }
+        else {
+            updateStatusWork = SyncWorkRequest.sendRecipientSignatureAndUpdateStatusDelivered(
+                    context,
+                    invoiceId,
+                    recipientSignatureFilePath,
+                    transportationId,
+                    nextStatusId,
+                    nextPointId,
+                    partialId);
+        }
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateStatusWork).observe(getViewLifecycleOwner(), workInfo -> {
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                final Data outputData = workInfo.getOutputData();
+//                final long pointId = outputData.getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, -1L);
+//                final long statusId = outputData.getLong(Constants.KEY_CURRENT_STATUS_ID, -1L);
+//                final String statusName = outputData.getString(Constants.KEY_CURRENT_STATUS_NAME);
+
+                if (currentPointId <= 0 || currentStatusId <= 0 || currentStatusName == null) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    checkImageView.setVisibility(View.INVISIBLE);
+
+                    Toast.makeText(context, "Произошла ошибка при обновлении статуса", Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+
                 final Drawable drawable = checkImageView.getDrawable();
                 checkImageView.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
@@ -410,53 +557,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
                     vectorDrawable = (AnimatedVectorDrawable) drawable;
                     vectorDrawable.start();
                 }
-                return;
-            }
-            if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                progressBar.setVisibility(View.INVISIBLE);
-                checkImageView.setVisibility(View.INVISIBLE);
 
-                Toast.makeText(context, "Произошла ошибка при обновлении статуса", Toast.LENGTH_SHORT).show();
-
-                return;
-            }
-            progressBar.setVisibility(View.VISIBLE);
-            checkImageView.setVisibility(View.INVISIBLE);
-            submitStatusBtn.setEnabled(false);
-        });
-    }
-
-    private void updateStatusDelivered(@NonNull final Context context,
-                                       final long invoiceId,
-                                       final String recipientSignatureFilePath,
-                                       final long transportationId,
-                                       final long nextStatusId,
-                                       final long nextPointId,
-                                       final long partialId) {
-        final UUID sendSignatureAndUpdateDelivered = SyncWorkRequest.sendRecipientSignatureAndUpdateStatusDelivered(
-                context,
-                invoiceId,
-                recipientSignatureFilePath,
-                transportationId,
-                nextStatusId,
-                nextPointId,
-                partialId);
-
-        WorkManager.getInstance(context).getWorkInfoByIdLiveData(sendSignatureAndUpdateDelivered).observe(getViewLifecycleOwner(), workInfo -> {
-            if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                final Drawable drawable = checkImageView.getDrawable();
-                checkImageView.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.INVISIBLE);
-
-                if (drawable instanceof AnimatedVectorDrawableCompat) {
-                    vectorDrawableCompat = (AnimatedVectorDrawableCompat) drawable;
-                    vectorDrawableCompat.start();
-                    return;
-                }
-                if (drawable instanceof AnimatedVectorDrawable) {
-                    vectorDrawable = (AnimatedVectorDrawable) drawable;
-                    vectorDrawable.start();
-                }
                 return;
             }
             if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {

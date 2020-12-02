@@ -23,7 +23,7 @@ public class IntentConstants {
     public static final int FRAGMENT_CURRENT_TRANSPORT = 0x01;
     public static final int FRAGMENT_DELIVERY_TRANSPORT = 0x02;
 
-    public static final String NOTIFICATIONS_ACTIVITY = ".view.activity.NotificationsActivity";
+    public static final String MAIN_ACTIVITY = ".view.activity.MainActivity";
     public static final String REQUEST_PUBLIC_REQUESTS = "PUBLIC_REQUESTS";
     public static final String REQUEST_MY_REQUESTS = "MY_REQUESTS";
     public static final String REQUEST_CURRENT_TRANSPORTATIONS = "CURRENT_TRANSPORTATIONS";

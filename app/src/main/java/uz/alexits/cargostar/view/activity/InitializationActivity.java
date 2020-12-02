@@ -59,11 +59,10 @@ public class InitializationActivity extends AppCompatActivity {
                 return;
             }
             final String token = task.getResult();
-            SharedPrefs.getInstance(context).putString(SharedPrefs.TOKEN, token);
-
 
             Log.i(TAG, "obtainFcmToken(): " + token);
-            Toast.makeText(context, token, Toast.LENGTH_SHORT).show();
+
+            SharedPrefs.getInstance(context).putString(SharedPrefs.TOKEN, token);
         });
     }
 

@@ -64,4 +64,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-messaging'
 
+    //seek bar
+    implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
 }

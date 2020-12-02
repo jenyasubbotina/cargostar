@@ -17,26 +17,26 @@ import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.model.transportation.TransportationData;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
 
 public class TransportationStatusViewModel extends AndroidViewModel {
     private final Repository repository;
-
-    private final MutableLiveData<Long> transportationId;
-    private final MutableLiveData<Long> currentTransitPointId;
-    private final MutableLiveData<Long> currentCityId;
 
     private final LiveData<TransportationStatus> inTransitStatus;
     private final LiveData<TransportationStatus> onItsWayStatus;
     private final LiveData<TransportationStatus> deliveredStatus;
     private final LiveData<TransportationStatus> leftCountryStatus;
 
-    private final MutableLiveData<TransportationStatus> nextTransportationStatus;
-    private final MutableLiveData<Long> nextTransitPointId;
-
+    private final MutableLiveData<Long> transportationId;
     private final MutableLiveData<Long> requestId;
     private final MutableLiveData<Long> partialId;
+
+    private final MutableLiveData<Long> currentPointId;
+    private final MutableLiveData<Long> currentCityId;
+
+    private final MutableLiveData<TransportationStatus> nextStatus;
+    private final MutableLiveData<Long> nextPoint;
+
 
     public TransportationStatusViewModel(@NonNull Application application) {
         super(application);
@@ -45,10 +45,10 @@ public class TransportationStatusViewModel extends AndroidViewModel {
         this.requestId = new MutableLiveData<>();
         this.partialId = new MutableLiveData<>();
         this.transportationId = new MutableLiveData<>();
-        this.currentTransitPointId = new MutableLiveData<>();
+        this.currentPointId = new MutableLiveData<>();
         this.currentCityId = new MutableLiveData<>();
-        this.nextTransportationStatus = new MutableLiveData<>();
-        this.nextTransitPointId = new MutableLiveData<>();
+        this.nextStatus = new MutableLiveData<>();
+        this.nextPoint = new MutableLiveData<>();
 
         this.inTransitStatus = repository.selectTransportationStatusById(3L);
         this.onItsWayStatus = repository.selectTransportationStatusById(4L);
@@ -66,8 +66,8 @@ public class TransportationStatusViewModel extends AndroidViewModel {
     }
 
     /* Transportation */
-    public void setCurrentTransitPointId(final Long currentTransitPointId) {
-        this.currentTransitPointId.setValue(currentTransitPointId);
+    public void setCurrentPointId(final Long currentPointId) {
+        this.currentPointId.setValue(currentPointId);
     }
 
     public void setTransportationId(final Long transportationId) {
@@ -78,12 +78,12 @@ public class TransportationStatusViewModel extends AndroidViewModel {
         this.currentCityId.setValue(cityId);
     }
 
-    public void setNextTransportationStatus(final TransportationStatus transportationStatus) {
-        this.nextTransportationStatus.setValue(transportationStatus);
+    public void setNextStatus(final TransportationStatus transportationStatus) {
+        this.nextStatus.setValue(transportationStatus);
     }
 
-    public void setNextTransitPointId(final Long nextTransitPointId) {
-        this.nextTransitPointId.setValue(nextTransitPointId);
+    public void setNextPoint(final Long nextPoint) {
+        this.nextPoint.setValue(nextPoint);
     }
 
     public void setPartialId(final Long partialId) {
@@ -97,12 +97,8 @@ public class TransportationStatusViewModel extends AndroidViewModel {
         return Transformations.switchMap(transportationId, repository::selectRouteByTransportationId);
     }
 
-    public LiveData<List<TransportationData>> getTransportationData() {
-        return Transformations.switchMap(transportationId, repository::selectTransportationDataByTransportationId);
-    }
-
     public LiveData<TransitPoint> getCurrentTransitPoint() {
-        return Transformations.switchMap(currentTransitPointId, repository::selectTransitPointById);
+        return Transformations.switchMap(currentPointId, repository::selectTransitPointById);
     }
 
     public LiveData<City> getCurrentCity() {
@@ -110,10 +106,10 @@ public class TransportationStatusViewModel extends AndroidViewModel {
     }
 
     public LiveData<TransportationStatus> getNextStatus() {
-        return nextTransportationStatus;
+        return nextStatus;
     }
 
-    public LiveData<Long> getNextTransitPoint() { return nextTransitPointId; }
+    public LiveData<Long> getNextTransitPoint() { return nextPoint; }
 
     public LiveData<TransportationStatus> getInTransitStatus() {
         return inTransitStatus;
@@ -137,5 +133,9 @@ public class TransportationStatusViewModel extends AndroidViewModel {
 
     public LiveData<List<Transportation>> getPartialTransportationList() {
         return Transformations.switchMap(partialId, repository::selectTransportationsByPartialId);
+    }
+
+    public LiveData<Transportation> getCurrentTransportation() {
+        return Transformations.switchMap(transportationId, repository::selectTransportationById);
     }
 }

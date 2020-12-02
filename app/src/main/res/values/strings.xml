@@ -168,7 +168,7 @@
     <string name="partial">Партия</string>
     <string name="cost">Стоимость</string>
     <string name="fuel_tax">Топливная надбавка</string>
-    <string name="current_location">Текущее местоположение</string>
+    <string name="current_location">Текущее местоположение: %1$s</string>
     <string name="dispatch_date">Дата отправки</string>
     <string name="arrival_date">Дата прибытия</string>
     <string name="additional_documents">Сопроводительные документы</string>
@@ -217,4 +217,5 @@
     <string name="choose_recipient_from_address_book">Выберите получателя</string>
     <string name="choose_payer_from_address_book">Выберите плательщика</string>
     <string name="request_id">ID заявки</string>
+    <string name="address">Адрес</string>
 </resources>

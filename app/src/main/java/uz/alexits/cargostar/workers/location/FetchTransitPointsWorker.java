@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.work.Data;
+import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -56,11 +57,13 @@ public class FetchTransitPointsWorker extends Worker {
                     Log.i(TAG, "fetchTransitPointList(): " + transitPointList);
 
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertTransitPoints(transitPointList);
-                    return Result.success(new Data.Builder()
+
+                    final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)
                             .putString(Constants.KEY_TOKEN, token)
-                            .build());
+                            .putInt(Constants.KEY_PROGRESS, 30).build();
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
             else {

@@ -52,7 +52,7 @@
         app:layout_constraintStart_toEndOf="@id/from_text_view"
         android:layout_marginStart="10dp"
         android:contentDescription="@string/new_bid"
-        android:src="@drawable/ic_path"/>
+        android:src="@drawable/ic_path_grey"/>
 
     <TextView
         android:id="@+id/to_text_view"

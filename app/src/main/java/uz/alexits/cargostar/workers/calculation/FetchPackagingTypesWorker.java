@@ -46,12 +46,15 @@ public class FetchPackagingTypesWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllPackagingTypes(): response=" + response.body());
                     final List<PackagingType> packagingTypeList = response.body();
+
                     LocalCache.getInstance(getApplicationContext()).packagingDao().insertPackagingTypeListTransaction(packagingTypeList);
-                    return ListenableWorker.Result.success(new Data.Builder()
+
+                    final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)
                             .putString(Constants.KEY_TOKEN, token)
-                            .build());
+                            .putInt(Constants.KEY_PROGRESS, 45).build();
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
             else {

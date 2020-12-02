@@ -159,4 +159,8 @@ public class Constants {
     public static final String KEY_CONSIGNMENT_QUANTITY = "count";
     public static final String KEY_IS_SENDER_SIGNATURE_LOCAL = "is_sender_signature_local";
     public static final String KEY_TOKEN = "push_token";
+    public static final String KEY_BRANCHE_ID = "branche_id";
+    public static final String KEY_PROGRESS = "progress";
+    public static final String KEY_CURRENT_STATUS_ID = "current_status_id";
+    public static final String KEY_CURRENT_STATUS_NAME = "current_status_name";
 }

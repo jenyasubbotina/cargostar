@@ -91,22 +91,22 @@ public class FcmMessagingService extends FirebaseMessagingService {
             if (type2.equalsIgnoreCase(Constants.SUBTYPE_NEW)) {
                 Log.i(TAG, "onMessageReceived(): new request");
                 if (request.getCourierId() == null) {
-                    intentValue = IntentConstants.NOTIFICATIONS_ACTIVITY;
+                    intentValue = IntentConstants.MAIN_ACTIVITY;
                     link = IntentConstants.REQUEST_PUBLIC_REQUESTS;
                 }
                 else if (request.getCourierId() == SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID)) {
-                    intentValue = IntentConstants.NOTIFICATIONS_ACTIVITY;
+                    intentValue = IntentConstants.MAIN_ACTIVITY;
                     link = IntentConstants.REQUEST_MY_REQUESTS;
                 }
             }
             else if (type2.equalsIgnoreCase(Constants.SUBTYPE_UPDATE)) {
                 Log.i(TAG, "onMessageReceived(): request update");
                 if (request.getCourierId() == null) {
-                    intentValue = IntentConstants.NOTIFICATIONS_ACTIVITY;
+                    intentValue = IntentConstants.MAIN_ACTIVITY;
                     link = IntentConstants.REQUEST_PUBLIC_REQUESTS;
                 }
                 else if (request.getCourierId() == SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID)) {
-                    intentValue = IntentConstants.NOTIFICATIONS_ACTIVITY;
+                    intentValue = IntentConstants.MAIN_ACTIVITY;
                     link = IntentConstants.REQUEST_MY_REQUESTS;
                 }
             }
@@ -142,7 +142,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         }
         else if (type.equalsIgnoreCase(Constants.TYPE_TRANSPORTATION)) {
             final Transportation transportation = parseTransportation(dataPayload);
-            intentValue = IntentConstants.NOTIFICATIONS_ACTIVITY;
+            intentValue = IntentConstants.MAIN_ACTIVITY;
 
             if (type2.equalsIgnoreCase(Constants.SUBTYPE_NEW)) {
                 Log.i(TAG, "onMessageReceived(): new transportation");
@@ -280,6 +280,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final String providerId = dataPayload.get(Constants.KEY_PROVIDER_ID);
         final String invoiceId = dataPayload.get(Constants.KEY_INVOICE_ID);
         final String requestId = dataPayload.get(Constants.KEY_REQUEST_ID);
+        final String brancheId = dataPayload.get(Constants.KEY_BRANCHE_ID);
         final String transportationStatusId = dataPayload.get(Constants.KEY_TRANSPORTATION_STATUS);
         final String paymentStatusId = dataPayload.get(Constants.KEY_PAYMENT_STATUS_ID);
         final String currentTransitPointId = dataPayload.get(Constants.KEY_CURRENT_TRANSIT_POINT_ID);
@@ -302,6 +303,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final Long courier_id = courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId.trim()) : null;
         final Long invoice_id = invoiceId != null && !TextUtils.isEmpty(invoiceId) ? Long.parseLong(invoiceId.trim()) : null;
         final Long request_id = requestId != null && !TextUtils.isEmpty(requestId) ? Long.parseLong(requestId.trim()) : null;
+        final Long branche_id = brancheId != null && !TextUtils.isEmpty(brancheId) ? Long.parseLong(brancheId.trim()) : null;
         final Long transportation_status_id = transportationStatusId != null && !TextUtils.isEmpty(transportationStatusId) ? Long.parseLong(transportationStatusId.trim()) : null;
         final Long payment_status_id = paymentStatusId != null && !TextUtils.isEmpty(paymentStatusId) ? Long.parseLong(paymentStatusId.trim()) : null;
         final Long partial_id = partialId != null && !TextUtils.isEmpty(partialId) ? Long.parseLong(partialId.trim()) : null;
@@ -315,6 +317,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 courier_id,
                 invoice_id,
                 request_id,
+                branche_id,
                 transportation_status_id,
                 payment_status_id,
                 current_transit_point_id,

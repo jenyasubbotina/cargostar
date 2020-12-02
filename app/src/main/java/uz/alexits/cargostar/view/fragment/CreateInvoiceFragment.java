@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -118,7 +119,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
     private Spinner packagingTypeSpinner;
     private ArrayAdapter<PackagingType> packagingTypeArrayAdapter;
-    private RelativeLayout packagingTypeField;
 
     private EditText weightEditText;
     private EditText lengthEditText;
@@ -639,7 +639,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         calculatorViewModel.getPackagingTypeList().observe(getViewLifecycleOwner(), packagingTypeList -> {
             packagingTypeArrayAdapter.clear();
             packagingTypeArrayAdapter.addAll(packagingTypeList);
-            packagingTypeArrayAdapter.notifyDataSetChanged();
+//            packagingTypeArrayAdapter.notifyDataSetChanged();
         });
 
         calculatorViewModel.getZoneList().observe(getViewLifecycleOwner(), zoneList -> {
@@ -917,6 +917,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //recipient country
+
                 recipientCountry = (Country) parent.getSelectedItem();
                 createInvoiceViewModel.setRecipientCountryId(recipientCountry.getId());
                 calculatorViewModel.setDestCountryId(recipientCountry.getId());
@@ -1223,12 +1224,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 final TextView itemTextView = (TextView) view;
-                final PackagingType selectedPackagingType = (PackagingType) adapterView.getSelectedItem();
 
                 if (itemTextView != null) {
                     if (i < adapterView.getCount()) {
                         itemTextView.setTextColor(context.getColor(R.color.colorBlack));
-                        packagingTypeField.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
             }
@@ -1326,37 +1325,35 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerCityId = ((City) recipientCitySpinner.getSelectedItem()).getId();
             }
         });
-
-        bindOnFocusChangeListeners();
     }
 
     private void bindOnFocusChangeListeners() {
         senderEmailEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderEmailEditText, hasFocus);
+            UiUtils.onFocusChanged(v, hasFocus);
         });
 
         senderSignatureEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderSignatureEditText, hasFocus);
+            UiUtils.onFocusChanged(v, hasFocus);
         });
 
         senderFirstNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderFirstNameEditText, hasFocus);
+            UiUtils.onFocusChanged(v, hasFocus);
         });
 
         senderLastNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderLastNameEditText, hasFocus);
+            UiUtils.onFocusChanged(v, hasFocus);
         });
 
         senderMiddleNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderMiddleNameEditText, hasFocus);
+            UiUtils.onFocusChanged(v, hasFocus);
         });
 
         senderPhoneEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderPhoneEditText, hasFocus);
+            UiUtils.onFocusChanged(v, hasFocus);
         });
 
         senderAddressEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderAddressEditText, hasFocus);
+            UiUtils.onFocusChanged(v, hasFocus);
         });
 
         senderZipEditText.setOnFocusChangeListener((v, hasFocus) -> {
@@ -1631,7 +1628,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         cargoPriceEditText = root.findViewById(R.id.cargo_price_edit_text);
         cargoDescriptionEditText = root.findViewById(R.id.cargo_description_edit_text);
         packagingTypeSpinner = root.findViewById(R.id.packaging_type_spinner);
-        packagingTypeField = root.findViewById(R.id.packaging_type_field);
         weightEditText = root.findViewById(R.id.weight_edit_text);
         lengthEditText = root.findViewById(R.id.length_edit_text);
         widthEditText = root.findViewById(R.id.width_edit_text);
@@ -1712,6 +1708,31 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         recipientAddressBookSpinner.setAdapter(recipientAddressBookArrayAdapter);
         payerAddressBookSpinner.setAdapter(payerAddressBookArrayAdapter);
+
+        senderCountrySpinner.setFocusable(true);
+        senderCountrySpinner.setFocusableInTouchMode(true);
+        recipientCountrySpinner.setFocusable(true);
+        recipientCountrySpinner.setFocusableInTouchMode(true);
+        payerCountrySpinner.setFocusable(true);
+        payerCountrySpinner.setFocusableInTouchMode(true);
+        senderCitySpinner.setFocusable(true);
+        senderCitySpinner.setFocusableInTouchMode(true);
+        recipientCitySpinner.setFocusable(true);
+        recipientCitySpinner.setFocusableInTouchMode(true);
+        payerCitySpinner.setFocusable(true);
+        payerCitySpinner.setFocusableInTouchMode(true);
+        packagingTypeSpinner.setFocusable(true);
+        packagingTypeSpinner.setFocusableInTouchMode(true);
+        recipientAddressBookSpinner.setFocusable(true);
+        recipientAddressBookSpinner.setFocusableInTouchMode(true);
+        payerAddressBookSpinner.setFocusable(true);
+        payerAddressBookSpinner.setFocusableInTouchMode(true);
+        senderIsPayerRadioBtn.setFocusable(true);
+        senderIsPayerRadioBtn.setFocusableInTouchMode(true);
+        recipientIsPayerRadioBtn.setFocusable(true);
+        recipientIsPayerRadioBtn.setFocusableInTouchMode(true);
+
+        bindOnFocusChangeListeners();
     }
 
     private void updateUI() {
@@ -2428,6 +2449,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
 
         final String serializedConsignmentList = new Gson().toJson(consignmentList);
+
+        Log.i(TAG, "createInvoice(): invoiceId=" + invoiceId);
 
         final UUID sendInvoiceWorkUUID = SyncWorkRequest.sendInvoice(
                 context,

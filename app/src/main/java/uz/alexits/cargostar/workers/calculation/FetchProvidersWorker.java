@@ -47,12 +47,15 @@ public class FetchProvidersWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllProviders(): response=" + response.body());
                     final List<Provider> providerList = response.body();
+
                     LocalCache.getInstance(getApplicationContext()).packagingDao().insertProvidersTransaction(providerList);
-                    return ListenableWorker.Result.success(new Data.Builder()
+
+                    final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)
                             .putString(Constants.KEY_TOKEN, token)
-                            .build());
+                            .putInt(Constants.KEY_PROGRESS, 35).build();
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
             else {

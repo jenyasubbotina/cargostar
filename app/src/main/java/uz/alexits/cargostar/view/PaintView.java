@@ -110,7 +110,6 @@ public class PaintView extends View {
             mCanvas.drawPath(fp.path, mPaint);
 
         }
-
         canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
         canvas.restore();
     }

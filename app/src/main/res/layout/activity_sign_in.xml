@@ -131,8 +131,8 @@
 
     <ProgressBar
         android:id="@+id/progress_bar"
-        app:layout_constraintTop_toBottomOf="@id/keep_logging_check_box"
-        app:layout_constraintBottom_toTopOf="@id/parcels_image_view"
+        app:layout_constraintTop_toBottomOf="@id/logo_image_view"
+        app:layout_constraintBottom_toTopOf="@id/authorization_text_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="wrap_content"

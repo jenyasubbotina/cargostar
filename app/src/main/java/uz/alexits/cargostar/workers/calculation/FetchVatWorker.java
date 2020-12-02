@@ -49,12 +49,16 @@ public class FetchVatWorker extends Worker {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchVat(): response=" + response.body());
                     final Vat vat = response.body();
+
                     LocalCache.getInstance(getApplicationContext()).packagingDao().insertVat(vat);
-                    return ListenableWorker.Result.success(new Data.Builder()
+
+                    final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)
                             .putString(Constants.KEY_TOKEN, token)
-                            .build());
+                            .putInt(Constants.KEY_PROGRESS, 65)
+                            .build();
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
             else {

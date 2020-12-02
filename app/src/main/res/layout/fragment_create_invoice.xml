@@ -160,7 +160,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/sender_first_name_edit_text"
             app:layout_constraintStart_toStartOf="@id/sender_signature_field"
             app:layout_constraintEnd_toEndOf="@id/sender_signature_field"
-            android:layout_marginTop="4dp"
             android:inputType="textPersonName"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -214,7 +213,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/sender_middle_name_edit_text"
             app:layout_constraintStart_toStartOf="@id/sender_last_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/sender_last_name_edit_text"
-            android:layout_marginTop="4dp"
             android:inputType="phone"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -234,24 +232,18 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/country"/>
 
-        <RelativeLayout
-            android:id="@+id/sender_country_field"
+        <Spinner
+            android:id="@+id/sender_country_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             app:layout_constraintTop_toBottomOf="@id/sender_country_text_view"
             app:layout_constraintStart_toStartOf="@id/sender_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/sender_middle_name_edit_text"
             android:layout_marginTop="4dp"
-            android:background="@drawable/edit_text_locked">
-
-            <Spinner
-                android:id="@+id/sender_country_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp"
-                android:prompt="@string/choose_country"/>
-        </RelativeLayout>
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/choose_country"/>
 
         <TextView
             android:id="@+id/sender_city_text_view"
@@ -264,44 +256,38 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/city"/>
 
-        <RelativeLayout
-            android:id="@+id/sender_city_field"
+        <Spinner
+            android:id="@+id/sender_city_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/sender_country_field"
-            app:layout_constraintBottom_toBottomOf="@id/sender_country_field"
+            android:layout_height="56dp"
+            app:layout_constraintTop_toTopOf="@id/sender_country_spinner"
+            app:layout_constraintBottom_toBottomOf="@id/sender_country_spinner"
             app:layout_constraintStart_toStartOf="@id/sender_phone_edit_text"
             app:layout_constraintEnd_toEndOf="@id/sender_phone_edit_text"
-            android:background="@drawable/edit_text_locked">
-
-            <Spinner
-                android:id="@+id/sender_city_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp"
-                android:prompt="@string/choose_city"/>
-        </RelativeLayout>
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/choose_city"/>
 
         <TextView
             android:id="@+id/sender_address_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/sender_country_field"
+            app:layout_constraintTop_toBottomOf="@id/sender_city_spinner"
             app:layout_constraintStart_toStartOf="@id/sender_country_text_view"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
-            android:text="@string/delivery_address"/>
+            android:text="@string/take_address"/>
 
         <EditText
             android:id="@+id/sender_address_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/sender_address_text_view"
-            app:layout_constraintStart_toStartOf="@id/sender_country_field"
-            app:layout_constraintEnd_toEndOf="@id/sender_country_field"
+            app:layout_constraintStart_toStartOf="@id/sender_country_spinner"
+            app:layout_constraintEnd_toEndOf="@id/sender_country_spinner"
             android:layout_marginTop="4dp"
             android:inputType="textPostalAddress"
             android:background="@drawable/edit_text_locked"
@@ -327,8 +313,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/sender_address_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/sender_address_edit_text"
-            app:layout_constraintStart_toStartOf="@id/sender_city_field"
-            app:layout_constraintEnd_toEndOf="@id/sender_city_field"
+            app:layout_constraintStart_toStartOf="@id/sender_city_spinner"
+            app:layout_constraintEnd_toEndOf="@id/sender_city_spinner"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -451,30 +437,24 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/address_book"/>
 
-        <RelativeLayout
-            android:id="@+id/recipient_address_book_field"
+        <Spinner
+            android:id="@+id/recipient_address_book_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             app:layout_constraintTop_toBottomOf="@id/recipient_address_book_text_view"
             app:layout_constraintStart_toStartOf="@id/recipient_email_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_first_name_edit_text"
-            android:background="@drawable/edit_text_locked"
-            android:layout_marginTop="4dp">
-
-            <Spinner
-                android:id="@+id/recipient_address_book_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="4dp"
-                android:prompt="@string/choose_recipient_from_address_book"/>
-        </RelativeLayout>
+            android:layout_marginTop="4dp"
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/choose_recipient_from_address_book"/>
 
         <TextView
             android:id="@+id/recipient_email_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/recipient_address_book_field"
+            app:layout_constraintTop_toBottomOf="@id/recipient_address_book_spinner"
             app:layout_constraintStart_toStartOf="@id/recipient_data_text_view"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
@@ -588,24 +568,18 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/country"/>
 
-        <RelativeLayout
-            android:id="@+id/recipient_country_field"
+        <Spinner
+            android:id="@+id/recipient_country_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             app:layout_constraintTop_toBottomOf="@id/recipient_country_text_view"
             app:layout_constraintStart_toStartOf="@id/recipient_last_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_last_name_edit_text"
             android:layout_marginTop="4dp"
-            android:background="@drawable/edit_text_locked">
-
-            <Spinner
-                android:id="@+id/recipient_country_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp"
-                android:prompt="@string/choose_country"/>
-        </RelativeLayout>
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/choose_country"/>
 
         <TextView
             android:id="@+id/recipient_city_text_view"
@@ -618,30 +592,24 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/city"/>
 
-        <RelativeLayout
-            android:id="@+id/recipient_city_field"
+        <Spinner
+            android:id="@+id/recipient_city_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/recipient_country_field"
-            app:layout_constraintBottom_toBottomOf="@id/recipient_country_field"
+            android:layout_height="56dp"
+            app:layout_constraintTop_toTopOf="@id/recipient_country_spinner"
+            app:layout_constraintBottom_toBottomOf="@id/recipient_country_spinner"
             app:layout_constraintStart_toStartOf="@id/recipient_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_middle_name_edit_text"
-            android:background="@drawable/edit_text_locked">
-
-            <Spinner
-                android:id="@+id/recipient_city_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp"
-                android:prompt="@string/choose_city"/>
-        </RelativeLayout>
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/choose_city"/>
 
         <TextView
             android:id="@+id/recipient_address_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/recipient_country_field"
+            app:layout_constraintTop_toBottomOf="@id/recipient_country_spinner"
             app:layout_constraintStart_toStartOf="@id/recipient_country_text_view"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
@@ -654,8 +622,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/recipient_address_text_view"
-            app:layout_constraintStart_toStartOf="@id/recipient_country_field"
-            app:layout_constraintEnd_toEndOf="@id/recipient_country_field"
+            app:layout_constraintStart_toStartOf="@id/recipient_country_spinner"
+            app:layout_constraintEnd_toEndOf="@id/recipient_country_spinner"
             android:layout_marginTop="4dp"
             android:inputType="textPostalAddress"
             android:background="@drawable/edit_text_locked"
@@ -681,8 +649,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/recipient_address_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/recipient_address_edit_text"
-            app:layout_constraintStart_toStartOf="@id/recipient_city_field"
-            app:layout_constraintEnd_toEndOf="@id/recipient_city_field"
+            app:layout_constraintStart_toStartOf="@id/recipient_city_spinner"
+            app:layout_constraintEnd_toEndOf="@id/recipient_city_spinner"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -892,30 +860,24 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/address_book"/>
 
-        <RelativeLayout
-            android:id="@+id/payer_address_book_field"
+        <Spinner
+            android:id="@+id/payer_address_book_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             app:layout_constraintTop_toBottomOf="@id/payer_address_book_text_view"
             app:layout_constraintStart_toStartOf="@id/recipient_email_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_first_name_edit_text"
-            android:background="@drawable/edit_text_locked"
-            android:layout_marginTop="4dp">
-
-            <Spinner
-                android:id="@+id/payer_address_book_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="4dp"
-                android:prompt="@string/choose_payer_from_address_book"/>
-        </RelativeLayout>
+            android:layout_marginTop="4dp"
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/choose_payer_from_address_book"/>
 
         <TextView
             android:id="@+id/payer_email_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payer_address_book_field"
+            app:layout_constraintTop_toBottomOf="@id/payer_address_book_spinner"
             app:layout_constraintStart_toStartOf="@id/payer_data_text_view"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
@@ -1029,24 +991,18 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/country"/>
 
-        <RelativeLayout
-            android:id="@+id/payer_country_field"
+        <Spinner
+            android:id="@+id/payer_country_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             app:layout_constraintTop_toBottomOf="@id/payer_country_text_view"
             app:layout_constraintStart_toStartOf="@id/payer_last_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/payer_last_name_edit_text"
             android:layout_marginTop="4dp"
-            android:background="@drawable/edit_text_locked">
-
-            <Spinner
-                android:id="@+id/payer_country_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp"
-                android:prompt="@string/choose_country"/>
-        </RelativeLayout>
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/choose_country"/>
 
         <TextView
             android:id="@+id/payer_city_text_view"
@@ -1059,44 +1015,38 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/city"/>
 
-        <RelativeLayout
-            android:id="@+id/payer_city_field"
+        <Spinner
+            android:id="@+id/payer_city_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/payer_country_field"
-            app:layout_constraintBottom_toBottomOf="@id/payer_country_field"
+            android:layout_height="56dp"
+            app:layout_constraintTop_toTopOf="@id/payer_country_spinner"
+            app:layout_constraintBottom_toBottomOf="@id/payer_country_spinner"
             app:layout_constraintStart_toStartOf="@id/payer_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/payer_middle_name_edit_text"
-            android:background="@drawable/edit_text_locked">
-
-            <Spinner
-                android:id="@+id/payer_city_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp"
-                android:prompt="@string/choose_city"/>
-        </RelativeLayout>
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:prompt="@string/choose_city"/>
 
         <TextView
             android:id="@+id/payer_address_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payer_country_field"
+            app:layout_constraintTop_toBottomOf="@id/payer_country_spinner"
             app:layout_constraintStart_toStartOf="@id/payer_country_text_view"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
-            android:text="@string/delivery_address"/>
+            android:text="@string/address"/>
 
         <EditText
             android:id="@+id/payer_address_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/payer_address_text_view"
-            app:layout_constraintStart_toStartOf="@id/payer_country_field"
-            app:layout_constraintEnd_toEndOf="@id/payer_country_field"
+            app:layout_constraintStart_toStartOf="@id/payer_country_spinner"
+            app:layout_constraintEnd_toEndOf="@id/payer_country_spinner"
             android:layout_marginTop="4dp"
             android:inputType="textPostalAddress"
             android:background="@drawable/edit_text_locked"
@@ -1122,8 +1072,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/payer_address_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/payer_address_edit_text"
-            app:layout_constraintStart_toStartOf="@id/payer_city_field"
-            app:layout_constraintEnd_toEndOf="@id/payer_city_field"
+            app:layout_constraintStart_toStartOf="@id/payer_city_spinner"
+            app:layout_constraintEnd_toEndOf="@id/payer_city_spinner"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -1707,30 +1657,23 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/package_type"/>
 
-        <RelativeLayout
-            android:id="@+id/packaging_type_field"
+        <Spinner
+            android:id="@+id/packaging_type_spinner"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             app:layout_constraintTop_toBottomOf="@id/packaging_type_text_view"
             app:layout_constraintStart_toStartOf="@id/packaging_type_text_view"
             app:layout_constraintEnd_toEndOf="@id/length_edit_text"
             android:layout_marginTop="4dp"
-            app:layout_constraintHorizontal_weight="1"
-            android:background="@drawable/edit_text_locked">
-
-            <Spinner
-                android:id="@+id/packaging_type_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp" />
-        </RelativeLayout>
+            android:paddingHorizontal="4dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
 
         <TextView
             android:id="@+id/weight_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/packaging_type_field"
+            app:layout_constraintTop_toBottomOf="@id/packaging_type_spinner"
             app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
             android:layout_marginTop="24dp"
             android:textSize="16sp"

@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
+import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -66,10 +67,10 @@ public class SignInWorker extends Worker {
                     final Data outputData = new Data.Builder()
                             .putLong(SharedPrefs.ID, courier.getId())
                             .putLong(SharedPrefs.BRANCH_ID, courier.getBrancheId())
+                            .putInt(Constants.KEY_PROGRESS, 100)
                             .build();
 
-                    Log.i(TAG, "signIn(): successfully inserted courier " + courier);
-                    return Result.success(outputData);
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
         }

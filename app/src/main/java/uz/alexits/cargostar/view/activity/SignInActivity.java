@@ -24,6 +24,7 @@ import java.util.UUID;
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -35,7 +36,6 @@ public class SignInActivity extends AppCompatActivity {
     private EditText passwordEditText;
     private Button signInBtn;
     private CheckBox keepLoggingCheckBox;
-//    private TextView forgotPasswordTextView;
     private ImageView passwordEyeImageView;
 
     private ProgressBar progressBar;
@@ -46,18 +46,6 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         initUI();
-
-        LocalCache.getInstance(this).actorDao().selectCustomer(95).observe(this, sender -> {
-            Log.i(TAG, "sender: " + sender);
-        });
-
-        LocalCache.getInstance(this).invoiceDao().selectAddressBookEntryById(223).observe(this, sender -> {
-            Log.i(TAG, "recipient: " + sender);
-        });
-
-        LocalCache.getInstance(this).invoiceDao().selectAddressBookEntryById(224).observe(this, sender -> {
-            Log.i(TAG, "payer: " + sender);
-        });
 
         signInBtn.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
@@ -116,6 +104,9 @@ public class SignInActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.INVISIBLE);
                     signInBtn.setEnabled(true);
                     return;
+                }
+                if (workInfo.getState() == WorkInfo.State.BLOCKED) {
+                    Log.i(TAG, "progress: " + workInfo.getProgress().getInt(Constants.KEY_PROGRESS, 0));
                 }
                 Log.i(TAG, "workInfo: " + workInfo.getState() + " attempt=" + workInfo.getRunAttemptCount());
                 progressBar.setVisibility(View.VISIBLE);

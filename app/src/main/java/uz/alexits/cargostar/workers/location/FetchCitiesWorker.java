@@ -53,12 +53,13 @@ public class FetchCitiesWorker extends Worker {
                 if (response.isSuccessful()) {
                     final List<City> cityList = response.body();
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertCities(cityList);
-                    return ListenableWorker.Result.success(
-                            new Data.Builder()
-                                    .putString(Constants.KEY_LOGIN, login)
-                                    .putString(Constants.KEY_PASSWORD, password)
-                                    .putString(Constants.KEY_TOKEN, token)
-                                    .build());
+
+                    final Data outputData = new Data.Builder()
+                            .putString(Constants.KEY_LOGIN, login)
+                            .putString(Constants.KEY_PASSWORD, password)
+                            .putString(Constants.KEY_TOKEN, token)
+                            .putInt(Constants.KEY_PROGRESS, 20).build();
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
             else {

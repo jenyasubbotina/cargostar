@@ -10,12 +10,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.model.location.Branche;
 
 @Entity(tableName = "transportation",
         foreignKeys = {
                 @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
+                @ForeignKey(entity = Branche.class, parentColumns = "id", childColumns = "branche_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
                 @ForeignKey(entity = TransportationStatus.class, parentColumns = "id", childColumns = "transportation_status_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "provider_id"), @Index(value = "transportation_status_id"), @Index(value = "invoice_id", unique = true)}
+        indices = {@Index(value = "provider_id"), @Index(value = "transportation_status_id"), @Index(value = "invoice_id", unique = true), @Index(value = "branche_id")}
         )
 public class Transportation {
     @Expose
@@ -45,9 +47,14 @@ public class Transportation {
     private final Long requestId;
 
     @Expose
+    @SerializedName("branche_id")
+    @ColumnInfo(name = "branche_id")
+    private final Long brancheId;
+
+    @Expose
     @SerializedName("status_transport")
     @ColumnInfo(name = "transportation_status_id")
-    private final Long transportationStatusId;
+    private Long transportationStatusId;
 
     @Expose
     @SerializedName("status_payment")
@@ -57,7 +64,7 @@ public class Transportation {
     @Expose
     @SerializedName("current_point")
     @ColumnInfo(name = "current_transition_point_id")
-    private final Long currentTransitionPointId;
+    private Long currentTransitionPointId;
 
     @Expose
     @SerializedName("party_id")
@@ -129,6 +136,7 @@ public class Transportation {
                           final Long courierId,
                           final Long invoiceId,
                           final Long requestId,
+                          final Long brancheId,
                           final Long transportationStatusId,
                           final Long paymentStatusId,
                           final Long currentTransitionPointId,
@@ -147,6 +155,7 @@ public class Transportation {
         this.courierId = courierId;
         this.invoiceId = invoiceId;
         this.requestId = requestId;
+        this.brancheId = brancheId;
         this.transportationStatusId = transportationStatusId;
         this.paymentStatusId = paymentStatusId;
         this.currentTransitionPointId = currentTransitionPointId;
@@ -164,6 +173,10 @@ public class Transportation {
 
     public long getId() {
         return id;
+    }
+
+    public Long getBrancheId() {
+        return brancheId;
     }
 
     public Long getProviderId() {
@@ -274,6 +287,14 @@ public class Transportation {
         return requestId;
     }
 
+    public void setTransportationStatusId(Long transportationStatusId) {
+        this.transportationStatusId = transportationStatusId;
+    }
+
+    public void setCurrentTransitionPointId(Long currentTransitionPointId) {
+        this.currentTransitionPointId = currentTransitionPointId;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -282,6 +303,7 @@ public class Transportation {
                 ", providerId=" + providerId +
                 ", courierId=" + courierId +
                 ", invoiceId=" + invoiceId +
+                ", brancheId=" + brancheId +
                 ", transportationStatusId=" + transportationStatusId +
                 ", paymentStatusId=" + paymentStatusId +
                 ", currentTransitionPointId=" + currentTransitionPointId +

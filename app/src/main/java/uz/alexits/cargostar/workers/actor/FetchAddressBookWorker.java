@@ -61,11 +61,15 @@ public class FetchAddressBookWorker extends Worker {
                         return Result.failure();
                     }
                     Log.i(TAG, "fetchAddressBook(): successfully inserted entries");
-                    return Result.success(new Data.Builder()
+
+                    final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)
                             .putString(Constants.KEY_TOKEN, token)
-                            .build());
+                            .putInt(Constants.KEY_PROGRESS, 80)
+                            .build();
+
+                    return ListenableWorker.Result.success(outputData);
                 }
             }
             else {

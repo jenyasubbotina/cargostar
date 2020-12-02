@@ -10,6 +10,7 @@ import androidx.work.Data;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.OverwritingInputMerger;
+import androidx.work.WorkContinuation;
 import androidx.work.WorkManager;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
@@ -44,7 +45,6 @@ import uz.alexits.cargostar.workers.requests.BindRequestWorker;
 import uz.alexits.cargostar.workers.requests.FetchMyRequestsWorker;
 import uz.alexits.cargostar.workers.requests.FetchRequestsWorker;
 import uz.alexits.cargostar.workers.requests.InsertRequestWorker;
-import uz.alexits.cargostar.workers.transportation.FetchTransportationDataWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationRouteWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationStatusesWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationsWorker;
@@ -112,114 +112,133 @@ public class SyncWorkRequest {
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         final OneTimeWorkRequest fetchRegionsRequest = new OneTimeWorkRequest.Builder(FetchRegionsWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         final OneTimeWorkRequest fetchCitiesRequest = new OneTimeWorkRequest.Builder(FetchCitiesWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch branches from server */
         final OneTimeWorkRequest fetchBranchesRequest = new OneTimeWorkRequest.Builder(FetchBranchesWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch transit points from server */
         final OneTimeWorkRequest fetchTransitPointsRequest = new OneTimeWorkRequest.Builder(FetchTransitPointsWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch provider data from server */
         final OneTimeWorkRequest fetchProviderListRequest = new OneTimeWorkRequest.Builder(FetchProvidersWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch packaging data from server */
         final OneTimeWorkRequest fetchPackagingRequest = new OneTimeWorkRequest.Builder(FetchPackagingWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch packaging type data from server */
         final OneTimeWorkRequest fetchPackagingTypesRequest = new OneTimeWorkRequest.Builder(FetchPackagingTypesWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch zone data from server */
         final OneTimeWorkRequest fetchZonesRequest = new OneTimeWorkRequest.Builder(FetchZonesWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch zone country data from server */
         final OneTimeWorkRequest fetchZoneCountriesRequest = new OneTimeWorkRequest.Builder(FetchZoneCountriesWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch zone settings data from server */
         final OneTimeWorkRequest fetchZoneSettingsRequest = new OneTimeWorkRequest.Builder(FetchZoneSettingsWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch vat data from server */
         final OneTimeWorkRequest fetchVatRequest = new OneTimeWorkRequest.Builder(FetchVatWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch request data from server */
         final OneTimeWorkRequest fetchRequestListRequest = new OneTimeWorkRequest.Builder(FetchRequestsWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch sender data from server */
         final OneTimeWorkRequest fetchSenderListRequest = new OneTimeWorkRequest.Builder(FetchSenderListData.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch address book data from server */
         final OneTimeWorkRequest fetchAddressBookRequest = new OneTimeWorkRequest.Builder(FetchAddressBookWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch invoice data from server */
         final OneTimeWorkRequest fetchInvoicesRequest = new OneTimeWorkRequest.Builder(FetchInvoiceListWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch transportation status list from server */
         final OneTimeWorkRequest fetchTransportationStatusesRequest = new OneTimeWorkRequest.Builder(FetchTransportationStatusesWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* fetch transportation list from server */
         final OneTimeWorkRequest fetchTransportationsRequest = new OneTimeWorkRequest.Builder(FetchTransportationsWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
         /* last one -> sign in */
         final OneTimeWorkRequest signInRequest = new OneTimeWorkRequest.Builder(SignInWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .addTag("synchronize")
                 .build();
-        WorkManager.getInstance(context)
+        final WorkContinuation syncChain = WorkManager.getInstance(context)
                 .beginWith(fetchCountriesRequest)
                 .then(fetchRegionsRequest)
                 .then(fetchCitiesRequest)
@@ -238,8 +257,9 @@ public class SyncWorkRequest {
                 .then(fetchInvoicesRequest)
                 .then(fetchTransportationStatusesRequest)
                 .then(fetchTransportationsRequest)
-                .then(signInRequest)
-                .enqueue();
+                .then(signInRequest);
+
+        syncChain.enqueue();
 
         return signInRequest.getId();
     }
@@ -917,28 +937,6 @@ public class SyncWorkRequest {
         return fetchTransportationsRequest.getId();
     }
 
-    public static UUID fetchTransportationData(@NonNull final Context context, final long transportationId) {
-        final Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresCharging(false)
-                .setRequiresStorageNotLow(false)
-                .setRequiresDeviceIdle(false)
-                .build();
-
-        final Data inputData = new Data.Builder()
-                .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
-                .build();
-
-        final OneTimeWorkRequest fetchTransportationDataRequest = new OneTimeWorkRequest.Builder(FetchTransportationDataWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-        WorkManager.getInstance(context).enqueue(fetchTransportationDataRequest);
-
-        return fetchTransportationDataRequest.getId();
-    }
-
     public static UUID fetchTransportationRoute(@NonNull final Context context, final long transportationId) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -986,11 +984,6 @@ public class SyncWorkRequest {
                 .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
-        final OneTimeWorkRequest fetchTransportationDataRequest = new OneTimeWorkRequest.Builder(FetchTransportationDataWorker.class)
-                .setConstraints(constraints)
-                .setInputMerger(OverwritingInputMerger.class)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
         final OneTimeWorkRequest fetchTransportationRouteRequest = new OneTimeWorkRequest.Builder(FetchTransportationRouteWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
@@ -998,7 +991,6 @@ public class SyncWorkRequest {
                 .build();
         WorkManager.getInstance(context)
                 .beginWith(updateTransportationStatusRequest)
-                .then(fetchTransportationDataRequest)
                 .then(fetchTransportationRouteRequest)
                 .enqueue();
 
@@ -1040,11 +1032,6 @@ public class SyncWorkRequest {
                 .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
-        final OneTimeWorkRequest fetchTransportationDataRequest = new OneTimeWorkRequest.Builder(FetchTransportationDataWorker.class)
-                .setConstraints(constraints)
-                .setInputMerger(OverwritingInputMerger.class)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
         final OneTimeWorkRequest fetchTransportationRouteRequest = new OneTimeWorkRequest.Builder(FetchTransportationRouteWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
@@ -1053,7 +1040,6 @@ public class SyncWorkRequest {
         WorkManager.getInstance(context)
                 .beginWith(sendRecipientSignatureRequest)
                 .then(updateTransportationStatusRequest)
-                .then(fetchTransportationDataRequest)
                 .then(fetchTransportationRouteRequest)
                 .enqueue();
 
