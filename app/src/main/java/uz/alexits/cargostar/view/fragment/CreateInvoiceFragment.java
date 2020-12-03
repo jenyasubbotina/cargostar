@@ -66,6 +66,7 @@ import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.utils.Serializer;
+import uz.alexits.cargostar.view.MyScrollView;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
@@ -439,8 +440,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             courierId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getCourierId();
             providerId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getProviderId();
             price = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPrice();
-
-            Log.i(TAG, "onCreate(): tariffId=" + tariffId + " price=" + price);
 
             deliveryType = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDeliveryType();
             comment = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getComment();
@@ -1228,6 +1227,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 if (itemTextView != null) {
                     if (i < adapterView.getCount()) {
                         itemTextView.setTextColor(context.getColor(R.color.colorBlack));
+                        senderCountrySpinner.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
             }
@@ -1546,6 +1546,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
 
         //main content views
+        final MyScrollView myScrollView = root.findViewById(R.id.my_scroll_view);
         progressBar = root.findViewById(R.id.progress_bar);
 
         /* sender data */
@@ -1709,28 +1710,24 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         recipientAddressBookSpinner.setAdapter(recipientAddressBookArrayAdapter);
         payerAddressBookSpinner.setAdapter(payerAddressBookArrayAdapter);
 
-        senderCountrySpinner.setFocusable(true);
-        senderCountrySpinner.setFocusableInTouchMode(true);
-        recipientCountrySpinner.setFocusable(true);
-        recipientCountrySpinner.setFocusableInTouchMode(true);
-        payerCountrySpinner.setFocusable(true);
-        payerCountrySpinner.setFocusableInTouchMode(true);
-        senderCitySpinner.setFocusable(true);
-        senderCitySpinner.setFocusableInTouchMode(true);
-        recipientCitySpinner.setFocusable(true);
-        recipientCitySpinner.setFocusableInTouchMode(true);
-        payerCitySpinner.setFocusable(true);
-        payerCitySpinner.setFocusableInTouchMode(true);
-        packagingTypeSpinner.setFocusable(true);
-        packagingTypeSpinner.setFocusableInTouchMode(true);
-        recipientAddressBookSpinner.setFocusable(true);
-        recipientAddressBookSpinner.setFocusableInTouchMode(true);
-        payerAddressBookSpinner.setFocusable(true);
-        payerAddressBookSpinner.setFocusableInTouchMode(true);
-        senderIsPayerRadioBtn.setFocusable(true);
-        senderIsPayerRadioBtn.setFocusableInTouchMode(true);
-        recipientIsPayerRadioBtn.setFocusable(true);
-        recipientIsPayerRadioBtn.setFocusableInTouchMode(true);
+//        senderCountrySpinner.setFocusable(true);
+//        senderCountrySpinner.setFocusableInTouchMode(true);
+//        recipientCountrySpinner.setFocusable(true);
+//        recipientCountrySpinner.setFocusableInTouchMode(true);
+//        payerCountrySpinner.setFocusable(true);
+//        payerCountrySpinner.setFocusableInTouchMode(true);
+//        senderCitySpinner.setFocusable(true);
+//        senderCitySpinner.setFocusableInTouchMode(true);
+//        recipientCitySpinner.setFocusable(true);
+//        recipientCitySpinner.setFocusableInTouchMode(true);
+//        payerCitySpinner.setFocusable(true);
+//        payerCitySpinner.setFocusableInTouchMode(true);
+//        packagingTypeSpinner.setFocusable(true);
+//        packagingTypeSpinner.setFocusableInTouchMode(true);
+//        recipientAddressBookSpinner.setFocusable(true);
+//        recipientAddressBookSpinner.setFocusableInTouchMode(true);
+//        payerAddressBookSpinner.setFocusable(true);
+//        payerAddressBookSpinner.setFocusableInTouchMode(true);
 
         bindOnFocusChangeListeners();
     }
@@ -2450,8 +2447,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         final String serializedConsignmentList = new Gson().toJson(consignmentList);
 
-        Log.i(TAG, "createInvoice(): invoiceId=" + invoiceId);
-
         final UUID sendInvoiceWorkUUID = SyncWorkRequest.sendInvoice(
                 context,
                 requestId,
@@ -2554,7 +2549,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 createInvoiceBtn.setVisibility(View.INVISIBLE);
                 progressBar.setVisibility(View.VISIBLE);
             }
-            Log.i(TAG, "createInvoice(): " + workInfo.getState());
         });
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<uz.alexits.cargostar.view.MyScrollView
+    android:id="@+id/my_scroll_view"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -241,8 +242,7 @@
             app:layout_constraintEnd_toEndOf="@id/sender_middle_name_edit_text"
             android:layout_marginTop="4dp"
             android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:background="@drawable/edit_text_locked"
             android:prompt="@string/choose_country"/>
 
         <TextView
@@ -265,8 +265,7 @@
             app:layout_constraintStart_toStartOf="@id/sender_phone_edit_text"
             app:layout_constraintEnd_toEndOf="@id/sender_phone_edit_text"
             android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:background="@drawable/edit_text_locked"
             android:prompt="@string/choose_city"/>
 
         <TextView
@@ -444,10 +443,9 @@
             app:layout_constraintTop_toBottomOf="@id/recipient_address_book_text_view"
             app:layout_constraintStart_toStartOf="@id/recipient_email_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_first_name_edit_text"
+            android:background="@drawable/edit_text_locked"
             android:layout_marginTop="4dp"
             android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:prompt="@string/choose_recipient_from_address_book"/>
 
         <TextView
@@ -577,8 +575,7 @@
             app:layout_constraintEnd_toEndOf="@id/recipient_last_name_edit_text"
             android:layout_marginTop="4dp"
             android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:background="@drawable/edit_text_locked"
             android:prompt="@string/choose_country"/>
 
         <TextView
@@ -601,8 +598,7 @@
             app:layout_constraintStart_toStartOf="@id/recipient_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_middle_name_edit_text"
             android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:background="@drawable/edit_text_locked"
             android:prompt="@string/choose_city"/>
 
         <TextView
@@ -867,10 +863,9 @@
             app:layout_constraintTop_toBottomOf="@id/payer_address_book_text_view"
             app:layout_constraintStart_toStartOf="@id/recipient_email_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_first_name_edit_text"
+            android:background="@drawable/edit_text_locked"
             android:layout_marginTop="4dp"
             android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:prompt="@string/choose_payer_from_address_book"/>
 
         <TextView
@@ -1000,8 +995,6 @@
             app:layout_constraintEnd_toEndOf="@id/payer_last_name_edit_text"
             android:layout_marginTop="4dp"
             android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:prompt="@string/choose_country"/>
 
         <TextView
@@ -1024,8 +1017,6 @@
             app:layout_constraintStart_toStartOf="@id/payer_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/payer_middle_name_edit_text"
             android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:prompt="@string/choose_city"/>
 
         <TextView
@@ -1664,10 +1655,9 @@
             app:layout_constraintTop_toBottomOf="@id/packaging_type_text_view"
             app:layout_constraintStart_toStartOf="@id/packaging_type_text_view"
             app:layout_constraintEnd_toEndOf="@id/length_edit_text"
+            android:background="@drawable/edit_text_locked"
             android:layout_marginTop="4dp"
-            android:paddingHorizontal="4dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"/>
+            android:paddingHorizontal="4dp" />
 
         <TextView
             android:id="@+id/weight_text_view"
@@ -2177,4 +2167,4 @@
             app:layout_constraintEnd_toEndOf="@id/create_receipt_btn"
             android:visibility="invisible"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+</uz.alexits.cargostar.view.MyScrollView>
