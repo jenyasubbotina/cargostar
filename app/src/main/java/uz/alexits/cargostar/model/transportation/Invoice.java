@@ -67,6 +67,11 @@ public class Invoice {
     private final Long requestId;
 
     @Expose
+    @SerializedName("signature")
+    @ColumnInfo(name = "recipient_signature")
+    private String recipientSignatureUrl;
+
+    @Expose
     @SerializedName("tarif")
     @ColumnInfo(name = "tariff_id")
     private final Long tariffId;
@@ -95,6 +100,7 @@ public class Invoice {
                    final String number,
                    final Long senderId,
                    final Long recipientId,
+                   final String recipientSignatureUrl,
                    final Long payerId,
                    final Long providerId,
                    final Long requestId,
@@ -107,6 +113,7 @@ public class Invoice {
         this.number = number;
         this.senderId = senderId;
         this.recipientId = recipientId;
+        this.recipientSignatureUrl = recipientSignatureUrl;
         this.payerId = payerId;
         this.providerId = providerId;
         this.requestId = requestId;
@@ -153,6 +160,14 @@ public class Invoice {
         return price;
     }
 
+    public String getRecipientSignatureUrl() {
+        return recipientSignatureUrl;
+    }
+
+    public void setRecipientSignatureUrl(String recipientSignatureUrl) {
+        this.recipientSignatureUrl = recipientSignatureUrl;
+    }
+
     public int getStatus() {
         return status;
     }
@@ -173,6 +188,7 @@ public class Invoice {
                 ", number='" + number + '\'' +
                 ", senderId=" + senderId +
                 ", recipientId=" + recipientId +
+                ", recipientSignatureUrl=" + recipientSignatureUrl +
                 ", payerId=" + payerId +
                 ", providerId=" + providerId +
                 ", requestId=" + requestId +

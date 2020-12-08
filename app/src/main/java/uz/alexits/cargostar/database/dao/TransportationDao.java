@@ -45,7 +45,7 @@ public abstract class TransportationDao {
     @Query("SELECT * FROM transportation WHERE " +
             "current_transition_point_id == :transitPointId AND " +
             "transportation_status_id IN (:statusArray) AND " +
-            " ORDER BY id DESC")
+            "invoice_id IN (SELECT id FROM invoice WHERE recipient_signature IS NULL) ORDER BY id DESC")
     public abstract LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId);
 
     @Query("DELETE FROM transportation WHERE id == :transportationId")

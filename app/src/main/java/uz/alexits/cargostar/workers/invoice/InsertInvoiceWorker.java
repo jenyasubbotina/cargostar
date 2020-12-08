@@ -20,6 +20,7 @@ public class InsertInvoiceWorker extends Worker {
     private final long tariffId;
     private final long senderId;
     private final long recipientId;
+    private final String recipientSignatureUrl;
     private final long payerId;
     private final double price;
     private final int status;
@@ -89,6 +90,7 @@ public class InsertInvoiceWorker extends Worker {
         this.tariffId = getInputData().getLong(Constants.KEY_TARIFF_ID, -1L);
         this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1L);
         this.recipientId = getInputData().getLong(Constants.KEY_RECIPIENT_ID, -1L);
+        this.recipientSignatureUrl = getInputData().getString(Constants.KEY_SIGNATURE);
         this.payerId = getInputData().getLong(Constants.KEY_PAYER_ID, -1L);
         this.price = getInputData().getDouble(Constants.KEY_PRICE, -1);
         this.status = getInputData().getInt(Constants.KEY_STATUS, -1);
@@ -180,6 +182,7 @@ public class InsertInvoiceWorker extends Worker {
                     number,
                     senderId,
                     recipientId,
+                    recipientSignatureUrl,
                     payerId,
                     providerId,
                     requestId,
