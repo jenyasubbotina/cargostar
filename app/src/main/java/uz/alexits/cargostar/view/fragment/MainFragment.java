@@ -31,6 +31,7 @@ import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.MainActivity;
@@ -114,38 +115,38 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         //header views
         editImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
 
         createUserImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.createUserFragment);
         });
 
         notificationsImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.notificationsFragment);
         });
 
         calculatorImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
 
         //main content views
         publicRequestsImageView.setOnClickListener(v -> {
             final MainFragmentDirections.ActionMainFragmentToPublicRequestsFragment action = MainFragmentDirections.actionMainFragmentToPublicRequestsFragment();
             action.setCourierId(courierId);
-            NavHostFragment.findNavController(this).navigate(action);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
         });
 
         myRequestsImageView.setOnClickListener(v -> {
             final MainFragmentDirections.ActionMainFragmentToMyRequestsFragment action = MainFragmentDirections.actionMainFragmentToMyRequestsFragment();
             action.setCourierId(courierId);
-            NavHostFragment.findNavController(this).navigate(action);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
         });
 
         createParcelImageView.setOnClickListener(v -> {
             final MainFragmentDirections.ActionMainFragmentToCreateInvoiceFragment action = MainFragmentDirections.actionMainFragmentToCreateInvoiceFragment();
             action.setCourierId(courierId);
-            NavHostFragment.findNavController(this).navigate(action);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
         });
 
         scanParcelsImageView.setOnClickListener(v -> {
@@ -163,7 +164,7 @@ public class MainFragment extends Fragment {
                     MainFragmentDirections.actionMainFragmentToCurrentTransportationsFragment();
             action.setStatusFlag(IntentConstants.FRAGMENT_CURRENT_TRANSPORT);
             action.setCourierBranchId(courierBranchId);
-            NavHostFragment.findNavController(this).navigate(action);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
         });
 
         transportationDeliveryImageView.setOnClickListener(v -> {
@@ -171,7 +172,7 @@ public class MainFragment extends Fragment {
                     MainFragmentDirections.actionMainFragmentToCurrentTransportationsFragment();
             action.setStatusFlag(IntentConstants.FRAGMENT_DELIVERY_TRANSPORT);
             action.setCourierBranchId(courierBranchId);
-            NavHostFragment.findNavController(this).navigate(action);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
         });
     }
 
@@ -356,7 +357,7 @@ public class MainFragment extends Fragment {
                         action.setArrivalDate(arrivalDate);
                         action.setDirection(direction);
 
-                        NavHostFragment.findNavController(this).navigate(action);
+                        UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
                     }
                     if (workInfo.getState() == WorkInfo.State.CANCELLED || workInfo.getState() == WorkInfo.State.FAILED) {
                         Toast.makeText(context, "QR код " + qr + " не найден", Toast.LENGTH_SHORT).show();

@@ -30,12 +30,17 @@ public class FcmMessagingService extends FirebaseMessagingService {
     private static int notificationId = 0;
     private static String DEFAULT_CHANNEL_ID;
     private static String PACKAGE_NAME;
+    private long courierId;
 
     @Override
     public void onCreate() {
         super.onCreate();
         DEFAULT_CHANNEL_ID = getString(R.string.implicit_notification_channel_id);
         PACKAGE_NAME = getPackageName();
+        new Thread(() -> {
+            courierId = SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID);
+            Log.i(TAG, "onCreate(): courierId=" + courierId);
+        }).start();
     }
 
     @Override
@@ -146,20 +151,30 @@ public class FcmMessagingService extends FirebaseMessagingService {
 
             if (type2.equalsIgnoreCase(Constants.SUBTYPE_NEW)) {
                 Log.i(TAG, "onMessageReceived(): new transportation");
+                try {
+                    new Thread(() -> {
+                        LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation);
+                    }).start();
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "insertTransportation(): ", e);
+                }
             }
             else if (type2.equalsIgnoreCase(Constants.SUBTYPE_STATUS_UPDATE)) {
                 Log.i(TAG, "onMessageReceived(): transportation status update");
+//                if (courierId != transportation.getCourierId()) {
+//                    try {
+//                        new Thread(() -> {
+//                            LocalCache.getInstance(getApplicationContext()).transportationDao().updateTransportation(transportation);
+//                        }).start();
+//                    }
+//                    catch (Exception e) {
+//                        Log.e(TAG, "updateTransportation(): ", e);
+//                    }
+//                }
             }
             body = String.valueOf(transportation.getId());
             link = IntentConstants.REQUEST_CURRENT_TRANSPORTATIONS;
-            try {
-                new Thread(() -> {
-                    LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation);
-                }).start();
-            }
-            catch (Exception e) {
-                Log.e(TAG, "insertTransportation(): ", e);
-            }
         }
         if (intentValue == null) {
             return;

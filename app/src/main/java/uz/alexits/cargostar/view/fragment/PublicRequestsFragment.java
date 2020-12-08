@@ -34,6 +34,7 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
@@ -122,23 +123,23 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         super.onViewCreated(view, savedInstanceState);
         //header views
         profileImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
         });
 
         createUserImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.createUserFragment);
         });
 
         notificationsImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.notificationsFragment);
         });
 
         calculatorImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
 
         editImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
     }
 
@@ -160,11 +161,13 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
             }
         });
+
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
             }
         });
+
         courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
@@ -230,10 +233,6 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
                 Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        if (bindRequestUUID != null) {
-
-        }
     }
 
     @Override
@@ -267,7 +266,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         action.setDeliveryType(currentItem.getDeliveryType());
         action.setComment(currentItem.getComment());
         action.setConsignmentQuantity(currentItem.getConsignmentQuantity());
-        NavHostFragment.findNavController(this).navigate(action);
+        UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
     }
 
     @Override

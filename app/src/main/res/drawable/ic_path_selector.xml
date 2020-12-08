@@ -3,11 +3,4 @@
     <item
         android:id="@android:id/background"
         android:drawable="@drawable/img_path_grey" />
-<!--    <item-->
-<!--        android:id="@android:id/progress"-->
-<!--        android:drawable="@drawable/img_path_green" />-->
-<!--    <item-->
-<!--        android:id="@android:id/progress">-->
-<!--        <color android:color="@color/colorGreen"/>-->
-<!--    </item>-->
 </selector>

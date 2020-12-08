@@ -750,23 +750,23 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         //content views
          profileImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
-        });
+             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
+         });
 
         createUserImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.createUserFragment);
         });
 
         notificationsImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.notificationsFragment);
         });
 
         calculatorImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
 
         editImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
 
         cargoQrImageView.setOnClickListener(v -> {
@@ -2524,7 +2524,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
                 Toast.makeText(context, successMsg, Toast.LENGTH_SHORT).show();
 
-                NavHostFragment.findNavController(CreateInvoiceFragment.this).navigate(R.id.action_createInvoiceFragment_to_mainFragment);
+                UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.action_createInvoiceFragment_to_mainFragment);
 
                 return;
             }

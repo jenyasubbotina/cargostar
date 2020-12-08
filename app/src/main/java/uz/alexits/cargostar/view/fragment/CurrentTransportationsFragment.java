@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +36,7 @@ import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.viewmodel.TransportationViewModel;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
@@ -165,23 +167,24 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         });
 
         profileImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
         });
 
         createUserImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.createUserFragment);
         });
 
         notificationsImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.notificationsFragment);
+
         });
 
         calculatorImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
 
         editImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
 
         /* main content views */
@@ -507,7 +510,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         action.setArrivalDate(currentItem.getArrivalDate());
         action.setDirection(currentItem.getDirection());
 
-        NavHostFragment.findNavController(this).navigate(action);
+        UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
     }
 
     private void initCitySpinner(final List<TransitPoint> transitPointList) {
@@ -573,7 +576,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                         action.setArrivalDate(arrivalDate);
                         action.setDirection(direction);
 
-                        NavHostFragment.findNavController(this).navigate(action);
+                        UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
                     }
                     if (workInfo.getState() == WorkInfo.State.CANCELLED || workInfo.getState() == WorkInfo.State.FAILED) {
                         Toast.makeText(context, "QR код " + qr + " не найден", Toast.LENGTH_SHORT).show();

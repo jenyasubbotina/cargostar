@@ -32,6 +32,7 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.transportation.Consignment;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.MainActivity;
@@ -86,7 +87,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
     private boolean forEachCargoHidden = false;
     private InvoiceData forEachCargoHeading;
-    private int cargoListSize = -1;
     private final List<InvoiceData> forEachCargoList = new ArrayList<>();
 
     //header views
@@ -180,6 +180,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
     private static volatile String serializedConsignmentList = null;
 
     private static volatile UUID fetchInvoiceRequestUUID;
+    private static volatile boolean consignmentListSet = false;
 
     public InvoiceDataFragment() {
         // Required empty public constructor
@@ -227,7 +228,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 fetchInvoiceRequestUUID = null;
             }
         }
-
+        consignmentListSet = false;
     }
 
     @Override
@@ -263,23 +264,23 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         super.onViewCreated(view, savedInstanceState);
         //header views
         profileImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
         });
 
         createUserImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.createUserFragment);
         });
 
         notificationsImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.notificationsFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.notificationsFragment);
         });
 
         calculatorImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
 
         editImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
 
         if (!isPublic) {
@@ -358,8 +359,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
             action.setSerializedConsignmentList(serializedConsignmentList);
 
-            NavHostFragment.findNavController(this).navigate(action);
-
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
         });
     }
 
@@ -791,6 +791,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 forEachCargoList.add(new InvoiceData(getString(R.string.qr_code), consignment.getQr(), InvoiceData.TYPE_ITEM));
                 i++;
             }
+            consignmentListSet = true;
         });
 
         if (fetchInvoiceRequestUUID != null) {
@@ -1092,6 +1093,8 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         final InvoiceData currentItem = itemList.get(position);
         currentItem.isHidden = !currentItem.isHidden;
 
+
+
         /* public data */
         if (currentItem.equals(publicDataHeading)) {
             if (publicDataHidden) {
@@ -1185,20 +1188,24 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             }
             documentsDataHidden = !documentsDataHidden;
         }
-        else if (currentItem.equals(forEachCargoHeading)) {
-            if (cargoListSize > 0) {
-                if (forEachCargoHidden) {
-                    itemList.addAll(position + 1, forEachCargoList);
-                }
-                else {
-                    for (int i = 0; i < (7 * cargoListSize); i++) {
-                        itemList.remove(position + 1);
-                    }
-                }
-                forEachCargoHidden = !forEachCargoHidden;
-            }
-        }
-        adapter.notifyDataSetChanged();
+//        else if (currentItem.equals(forEachCargoHeading)) {
+//            if (!consignmentListSet) {
+//                return;
+//            }
+//
+//            if (consignmentQuantity > 0) {
+//                if (forEachCargoHidden) {
+//                    itemList.addAll(position + 1, forEachCargoList);
+//                }
+//                else {
+//                    for (int i = 0; i < (7 * consignmentQuantity); i++) {
+//                        itemList.remove(position + 1);
+//                    }
+//                }
+//                forEachCargoHidden = !forEachCargoHidden;
+//            }
+//        }
+//        adapter.notifyDataSetChanged();
     }
 
     private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.US);

@@ -8,7 +8,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import uz.alexits.cargostar.R;
 
@@ -30,6 +34,10 @@ public class UiUtils {
     {
         InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+    }
+
+    public static NavController getNavController(@NonNull final Activity activity, @IdRes int resId) {
+        return Navigation.findNavController(activity, resId);
     }
 
     private static final String TAG = UiUtils.class.toString();

@@ -55,45 +55,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class SyncWorkRequest {
-    /* Location Data */
-    public static UUID fetchBranchesAndSignIn(@NonNull final Context context,
-                                              final int perPage,
-                                              final String login,
-                                              final String password,
-                                              final String token) {
-        final Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresCharging(false)
-                .setRequiresStorageNotLow(false)
-                .setRequiresDeviceIdle(false)
-                .build();
-
-        final Data inputData = new Data.Builder()
-                .putInt(KEY_PER_PAGE, perPage)
-                .putString(Constants.KEY_LOGIN, login)
-                .putString(Constants.KEY_PASSWORD, password)
-                .putString(SharedPrefs.TOKEN, token)
-                .build();
-
-        final OneTimeWorkRequest fetchBranchesRequest = new OneTimeWorkRequest.Builder(FetchBranchesWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-
-        final OneTimeWorkRequest signInRequest = new OneTimeWorkRequest.Builder(SignInWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-        WorkManager.getInstance(context)
-                .beginWith(fetchBranchesRequest)
-                .then(signInRequest)
-                .enqueue();
-
-        return signInRequest.getId();
-    }
-
+    /* Synchronization */
     public static UUID synchronizeFirstTime(final Context context, final String login, final String password, final String token) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -264,29 +226,7 @@ public class SyncWorkRequest {
         return signInRequest.getId();
     }
 
-    public static UUID fetchTransportationStatuses(@NonNull final Context context) {
-        final Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresCharging(false)
-                .setRequiresStorageNotLow(false)
-                .setRequiresDeviceIdle(false)
-                .build();
-
-        final Data inputData = new Data.Builder()
-                .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
-                .build();
-
-        final OneTimeWorkRequest fetchTransportationStatusListRequest = new OneTimeWorkRequest.Builder(FetchTransportationStatusesWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-                .build();
-
-        WorkManager.getInstance(context)
-                .enqueue(fetchTransportationStatusListRequest);
-
-        return fetchTransportationStatusListRequest.getId();
-    }
+    /* Location Data */
 
     public static UUID fetchTransitPoints(@NonNull final Context context) {
         final Constraints constraints = new Constraints.Builder()
@@ -311,23 +251,6 @@ public class SyncWorkRequest {
 
         return fetchTransitPointsRequest.getId();
     }
-
-//    public static UUID fetchLocationData(@NonNull final Context context) {
-//        final Constraints constraints = new Constraints.Builder()
-//                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-//                .setRequiresCharging(false)
-//                .setRequiresStorageNotLow(false)
-//                .setRequiresDeviceIdle(false)
-//                .build();
-//
-//        final OneTimeWorkRequest fetchLocationDataRequest = new OneTimeWorkRequest.Builder(FetchLocationDataWorker.class)
-//                .setConstraints(constraints)
-//                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
-//                .build();
-//
-//        WorkManager.getInstance(context).enqueue(fetchLocationDataRequest);
-//        return fetchLocationDataRequest.getId();
-//    }
 
     /* Calculation Data */
     public static void fetchPackagingData(@NonNull final Context context, final int perPage) {
@@ -995,6 +918,30 @@ public class SyncWorkRequest {
                 .enqueue();
 
         return fetchTransportationRouteRequest.getId();
+    }
+
+    public static UUID fetchTransportationStatuses(@NonNull final Context context) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
+                .build();
+
+        final OneTimeWorkRequest fetchTransportationStatusListRequest = new OneTimeWorkRequest.Builder(FetchTransportationStatusesWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
+        WorkManager.getInstance(context)
+                .enqueue(fetchTransportationStatusListRequest);
+
+        return fetchTransportationStatusListRequest.getId();
     }
 
     public static UUID sendRecipientSignatureAndUpdateStatusDelivered(@NonNull final Context context,

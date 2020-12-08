@@ -31,6 +31,7 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.viewholder.NotificationViewHolder;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.NotificationsViewModel;
@@ -117,19 +118,19 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         //header views
 
         profileImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.mainFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
         });
 
         createUserImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.createUserFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.createUserFragment);
         });
 
         calculatorImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.calculatorFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
 
         editImageView.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.profileFragment);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
     }
 
@@ -235,13 +236,13 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         if (currentItem.getLink().equalsIgnoreCase(IntentConstants.REQUEST_PUBLIC_REQUESTS)) {
             final NotificationsFragmentDirections.ActionNotificationsFragmentToPublicBidsFragment action = NotificationsFragmentDirections.actionNotificationsFragmentToPublicBidsFragment();
             action.setCourierId(courierId);
-            NavHostFragment.findNavController(this).navigate(action);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
             return;
         }
         if (currentItem.getLink().equalsIgnoreCase(IntentConstants.REQUEST_MY_REQUESTS)) {
             final NotificationsFragmentDirections.ActionNotificationsFragmentToMyRequestsFragment action = NotificationsFragmentDirections.actionNotificationsFragmentToMyRequestsFragment();
             action.setCourierId(courierId);
-            NavHostFragment.findNavController(this).navigate(action);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
             return;
         }
         if (currentItem.getLink().equalsIgnoreCase(IntentConstants.REQUEST_CURRENT_TRANSPORTATIONS)) {
@@ -252,7 +253,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
             final NotificationsFragmentDirections.ActionNotificationsFragmentToCurrentTransportationsFragment action = NotificationsFragmentDirections.actionNotificationsFragmentToCurrentTransportationsFragment();
             action.setStatusFlag(IntentConstants.FRAGMENT_CURRENT_TRANSPORT);
             action.setCourierBranchId(courierBranchId);
-            NavHostFragment.findNavController(this).navigate(action);
+            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
         }
     }
 

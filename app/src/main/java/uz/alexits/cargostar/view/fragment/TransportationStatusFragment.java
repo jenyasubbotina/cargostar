@@ -46,6 +46,7 @@ import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationStatus;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.IntentConstants;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.activity.SignatureActivity;
 import uz.alexits.cargostar.view.adapter.PartialAdapter;
 import uz.alexits.cargostar.view.callback.PartialCallback;
@@ -277,7 +278,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
 
         if (partialId <= 0) {
             final List<Transportation> transportationList = new ArrayList<>();
-            transportationList.add(new Transportation(
+            final Transportation transportation = new Transportation(
                     transportationId,
                     providerId,
                     courierId,
@@ -296,7 +297,11 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
                     direction,
                     1,
                     new Date(),
-                    new Date()));
+                    new Date());
+            transportation.setCityFrom(cityFrom);
+            transportation.setCityTo(cityTo);
+            transportation.setTransportationStatusName(currentStatusName);
+            transportationList.add(transportation);
             partialAdapter.setTransportationList(transportationList);
             partialAdapter.notifyDataSetChanged();
         }
@@ -385,14 +390,16 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
                             final float temp2 = (float) currentPosition / temp;
                             final float progress = temp2 * 100;
                             pathSeekBar.setProgress((int) progress, true);
+                            Log.i(TAG, "currentStatus=" + currentStatusId + "setProgress=" + progress);
 
                             return;
                         }
                         if (currentStatusId == inTransitTransportationStatus.getId()) {
+                            pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.purple_bubble));
+
                             if (nextPath != null) {
                                 statusViewModel.setNextStatus(onItsWayTransportationStatus);
                                 statusViewModel.setNextPoint(nextPath.getTransitPointId());
-                                pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.purple_bubble));
                             }
                             else {
                                 if (destinationCountry != null) {
@@ -413,17 +420,20 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
                             statusViewModel.setNextPoint(currentPath.getTransitPointId());
                             pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.green_bubble));
                             pathSeekBar.setProgress(100, true);
+                            Log.i(TAG, "currentStatus=" + currentStatusId + "setProgress=" + 100);
                         }
                     }
                 }
                 if (currentStatusId == deliveredTransportationStatus.getId() || currentStatusId == leftCountryTransportationStatus.getId()) {
                     pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.green_bubble));
                     pathSeekBar.setProgress(100, true);
+                    Log.i(TAG, "currentStatus=" + currentStatusId + "setProgress=" + 100);
                     return;
                 }
                 if (currentStatusId == inTransitTransportationStatus.getId()) {
                     pathSeekBar.setThumb(ContextCompat.getDrawable(context, R.drawable.purple_bubble));
                     pathSeekBar.setProgress(0, true);
+                    Log.i(TAG, "currentStatus=" + currentStatusId + "setProgress=" + 0);
                 }
             }
         });
@@ -476,10 +486,13 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
 
         statusViewModel.getCurrentTransportation().observe(getViewLifecycleOwner(), currentTransportation -> {
             if (currentTransportation != null) {
-                Log.i(TAG, "getTransportation(): " + currentTransportation);
-                currentStatusId = currentTransportation.getTransportationStatusId();
-                currentPointId = currentTransportation.getCurrentTransitionPointId();
-                statusViewModel.setCurrentPointId(currentPointId);
+                if (currentTransportation.getTransportationStatusId() != null) {
+                    currentStatusId = currentTransportation.getTransportationStatusId();
+                }
+                if (currentTransportation.getCurrentTransitionPointId() != null) {
+                    currentPointId = currentTransportation.getCurrentTransitionPointId();
+                    statusViewModel.setCurrentPointId(currentPointId);
+                }
             }
         });
     }
@@ -593,7 +606,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
         action.setDeliveryType(deliveryType);
         action.setComment(comment);
         action.setConsignmentQuantity(consignmentQuantity);
-        NavHostFragment.findNavController(this).navigate(action);
+        UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
     }
 
     private static final String TAG = TransportationStatusFragment.class.toString();

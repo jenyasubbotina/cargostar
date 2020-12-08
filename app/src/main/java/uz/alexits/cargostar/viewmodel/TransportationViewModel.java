@@ -51,14 +51,8 @@ public class TransportationViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Transportation>> getCurrentTransportationList() {
-//        if (fragmentType == ) {
-            return Transformations.switchMap(statusArrayTransitPoint, input ->
-                    repository.selectCurrentTransportations(input.getStatusArray(), input.getTransitPoint()));
-//        }
-//        if (fragmentType == ) {
-//            return Transformations.switchMap(statusArrayTransitPoint, input ->
-//                    repository.selectTransportationDelivery(input.getStatusArray(), input.getTransitPoint()));
-//        }
+        return Transformations.switchMap(statusArrayTransitPoint, input ->
+                repository.selectCurrentTransportations(input.getStatusArray(), input.getTransitPoint()));
     }
 
     /*Transit points*/

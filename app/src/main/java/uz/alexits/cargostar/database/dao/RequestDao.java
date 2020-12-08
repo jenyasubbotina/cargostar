@@ -29,10 +29,10 @@ public abstract class RequestDao {
         return insertRequests(newRequestList);
     }
 
-    @Query("SELECT * FROM request WHERE courier_id IS NULL ORDER BY id DESC")
+    @Query("SELECT * FROM request WHERE id NOT IN (SELECT request_id FROM transportation ORDER BY request_id DESC) AND courier_id IS NULL ORDER BY id DESC")
     public abstract LiveData<List<Request>> selectPublicRequests();
 
-    @Query("SELECT * FROM request WHERE courier_id == :courierId ORDER BY id DESC")
+    @Query("SELECT * FROM request WHERE id NOT IN (SELECT request_id FROM transportation ORDER BY request_id DESC) AND courier_id == :courierId ORDER BY id DESC")
     public abstract LiveData<List<Request>> selectRequestsByCourierId(final long courierId);
 
     @Query("SELECT * FROM request WHERE id == :requestId")

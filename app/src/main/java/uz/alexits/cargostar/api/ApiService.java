@@ -79,10 +79,14 @@ public interface ApiService {
     @GET("setting")
     Call<Vat> getVat();
 
-    /*Requests requests */
+    /* Requests */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request")
     Call<List<Request>> getPublicRequests(@Query("per-page") final int perPage);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("request/new")
+    Call<List<Request>> getPublicRequests(@Query("per-page") final int perPage, @Query("id") final long lastId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request/employee")
@@ -136,6 +140,10 @@ public interface ApiService {
     @GET("invoice")
     Call<List<Invoice>> getInvoiceList(@Query("per-page") final int perPage);
 
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("invoice/new")
+    Call<List<Invoice>> getInvoiceList(@Query("per-page") final int perPage, @Query("id") final long lastId);
+
     /* Address Book */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("address-book/view")
@@ -145,10 +153,18 @@ public interface ApiService {
     @GET("address-book")
     Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage);
 
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("address-book/new")
+    Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage, @Query("id") final long lastId);
+
     /* Transportation */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation")
     Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("transportation/new")
+    Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage, @Query("id") final long lastId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("partial")
@@ -158,7 +174,7 @@ public interface ApiService {
     @GET("status-transport")
     Call<List<TransportationStatus>> getTransportationStatusList(@Query("per-page") final int perPage);
 
-    //transportation history
+    /* Transportation History */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation-status/transportation")
     Call<List<TransportationData>> getTransportationData(@Query("id") final Long transportationId);

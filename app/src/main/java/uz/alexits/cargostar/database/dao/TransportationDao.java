@@ -42,11 +42,11 @@ public abstract class TransportationDao {
     @Query("SELECT * FROM transportation ORDER BY id")
     public abstract LiveData<List<Transportation>> selectAllTransportation();
 
-    @Query("SELECT * FROM transportation WHERE current_transition_point_id == :transitPointId AND transportation_status_id IN (:statusArray) ORDER BY id DESC")
+    @Query("SELECT * FROM transportation WHERE " +
+            "current_transition_point_id == :transitPointId AND " +
+            "transportation_status_id IN (:statusArray) AND " +
+            " ORDER BY id DESC")
     public abstract LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId);
-
-//    @Query("SELECT * FROM transportation WHERE  == :transitPointId AND transportation_status_id IN (:statusArray) ORDER BY id DESC")
-//    public abstract LiveData<List<Transportation>> selectTransportationDelivery(final List<Long> statusArray, final Long transitPointId);
 
     @Query("DELETE FROM transportation WHERE id == :transportationId")
     public abstract void deleteTransportation(final long transportationId);
