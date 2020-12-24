@@ -695,7 +695,7 @@ public class CreateUserFragment extends Fragment {
         locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
         requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
 
-        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));

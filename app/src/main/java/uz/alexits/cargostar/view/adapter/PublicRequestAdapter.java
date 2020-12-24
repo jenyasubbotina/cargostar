@@ -34,7 +34,6 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
 
     public void setRequestList(@NonNull final List<Request> requestList) {
         this.requestList = requestList;
-        Log.i(PublicRequestAdapter.class.toString(), "setRequestList(): " + requestList);
     }
 
     @NonNull
@@ -57,11 +56,13 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
 
             holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
 
-//            if (currentRequest.isNew()) {
-//                holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
-//            }
-//            else {
-//            }
+            if (currentRequest.isNew()) {
+                holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
+            }
+            else {
+                holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
+            }
+
             if (currentRequest.getPaymentStatus() != null && currentRequest.getPaymentStatus().equalsIgnoreCase("succeeded")) {
                 holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
             }

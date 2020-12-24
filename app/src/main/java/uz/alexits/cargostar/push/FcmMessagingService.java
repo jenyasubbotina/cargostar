@@ -39,7 +39,6 @@ public class FcmMessagingService extends FirebaseMessagingService {
         PACKAGE_NAME = getPackageName();
         new Thread(() -> {
             courierId = SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID);
-            Log.i(TAG, "onCreate(): courierId=" + courierId);
         }).start();
     }
 

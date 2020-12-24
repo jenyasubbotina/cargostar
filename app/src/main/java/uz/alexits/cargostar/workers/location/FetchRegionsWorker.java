@@ -52,7 +52,7 @@ public class FetchRegionsWorker extends Worker {
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<Region> regionList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).locationDao().insertRegions(regionList);
+                    LocalCache.getInstance(getApplicationContext()).locationDao().dropAndInsertRegions(regionList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

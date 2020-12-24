@@ -54,8 +54,8 @@ public class UpdateTransportationStatusWorker extends Worker {
             return Result.failure();
         }
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
 
             final Response<Transportation> response;
 

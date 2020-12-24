@@ -16,6 +16,7 @@ import uz.alexits.cargostar.utils.Constants;
 
 public class FetchInvoiceWorker extends Worker {
     private final long invoiceId;
+    private final long courierId;
 
     private final long senderId;
     private final String senderEmail;
@@ -33,12 +34,14 @@ public class FetchInvoiceWorker extends Worker {
     private final String senderCargo;
     private final String senderTnt;
     private final String senderFedex;
+    private final int discount;
 
     private final int consignmentQuantity;
 
     public FetchInvoiceWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
 
         this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1L);
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
@@ -56,6 +59,7 @@ public class FetchInvoiceWorker extends Worker {
         this.senderCargo = getInputData().getString(Constants.KEY_SENDER_CARGOSTAR);
         this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
         this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
+        this.discount = getInputData().getInt(Constants.KEY_DISCOUNT, 0);
 
         this.consignmentQuantity = getInputData().getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0);
     }
@@ -70,8 +74,8 @@ public class FetchInvoiceWorker extends Worker {
 
         try {
             RetrofitClient.getInstance(getApplicationContext())
-                    .setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                            SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+                    .setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+                            SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
             final Response<Invoice> response = RetrofitClient.getInstance(getApplicationContext()).getInvoice(invoiceId);
 
             if (response.code() == 200) {
@@ -86,6 +90,7 @@ public class FetchInvoiceWorker extends Worker {
                     Log.i(TAG, "fetchInvoice(): successfully received invoice " + invoice);
 
                     final Data outputData = new Data.Builder()
+                            .putLong(Constants.KEY_SENDER_ID, senderId)
                             .putString(Constants.KEY_SENDER_EMAIL, senderEmail)
                             .putString(Constants.KEY_SENDER_SIGNATURE, senderSignature)
                             .putString(Constants.KEY_SENDER_FIRST_NAME, senderFirstName)
@@ -101,14 +106,17 @@ public class FetchInvoiceWorker extends Worker {
                             .putString(Constants.KEY_SENDER_CARGOSTAR, senderCargo)
                             .putString(Constants.KEY_SENDER_TNT, senderTnt)
                             .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
+                            .putInt(Constants.KEY_DISCOUNT, discount)
 
                             .putLong(Constants.KEY_REQUEST_ID, invoice.getRequestId() != null ? invoice.getRequestId() : -1L)
                             .putLong(Constants.KEY_INVOICE_ID, invoice.getId())
                             .putString(Constants.KEY_NUMBER, invoice.getNumber())
                             .putLong(Constants.KEY_PROVIDER_ID, invoice.getProviderId() != null ? invoice.getProviderId() : -1L)
+                            .putLong(Constants.KEY_COURIER_ID, courierId)
                             .putLong(Constants.KEY_TARIFF_ID, invoice.getTariffId() != null ? invoice.getTariffId() : -1L)
                             .putLong(Constants.KEY_SENDER_ID, invoice.getSenderId() != null ? invoice.getSenderId() : -1L)
                             .putLong(Constants.KEY_RECIPIENT_ID, invoice.getRecipientId() != null ? invoice.getRecipientId() : -1L)
+                            .putString(Constants.KEY_RECIPIENT_SIGNATURE, invoice.getRecipientSignatureUrl())
                             .putLong(Constants.KEY_PAYER_ID, invoice.getPayerId() != null ? invoice.getPayerId() : -1L)
                             .putDouble(Constants.KEY_PRICE, invoice.getPrice())
                             .putLong(Constants.KEY_STATUS, invoice.getStatus())

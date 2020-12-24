@@ -26,7 +26,6 @@ import java.util.List;
 public class RequestsViewModel extends AndroidViewModel {
     private final Repository repository;
 
-    private final MutableLiveData<Long> courierId;
     private final MutableLiveData<Long> requestId;
     private final MutableLiveData<Long> invoiceId;
 
@@ -58,9 +57,8 @@ public class RequestsViewModel extends AndroidViewModel {
         super(application);
         this.repository = Repository.getInstance(application);
 
-        this.requestList = repository.selectAllRequests();
+        this.requestList = repository.selectPublicRequests();
 
-        this.courierId = new MutableLiveData<>();
         this.requestId = new MutableLiveData<>();
         this.invoiceId = new MutableLiveData<>();
 
@@ -92,6 +90,10 @@ public class RequestsViewModel extends AndroidViewModel {
         return repository.selectRequestsByCourierId(courierId);
     }
 
+    public LiveData<List<Request>> getAllRequests() {
+        return repository.selectAllRequests();
+    }
+
     public void readReceipt(final long requestId) {
         repository.readRequest(requestId);
     }
@@ -120,13 +122,6 @@ public class RequestsViewModel extends AndroidViewModel {
             return;
         }
         this.tariffId .setValue(tariffId);
-    }
-
-    public void setCourierId(final Long courierId) {
-        if (courierId == null) {
-            return;
-        }
-        this.courierId.setValue(courierId);
     }
 
     public void setSenderId(final Long senderId) {

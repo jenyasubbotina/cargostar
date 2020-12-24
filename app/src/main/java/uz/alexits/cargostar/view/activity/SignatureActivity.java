@@ -59,9 +59,17 @@ public class SignatureActivity extends AppCompatActivity {
     private Bitmap makeScreenshot(final View view) {
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache(true);
-        Bitmap b = Bitmap.createBitmap(view.getDrawingCache());
+        final Bitmap source = view.getDrawingCache();
+        final Bitmap result = cropBitmap(source);
         view.setDrawingCacheEnabled(false);
-        return b;
+        return result;
+    }
+
+    private Bitmap cropBitmap(final Bitmap source) {
+        if (source.getWidth() >= source.getHeight()){
+            return Bitmap.createBitmap(source, source.getWidth() / 2 - source.getHeight() / 2, 0, source.getHeight(), source.getHeight());
+        }
+        return Bitmap.createBitmap(source, 0, source.getHeight() / 2 - source.getWidth() / 2, source.getWidth(), source.getWidth());
     }
 
 

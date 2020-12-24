@@ -35,7 +35,7 @@ public class SendInvoiceWorker extends Worker {
     private final String senderLastName;
     private final String senderPhone;
     private final String senderCountryId;
-    private final String senderCityId;
+    private final String senderCity;
     private final String senderAddress;
     private final String senderZip;
     private final String senderTnt;
@@ -51,7 +51,7 @@ public class SendInvoiceWorker extends Worker {
     private final String recipientPhone;
     private final String recipientAddress;
     private final String recipientCountryId;
-    private final String recipientCityId;
+    private final String recipientCity;
     private final String recipientZip;
     private final String recipientCargo;
     private final String recipientTnt;
@@ -67,7 +67,7 @@ public class SendInvoiceWorker extends Worker {
     private final String payerPhone;
     private final String payerAddress;
     private final String payerCountryId;
-    private final String payerCityId;
+    private final String payerCity;
     private final String payerZip;
     private final String payerCargostar;
     private final String payerTnt;
@@ -118,7 +118,7 @@ public class SendInvoiceWorker extends Worker {
         this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
         this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
         this.senderCountryId = getInputData().getString(Constants.KEY_SENDER_COUNTRY_ID);
-        this.senderCityId = getInputData().getString(Constants.KEY_SENDER_CITY_ID);
+        this.senderCity = getInputData().getString(Constants.KEY_SENDER_CITY_ID);
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
         this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
         this.senderFirstName = getInputData().getString(Constants.KEY_SENDER_FIRST_NAME);
@@ -133,7 +133,7 @@ public class SendInvoiceWorker extends Worker {
         this.recipientTnt = getInputData().getString(Constants.KEY_RECIPIENT_TNT);
         this.recipientFedex = getInputData().getString(Constants.KEY_RECIPIENT_FEDEX);
         this.recipientCountryId = getInputData().getString(Constants.KEY_RECIPIENT_COUNTRY_ID);
-        this.recipientCityId = getInputData().getString(Constants.KEY_RECIPIENT_CITY_ID);
+        this.recipientCity = getInputData().getString(Constants.KEY_RECIPIENT_CITY_ID);
         this.recipientAddress = getInputData().getString(Constants.KEY_RECIPIENT_ADDRESS);
         this.recipientZip = getInputData().getString(Constants.KEY_RECIPIENT_ZIP);
         this.recipientFirstName = getInputData().getString(Constants.KEY_RECIPIENT_FIRST_NAME);
@@ -145,7 +145,7 @@ public class SendInvoiceWorker extends Worker {
 
         this.payerEmail = getInputData().getString(Constants.KEY_PAYER_EMAIL);
         this.payerCountryId = getInputData().getString(Constants.KEY_PAYER_COUNTRY_ID);
-        this.payerCityId = getInputData().getString(Constants.KEY_PAYER_CITY_ID);
+        this.payerCity = getInputData().getString(Constants.KEY_PAYER_CITY_ID);
         this.payerAddress = getInputData().getString(Constants.KEY_PAYER_ADDRESS);
         this.payerZip = getInputData().getString(Constants.KEY_PAYER_ZIP);
         this.payerFirstName = getInputData().getString(Constants.KEY_PAYER_FIRST_NAME);
@@ -209,7 +209,7 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setSenderFedexAccountNumber(senderFedex);
         createInvoiceParams.setSenderAddress(senderAddress);
         createInvoiceParams.setSenderCountryId(senderCountryId);
-        createInvoiceParams.setSenderCityId(senderCityId);
+        createInvoiceParams.setSenderCityId(senderCity);
         createInvoiceParams.setSenderZip(senderZip);
         createInvoiceParams.setSenderFirstName(senderFirstName);
         createInvoiceParams.setSenderMiddleName(senderMiddleName);
@@ -225,7 +225,7 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setRecipientFedexAccountNumber(recipientFedex);
         createInvoiceParams.setRecipientAddress(recipientAddress);
         createInvoiceParams.setRecipientCountryId(recipientCountryId);
-        createInvoiceParams.setRecipientCityId(recipientCityId);
+        createInvoiceParams.setRecipientCityId(recipientCity);
         createInvoiceParams.setRecipientZip(recipientZip);
         createInvoiceParams.setRecipientFirstName(recipientFirstName);
         createInvoiceParams.setRecipientMiddleName(recipientMiddleName);
@@ -237,7 +237,7 @@ public class SendInvoiceWorker extends Worker {
         /* payer data */
         createInvoiceParams.setPayerEmail(payerEmail);
         createInvoiceParams.setPayerCountryId(payerCountryId);
-        createInvoiceParams.setPayerCityId(payerCityId);
+        createInvoiceParams.setPayerCityId(payerCity);
         createInvoiceParams.setPayerAddress(payerAddress);
         createInvoiceParams.setPayerZip(payerZip);
         createInvoiceParams.setPayerFirstName(payerFirstName);
@@ -279,8 +279,8 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setPaymentMethod(paymentMethod);
 
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
             final Response<CreateInvoiceResponse> response = RetrofitClient.getInstance(getApplicationContext()).createInvoice(createInvoiceParams);
             if (response.code() == 200 || response.code() == 201) {
                 if (response.isSuccessful()) {

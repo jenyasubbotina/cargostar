@@ -220,7 +220,7 @@ public class ProfileFragment extends Fragment {
                     progressBar.setVisibility(View.INVISIBLE);
                     saveBtn.setEnabled(true);
 
-                    SharedPrefs.getInstance(context).putString(SharedPrefs.PASSWORD_HASH, pwd);
+                    SharedPrefs.getInstance(context).putString(Constants.KEY_PASSWORD, pwd);
 
                     startActivity(new Intent(context, MainActivity.class));
                     activity.finish();
@@ -241,10 +241,10 @@ public class ProfileFragment extends Fragment {
         });
 
         logoutTextView.setOnClickListener(v -> {
-            SharedPrefs.getInstance(activity).putString(SharedPrefs.LOGIN, null);
+            SharedPrefs.getInstance(activity).putString(Constants.KEY_LOGIN, null);
             SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, 0);
             SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, 0);
-            SharedPrefs.getInstance(activity).putString(SharedPrefs.PASSWORD_HASH, null);
+            SharedPrefs.getInstance(activity).putString(Constants.KEY_PASSWORD, null);
             SharedPrefs.getInstance(activity).putBoolean(SharedPrefs.KEEP_LOGGED, false);
             final Intent logoutIntent = new Intent(activity.getApplicationContext(), SignInActivity.class);
             logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -263,7 +263,7 @@ public class ProfileFragment extends Fragment {
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         final LocationDataViewModel locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
 
-        final String login = SharedPrefs.getInstance(getContext()).getString(SharedPrefs.LOGIN);
+        final String login = SharedPrefs.getInstance(getContext()).getString(Constants.KEY_LOGIN);
 
         courierViewModel.selectCourierByLogin(login).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {

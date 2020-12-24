@@ -27,15 +27,20 @@ import android.widget.Toast;
 
 import java.util.UUID;
 
+import uz.alexits.cargostar.BuildConfig;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
+import uz.alexits.cargostar.viewmodel.RequestsViewModel;
+import uz.alexits.cargostar.viewmodel.TransportationViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -62,8 +67,7 @@ public class MainFragment extends Fragment {
     private ImageView currentTransportationListImageView;
     private ImageView scanParcelsImageView;
     private ImageView transportationDeliveryImageView;
-
-    private ProgressBar progressBar;
+    private TextView appVersionTextView;
 
     private static volatile long courierId = -1;
     private static volatile long courierBranchId = -1;
@@ -81,6 +85,11 @@ public class MainFragment extends Fragment {
         new Thread(() -> {
             courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
         }).start();
+
+        SyncWorkRequest.fetchSenderList(context);
+        SyncWorkRequest.fetchAddressBookList(context);
+        SyncWorkRequest.fetchRequests(context);
+        SyncWorkRequest.fetchTransportationList(context);
     }
 
     @Override
@@ -105,7 +114,7 @@ public class MainFragment extends Fragment {
         currentTransportationListImageView = root.findViewById(R.id.current_parcels_image_view);
         scanParcelsImageView = root.findViewById(R.id.scan_parcels_image_view);
         transportationDeliveryImageView = root.findViewById(R.id.parcel_delivery_image_view);
-        progressBar = root.findViewById(R.id.progress_bar);
+        appVersionTextView = root.findViewById(R.id.app_version_text_view);
 
         return root;
     }
@@ -131,6 +140,8 @@ public class MainFragment extends Fragment {
         });
 
         //main content views
+        appVersionTextView.setText(getString(R.string.app_version, BuildConfig.VERSION_NAME));
+
         publicRequestsImageView.setOnClickListener(v -> {
             final MainFragmentDirections.ActionMainFragmentToPublicRequestsFragment action = MainFragmentDirections.actionMainFragmentToPublicRequestsFragment();
             action.setCourierId(courierId);
@@ -182,7 +193,7 @@ public class MainFragment extends Fragment {
         //header views
         final CourierViewModel courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
 
-        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
@@ -261,42 +272,6 @@ public class MainFragment extends Fragment {
             catch (Exception e) {
                 Log.e(TAG, "getInvoiceById(): ", e);
                 Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void searchTransportation(final String transportationQr) {
-        final UUID searchInvoiceUUID = SyncWorkRequest.searchTransportation(context, transportationQr);
-        WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
-            if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                Toast.makeText(context, "QR-кода нет в базе данных", Toast.LENGTH_SHORT).show();
-
-                requestSearchEditText.setEnabled(true);
-
-                return;
-            }
-            if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                final Data outputData = workInfo.getOutputData();
-
-                final Intent mainIntent = new Intent(context, MainActivity.class);
-                mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_TRANSPORTATION);
-                mainIntent.putExtra(Constants.KEY_TRANSPORTATION_ID, outputData.getLong(Constants.KEY_TRANSPORTATION_ID, -1L));
-                mainIntent.putExtra(Constants.KEY_INVOICE_ID, outputData.getLong(Constants.KEY_INVOICE_ID, -1L));
-                mainIntent.putExtra(Constants.KEY_CITY_FROM, outputData.getString(Constants.KEY_CITY_FROM));
-                mainIntent.putExtra(Constants.KEY_CITY_TO, outputData.getString(Constants.KEY_CITY_TO));
-                mainIntent.putExtra(Constants.KEY_COURIER_ID, outputData.getLong(Constants.KEY_COURIER_ID, -1L));
-                mainIntent.putExtra(Constants.KEY_PROVIDER_ID, outputData.getLong(Constants.KEY_PROVIDER_ID, -1L));
-                mainIntent.putExtra(Constants.KEY_DIRECTION, outputData.getString(Constants.KEY_DIRECTION));
-                mainIntent.putExtra(Constants.KEY_TRANSPORTATION_STATUS_ID, outputData.getLong(Constants.KEY_TRANSPORTATION_STATUS_ID, -1L));
-                mainIntent.putExtra(Constants.KEY_TRANSPORTATION_STATUS, outputData.getString(Constants.KEY_TRANSPORTATION_STATUS));
-                mainIntent.putExtra(Constants.KEY_CURRENT_TRANSIT_POINT_ID, outputData.getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, -1L));
-                mainIntent.putExtra(Constants.KEY_INSTRUCTIONS, outputData.getString(Constants.KEY_INSTRUCTIONS));
-                mainIntent.putExtra(Constants.KEY_ARRIVAL_DATE, outputData.getString(Constants.KEY_ARRIVAL_DATE));
-                mainIntent.putExtra(Constants.KEY_TRACKING_CODE, outputData.getString(Constants.KEY_TRACKING_CODE));
-                mainIntent.putExtra(Constants.KEY_QR_CODE, outputData.getString(Constants.KEY_QR_CODE));
-                mainIntent.putExtra(Constants.KEY_PARTY_QR_CODE, outputData.getString(Constants.KEY_PARTY_QR_CODE));
-                mainIntent.putExtra(Constants.KEY_PAYMENT_STATUS_ID, outputData.getLong(Constants.KEY_PAYMENT_STATUS_ID, -1L));
-                startActivity(mainIntent);
             }
         });
     }

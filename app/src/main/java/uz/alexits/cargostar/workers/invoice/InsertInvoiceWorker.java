@@ -17,6 +17,7 @@ public class InsertInvoiceWorker extends Worker {
     private final long invoiceId;
     private final String number;
     private final long providerId;
+    private final long courierId;
     private final long tariffId;
     private final long senderId;
     private final long recipientId;
@@ -42,6 +43,7 @@ public class InsertInvoiceWorker extends Worker {
     private final String senderCargo;
     private final String senderTnt;
     private final String senderFedex;
+    private final int discount;
 
     private final String recipientEmail;
     private final String recipientFirstName;
@@ -87,10 +89,11 @@ public class InsertInvoiceWorker extends Worker {
         this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
         this.number = getInputData().getString(Constants.KEY_NUMBER);
         this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, -1L);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
         this.tariffId = getInputData().getLong(Constants.KEY_TARIFF_ID, -1L);
         this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1L);
         this.recipientId = getInputData().getLong(Constants.KEY_RECIPIENT_ID, -1L);
-        this.recipientSignatureUrl = getInputData().getString(Constants.KEY_SIGNATURE);
+        this.recipientSignatureUrl = getInputData().getString(Constants.KEY_RECIPIENT_SIGNATURE);
         this.payerId = getInputData().getLong(Constants.KEY_PAYER_ID, -1L);
         this.price = getInputData().getDouble(Constants.KEY_PRICE, -1);
         this.status = getInputData().getInt(Constants.KEY_STATUS, -1);
@@ -112,6 +115,7 @@ public class InsertInvoiceWorker extends Worker {
         this.senderCargo = getInputData().getString(Constants.KEY_SENDER_CARGOSTAR);
         this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
         this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
+        this.discount = getInputData().getInt(Constants.KEY_DISCOUNT, 0);
 
         this.recipientEmail = getInputData().getString(Constants.KEY_RECIPIENT_EMAIL);
         this.recipientFirstName = getInputData().getString(Constants.KEY_RECIPIENT_FIRST_NAME);
@@ -206,9 +210,11 @@ public class InsertInvoiceWorker extends Worker {
                     .putLong(Constants.KEY_INVOICE_ID, invoiceId)
                     .putString(Constants.KEY_NUMBER, number)
                     .putLong(Constants.KEY_PROVIDER_ID, providerId)
+                    .putLong(Constants.KEY_COURIER_ID, courierId)
                     .putLong(Constants.KEY_TARIFF_ID, tariffId)
                     .putLong(Constants.KEY_SENDER_ID, senderId)
                     .putLong(Constants.KEY_RECIPIENT_ID, recipientId)
+                    .putString(Constants.KEY_RECIPIENT_SIGNATURE, recipientSignatureUrl)
                     .putLong(Constants.KEY_PAYER_ID, payerId)
                     .putDouble(Constants.KEY_PRICE, price)
                     .putLong(Constants.KEY_STATUS, status)
@@ -230,6 +236,7 @@ public class InsertInvoiceWorker extends Worker {
                     .putString(Constants.KEY_SENDER_CARGOSTAR, senderCargo)
                     .putString(Constants.KEY_SENDER_TNT, senderTnt)
                     .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
+                    .putInt(Constants.KEY_DISCOUNT, discount)
 
                     .putString(Constants.KEY_RECIPIENT_EMAIL, recipientEmail)
                     .putString(Constants.KEY_RECIPIENT_FIRST_NAME, recipientFirstName)

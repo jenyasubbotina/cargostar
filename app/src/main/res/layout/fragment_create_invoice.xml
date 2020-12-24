@@ -264,9 +264,11 @@
             app:layout_constraintBottom_toBottomOf="@id/sender_country_spinner"
             app:layout_constraintStart_toStartOf="@id/sender_phone_edit_text"
             app:layout_constraintEnd_toEndOf="@id/sender_phone_edit_text"
-            android:paddingHorizontal="4dp"
             android:background="@drawable/edit_text_locked"
-            android:prompt="@string/choose_city"/>
+            android:textSize="16sp"
+            android:fontFamily="@font/geometria_actual"
+            android:paddingHorizontal="4dp"
+            android:textColor="@color/colorBlack"/>
 
         <TextView
             android:id="@+id/sender_address_text_view"
@@ -400,6 +402,33 @@
             android:fontFamily="@font/geometria_actual"
             android:padding="17dp"
             android:textColor="@color/colorBlack"/>
+
+        <TextView
+            android:id="@+id/sender_discount_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/sender_company_text_view"
+            app:layout_constraintStart_toStartOf="@id/sender_fedex_text_view"
+            android:textSize="16sp"
+            android:textColor="#A5ABC0"
+            android:fontFamily="@font/geometria_actual"
+            android:text="@string/discount"/>
+
+        <EditText
+            android:id="@+id/sender_discount_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/sender_company_edit_text"
+            app:layout_constraintBottom_toBottomOf="@id/sender_company_edit_text"
+            app:layout_constraintStart_toStartOf="@id/sender_fedex_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/sender_fedex_edit_text"
+            android:inputType="numberDecimal"
+            android:background="@drawable/edit_text_locked"
+            android:textSize="16sp"
+            android:fontFamily="@font/geometria_actual"
+            android:padding="17dp"
+            android:textColor="@color/colorBlack"
+            android:enabled="false"/>
 
         <View
             android:id="@+id/sender_stroke"
@@ -597,9 +626,11 @@
             app:layout_constraintBottom_toBottomOf="@id/recipient_country_spinner"
             app:layout_constraintStart_toStartOf="@id/recipient_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_middle_name_edit_text"
-            android:paddingHorizontal="4dp"
             android:background="@drawable/edit_text_locked"
-            android:prompt="@string/choose_city"/>
+            android:textSize="16sp"
+            android:fontFamily="@font/geometria_actual"
+            android:paddingHorizontal="4dp"
+            android:textColor="@color/colorBlack"/>
 
         <TextView
             android:id="@+id/recipient_address_text_view"
@@ -1016,8 +1047,11 @@
             app:layout_constraintBottom_toBottomOf="@id/payer_country_spinner"
             app:layout_constraintStart_toStartOf="@id/payer_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/payer_middle_name_edit_text"
+            android:background="@drawable/edit_text_locked"
+            android:textSize="16sp"
+            android:fontFamily="@font/geometria_actual"
             android:paddingHorizontal="4dp"
-            android:prompt="@string/choose_city"/>
+            android:textColor="@color/colorBlack"/>
 
         <TextView
             android:id="@+id/payer_address_text_view"
@@ -1099,37 +1133,11 @@
             android:padding="17dp"
             android:textColor="@color/colorBlack"/>
 
-        <TextView
-            android:id="@+id/payer_discount_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/payer_phone_text_view"
-            app:layout_constraintStart_toStartOf="@id/payer_zip_text_view"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/discount"/>
-
-        <EditText
-            android:id="@+id/payer_discount_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/payer_phone_edit_text"
-            app:layout_constraintBottom_toBottomOf="@id/payer_phone_edit_text"
-            app:layout_constraintStart_toStartOf="@id/payer_zip_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/payer_zip_edit_text"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:padding="17dp"
-            android:textColor="@color/colorBlack"/>
-
         <View
             android:id="@+id/payer_stroke"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@id/payer_discount_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/payer_phone_edit_text"
             app:layout_constraintStart_toStartOf="@id/sender_stroke"
             app:layout_constraintEnd_toEndOf="@id/sender_stroke"
             android:layout_marginTop="41dp"
@@ -1193,7 +1201,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/payer_tnt_text_view"
-            app:layout_constraintStart_toStartOf="@id/payer_discount_text_view"
+            app:layout_constraintStart_toStartOf="@id/sender_discount_text_view"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
@@ -1205,8 +1213,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/payer_tnt_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/payer_tnt_edit_text"
-            app:layout_constraintStart_toStartOf="@id/payer_discount_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/payer_discount_edit_text"
+            app:layout_constraintStart_toStartOf="@id/sender_discount_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/sender_discount_edit_text"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -1767,67 +1775,12 @@
             android:textColor="@color/colorBlack"/>
 
         <TextView
-            android:id="@+id/cargo_qr_text_view"
+            android:id="@+id/cargo_name_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/width_edit_text"
             app:layout_constraintStart_toStartOf="@id/for_each_cargo_text_view"
             android:layout_marginTop="24dp"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/qr_code"/>
-
-        <RelativeLayout
-            android:id="@+id/cargo_qr_field"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/cargo_qr_text_view"
-            app:layout_constraintStart_toStartOf="@id/width_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/width_edit_text"
-            android:layout_marginTop="4dp">
-
-            <EditText
-                android:id="@+id/cargo_qr_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:background="@drawable/edit_text_locked"
-                android:textSize="16sp"
-                android:fontFamily="@font/geometria_actual"
-                android:textColor="@color/colorBlack"
-                android:paddingVertical="17dp"
-                android:paddingHorizontal="36dp"
-                android:enabled="false"/>
-
-            <ImageView
-                android:id="@+id/cargo_qr_result_image_view"
-                android:layout_width="19dp"
-                android:layout_height="22dp"
-                android:layout_alignStart="@id/cargo_qr_edit_text"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_image_green"
-                android:layout_marginStart="12dp"
-                android:contentDescription="@string/signature"
-                android:visibility="invisible"/>
-
-            <ImageView
-                android:id="@+id/cargo_qr_image_view"
-                android:layout_width="25dp"
-                android:layout_height="22dp"
-                android:layout_alignEnd="@id/cargo_qr_edit_text"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_camera"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="@string/qr_code"/>
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/cargo_name_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/cargo_qr_text_view"
-            app:layout_constraintStart_toStartOf="@id/height_edit_text"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
@@ -1837,10 +1790,10 @@
             android:id="@+id/cargo_name_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/cargo_qr_field"
-            app:layout_constraintBottom_toBottomOf="@id/cargo_qr_field"
-            app:layout_constraintStart_toStartOf="@id/height_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/height_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/cargo_name_text_view"
+            app:layout_constraintStart_toStartOf="@id/cargo_name_text_view"
+            app:layout_constraintEnd_toEndOf="@id/width_edit_text"
+            android:layout_marginTop="4dp"
             android:inputType="text"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -1852,9 +1805,8 @@
             android:id="@+id/cargo_description_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/cargo_qr_field"
-            app:layout_constraintStart_toStartOf="@id/cargo_qr_text_view"
-            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toTopOf="@id/cargo_name_text_view"
+            app:layout_constraintStart_toStartOf="@id/height_text_view"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
@@ -1864,11 +1816,9 @@
             android:id="@+id/cargo_description_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/cargo_description_text_view"
-            app:layout_constraintStart_toStartOf="@id/cargo_qr_field"
-            app:layout_constraintEnd_toEndOf="@id/cargo_name_edit_text"
-            app:layout_constraintHorizontal_weight="1"
-            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toTopOf="@id/cargo_name_edit_text"
+            app:layout_constraintStart_toStartOf="@id/height_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/height_edit_text"
             android:inputType="text"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -1880,8 +1830,8 @@
             android:id="@+id/cargo_price_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/cargo_description_edit_text"
-            app:layout_constraintStart_toStartOf="@id/cargo_description_text_view"
+            app:layout_constraintTop_toBottomOf="@id/cargo_name_edit_text"
+            app:layout_constraintStart_toStartOf="@id/cargo_name_text_view"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
@@ -1893,8 +1843,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/cargo_price_text_view"
-            app:layout_constraintStart_toStartOf="@id/cargo_qr_field"
-            app:layout_constraintEnd_toEndOf="@id/cargo_qr_field"
+            app:layout_constraintStart_toStartOf="@id/cargo_name_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/cargo_name_edit_text"
+            android:layout_marginTop="4dp"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -1908,8 +1859,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/cargo_price_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/cargo_price_edit_text"
-            app:layout_constraintStart_toStartOf="@id/cargo_name_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/cargo_name_edit_text"
+            app:layout_constraintStart_toStartOf="@id/cargo_description_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/cargo_description_edit_text"
             android:text="@string/add"
             android:fontFamily="@font/geometria_medium"
             android:textSize="19sp"
@@ -2031,12 +1982,12 @@
             android:layout_marginEnd="35dp"
             android:layout_marginStart="52dp"
             android:background="@drawable/btn_gradient_orange"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="4dp"
             android:paddingVertical="18dp"
             android:text="@string/calculate"
             android:textAllCaps="false"
             android:textColor="#FFF"
-            android:textSize="19sp"
+            android:textSize="17sp"
             android:fontFamily="@font/geometria_medium"
             android:elevation="8dp"/>
 
@@ -2121,7 +2072,7 @@
                 android:textSize="16sp"
                 android:layout_weight="0.5"
                 android:buttonTint="@color/colorBlue"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:gravity="center"/>
 
             <RadioButton
@@ -2134,7 +2085,7 @@
                 android:textSize="16sp"
                 android:layout_weight="0.5"
                 android:buttonTint="@color/colorBlue"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:gravity="center"/>
         </RadioGroup>
 

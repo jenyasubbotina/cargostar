@@ -443,12 +443,12 @@
             app:layout_constraintEnd_toEndOf="@id/destination_country_field"
             android:layout_marginStart="52dp"
             android:background="@drawable/btn_gradient_orange"
-            android:paddingHorizontal="16dp"
             android:paddingVertical="18dp"
+            android:paddingHorizontal="4dp"
             android:text="@string/calculate"
             android:textAllCaps="false"
             android:textColor="#FFF"
-            android:textSize="19sp"
+            android:textSize="17sp"
             android:fontFamily="@font/geometria_medium"
             android:elevation="8dp"/>
 

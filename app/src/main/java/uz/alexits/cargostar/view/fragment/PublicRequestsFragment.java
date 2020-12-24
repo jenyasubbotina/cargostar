@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
@@ -83,8 +82,6 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         if (getArguments() != null) {
             courierId = PublicRequestsFragmentArgs.fromBundle(getArguments()).getCourierId();
         }
-
-        SyncWorkRequest.fetchRequestData(context);
     }
 
     @Override
@@ -155,7 +152,7 @@ public class PublicRequestsFragment extends Fragment implements RequestCallback 
         });
 
         //header views
-        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));

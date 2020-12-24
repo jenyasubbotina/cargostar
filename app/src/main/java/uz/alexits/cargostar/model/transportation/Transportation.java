@@ -300,9 +300,10 @@ public class Transportation {
     public String toString() {
         return "Transportation{" +
                 "id=" + id +
+                ", requestId=" + requestId +
+                ", invoiceId=" + invoiceId +
                 ", providerId=" + providerId +
                 ", courierId=" + courierId +
-                ", invoiceId=" + invoiceId +
                 ", brancheId=" + brancheId +
                 ", transportationStatusId=" + transportationStatusId +
                 ", paymentStatusId=" + paymentStatusId +

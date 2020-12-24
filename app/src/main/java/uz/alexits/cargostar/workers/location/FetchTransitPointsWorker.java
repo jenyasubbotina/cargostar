@@ -32,8 +32,8 @@ public class FetchTransitPointsWorker extends Worker {
     public FetchTransitPointsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
-        this.login = SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN);
-        this.password = SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH);
+        this.login = SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN);
+        this.password = SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
 
         if (login == null || password == null) {

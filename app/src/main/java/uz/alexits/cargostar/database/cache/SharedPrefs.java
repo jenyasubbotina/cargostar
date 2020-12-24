@@ -69,10 +69,7 @@ public class SharedPrefs {
         return this.prefs.getLong(key, -1);
     }
 
-    public static final String LOGIN = "login";
-    public static final String PASSWORD_HASH = "password_hash";
     public static final String ID = "id";
     public static final String BRANCH_ID = "branch_id";
-    public static final String TOKEN = "token";
     public static final String KEEP_LOGGED = "keep_logged";
 }

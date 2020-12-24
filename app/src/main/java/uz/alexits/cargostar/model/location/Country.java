@@ -143,6 +143,6 @@ public class Country {
     @NonNull
     @Override
     public String toString() {
-        return name;
+        return nameEn;
     }
 }

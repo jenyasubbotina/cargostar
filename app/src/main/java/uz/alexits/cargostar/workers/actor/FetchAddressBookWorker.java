@@ -14,6 +14,7 @@ import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.AddressBook;
+import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -22,13 +23,15 @@ public class FetchAddressBookWorker extends Worker {
     private String login;
     private String password;
     private final String token;
+    private final long lastId;
 
     public FetchAddressBookWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
-        this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
-        this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+        this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
+        this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
+        this.lastId = getInputData().getLong(Constants.LAST_ADDRESS_BOOK_ID, 0L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
@@ -40,9 +43,16 @@ public class FetchAddressBookWorker extends Worker {
     @Override
     public ListenableWorker.Result doWork() {
         try {
-            Log.i(TAG, "per-page: " + perPage);
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<AddressBook>> response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(perPage);
+
+            Response<List<AddressBook>> response = null;
+
+            if (lastId > 0) {
+                response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(perPage, lastId);
+            }
+            else {
+                response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(perPage);
+            }
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

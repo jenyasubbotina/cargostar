@@ -25,17 +25,12 @@ public class TransportationViewModel extends AndroidViewModel {
     private final MutableLiveData<Long> currentTransitPointId;
     private final MutableLiveData<StatusArrayTransitPoint> statusArrayTransitPoint;
 
-//    private final LiveData<List<Transportation>> currentTransportationList;
-
-
     public TransportationViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
 
         this.currentTransitPointId = new MutableLiveData<>();
         this.statusArrayTransitPoint = new MutableLiveData<>();
-
-//        this.currentTransportationList = repository.selectCurrentTransportations();
     }
 
     /* Transportation */
@@ -70,5 +65,9 @@ public class TransportationViewModel extends AndroidViewModel {
 
     public LiveData<List<TransitPoint>> selectTransitPointsByCountry(final long countryId) {
         return repository.selectAllTransitPointsByCountry(countryId);
+    }
+
+    public LiveData<List<Transportation>> getAllTransportation() {
+        return repository.selectAllTransportation();
     }
 }

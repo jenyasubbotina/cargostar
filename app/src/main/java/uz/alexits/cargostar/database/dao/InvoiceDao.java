@@ -56,6 +56,9 @@ public interface InvoiceDao {
     @Update
     int updateAddressBookEntry(final AddressBook addressBook);
 
+    @Query("SELECT id FROM address_book ORDER BY id DESC LIMIT 1")
+    long getLastAddressBookId();
+
     /* cargo */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long[] insertCargoList(final List<Consignment> consignmentList);

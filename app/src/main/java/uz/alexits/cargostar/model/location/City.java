@@ -41,7 +41,7 @@ public class City {
     @SerializedName("name_en")
     @Expose
     @ColumnInfo(name = "name_en")
-    @Nullable private String nameEn;
+    @NonNull private final String nameEn;
 
     @SerializedName("status")
     @Expose
@@ -60,7 +60,7 @@ public class City {
     public City(final long id,
                 final long regionId,
                 @NonNull final String name,
-                @Nullable final String nameEn,
+                @NonNull final String nameEn,
                 final int status,
                 @Nullable final Date createdAt,
                 @Nullable final Date updatedAt) {
@@ -71,12 +71,6 @@ public class City {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-    }
-
-    @Ignore
-    public City(final long regionId, @NonNull final String name) {
-        this.regionId = regionId;
-        this.name = name;
     }
 
     public long getId() {
@@ -96,13 +90,9 @@ public class City {
         return name;
     }
 
-    @Nullable
+    @NonNull
     public String getNameEn() {
         return nameEn;
-    }
-
-    public void setNameEn(@Nullable String nameEn) {
-        this.nameEn = nameEn;
     }
 
     public int getStatus() {
@@ -134,6 +124,6 @@ public class City {
     @NonNull
     @Override
     public String toString() {
-        return name;
+        return nameEn;
     }
 }

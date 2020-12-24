@@ -58,4 +58,7 @@ public interface ActorDao {
 
     @Query("SELECT id FROM customer WHERE email LIKE :email LIMIT 1")
     LiveData<Long> selectSenderIdByEmail(final String email);
+
+    @Query("SELECT id FROM customer ORDER BY id DESC LIMIT 1")
+    long getLastSenderId();
 }

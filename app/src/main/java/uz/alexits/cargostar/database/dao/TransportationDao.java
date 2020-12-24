@@ -86,4 +86,7 @@ public abstract class TransportationDao {
 
     @Query("SELECT * FROM transportation WHERE partial_id == :partialId ORDER BY id")
     public abstract LiveData<List<Transportation>> selectTransportationsByPartialId(final long partialId);
+
+    @Query("SELECT id FROM transportation ORDER BY id DESC LIMIT 1")
+    public abstract long getLastTransportationId();
 }

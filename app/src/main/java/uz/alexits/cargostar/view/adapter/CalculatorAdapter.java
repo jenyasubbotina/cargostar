@@ -9,11 +9,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.model.transportation.Consignment;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
-import uz.alexits.cargostar.view.viewholder.CalcItemViewHolder;
+import uz.alexits.cargostar.view.viewholder.CalculatorViewHolder;
+import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
 
 import java.util.List;
 
-public class CalculatorAdapter extends RecyclerView.Adapter<CalcItemViewHolder> {
+public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorViewHolder> {
     private final Context context;
     private List<Consignment> itemList;
     private final CreateInvoiceCallback callback;
@@ -35,13 +36,13 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalcItemViewHolder> 
 
     @NonNull
     @Override
-    public CalcItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CalculatorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View root = LayoutInflater.from(context).inflate(R.layout.view_holder_calculator, parent, false);
-        return new CalcItemViewHolder(root);
+        return new CalculatorViewHolder(root);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CalcItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CalculatorViewHolder holder, int position) {
         final Consignment currentItem = itemList.get(position);
 
         if (currentItem != null) {

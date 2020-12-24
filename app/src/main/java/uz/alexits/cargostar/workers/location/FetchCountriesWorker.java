@@ -52,7 +52,7 @@ public class FetchCountriesWorker extends Worker {
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<Country> countryList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).locationDao().insertCountries(countryList);
+                    LocalCache.getInstance(getApplicationContext()).locationDao().dropAndInsertCountries(countryList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

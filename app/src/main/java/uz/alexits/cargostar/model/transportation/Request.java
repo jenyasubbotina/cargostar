@@ -17,7 +17,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-//todo: foreign keys: invoiceId, clientId, userId
 @Entity(tableName = "request",
         foreignKeys = {
         @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "sender_country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),

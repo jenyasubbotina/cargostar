@@ -36,8 +36,8 @@ public class BindRequestWorker extends Worker {
         }
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
 
             final Response<Request> response = RetrofitClient.getInstance(getApplicationContext()).bindRequest(requestId, courierId);
 

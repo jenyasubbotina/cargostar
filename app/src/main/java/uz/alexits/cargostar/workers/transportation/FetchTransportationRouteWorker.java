@@ -39,8 +39,8 @@ public class FetchTransportationRouteWorker extends Worker {
         }
 
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
             final Response<List<Route>> response = RetrofitClient.getInstance(getApplicationContext()).getTransportationRoute(transportationId);
 
             if (response.code() == 200) {

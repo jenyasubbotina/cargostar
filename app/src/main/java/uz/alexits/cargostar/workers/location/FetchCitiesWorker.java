@@ -52,7 +52,7 @@ public class FetchCitiesWorker extends Worker {
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<City> cityList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).locationDao().insertCities(cityList);
+                    LocalCache.getInstance(getApplicationContext()).locationDao().dropAndInsertCities(cityList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

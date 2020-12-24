@@ -57,8 +57,8 @@ public class UpdateCourierWorker extends Worker {
                 serializedPhoto = Serializer.bitmapToBase64(getApplicationContext(), photoUrl);
             }
 
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.LOGIN),
-                    SharedPrefs.getInstance(getApplicationContext()).getString(SharedPrefs.PASSWORD_HASH));
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
             final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext())
                     .updateCourierData(courierId, password, firstName, middleName, lastName, phone, serializedPhoto);
             if (response.code() == 200) {

@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
@@ -66,12 +63,11 @@ import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.utils.Serializer;
-import uz.alexits.cargostar.view.MyScrollView;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.ScanQrActivity;
 import uz.alexits.cargostar.view.activity.SignatureActivity;
-import uz.alexits.cargostar.view.adapter.CalculatorAdapter;
+import uz.alexits.cargostar.view.adapter.ConsignmentAdapter;
 import uz.alexits.cargostar.view.adapter.CustomArrayAdapter;
 import uz.alexits.cargostar.view.adapter.TariffPriceRadioAdapter;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
@@ -121,13 +117,13 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private Spinner packagingTypeSpinner;
     private ArrayAdapter<PackagingType> packagingTypeArrayAdapter;
 
+    private TextView lengthTextView;
+    private TextView widthTextView;
+    private TextView heightTextView;
     private EditText weightEditText;
     private EditText lengthEditText;
     private EditText widthEditText;
     private EditText heightEditText;
-    private EditText cargoQrEditText;
-    private ImageView cargoQrImageView;
-    private ImageView cargoResultImageView;
     private Button addBtn;
 
     private ProgressBar progressBar;
@@ -150,20 +146,17 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
     private Button createInvoiceBtn;
 
-    /* sender data */
+    /* location data */
     private Country senderCountry;
-    private City senderCity;
-
-    /* recipient data */
     private Country recipientCountry;
-    private City recipientCity;
-
-    /* payer data */
     private Country payerCountry;
+
+    private City senderCity;
+    private City recipientCity;
     private City payerCity;
 
     /* show current cargoList */
-    private CalculatorAdapter calculatorAdapter;
+    private ConsignmentAdapter consignmentAdapter;
     private RecyclerView itemRecyclerView;
 
     /* view model */
@@ -225,12 +218,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private EditText okedEditText;
 
     private Spinner senderCountrySpinner;
-    private Spinner senderCitySpinner;
-
     private Spinner recipientCountrySpinner;
-    private Spinner recipientCitySpinner;
-
     private Spinner payerCountrySpinner;
+
+    private Spinner senderCitySpinner;
+    private Spinner recipientCitySpinner;
     private Spinner payerCitySpinner;
 
     private Spinner recipientAddressBookSpinner;
@@ -241,38 +233,36 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private RadioButton recipientIsPayerRadioBtn;
 
     private ArrayAdapter<Country> countryArrayAdapter;
-
     private ArrayAdapter<City> senderCityArrayAdapter;
     private ArrayAdapter<City> recipientCityArrayAdapter;
     private ArrayAdapter<City> payerCityArrayAdapter;
-
     private ArrayAdapter<AddressBook> recipientAddressBookArrayAdapter;
     private ArrayAdapter<AddressBook> payerAddressBookArrayAdapter;
 
     private List<Country> countryList;
-
     private List<City> senderCityList;
     private List<City> recipientCityList;
     private List<City> payerCityList;
 
     private List<AddressBook> addressBookEntries;
 
-    private static volatile boolean isSenderInitialPick = true;
-    private static volatile boolean addressBookInitialized = false;
-    private static volatile boolean isRecipientInitialPick = true;
-    private static volatile boolean isPayerInitialPick = true;
+    /* flags to handle UI initialization */
+    private static volatile boolean isSenderInitialPick;
+    private static volatile boolean addressBookInitialized;
+    private static volatile boolean isRecipientInitialPick;
+    private static volatile boolean isPayerInitialPick;
 
-    private static volatile boolean isSenderCountryInitialPick = true;
-    private static volatile boolean isRecipientCountryInitialPick = true;
-    private static volatile boolean isPayerCountryInitialPick = true;
+    private static volatile boolean isSenderCountryInitialPick;
+    private static volatile boolean isRecipientCountryInitialPick;
+    private static volatile boolean isPayerCountryInitialPick;
 
-    private static volatile boolean isSenderCityInitialPick = true;
-    private static volatile boolean isRecipientCityInitialPick = true;
-    private static volatile boolean isPayerCityInitialPick = true;
+    private static volatile boolean isSenderCityInitialPick;
+    private static volatile boolean isRecipientCityInitialPick;
+    private static volatile boolean isPayerCityInitialPick;
 
-    private static volatile boolean senderCountryIsSet = false;
-    private static volatile boolean recipientCountryIsSet = false;
-    private static volatile boolean payerCountryIsSet = false;
+    private static volatile boolean senderCountryIsSet;
+    private static volatile boolean recipientCountryIsSet;
+    private static volatile boolean payerCountryIsSet;
 
     /* if invoice was created before */
     private static volatile int requestKey = -1;
@@ -303,6 +293,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile String senderCargo = null;
     private static volatile String senderTnt = null;
     private static volatile String senderFedex = null;
+    private static volatile int discount = 0;
 
     private static volatile long recipientId = -1L;
     private static volatile String recipientEmail = null;
@@ -366,11 +357,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         recipientId = -1;
         payerId = -1;
         senderCountryId = -1;
-        senderCityId = -1;
         recipientCountryId = -1;
-        recipientCityId = -1;
         payerCountryId = -1;
-        payerCityId = -1;
 
         price = 0;
         deliveryType = 0;
@@ -389,6 +377,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         senderCargo = null;
         senderTnt = null;
         senderFedex = null;
+        discount = 0;
 
         recipientEmail = null;
         recipientFirstName = null;
@@ -459,6 +448,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             senderCargo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCargo();
             senderTnt = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderTnt();
             senderFedex = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFedex();
+            discount = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDiscount();
 
             recipientId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientId();
             recipientEmail = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientEmail();
@@ -496,6 +486,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             payerMfo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerMfo();
             payerOked = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerOked();
 
+            Log.i(TAG, "senderCityId=" + senderCityId +
+                    " payerCountryId=" + payerCountryId +
+                    " payerCityId=" + payerCityId +
+                    " discount=" + discount);
+
             consignmentQuantity = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
 
             if (consignmentQuantity > 0) {
@@ -510,10 +505,17 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 }
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final View root = inflater.inflate(R.layout.fragment_create_invoice, container, false);
+
         isSenderInitialPick = true;
-        addressBookInitialized = false;
         isRecipientInitialPick = true;
         isPayerInitialPick = true;
+        addressBookInitialized = false;
 
         if (requestKey == IntentConstants.REQUEST_EDIT_INVOICE) {
             isSenderCountryInitialPick = false;
@@ -533,12 +535,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             isRecipientCityInitialPick = true;
             isPayerCityInitialPick = true;
         }
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.fragment_create_invoice, container, false);
 
         initUI(root);
 
@@ -562,7 +558,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         calculatorViewModel = new ViewModelProvider(this).get(CalculatorViewModel.class);
 
         /* header view model */
-        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
@@ -638,7 +634,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         calculatorViewModel.getPackagingTypeList().observe(getViewLifecycleOwner(), packagingTypeList -> {
             packagingTypeArrayAdapter.clear();
             packagingTypeArrayAdapter.addAll(packagingTypeList);
-//            packagingTypeArrayAdapter.notifyDataSetChanged();
         });
 
         calculatorViewModel.getZoneList().observe(getViewLifecycleOwner(), zoneList -> {
@@ -769,10 +764,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
 
-        cargoQrImageView.setOnClickListener(v -> {
-            startActivityForResult(new Intent(context, ScanQrActivity.class), IntentConstants.REQUEST_SCAN_QR_CARGO);
-        });
-
         senderSignatureImageView.setOnClickListener(v -> {
             startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_SENDER_SIGNATURE);
         });
@@ -804,6 +795,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //sender country
                 senderCountry = (Country) parent.getSelectedItem();
+                createInvoiceViewModel.setSenderCountryId(senderCountry.getId());
+                calculatorViewModel.setSrcCountryId(senderCountry.getId());
 
                 final TextView itemTextView = (TextView) view;
                 if (itemTextView != null) {
@@ -812,10 +805,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                         senderCountrySpinner.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
-
-                createInvoiceViewModel.setSenderCountryId(senderCountry.getId());
-                calculatorViewModel.setSrcCountryId(senderCountry.getId());
-
                 //country & null = hide all
                 if (recipientCountry == null) {
                     selectedCountryId = null;
@@ -916,7 +905,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //recipient country
-
                 recipientCountry = (Country) parent.getSelectedItem();
                 createInvoiceViewModel.setRecipientCountryId(recipientCountry.getId());
                 calculatorViewModel.setDestCountryId(recipientCountry.getId());
@@ -928,7 +916,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                         recipientCountrySpinner.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
-
                 //country & null = hide all
                 if (senderCountry == null) {
                     selectedCountryId = null;
@@ -1194,6 +1181,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 //docs
                 calculatorViewModel.setType(1);
                 //make consignment fields invisible
+                lengthTextView.setVisibility(View.INVISIBLE);
+                widthTextView.setVisibility(View.INVISIBLE);
+                heightTextView.setVisibility(View.INVISIBLE);
                 lengthEditText.setVisibility(View.INVISIBLE);
                 widthEditText.setVisibility(View.INVISIBLE);
                 heightEditText.setVisibility(View.INVISIBLE);
@@ -1206,6 +1196,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 //boxes
                 calculatorViewModel.setType(2);
                 //make consignment fields visible
+                lengthTextView.setVisibility(View.VISIBLE);
+                widthTextView.setVisibility(View.VISIBLE);
+                heightTextView.setVisibility(View.VISIBLE);
                 lengthEditText.setVisibility(View.VISIBLE);
                 widthEditText.setVisibility(View.VISIBLE);
                 heightEditText.setVisibility(View.VISIBLE);
@@ -1304,7 +1297,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
                 payerCountrySpinner.setSelection(senderCountrySpinner.getSelectedItemPosition());
                 payerCityId = ((City) senderCitySpinner.getSelectedItem()).getId();
-
                 return;
             }
             if (checkedId == recipientIsPayerRadioBtn.getId()) {
@@ -1328,207 +1320,113 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     }
 
     private void bindOnFocusChangeListeners() {
-        senderEmailEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(v, hasFocus);
-        });
+        senderEmailEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderSignatureEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(v, hasFocus);
-        });
+        senderSignatureEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderFirstNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(v, hasFocus);
-        });
+        senderFirstNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderLastNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(v, hasFocus);
-        });
+        senderLastNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderMiddleNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(v, hasFocus);
-        });
+        senderMiddleNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderPhoneEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(v, hasFocus);
-        });
+        senderPhoneEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderAddressEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(v, hasFocus);
-        });
+        senderAddressEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderZipEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderZipEditText, hasFocus);
-        });
+        senderCitySpinner.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderCompanyEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderCompanyEditText, hasFocus);
-        });
+        senderZipEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderTntEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderTntEditText, hasFocus);
-        });
+        senderCompanyEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderFedexEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(senderFedexEditText, hasFocus);
-        });
+        senderTntEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
+
+        senderFedexEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
         /* recipient data */
-        recipientEmailEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientEmailEditText, hasFocus);
-        });
+        recipientEmailEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientFirstNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientFirstNameEditText, hasFocus);
-        });
+        recipientFirstNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientLastNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientLastNameEditText, hasFocus);
-        });
+        recipientLastNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientMiddleNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientMiddleNameEditText, hasFocus);
-        });
+        recipientMiddleNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientAddressEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientAddressEditText, hasFocus);
-        });
+        recipientCitySpinner.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientZipEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientZipEditText, hasFocus);
-        });
+        recipientAddressEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientPhoneEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientPhoneEditText, hasFocus);
-        });
+        recipientZipEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientCargoEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientCargoEditText, hasFocus);
-        });
+        recipientPhoneEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientTntEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientTntEditText, hasFocus);
-        });
+        recipientCargoEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientFedexEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientFedexEditText, hasFocus);
-        });
+        recipientTntEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientCompanyEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(recipientCompanyEditText, hasFocus);
-        });
+        recipientFedexEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
+
+        recipientCompanyEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
         /* payer data */
-        payerEmailEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerEmailEditText, hasFocus);
-        });
+        payerEmailEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerFirstNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerFirstNameEditText, hasFocus);
-        });
+        payerFirstNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerLastNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerLastNameEditText, hasFocus);
-        });
+        payerLastNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerMiddleNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerMiddleNameEditText, hasFocus);
-        });
+        payerMiddleNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerAddressEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerAddressEditText, hasFocus);
-        });
+        payerAddressEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerZipEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerZipEditText, hasFocus);
-        });
+        payerZipEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerPhoneEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerPhoneEditText, hasFocus);
-        });
+        payerCitySpinner.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        discountEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(discountEditText, hasFocus);
-        });
+        payerPhoneEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerCargoEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerCargoEditText, hasFocus);
-        });
+        discountEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerTntEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerTntEditText, hasFocus);
-        });
+        payerCargoEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerTntTaxIdEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerTntTaxIdEditText, hasFocus);
-        });
+        payerTntEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerFedexEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerFedexEditText, hasFocus);
-        });
+        payerTntTaxIdEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerFedexTaxIdEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerFedexTaxIdEditText, hasFocus);
-        });
+        payerFedexEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerInnEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerInnEditText, hasFocus);
-        });
+        payerFedexTaxIdEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerCompanyEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(payerCompanyEditText, hasFocus);
-        });
+        payerInnEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        checkingAccountEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(checkingAccountEditText, hasFocus);
-        });
+        payerCompanyEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        bankEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(bankEditText, hasFocus);
-        });
+        checkingAccountEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        registrationCodeEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(registrationCodeEditText, hasFocus);
-        });
+        bankEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        mfoEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(mfoEditText, hasFocus);
-        });
+        registrationCodeEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        okedEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(okedEditText, hasFocus);
-        });
+        mfoEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        instructionsEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(instructionsEditText, hasFocus);
-        });
+        okedEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        weightEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(weightEditText, hasFocus);
-        });
+        instructionsEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        lengthEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(lengthEditText, hasFocus);
-        });
+        weightEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        widthEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(widthEditText, hasFocus);
-        });
+        lengthEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        heightEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(heightEditText, hasFocus);
-        });
+        widthEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        cargoNameEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(cargoNameEditText, hasFocus);
-        });
+        heightEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        cargoDescriptionEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(cargoDescriptionEditText, hasFocus);
-        });
+        cargoNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        cargoPriceEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(cargoPriceEditText, hasFocus);
-        });
+        cargoDescriptionEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
+
+        cargoPriceEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
     }
 
     private void initUI(final View root) {
@@ -1546,7 +1444,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
 
         //main content views
-        final MyScrollView myScrollView = root.findViewById(R.id.my_scroll_view);
         progressBar = root.findViewById(R.id.progress_bar);
 
         /* sender data */
@@ -1563,6 +1460,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         senderCompanyEditText = root.findViewById(R.id.sender_company_edit_text);
         senderTntEditText = root.findViewById(R.id.sender_tnt_edit_text);
         senderFedexEditText = root.findViewById(R.id.sender_fedex_edit_text);
+        discountEditText = root.findViewById(R.id.sender_discount_edit_text);
 
         /* recipient data */
         recipientEmailEditText = root.findViewById(R.id.recipient_email_edit_text);
@@ -1588,7 +1486,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         payerAddressEditText = root.findViewById(R.id.payer_address_edit_text);
         payerZipEditText = root.findViewById(R.id.payer_zip_edit_text);
         payerPhoneEditText = root.findViewById(R.id.payer_phone_edit_text);
-        discountEditText = root.findViewById(R.id.payer_discount_edit_text);
 
         payerCargoEditText = root.findViewById(R.id.payer_cargo_edit_text);
         payerTntEditText = root.findViewById(R.id.payer_tnt_edit_text);
@@ -1629,13 +1526,14 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         cargoPriceEditText = root.findViewById(R.id.cargo_price_edit_text);
         cargoDescriptionEditText = root.findViewById(R.id.cargo_description_edit_text);
         packagingTypeSpinner = root.findViewById(R.id.packaging_type_spinner);
+
+        lengthTextView = root.findViewById(R.id.length_text_view);
+        widthTextView = root.findViewById(R.id.width_text_view);
+        heightTextView = root.findViewById(R.id.height_text_view);
         weightEditText = root.findViewById(R.id.weight_edit_text);
         lengthEditText = root.findViewById(R.id.length_edit_text);
         widthEditText = root.findViewById(R.id.width_edit_text);
         heightEditText = root.findViewById(R.id.height_edit_text);
-        cargoQrEditText = root.findViewById(R.id.cargo_qr_edit_text);
-        cargoQrImageView = root.findViewById(R.id.cargo_qr_image_view);
-        cargoResultImageView = root.findViewById(R.id.cargo_qr_result_image_view);
         addBtn = root.findViewById(R.id.add_item_btn);
 
         //calculations
@@ -1655,13 +1553,13 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         packagingTypeArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         packagingTypeSpinner.setAdapter(packagingTypeArrayAdapter);
 
-        calculatorAdapter = new CalculatorAdapter(context, consignmentList, this);
+        consignmentAdapter = new ConsignmentAdapter(context, consignmentList, this);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         itemRecyclerView.setLayoutManager(layoutManager);
-        itemRecyclerView.setAdapter(calculatorAdapter);
-        calculatorAdapter.setItemList(consignmentList);
-        calculatorAdapter.notifyDataSetChanged();
+        itemRecyclerView.setAdapter(consignmentAdapter);
+        consignmentAdapter.setItemList(consignmentList);
+        consignmentAdapter.notifyDataSetChanged();
 
         tariffPriceRadioAdapter = new TariffPriceRadioAdapter(context, this);
         final LinearLayoutManager tariffPriceLayoutManager = new LinearLayoutManager(context);
@@ -1670,12 +1568,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         tariffPriceRecyclerView.setAdapter(tariffPriceRadioAdapter);
 
         senderCountrySpinner = root.findViewById(R.id.sender_country_spinner);
-        senderCitySpinner = root.findViewById(R.id.sender_city_spinner);
-
         recipientCountrySpinner = root.findViewById(R.id.recipient_country_spinner);
-        recipientCitySpinner = root.findViewById(R.id.recipient_city_spinner);
-
         payerCountrySpinner = root.findViewById(R.id.payer_country_spinner);
+
+        senderCitySpinner = root.findViewById(R.id.sender_city_spinner);
+        recipientCitySpinner = root.findViewById(R.id.recipient_city_spinner);
         payerCitySpinner = root.findViewById(R.id.payer_city_spinner);
 
         recipientAddressBookSpinner = root.findViewById(R.id.recipient_address_book_spinner);
@@ -1710,25 +1607,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         recipientAddressBookSpinner.setAdapter(recipientAddressBookArrayAdapter);
         payerAddressBookSpinner.setAdapter(payerAddressBookArrayAdapter);
 
-//        senderCountrySpinner.setFocusable(true);
-//        senderCountrySpinner.setFocusableInTouchMode(true);
-//        recipientCountrySpinner.setFocusable(true);
-//        recipientCountrySpinner.setFocusableInTouchMode(true);
-//        payerCountrySpinner.setFocusable(true);
-//        payerCountrySpinner.setFocusableInTouchMode(true);
-//        senderCitySpinner.setFocusable(true);
-//        senderCitySpinner.setFocusableInTouchMode(true);
-//        recipientCitySpinner.setFocusable(true);
-//        recipientCitySpinner.setFocusableInTouchMode(true);
-//        payerCitySpinner.setFocusable(true);
-//        payerCitySpinner.setFocusableInTouchMode(true);
-//        packagingTypeSpinner.setFocusable(true);
-//        packagingTypeSpinner.setFocusableInTouchMode(true);
-//        recipientAddressBookSpinner.setFocusable(true);
-//        recipientAddressBookSpinner.setFocusableInTouchMode(true);
-//        payerAddressBookSpinner.setFocusable(true);
-//        payerAddressBookSpinner.setFocusableInTouchMode(true);
-
         bindOnFocusChangeListeners();
     }
 
@@ -1741,10 +1619,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         if (!TextUtils.isEmpty(senderSignature)) {
             senderSignatureEditText.setText(senderSignature);
             senderSignatureEditText.setBackgroundResource(R.drawable.edit_text_active);
-            senderSignatureResultImageView.setBackgroundResource(R.drawable.ic_image_green);
+            senderSignatureResultImageView.setImageResource(R.drawable.ic_image_green);
         }
         else {
-            senderSignatureResultImageView.setBackgroundResource(R.drawable.ic_image_red);
+            senderSignatureResultImageView.setImageResource(R.drawable.ic_image_red);
         }
         senderSignatureResultImageView.setVisibility(View.VISIBLE);
 
@@ -1989,7 +1867,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         final String width = widthEditText.getText().toString().trim();
         final String height = heightEditText.getText().toString().trim();
         final String dimensions = length + "x" + width + "x" + height;
-        final String consignmentQr = cargoQrEditText.getText().toString().trim();
 
         /* check for empty fields */
         if (packagingType == null) {
@@ -2031,10 +1908,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 return;
             }
         }
-        if (TextUtils.isEmpty(consignmentQr)) {
-            Toast.makeText(context, "Отсканируйте груз", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (TextUtils.isEmpty(name)) {
             Toast.makeText(context, "Добавьте наименование вложения", Toast.LENGTH_SHORT).show();
             return;
@@ -2062,8 +1935,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 !TextUtils.isEmpty(height) ? Double.parseDouble(height) : 0,
                 !TextUtils.isEmpty(weight) ? Double.parseDouble(weight) : 0,
                 dimensions,
-                consignmentQr));
-        calculatorAdapter.notifyItemInserted(consignmentList.size() - 1);
+                null));
+        consignmentAdapter.notifyItemInserted(consignmentList.size() - 1);
     }
 
     private void calculateTotalPrice() {
@@ -2134,6 +2007,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (totalPrice > 0) {
                 if (correspondingTariff != null) {
+                    if (discount > 0 && discount < 100) {
+                        totalPrice = totalPrice * (100 - discount) / 100;
+                    }
+                    
                     if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
                         totalPrice += correspondingTariff.getParcelFee();
                     }
@@ -2157,8 +2034,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     }
 
     private void createInvoice() {
-
-
         /* sender data */
         final String senderEmail = senderEmailEditText.getText().toString().trim();
         final String senderSignature = senderSignatureEditText.getText().toString().trim();
@@ -2201,7 +2076,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         final String payerCityId = payerCity != null ? String.valueOf(payerCity.getId()) : null;
         final String payerZip = payerZipEditText.getText().toString().trim();
         final String payerPhone = payerPhoneEditText.getText().toString().trim();
-        final String payerDiscount = discountEditText.getText().toString().trim();
+        final String discount = discountEditText.getText().toString().trim();
         int payerType = 0;
 
         final String payerCargo = payerCargoEditText.getText().toString().trim();
@@ -2254,11 +2129,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             Toast.makeText(context, "Для создания заявки укажите страну отправителя", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(senderCityId)) {
-            Log.e(TAG, "senderCity empty");
-            Toast.makeText(context, "Для создания заявки укажите город отправителя", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (TextUtils.isEmpty(senderAddress)) {
             Log.e(TAG, "senderAddress empty");
             Toast.makeText(context, "Для создания заявки укажите адрес отправителя", Toast.LENGTH_SHORT).show();
@@ -2271,11 +2141,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
 
         //recipient data
-        if (TextUtils.isEmpty(recipientEmail)) {
-            Log.e(TAG, "sendInvoice(): recipientEmail is empty");
-            Toast.makeText(context, "Для создания заявки укажите email получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (TextUtils.isEmpty(recipientFirstName)) {
             Log.e(TAG, "sendInvoice(): recipientFirstName is empty");
             Toast.makeText(context, "Для создания заявки укажите имя получателя", Toast.LENGTH_SHORT).show();
@@ -2296,11 +2161,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             Toast.makeText(context, "Для создания заявки укажите страну получателя", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(recipientCityId)) {
-            Log.e(TAG, "sendInvoice(): recipientCity is empty");
-            Toast.makeText(context, "Для создания заявки укажите город получателя", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (TextUtils.isEmpty(recipientAddress)) {
             Log.e(TAG, "sendInvoice(): recipientAddress is empty");
             Toast.makeText(context, "Для создания заявки укажите адрес получателя", Toast.LENGTH_SHORT).show();
@@ -2313,11 +2173,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
 
         //payer data
-        if (TextUtils.isEmpty(payerEmail)) {
-            Log.e(TAG, "sendInvoice(): payerEmail is empty");
-            Toast.makeText(context, "Для создания заявки укажите email плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (TextUtils.isEmpty(payerFirstName)) {
             Log.e(TAG, "sendInvoice(): payerFirstName is empty");
             Toast.makeText(context, "Для создания заявки укажите имя плательщика", Toast.LENGTH_SHORT).show();
@@ -2336,11 +2191,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         if (TextUtils.isEmpty(payerCountryId)) {
             Log.e(TAG, "sendInvoice(): payerCountry is empty");
             Toast.makeText(context, "Для создания заявки укажите страну плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(payerCityId)) {
-            Log.e(TAG, "sendInvoice(): payerCity is empty");
-            Toast.makeText(context, "Для создания заявки укажите город плательщика", Toast.LENGTH_SHORT).show();
             return;
         }
         if (TextUtils.isEmpty(payerAddress)) {
@@ -2372,10 +2222,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         else {
             payerType = 1;
         }
-        if (consignmentList.isEmpty()) {
-            Toast.makeText(context, "Для создания заявки добавьте хотя бы 1 груз", Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (!firstProviderRadioBtn.isChecked() && !secondProviderRadioBtn.isChecked()) {
             Toast.makeText(context, "Для создания заявки выберите поставщика услуг", Toast.LENGTH_SHORT).show();
             return;
@@ -2396,6 +2242,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
         if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
             deliveryType = 2;
+        }
+        if (consignmentList.isEmpty()) {
+            Toast.makeText(context, "Для создания заявки добавьте хотя бы 1 груз", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        for (int i = 0; i < consignmentList.size(); i++) {
+            if (TextUtils.isEmpty(consignmentList.get(i).getQr())) {
+                Toast.makeText(context, "Отсканируйте QR для " + i + " груза", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         if (paymentMethodRadioGroup.getCheckedRadioButtonId() != cashRadioBtn.getId()
                 && paymentMethodRadioGroup.getCheckedRadioButtonId() != terminalRadioBtn.getId()
@@ -2497,7 +2353,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerFedexTax,
                 payerCompany,
                 payerType,
-                !TextUtils.isEmpty(payerDiscount) ? Double.parseDouble(payerDiscount) : -1,
+                !TextUtils.isEmpty(discount) ? Double.parseDouble(discount) : -1,
                 payerInn,
                 checkingAccount,
                 bank,
@@ -2558,7 +2414,14 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             return;
         }
         consignmentList.remove(position);
-        calculatorAdapter.notifyDataSetChanged();
+        consignmentAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onScanItemClicked(int position) {
+        final Intent scanQrIntent = new Intent(context, ScanQrActivity.class);
+        scanQrIntent.putExtra(Constants.KEY_QR_POSITION, position);
+        startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_CARGO);
     }
 
     @Override
@@ -2566,17 +2429,14 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == IntentConstants.REQUEST_SCAN_QR_CARGO) {
-            if (resultCode == Activity.RESULT_CANCELED) {
-                cargoQrEditText.setBackgroundResource(R.drawable.edit_text_locked);
-                cargoResultImageView.setImageResource(R.drawable.ic_image_red);
-                cargoResultImageView.setVisibility(View.VISIBLE);
-                return;
-            }
             if (resultCode == Activity.RESULT_OK && data != null) {
-                cargoQrEditText.setText(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
-                cargoQrEditText.setBackgroundResource(R.drawable.edit_text_active);
-                cargoResultImageView.setImageResource(R.drawable.ic_image_green);
-                cargoResultImageView.setVisibility(View.VISIBLE);
+                final String qr = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+                final int position = data.getIntExtra(Constants.KEY_QR_POSITION, -1);
+
+                if (position >= 0) {
+                    consignmentList.get(position).setQr(qr);
+                    consignmentAdapter.notifyItemChanged(position);
+                }
             }
             return;
         }
@@ -2613,11 +2473,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             if (!TextUtils.isEmpty(sender.getSignatureUrl())) {
                 senderSignatureEditText.setText(sender.getSignatureUrl());
                 senderSignatureEditText.setBackgroundResource(R.drawable.edit_text_active);
-                senderSignatureResultImageView.setBackgroundResource(R.drawable.ic_image_green);
+                senderSignatureResultImageView.setImageResource(R.drawable.ic_image_green);
             }
             else {
                 senderSignatureEditText.setBackgroundResource(R.drawable.edit_text_locked);
-                senderSignatureResultImageView.setBackgroundResource(R.drawable.ic_image_red);
+                senderSignatureResultImageView.setImageResource(R.drawable.ic_image_red);
             }
             senderSignatureResultImageView.setVisibility(View.VISIBLE);
 
@@ -2693,9 +2553,23 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 senderFedexEditText.setText(null);
                 senderFedexEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
+            if (sender.getDiscount() > 0) {
+                discountEditText.setText(String.valueOf(sender.getDiscount()));
+                discountEditText.setBackgroundResource(R.drawable.edit_text_active);
+                discount = sender.getDiscount();
+            }
+            else {
+                discountEditText.setText(null);
+                discountEditText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
             if (sender.getCountryId() != null) {
                 senderCountryId = sender.getCountryId();
-                senderCountrySpinner.setSelection((int) senderCountryId);
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == senderCountryId) {
+                        senderCountrySpinner.setSelection(i);
+                        break;
+                    }
+                }
             }
             if (sender.getCityId() != null) {
                 senderCityId = sender.getCityId();
@@ -2795,7 +2669,12 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (recipient.getCountryId() != null) {
                 recipientCountryId = recipient.getCountryId();
-                recipientCountrySpinner.setSelection((int) recipientCountryId);
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == recipientCountryId) {
+                        recipientCountrySpinner.setSelection(i);
+                        break;
+                    }
+                }
             }
             if (recipient.getCityId() != null) {
                 recipientCityId = recipient.getCityId();
@@ -2943,8 +2822,12 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (payer.getCountryId() != null) {
                 payerCountryId = payer.getCountryId();
-                payerCountrySpinner.setSelection((int) payerCountryId);
-
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == payerCountryId) {
+                        payerCountrySpinner.setSelection(i);
+                        break;
+                    }
+                }
             }
             if (payer.getCityId() != null) {
                 payerCityId = payer.getCityId();
@@ -2958,7 +2841,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         tariffPriceRadioAdapter.notifyDataSetChanged();
     }
 
-    public void setCountryList(final List<Country> countryList) {
+    private void setCountryList(final List<Country> countryList) {
         if (countryList != null) {
             countryArrayAdapter.clear();
             this.countryList = countryList;
@@ -2967,34 +2850,49 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (isSenderCountryInitialPick) {
                 isSenderCountryInitialPick = false;
-                senderCountrySpinner.setSelection(191);
+                senderCountrySpinner.setSelection(208);
             }
             else if (senderCountryId >= 0) {
-                senderCountrySpinner.setSelection((int) senderCountryId);
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == senderCountryId) {
+                        senderCountrySpinner.setSelection(i);
+                        break;
+                    }
+                }
             }
             senderCountryIsSet = true;
 
             if (isRecipientCountryInitialPick) {
                 isRecipientCountryInitialPick = false;
-                recipientCountrySpinner.setSelection(191);
+                recipientCountrySpinner.setSelection(208);
             }
             else if (recipientCountryId >= 0) {
-                recipientCountrySpinner.setSelection((int) recipientCountryId);
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == recipientCountryId) {
+                        recipientCountrySpinner.setSelection(i);
+                        break;
+                    }
+                }
             }
             recipientCountryIsSet = true;
 
             if (isPayerCountryInitialPick) {
                 isPayerCountryInitialPick = false;
-                payerCountrySpinner.setSelection(191);
+                payerCountrySpinner.setSelection(208);
             }
             else if (payerCountryId >= 0) {
-                payerCountrySpinner.setSelection((int) payerCountryId);
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == payerCountryId) {
+                        payerCountrySpinner.setSelection(i);
+                        break;
+                    }
+                }
             }
             payerCountryIsSet = true;
         }
     }
 
-    public void setSenderCityList(final List<City> senderCityList) {
+    private void setSenderCityList(final List<City> senderCityList) {
         if (senderCityList != null) {
             senderCityArrayAdapter.clear();
             this.senderCityList = senderCityList;
@@ -3007,7 +2905,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (isSenderCityInitialPick) {
                 isSenderCityInitialPick = false;
-                senderCitySpinner.setSelection(88);
+                senderCitySpinner.setSelection(85);
                 return;
             }
             if (senderCityId >= 0) {
@@ -3021,7 +2919,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
     }
 
-    public void setRecipientCityList(final List<City> recipientCityList) {
+    private void setRecipientCityList(final List<City> recipientCityList) {
         if (recipientCityList != null) {
             recipientCityArrayAdapter.clear();
             this.recipientCityList = recipientCityList;
@@ -3034,7 +2932,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (isRecipientCityInitialPick) {
                 isRecipientCityInitialPick = false;
-                recipientCitySpinner.setSelection(88);
+                recipientCitySpinner.setSelection(85);
                 return;
             }
             if (recipientCityId >= 0) {
@@ -3048,7 +2946,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
     }
 
-    public void setPayerCityList(final List<City> payerCityList) {
+    private void setPayerCityList(final List<City> payerCityList) {
         if (payerCityList != null) {
             payerCityArrayAdapter.clear();
             this.payerCityList = payerCityList;
@@ -3061,7 +2959,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (isPayerCityInitialPick) {
                 isPayerCityInitialPick = false;
-                payerCitySpinner.setSelection(88);
+                payerCitySpinner.setSelection(85);
                 return;
             }
             if (payerCityId >= 0) {

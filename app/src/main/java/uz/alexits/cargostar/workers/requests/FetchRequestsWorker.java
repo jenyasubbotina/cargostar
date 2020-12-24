@@ -24,13 +24,15 @@ public class FetchRequestsWorker extends Worker {
     private String login;
     private String password;
     private final String token;
+    private final long lastId;
 
     public FetchRequestsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
-        this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
-        this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+        this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
+        this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
+        this.lastId = getInputData().getLong(Constants.LAST_REQUEST_ID, 0L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
@@ -43,15 +45,27 @@ public class FetchRequestsWorker extends Worker {
     public ListenableWorker.Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<Request>> response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(perPage);
+            Response<List<Request>> response = null;
+
+            if (lastId > 0) {
+                response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(perPage, lastId);
+            }
+            else {
+                response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(perPage);
+            }
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllRequests(): response=" + response.body());
                     final List<Request> publicRequestList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).requestDao().dropAndInsertRequestList(publicRequestList);
-
+                    if (publicRequestList != null) {
+//                        for (final Request request : publicRequestList) {
+//                            Log.i(TAG, "-> " + request);
+//                            LocalCache.getInstance(getApplicationContext()).requestDao().insertRequest(request);
+//                        }
+                        LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+                    }
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)
@@ -62,12 +76,12 @@ public class FetchRequestsWorker extends Worker {
                 }
             }
             else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
+                Log.e(TAG, "fetchRequests(): " + response.errorBody());
             }
             return ListenableWorker.Result.failure();
         }
         catch (IOException e) {
-            Log.e(TAG, "doWork(): ", e);
+            Log.e(TAG, "fetchRequests(): ", e);
             return ListenableWorker.Result.failure();
         }
     }

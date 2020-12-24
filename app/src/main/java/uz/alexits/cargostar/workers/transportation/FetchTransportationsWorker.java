@@ -22,13 +22,15 @@ public class FetchTransportationsWorker extends Worker {
     private String login;
     private String password;
     private final String token;
+    private final long lastId;
 
     public FetchTransportationsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
-        this.login = SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN);
-        this.password = SharedPrefs.getInstance(context).getString(SharedPrefs.PASSWORD_HASH);
+        this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
+        this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
+        this.lastId = getInputData().getLong(Constants.LAST_TRANSPORTATION_ID, -1L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
@@ -41,7 +43,15 @@ public class FetchTransportationsWorker extends Worker {
     public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<Transportation>> response = RetrofitClient.getInstance(getApplicationContext()).getCurrentTransportations(perPage);
+
+            Response<List<Transportation>> response = null;
+
+            if (lastId > 0) {
+                response = RetrofitClient.getInstance(getApplicationContext()).getCurrentTransportations(perPage, lastId);
+            }
+            else {
+                response = RetrofitClient.getInstance(getApplicationContext()).getCurrentTransportations(perPage);
+            }
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

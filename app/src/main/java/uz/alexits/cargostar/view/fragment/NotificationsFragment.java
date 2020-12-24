@@ -141,7 +141,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         notificationsViewModel = new ViewModelProvider(this).get(NotificationsViewModel.class);
 
-        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));

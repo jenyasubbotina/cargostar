@@ -25,6 +25,7 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class InitializationActivity extends AppCompatActivity {
@@ -41,9 +42,9 @@ public class InitializationActivity extends AppCompatActivity {
         obtainFcmToken(this);
 
         if (SharedPrefs.getInstance(this).getBoolean(SharedPrefs.KEEP_LOGGED) &&
-                SharedPrefs.getInstance(this).getString(SharedPrefs.LOGIN) != null &&
-                SharedPrefs.getInstance(this).getString(SharedPrefs.PASSWORD_HASH) != null &&
-                SharedPrefs.getInstance(this).getString(SharedPrefs.TOKEN) != null) {
+                SharedPrefs.getInstance(this).getString(Constants.KEY_LOGIN) != null &&
+                SharedPrefs.getInstance(this).getString(Constants.KEY_PASSWORD) != null &&
+                SharedPrefs.getInstance(this).getString(Constants.KEY_TOKEN) != null) {
             startActivity(new Intent(this, MainActivity.class));
         }
         else {
@@ -62,7 +63,7 @@ public class InitializationActivity extends AppCompatActivity {
 
             Log.i(TAG, "obtainFcmToken(): " + token);
 
-            SharedPrefs.getInstance(context).putString(SharedPrefs.TOKEN, token);
+            SharedPrefs.getInstance(context).putString(Constants.KEY_TOKEN, token);
         });
     }
 

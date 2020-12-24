@@ -10,7 +10,6 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
@@ -50,13 +49,14 @@ import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.transportation.Consignment;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.Regex;
+import uz.alexits.cargostar.view.adapter.CalculatorAdapter;
 import uz.alexits.cargostar.view.adapter.TariffPriceAdapter;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.adapter.CalculatorAdapter;
+import uz.alexits.cargostar.view.adapter.ConsignmentAdapter;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
@@ -655,7 +655,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         //header view model
         final CourierViewModel courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
 
-        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(SharedPrefs.LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
@@ -745,8 +745,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
 
                 if (countryFirstRun) {
                     countryFirstRun = false;
-                    srcCountrySpinner.post(() -> srcCountrySpinner.setSelection(191, false));
-                    destCountrySpinner.post(() -> destCountrySpinner.setSelection(191, false));
+                    srcCountrySpinner.post(() -> srcCountrySpinner.setSelection(208, false));
+                    destCountrySpinner.post(() -> destCountrySpinner.setSelection(208, false));
                 }
             }
         });
@@ -875,6 +875,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         }
         consignmentList.remove(position);
         calculatorAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onScanItemClicked(int position) {
+        //do nothing
     }
 
     @Override

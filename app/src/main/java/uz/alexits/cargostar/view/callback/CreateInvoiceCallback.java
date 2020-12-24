@@ -13,6 +13,9 @@ import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 
 public interface CreateInvoiceCallback {
+    void onDeleteItemClicked(final int position);
+    void onScanItemClicked(final int position);
+
     void onSenderSignatureClicked();
     void onRecipientSignatureClicked();
     void afterFirstEditTextChanged(final int position, final CharSequence text);
@@ -21,9 +24,8 @@ public interface CreateInvoiceCallback {
     void onFirstSpinnerItemSelected(final int position, final Region region);
     void onSecondSpinnerItemSelected(final int position, final City city);
     void onBigSpinnerItemSelected(final int position, final Object entry);
-    void onDeleteItemClicked(final int position);
-
     void bindEditTextSpinner(final int position, final EditText editText);
     void bindEditTextImageView(final int position, final EditText firstEditText, final EditText secondEditText);
     void bindTwoEditTexts(final int position, final EditText firstEditText, final EditText secondEditText);
+
 }

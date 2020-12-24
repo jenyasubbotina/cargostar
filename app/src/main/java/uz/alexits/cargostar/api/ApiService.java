@@ -30,6 +30,7 @@ import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.model.calculation.Provider;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -79,6 +80,58 @@ public interface ApiService {
     @GET("setting")
     Call<Vat> getVat();
 
+    /* Providers / packaging */
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("provider")
+    Call<List<Provider>> getProviders();
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("packaging-type")
+    Call<List<PackagingType>> getPackagingTypes();
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("packaging")
+    Call<List<Packaging>> getPackaging();
+
+    /* Courier */
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @POST("employee/auth")
+    Call<Courier> signIn(@Body SignInParams signInParams);
+
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @PUT("employee/update")
+    Call<Courier> updateCourierData(@Query("id") final long courierId, @Body UpdateCourierParams updatedCourierParams);
+
+    /* Client */
+    @Headers("Content-type: application/json; charset=utf-8;")
+    @POST("client/create-client")
+    Call<Customer> createClient(@Body CreateClientParams createClientParams);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("client/view")
+    Call<Customer> getClient(@Query("id") final long clientId);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("client/new")
+    Call<List<Customer>> getClients(@Query("per-page") final int perPage, @Query("id") final long lastId);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("client")
+    Call<List<Customer>> getClients(@Query("per-page") final int perPage);
+
+    /* Address Book */
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("address-book/view")
+    Call<AddressBook> getAddressBookData(@Query("id") final long recipientPayerId);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("address-book")
+    Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("address-book/new")
+    Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage, @Query("id") final long lastId);
+
     /* Requests */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request")
@@ -96,36 +149,9 @@ public interface ApiService {
     @PUT("request/update")
     Call<Request> bindRequest(@Query("id") final long requestId, @Body BindRequestParams bindRequestParams);
 
-    /* Providers / packaging */
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("provider")
-    Call<List<Provider>> getProviders();
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("packaging-type")
-    Call<List<PackagingType>> getPackagingTypes();
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("packaging")
-    Call<List<Packaging>> getPackaging();
-
-    /* Client */
     @Headers("Content-type: application/json; charset=utf-8;")
-    @POST("client/create-client")
-    Call<Customer> createClient(@Body CreateClientParams createClientParams);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("client/view")
-    Call<Customer> getClient(@Query("id") final long clientId);
-
-    /* Courier */
-    @Headers("Content-type: application/json; charset=utf-8;")
-    @POST("employee/auth")
-    Call<Courier> signIn(@Body SignInParams signInParams);
-
-    @Headers("Content-type: application/json; charset=utf-8;")
-    @PUT("employee/update")
-    Call<Courier> updateCourierData(@Query("id") final long courierId, @Body UpdateCourierParams updatedCourierParams);
+    @GET("request/view")
+    Call<Request> getRequest(@Query("id") final long requestId);
 
     /* Invoice */
     @Headers("Content-type: application/json; charset=utf-8;")
@@ -144,20 +170,11 @@ public interface ApiService {
     @GET("invoice/new")
     Call<List<Invoice>> getInvoiceList(@Query("per-page") final int perPage, @Query("id") final long lastId);
 
-    /* Address Book */
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("address-book/view")
-    Call<AddressBook> getAddressBookData(@Query("id") final long recipientPayerId);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("address-book")
-    Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("address-book/new")
-    Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage, @Query("id") final long lastId);
-
     /* Transportation */
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("transportation/view")
+    Call<Transportation> getTransportation(@Query("id") final long transportationId);
+
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation")
     Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage);
@@ -199,6 +216,10 @@ public interface ApiService {
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("consignment/invoice")
     Call<List<Consignment>> getCargoListByInvoiceId(@Query("id") final Long invoiceId);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("request/partial")
+    Call<List<Consignment>> getCargoListByRequestId(@Query("id") final Long requestId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("client")

@@ -9,17 +9,23 @@ import android.util.Log;
 import android.widget.Toast;
 
 import uz.alexits.cargostar.R;
+import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.IntentConstants;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 public class ScanQrActivity extends AppCompatActivity {
     private int resultValue;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_qr);
+
+        if (getIntent() != null) {
+            this.position = getIntent().getIntExtra(Constants.KEY_QR_POSITION, -1);
+        }
 
         final IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setPrompt("Отсканируйте QR-код");
@@ -39,12 +45,14 @@ public class ScanQrActivity extends AppCompatActivity {
             else {
                 if (data != null) {
                     final String scannedData = data.getStringExtra("SCAN_RESULT");
+
                     if (scannedData != null) {
-                        Log.i(TAG, "scanResult: " + scannedData);
+                        Log.i(TAG, "scanResult=" + scannedData + " position=" + position);
 
                         final Intent resultIntent = new Intent();
 
                         resultIntent.putExtra(IntentConstants.INTENT_RESULT_VALUE, scannedData);
+                        resultIntent.putExtra(Constants.KEY_QR_POSITION, position);
                         setResult(RESULT_OK, resultIntent);
                         finish();
                     }

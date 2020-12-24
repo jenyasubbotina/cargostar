@@ -5,6 +5,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Headers;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.api.params.BindRequestParams;
@@ -114,13 +118,21 @@ public class RetrofitClient {
         return apiService.getAddressBook(perPage).execute();
     }
 
+    public Response<List<AddressBook>> getAddressBook(final int perPage, final long lastId) throws IOException {
+        return apiService.getAddressBook(perPage, lastId).execute();
+    }
+
     /*Requests requests */
     public Response<List<Request>> getPublicRequests(final int perPage) throws IOException {
         return apiService.getPublicRequests(perPage).execute();
     }
 
-    public Response<List<Request>> getMyRequests(final int perPage, final long courierId) throws IOException {
-        return apiService.getMyRequests(perPage, courierId).execute();
+    public Response<List<Request>> getPublicRequests(final int perPage, final long lastId) throws IOException {
+        return apiService.getPublicRequests(perPage, lastId).execute();
+    }
+
+    public Response<Request> getRequest(final long requestId) throws IOException {
+        return apiService.getRequest(requestId).execute();
     }
 
     /* Provider / packaging for calculations */
@@ -209,8 +221,16 @@ public class RetrofitClient {
         return apiService.createClient(clientParams).execute();
     }
 
-    public Response<Customer> getCustomer(final long clientId) throws IOException {
+    public Response<Customer> getClient(final long clientId) throws IOException {
         return apiService.getClient(clientId).execute();
+    }
+
+    public Response<List<Customer>> getClients(final int perPage) throws IOException {
+        return apiService.getClients(perPage).execute();
+    }
+
+    public Response<List<Customer>> getClients(final int perPage, final long lastId) throws IOException {
+        return apiService.getClients(perPage, lastId).execute();
     }
 
     /* Courier */
@@ -253,13 +273,25 @@ public class RetrofitClient {
         return apiService.getInvoiceList(perPage).execute();
     }
 
+    public Response<List<Invoice>> getInvoiceList(final int perPage, final long lastId) throws IOException {
+        return apiService.getInvoiceList(perPage, lastId).execute();
+    }
+
     public Response<RecipientSignatureParams> sendRecipientSignature(final long invoiceId, final String recipientSignature) throws IOException {
         return apiService.sendRecipientSignature(new RecipientSignatureParams(invoiceId, recipientSignature)).execute();
     }
 
     /* Transportation */
+    public Response<Transportation> getTransportation(final long transportationId) throws IOException {
+        return apiService.getTransportation(transportationId).execute();
+    }
+
     public Response<List<Transportation>> getCurrentTransportations(final int perPage) throws IOException {
         return apiService.getCurrentTransportations(perPage).execute();
+    }
+
+    public Response<List<Transportation>> getCurrentTransportations(final int perPage, final long lastId) throws IOException {
+        return apiService.getCurrentTransportations(perPage, lastId).execute();
     }
 
     public Response<List<TransportationStatus>> getTransportationStatusList(final int perPage) throws IOException {
@@ -291,6 +323,9 @@ public class RetrofitClient {
         return apiService.getCargoListByInvoiceId(invoiceId).execute();
     }
 
+    public Response<List<Consignment>> getCargoListByRequestId(@Query("id") final Long requestId) throws IOException {
+        return apiService.getCargoListByRequestId(requestId).execute();
+    }
 
     private static final String TAG = RetrofitClient.class.toString();
 

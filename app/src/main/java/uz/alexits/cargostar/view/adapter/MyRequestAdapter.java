@@ -50,11 +50,12 @@ public class MyRequestAdapter extends RecyclerView.Adapter<MyRequestViewHolder> 
 
             holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
 
-//            if (currentRequest.isNew()) {
-//                holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
-//            }
-//            else {
-//            }
+            if (currentRequest.isNew()) {
+                holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
+            }
+            else {
+                holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
+            }
             if (currentRequest.getPaymentStatus() != null && currentRequest.getPaymentStatus().equalsIgnoreCase("succeeded")) {
                 holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_green);
             }

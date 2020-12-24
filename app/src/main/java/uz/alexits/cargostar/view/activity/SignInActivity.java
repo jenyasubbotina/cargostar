@@ -62,7 +62,7 @@ public class SignInActivity extends AppCompatActivity {
                 return;
             }
 
-            final String token = SharedPrefs.getInstance(this).getString(SharedPrefs.TOKEN);
+            final String token = SharedPrefs.getInstance(this).getString(Constants.KEY_TOKEN);
 
             if (TextUtils.isEmpty(token)) {
                 Log.e(TAG, "onCreate(): empty token");
@@ -88,9 +88,9 @@ public class SignInActivity extends AppCompatActivity {
                         return;
                     }
                     SharedPrefs.getInstance(this).putBoolean(SharedPrefs.KEEP_LOGGED, keepLoggingCheckBox.isChecked());
-                    SharedPrefs.getInstance(this).putString(SharedPrefs.LOGIN, login);
-                    SharedPrefs.getInstance(this).putString(SharedPrefs.PASSWORD_HASH, password);
-                    SharedPrefs.getInstance(this).putString(SharedPrefs.TOKEN, token);
+                    SharedPrefs.getInstance(this).putString(Constants.KEY_LOGIN, login);
+                    SharedPrefs.getInstance(this).putString(Constants.KEY_PASSWORD, password);
+                    SharedPrefs.getInstance(this).putString(Constants.KEY_TOKEN, token);
                     SharedPrefs.getInstance(this).putLong(SharedPrefs.ID, courierId);
                     SharedPrefs.getInstance(this).putLong(SharedPrefs.BRANCH_ID, brancheId);
 

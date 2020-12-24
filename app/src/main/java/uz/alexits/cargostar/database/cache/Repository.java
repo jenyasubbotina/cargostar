@@ -64,9 +64,6 @@ public class Repository {
     private final LiveData<List<Packaging>> packagingList;
     private final LiveData<List<PackagingType>> packagingTypeList;
 
-    /*shipping data*/
-    private LiveData<List<Request>> requestList;
-
     private Repository(final Application application) {
         final LocalCache localCache = LocalCache.getInstance(application);
         this.locationDao = localCache.locationDao();
@@ -87,7 +84,6 @@ public class Repository {
         this.packagingList = packagingDao.selectAllPackaging();
         this.packagingTypeList = packagingDao.selectAllPackagingTypes();
         /* shipping data */
-        this.requestList = requestDao.selectPublicRequests();
     }
 
     public static Repository getInstance(final Application application) {
@@ -295,6 +291,10 @@ public class Repository {
     }
 
     public LiveData<List<Request>> selectAllRequests() {
+        return requestDao.selectAllRequests();
+    }
+
+    public LiveData<List<Request>> selectPublicRequests() {
         return requestDao.selectPublicRequests();
     }
 

@@ -270,7 +270,21 @@
                 android:fontFamily="@font/geometria_medium"
                 android:layout_marginTop="14dp"
                 android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/app_version_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginBottom="4dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/app_version"
+                android:textStyle="italic"
+                android:textColor="#AFAFAF"
+                android:fontFamily="@font/geometria_light"
+                android:textSize="12sp"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
