@@ -98,7 +98,6 @@ public class CalculatorViewModel extends AndroidViewModel {
 
     public void setCountryIdProviderId(final Long countryId, final Long providerId) {
         this.countryIdProviderId.setValue(new CountryIdProviderId(countryId, providerId));
-        Log.i(TAG, "countryId=" + countryId + " providerId=" + providerId);
     }
 
     public void setZoneIds(final List<Long> zoneIds) {

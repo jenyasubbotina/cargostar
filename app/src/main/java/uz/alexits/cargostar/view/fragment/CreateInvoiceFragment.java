@@ -485,12 +485,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             payerRegistrationCode = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerRegistrationCode();
             payerMfo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerMfo();
             payerOked = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerOked();
-
-            Log.i(TAG, "senderCityId=" + senderCityId +
-                    " payerCountryId=" + payerCountryId +
-                    " payerCityId=" + payerCityId +
-                    " discount=" + discount);
-
             consignmentQuantity = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
 
             if (consignmentQuantity > 0) {

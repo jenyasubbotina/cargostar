@@ -115,11 +115,14 @@ public class CreateUserFragment extends Fragment {
 
     private ProgressBar progressBar;
 
+    private static volatile boolean countryIsSet;
+    private static volatile boolean countryInitialPick;
+    private static volatile boolean cityInitialPick;
+
+
     //ViewModel
     private CourierViewModel courierViewModel;
-    private CustomerViewModel customerViewModel;
     private LocationDataViewModel locationDataViewModel;
-    private RequestsViewModel requestsViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,6 +130,10 @@ public class CreateUserFragment extends Fragment {
 
         this.context = getContext();
         this.activity = getActivity();
+
+        countryIsSet = false;
+        countryInitialPick = true;
+        cityInitialPick = true;
     }
 
     @Nullable
@@ -406,6 +413,7 @@ public class CreateUserFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 final TextView itemTextView = (TextView) view;
                 final Country selectedCountry = (Country) parent.getSelectedItem();
+                locationDataViewModel.setCountryId(selectedCountry.getId());
 
                 if (itemTextView != null) {
                     if (position < parent.getCount()) {
@@ -413,7 +421,6 @@ public class CreateUserFragment extends Fragment {
                         countryField.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
-                final int selectedPosition = countrySpinner.getSelectedItemPosition();
             }
 
             @Override
@@ -691,9 +698,7 @@ public class CreateUserFragment extends Fragment {
 
         //header view model
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
-        customerViewModel = new ViewModelProvider(this).get(CustomerViewModel.class);
         locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
-        requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
 
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
@@ -701,11 +706,13 @@ public class CreateUserFragment extends Fragment {
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
             }
         });
+
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
             }
         });
+
         courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
@@ -714,17 +721,35 @@ public class CreateUserFragment extends Fragment {
 
         //location data view model
         locationDataViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
-            for (final Country country : countryList) {
-                countryArrayAdapter.add(country);
+            if (countryList != null) {
+                countryArrayAdapter.clear();
+
+                for (final Country country : countryList) {
+                    countryArrayAdapter.add(country);
+                }
+                if (countryInitialPick) {
+                    countryInitialPick = false;
+                    countrySpinner.setSelection(208);
+                }
+                countryIsSet = true;
             }
-            countryArrayAdapter.notifyDataSetChanged();
         });
 
         locationDataViewModel.getCityList().observe(getViewLifecycleOwner(), cityList -> {
-            for (final City city : cityList) {
-                cityArrayAdapter.add(city);
+            if (cityList != null) {
+                cityArrayAdapter.clear();
+
+                for (final City city : cityList) {
+                    cityArrayAdapter.add(city);
+                }
+                if (!countryIsSet) {
+                    return;
+                }
+                if (cityInitialPick) {
+                    cityInitialPick = false;
+                    citySpinner.setSelection(85);
+                }
             }
-            cityArrayAdapter.notifyDataSetChanged();
         });
     }
 
@@ -746,27 +771,6 @@ public class CreateUserFragment extends Fragment {
                 signatureEditText.setText(signatureFilePath);
             }
         }
-    }
-    private void populateRegionAdapter(final ArrayAdapter<Region> arrayAdapter, final long countryId) {
-        arrayAdapter.clear();
-
-        locationDataViewModel.getRegionsByCountryId(countryId).observe(this, regionList -> {
-            for (final Region region : regionList) {
-                arrayAdapter.add(region);
-            }
-            arrayAdapter.notifyDataSetChanged();
-        });
-    }
-
-    private void populateCityAdapter(final ArrayAdapter<City> arrayAdapter, final long regionId) {
-        arrayAdapter.clear();
-
-        locationDataViewModel.getCitiesByRegionId(regionId).observe(this, cityList -> {
-            for (final City city : cityList) {
-                arrayAdapter.add(city);
-            }
-            arrayAdapter.notifyDataSetChanged();
-        });
     }
 
     private static final String TAG = CreateUserFragment.class.toString();

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.model.location.Branche;
@@ -20,32 +21,29 @@ public class LocationDataViewModel extends AndroidViewModel {
     private final Repository repository;
 
     private final LiveData<List<Country>> countryList;
-    private final LiveData<List<Region>> regionList;
-    private final LiveData<List<City>> cityList;
-
     private final LiveData<List<Branche>> brancheList;
     private final LiveData<List<TransitPoint>> transitPointList;
+    private final MutableLiveData<Long> countryId;
 
     public LocationDataViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
         this.countryList = repository.selectAllCountries();
-        this.regionList = repository.selectAllRegions();
-        this.cityList = repository.selectAllCities();
         this.brancheList = repository.selectAllBranches();
         this.transitPointList = repository.selectAllTransitPoints();
+        this.countryId = new MutableLiveData<>();
     }
 
     public LiveData<List<Country>> getCountryList() {
         return countryList;
     }
 
-    public LiveData<List<Region>> getRegionList() {
-        return regionList;
+    public void setCountryId(final long countryId) {
+        this.countryId.setValue(countryId);
     }
 
     public LiveData<List<City>> getCityList() {
-        return cityList;
+        return Transformations.switchMap(countryId, repository::selectCitiesByCountryId);
     }
 
     public LiveData<List<TransitPoint>> getTransitPointList() {

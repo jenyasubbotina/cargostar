@@ -80,10 +80,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
     private InvoiceData transportationDataHeading;
     private final List<InvoiceData> transportationDataList = new ArrayList<>();
 
-    private boolean documentsDataHidden = false;
-    private InvoiceData documentsDataHeading;
-    private final List<InvoiceData> documentsDataList = new ArrayList<>();
-
     private boolean forEachCargoHidden = false;
     private InvoiceData forEachCargoHeading;
     private final List<InvoiceData> forEachCargoList = new ArrayList<>();
@@ -751,7 +747,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         requestsViewModel.getConsignmentList().observe(getViewLifecycleOwner(), consignmentList -> {
             //for each cargo
             int i = 0;
-            int j = 81;
+            int j = 73;
 
             if (consignmentQuantity > 0 && !consignmentListSet) {
                 for (final Consignment consignment : consignmentList) {
@@ -882,7 +878,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         transportationDataHeading = new InvoiceData(getString(R.string.parcel_data), null, InvoiceData.TYPE_HEADING);
         forEachCargoHeading = new InvoiceData(getString(R.string.for_each_cargo), null, InvoiceData.TYPE_HEADING);
         paymentDataHeading = new InvoiceData(getString(R.string.payment_data), null, InvoiceData.TYPE_HEADING);
-        documentsDataHeading = new InvoiceData(getString(R.string.additional_documents), null, InvoiceData.TYPE_HEADING);
 
         //public data
         itemList.add(publicDataHeading);
@@ -1042,24 +1037,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         transportationDataList.add(new InvoiceData(getString(R.string.arrival_date), null, InvoiceData.TYPE_ITEM));
         transportationDataList.add(new InvoiceData(getString(R.string.courier_guidelines), null, InvoiceData.TYPE_ITEM));
 
-        //documents data
-        itemList.add(documentsDataHeading);
-        itemList.add(new InvoiceData(getString(R.string.e_bid), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.e_waybill), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.payer_guarantee_letter), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.pay_bill), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.invoice_document), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.invoice), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(null, null, InvoiceData.TYPE_STROKE));
-
-        //documents data
-        documentsDataList.add(new InvoiceData(getString(R.string.e_bid), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        documentsDataList.add(new InvoiceData(getString(R.string.e_waybill), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        documentsDataList.add(new InvoiceData(getString(R.string.payer_guarantee_letter), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        documentsDataList.add(new InvoiceData(getString(R.string.pay_bill), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        documentsDataList.add(new InvoiceData(getString(R.string.invoice_document), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-        documentsDataList.add(new InvoiceData(getString(R.string.invoice), getString(R.string.absent), InvoiceData.TYPE_ITEM));
-
         //consignment
         itemList.add(forEachCargoHeading);
 
@@ -1167,17 +1144,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 }
             }
             transportationDataHidden = !transportationDataHidden;
-        }
-        else if (currentItem.equals(documentsDataHeading)) {
-            if (documentsDataHidden) {
-                itemList.addAll(position + 1, documentsDataList);
-            }
-            else {
-                for (int i = 0; i < 6; i++) {
-                    itemList.remove(position + 1);
-                }
-            }
-            documentsDataHidden = !documentsDataHidden;
         }
 //        else if (currentItem.equals(forEachCargoHeading)) {
 //            if (!consignmentListSet) {
