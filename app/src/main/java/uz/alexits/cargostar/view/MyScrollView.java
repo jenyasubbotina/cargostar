@@ -27,25 +27,21 @@ public class MyScrollView extends NestedScrollView {
 
     @Override
     protected boolean onRequestFocusInDescendants(int direction, Rect previouslyFocusedRect) {
-        Log.i(TAG, "onRequestFocusInDescendants(): ");
         return false;
     }
 
     @Override
     protected int computeScrollDeltaToGetChildRectOnScreen(Rect rect) {
-        Log.i(TAG, "computeScrollDeltaToGetChildRectOnScreen(): ");
         return 0;
     }
 
     @Override
     public boolean fullScroll(int direction) {
-        Log.i(TAG, "fullScroll(): ");
         return super.fullScroll(direction);
     }
 
     @Override
     public boolean pageScroll(int direction) {
-        Log.i(TAG, "pageScroll(): ");
         return super.pageScroll(direction);
     }
 

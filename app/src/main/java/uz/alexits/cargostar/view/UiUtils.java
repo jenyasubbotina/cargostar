@@ -18,7 +18,6 @@ import uz.alexits.cargostar.R;
 
 public class UiUtils {
     public static void onFocusChanged(final View v, final boolean hasFocus) {
-        Log.i(TAG, "onFocusChanged: editText " + hasFocus);
         if (hasFocus) {
             v.setBackgroundResource(R.drawable.edit_text_active);
             return;

@@ -82,9 +82,6 @@ public class FetchRequestDataWorker extends Worker {
                             .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, request.getConsignmentQuantity())
                             .putString(Constants.KEY_COMMENT, request.getComment())
                             .build();
-
-                    Log.i(TAG, "fetchRequestDataWorker(): count=" + request.getConsignmentQuantity());
-
                     return Result.success(outputData);
                 }
             }

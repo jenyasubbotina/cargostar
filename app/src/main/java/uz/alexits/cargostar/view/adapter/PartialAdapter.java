@@ -43,8 +43,6 @@ public class PartialAdapter extends RecyclerView.Adapter<PartialViewHolder> {
         final Transportation currentTransportation = transportationList.get(position);
 
         if (currentTransportation != null) {
-            Log.i(TAG, "onBindViewHolder(): " + currentTransportation);
-
             final String parcelIndex = (position + 1) + ".";
 
             holder.indexTextView.setText(parcelIndex);

@@ -115,34 +115,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 }
             }
             body = String.valueOf(request.getId());
-            SyncWorkRequest.createRequest(
-                    getApplicationContext(),
-                    request.getId(),
-                    request.getInvoiceId() != null ? request.getInvoiceId() : -1L,
-                    request.getSenderCountryId() != null ? request.getSenderCountryId() : -1L,
-                    request.getSenderRegionId() != null ? request.getSenderRegionId() : -1L,
-                    request.getSenderCityId() != null ? request.getSenderCityId() : -1L,
-                    request.getUserId() != null ? request.getUserId() : -1L,
-                    request.getClientId() != null ? request.getClientId() : -1L,
-                    request.getCourierId() != null ? request.getCourierId() : -1L,
-                    request.getProviderId() != null ? request.getProviderId() : -1L,
-                    request.getSenderFirstName(),
-                    request.getSenderMiddleName(),
-                    request.getSenderLastName(),
-                    request.getSenderEmail(),
-                    request.getSenderPhone(),
-                    request.getSenderAddress(),
-                    request.getRecipientCountryId() != null ? request.getRecipientCountryId() : -1L,
-                    request.getRecipientCityId() != null ? request.getRecipientCityId() : -1L,
-                    request.getComment(),
-                    request.getSenderCity(),
-                    request.getRecipientCity(),
-                    request.getConsignmentQuantity(),
-                    request.getPaymentStatus(),
-                    request.getDeliveryType(),
-                    request.getStatus(),
-                    new Date().getTime(),
-                    new Date().getTime());
+            SyncWorkRequest.fetchRequestData(getApplicationContext(), request.getId(), request.getConsignmentQuantity());
         }
         else if (type.equalsIgnoreCase(Constants.TYPE_TRANSPORTATION)) {
             final Transportation transportation = parseTransportation(dataPayload);
@@ -161,16 +134,6 @@ public class FcmMessagingService extends FirebaseMessagingService {
             }
             else if (type2.equalsIgnoreCase(Constants.SUBTYPE_STATUS_UPDATE)) {
                 Log.i(TAG, "onMessageReceived(): transportation status update");
-//                if (courierId != transportation.getCourierId()) {
-//                    try {
-//                        new Thread(() -> {
-//                            LocalCache.getInstance(getApplicationContext()).transportationDao().updateTransportation(transportation);
-//                        }).start();
-//                    }
-//                    catch (Exception e) {
-//                        Log.e(TAG, "updateTransportation(): ", e);
-//                    }
-//                }
             }
             body = String.valueOf(transportation.getId());
             link = IntentConstants.REQUEST_CURRENT_TRANSPORTATIONS;
@@ -190,11 +153,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         }
     }
 
-    public void showMessage(final String title,
-                            final String body,
-                            final String packageName,
-                            final String intentValue,
-                            final String link) {
+    public void showMessage(final String title, final String body, final String packageName, final String intentValue, final String link) {
         if (packageName != null && intentValue != null && link != null) {
             final Intent notifyIntent = new Intent();
             notifyIntent.setComponent(new ComponentName(packageName, packageName + intentValue));

@@ -48,7 +48,6 @@ public class TransportationPath extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        Log.i(TAG, "onDraw: " + aX + " " + aY + " " + bX);
         canvas.drawLine(aX, aY, bX, bY, mPaint);
     }
 

@@ -69,8 +69,6 @@ public class FetchConsignmentListByRequestIdWorker extends Worker {
         this.consignmentQuantity = getInputData().getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0);
         this.comment = getInputData().getString(Constants.KEY_COMMENT);
 
-        Log.i(TAG, "FetchConsignmentListByRequestIdWorker(): count=" + consignmentQuantity);
-
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
         this.senderSignature = getInputData().getString(Constants.KEY_SENDER_SIGNATURE);
         this.senderFirstName = getInputData().getString(Constants.KEY_SENDER_FIRST_NAME);
@@ -98,7 +96,7 @@ public class FetchConsignmentListByRequestIdWorker extends Worker {
         }
         if (consignmentQuantity <= 0) {
             Log.e(TAG, "fetchCargoList(): consignmentQuantity <= 0");
-            return ListenableWorker.Result.failure();
+            return ListenableWorker.Result.success();
         }
 
         final Data.Builder outputDataBuilder = new Data.Builder()

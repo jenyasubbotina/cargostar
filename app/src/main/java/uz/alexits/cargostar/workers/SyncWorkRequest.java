@@ -779,8 +779,6 @@ public class SyncWorkRequest {
                 .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, consignmentQuantity)
                 .build();
 
-        Log.i(TAG, "fetchRequestData(): count=" + consignmentQuantity);
-
         final OneTimeWorkRequest fetchRequestDataRequest = new OneTimeWorkRequest.Builder(FetchRequestDataWorker.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
@@ -791,11 +789,6 @@ public class SyncWorkRequest {
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .build();
-
-        if (consignmentQuantity <= 0) {
-            WorkManager.getInstance(context).enqueue(fetchRequestDataRequest);
-            return fetchRequestDataRequest.getId();
-        }
         WorkManager.getInstance(context).beginWith(fetchRequestDataRequest).then(fetchConsignmentListByRequestId).enqueue();
         return fetchConsignmentListByRequestId.getId();
     }

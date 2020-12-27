@@ -20,9 +20,7 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
     private List<Request> requestList;
     private final RequestCallback callback;
 
-    public PublicRequestAdapter(@NonNull final Context context,
-                                @NonNull final List<Request> requestList,
-                                @NonNull final RequestCallback callback) {
+    public PublicRequestAdapter(@NonNull final Context context, @NonNull final List<Request> requestList, @NonNull final RequestCallback callback) {
         this.context = context;
         this.callback = callback;
         this.requestList = requestList;
@@ -46,6 +44,8 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
     @Override
     public void onBindViewHolder(@NonNull PublicRequestViewHolder holder, int position) {
         final Request currentRequest = requestList.get(position);
+
+        Log.i(TAG, "onBindViewHolder(): currentRequest" + currentRequest);
 
         if (currentRequest != null) {
             final String requestIndex = (position + 1) + ".";
@@ -77,4 +77,6 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
     public int getItemCount() {
         return requestList != null ? requestList.size() : 0;
     }
+
+    private static final String TAG = PublicRequestAdapter.class.toString();
 }

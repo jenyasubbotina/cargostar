@@ -132,7 +132,6 @@ public class SignInActivity extends AppCompatActivity {
         });
 
         passwordEyeImageView.setOnClickListener(v -> {
-            Log.i(TAG, "passwordEye clicked()" + showPassword);
             if (showPassword) {
                 passwordEyeImageView.setImageResource(R.drawable.ic_hide_password);
                 passwordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());

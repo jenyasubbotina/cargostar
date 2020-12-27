@@ -348,7 +348,6 @@ public class ProfileFragment extends Fragment {
         });
 
         courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
-            Log.i(ProfileFragment.class.toString(), "branch" + branch);
             if (branch != null) {
                 branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
                 //branch data

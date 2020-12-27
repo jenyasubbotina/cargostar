@@ -55,7 +55,6 @@ public class FetchTransportationRouteWorker extends Worker {
                             .putLong(Constants.KEY_CURRENT_STATUS_ID, currentStatusId)
                             .putString(Constants.KEY_CURRENT_STATUS_NAME, currentStatusName)
                             .build();
-                    Log.i(TAG, "fetchTransportationRoute(): " + outputData);
                     return Result.success();
                 }
             }

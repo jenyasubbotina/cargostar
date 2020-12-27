@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i(MainActivity.class.toString(), "onActivityResult: " + requestCode + " " + resultCode + " " + data);
         if (requestCode == PICK_IMAGE) {
 
         }

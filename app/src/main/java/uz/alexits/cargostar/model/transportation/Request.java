@@ -497,12 +497,15 @@ public class Request {
                 ", senderEmail='" + senderEmail + '\'' +
                 ", senderPhone='" + senderPhone + '\'' +
                 ", senderAddress='" + senderAddress + '\'' +
-                ", recipientCountryId='" + recipientCountryId + '\'' +
-                ", recipientCityId='" + recipientCityId + '\'' +
+                ", recipientCountryId=" + recipientCountryId +
+                ", recipientCityId=" + recipientCityId +
+                ", deliveryType=" + deliveryType +
                 ", comment='" + comment + '\'' +
-                ", status=" + status +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
+                ", isNew=" + isNew +
+                ", senderCity='" + senderCity + '\'' +
+                ", recipientCity='" + recipientCity + '\'' +
+                ", consignmentQuantity=" + consignmentQuantity +
+                ", paymentStatus='" + paymentStatus + '\'' +
                 '}';
     }
 }

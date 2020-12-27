@@ -564,15 +564,11 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 secondCardRadioBtn.setChecked(false);
 
                 if (firstCardRadioBtn.getText().equals(getString(R.string.cargostar))) {
-                    Log.i(TAG, "checked(): cargostar");
-
                     calculatorViewModel.setProviderId(6L);
                     calculatorViewModel.setCountryIdProviderId(selectedCountryId, 6L);
                     return;
                 }
                 if (firstCardRadioBtn.getText().equals(getString(R.string.tnt))) {
-                    Log.i(TAG, "checked(): tnt");
-
                     calculatorViewModel.setProviderId(5L);
                     calculatorViewModel.setCountryIdProviderId(selectedCountryId, 5L);
                 }

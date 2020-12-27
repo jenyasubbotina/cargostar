@@ -80,7 +80,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
     private InvoiceData transportationDataHeading;
     private final List<InvoiceData> transportationDataList = new ArrayList<>();
 
-    private boolean forEachCargoHidden = false;
     private InvoiceData forEachCargoHeading;
     private final List<InvoiceData> forEachCargoList = new ArrayList<>();
 
