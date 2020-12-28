@@ -2832,7 +2832,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     @Override
     public void onTariffSelected(int position, int lastCheckedPosition) {
         tariffPriceRadioAdapter.setLastCheckedPosition(position);
-        tariffPriceRadioAdapter.notifyDataSetChanged();
+        tariffPriceRecyclerView.post(() -> {
+            tariffPriceRadioAdapter.notifyDataSetChanged();
+        });
     }
 
     private void setCountryList(final List<Country> countryList) {

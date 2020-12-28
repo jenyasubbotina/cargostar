@@ -19,18 +19,13 @@ public class TariffPriceRadioAdapter extends RecyclerView.Adapter<TariffPriceRad
     private final Context context;
     private List<TariffPrice> itemList;
     private final TariffCallback callback;
-
     private int position;
     private int lastCheckedPosition;
-    private String selectedPrice;
-    private long selectedPackagingId;
 
     public TariffPriceRadioAdapter(final Context context, final TariffCallback callback) {
         this.context = context;
         this.callback = callback;
         this.lastCheckedPosition = -1;
-        this.selectedPrice = null;
-        this.selectedPackagingId = -1;
     }
 
     public void setItemList(final List<TariffPrice> itemList) {
@@ -39,11 +34,11 @@ public class TariffPriceRadioAdapter extends RecyclerView.Adapter<TariffPriceRad
     }
 
     public String getSelectedPrice() {
-        return itemList == null || itemList.isEmpty() ? null : itemList.get(position).getPrice();
+        return itemList == null || itemList.isEmpty() ? null : itemList.get(lastCheckedPosition).getPrice();
     }
 
     public long getSelectedPackagingId() {
-        return itemList == null || itemList.isEmpty() ? 0 : itemList.get(position).getTariffId();
+        return itemList == null || itemList.isEmpty() ? 0 : itemList.get(lastCheckedPosition).getTariffId();
     }
 
     public int getLastCheckedPosition() {
