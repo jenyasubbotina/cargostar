@@ -32,8 +32,10 @@ import android.widget.Toast;
 
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.location.TransitPoint;
+import uz.alexits.cargostar.model.transportation.Invoice;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.view.UiUtils;
@@ -106,17 +108,21 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         context = getContext();
         activity = getActivity();
-
-        isFirstCheckBoxPick = true;
-        isFirstSpinnerPick = true;
 
         if (getArguments() != null) {
             statusFlag = CurrentTransportationsFragmentArgs.fromBundle(getArguments()).getStatusFlag();
             courierBrancheId = CurrentTransportationsFragmentArgs.fromBundle(getArguments()).getCourierBranchId();
         }
-        SyncWorkRequest.fetchTransportationList(context);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        isFirstCheckBoxPick = true;
+        isFirstSpinnerPick = true;
     }
 
     @Override
@@ -238,6 +244,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         transportationViewModel = new ViewModelProvider(this).get(TransportationViewModel.class);
 
@@ -342,9 +349,9 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
         transportationViewModel.getCurrentTransportationList().observe(getViewLifecycleOwner(), transportationList -> {
             if (transportationList != null) {
-//                for (final Transportation transportation : transportationList) {
-//                    Log.i(TAG, "transport= " + transportation);
-//                }
+                for (final Transportation transportation : transportationList) {
+                    Log.i(TAG, "transport= " + transportation);
+                }
 
                 transportationAdapter.setTransportationList(transportationList);
                 transportationAdapter.notifyDataSetChanged();
@@ -361,12 +368,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                         deliveredCheckBox.setChecked(true);
                     }
                 }
-            }
-        });
-
-        transportationViewModel.getAllTransportation().observe(getViewLifecycleOwner(), transportationList -> {
-            for (final Transportation transportation : transportationList) {
-                Log.i(TAG, "transport=" + transportation);
             }
         });
     }
@@ -430,18 +431,21 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
             selectedStatusArray.clear();
             selectedStatusArray.add(3L);
             selectedStatusArray.add(5L);
-            selectedStatusArray.add(6L);        }
+            selectedStatusArray.add(6L);
+        }
         else if (onTheWay && !delivered && !lost) {
             //on the way
             Log.i(TAG, "statusList: on the way");
             selectedStatusArray.clear();
-            selectedStatusArray.add(4L);        }
+            selectedStatusArray.add(4L);
+        }
         else if (onTheWay && delivered && !lost) {
             //on the way + delivered
             Log.i(TAG, "statusList: on the way + delivered");
             selectedStatusArray.clear();
             selectedStatusArray.add(4L);
-            selectedStatusArray.add(6L);        }
+            selectedStatusArray.add(6L);
+        }
         else if (onTheWay && delivered) {
             //on the way + delivered + lost
             Log.i(TAG, "statusList: on the way + delivered + lost");

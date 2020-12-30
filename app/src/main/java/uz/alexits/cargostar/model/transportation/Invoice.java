@@ -67,6 +67,11 @@ public class Invoice {
 
     @Expose
     @SerializedName("signature")
+    @ColumnInfo(name = "sender_signature")
+    private String senderSignatureUrl;
+
+    @Expose
+    @SerializedName("recipient_signature")
     @ColumnInfo(name = "recipient_signature")
     private String recipientSignatureUrl;
 
@@ -159,12 +164,20 @@ public class Invoice {
         return price;
     }
 
+    public String getSenderSignatureUrl() {
+        return senderSignatureUrl;
+    }
+
     public String getRecipientSignatureUrl() {
         return recipientSignatureUrl;
     }
 
     public void setRecipientSignatureUrl(String recipientSignatureUrl) {
         this.recipientSignatureUrl = recipientSignatureUrl;
+    }
+
+    public void setSenderSignatureUrl(String senderSignatureUrl) {
+        this.senderSignatureUrl = senderSignatureUrl;
     }
 
     public int getStatus() {

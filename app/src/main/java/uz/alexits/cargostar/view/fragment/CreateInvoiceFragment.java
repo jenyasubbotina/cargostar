@@ -238,12 +238,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private ArrayAdapter<City> payerCityArrayAdapter;
     private ArrayAdapter<AddressBook> recipientAddressBookArrayAdapter;
     private ArrayAdapter<AddressBook> payerAddressBookArrayAdapter;
-
-    private List<Country> countryList;
-    private List<City> senderCityList;
-    private List<City> recipientCityList;
-    private List<City> payerCityList;
-
     private List<AddressBook> addressBookEntries;
 
     /* flags to handle UI initialization */
@@ -251,10 +245,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile boolean addressBookInitialized;
     private static volatile boolean isRecipientInitialPick;
     private static volatile boolean isPayerInitialPick;
-
-    private static volatile boolean isSenderCountryInitialPick;
-    private static volatile boolean isRecipientCountryInitialPick;
-    private static volatile boolean isPayerCountryInitialPick;
 
     private static volatile boolean isSenderCityInitialPick;
     private static volatile boolean isRecipientCityInitialPick;
@@ -412,12 +402,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         context = getContext();
         activity = getActivity();
 
-        countryList = new ArrayList<>();
-        senderCityList = new ArrayList<>();
-        recipientCityList = new ArrayList<>();
-        payerCityList = new ArrayList<>();
         addressBookEntries = new ArrayList<>();
-
         consignmentList = new ArrayList<>();
 
         if (getArguments() != null) {
@@ -511,25 +496,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         isPayerInitialPick = true;
         addressBookInitialized = false;
 
-        if (requestKey == IntentConstants.REQUEST_EDIT_INVOICE) {
-            isSenderCountryInitialPick = false;
-            isRecipientCountryInitialPick = false;
-            isPayerCountryInitialPick = false;
-
-            isSenderCityInitialPick = false;
-            isRecipientCityInitialPick = false;
-            isPayerCityInitialPick = false;
-        }
-        else {
-            isSenderCountryInitialPick = true;
-            isRecipientCountryInitialPick = true;
-            isPayerCountryInitialPick = true;
-
-            isSenderCityInitialPick = true;
-            isRecipientCityInitialPick = true;
-            isPayerCityInitialPick = true;
-        }
-
         initUI(root);
 
         if (requestKey == IntentConstants.REQUEST_EDIT_INVOICE) {
@@ -541,6 +507,21 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
 
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (requestKey == IntentConstants.REQUEST_EDIT_INVOICE) {
+            isSenderCityInitialPick = false;
+            isRecipientCityInitialPick = false;
+            isPayerCityInitialPick = false;
+        }
+        else {
+            isSenderCityInitialPick = true;
+            isRecipientCityInitialPick = true;
+            isPayerCityInitialPick = true;
+        }
     }
 
     @Override
@@ -572,7 +553,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         });
 
         /* location data view model */
-        createInvoiceViewModel.getCountryList().observe(getViewLifecycleOwner(), this::setCountryList);
+        createInvoiceViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
+            Log.i(TAG, "countryListSize: " + countryList.size());
+            setCountryList(countryList);
+        });
 
         createInvoiceViewModel.getSenderCityList().observe(getViewLifecycleOwner(), this::setSenderCityList);
 
@@ -1572,16 +1556,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         recipientAddressBookSpinner = root.findViewById(R.id.recipient_address_book_spinner);
         payerAddressBookSpinner = root.findViewById(R.id.payer_address_book_spinner);
 
-        countryArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, countryList);
+        countryArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         countryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        senderCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, senderCityList);
+        senderCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         senderCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        recipientCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, recipientCityList);
+        recipientCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         recipientCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        payerCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, payerCityList);
+        payerCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         payerCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         recipientAddressBookArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, addressBookEntries);
@@ -2558,16 +2542,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (sender.getCountryId() != null) {
                 senderCountryId = sender.getCountryId();
-                for (int i = 0; i < countryList.size(); i++) {
-                    if (countryList.get(i).getId() == senderCountryId) {
-                        senderCountrySpinner.setSelection(i);
-                        break;
-                    }
-                }
             }
             if (sender.getCityId() != null) {
                 senderCityId = sender.getCityId();
             }
+//                for (int i = 0; i < countryList.size(); i++) {
+//                    if (countryList.get(i).getId() == senderCountryId) {
+//                        senderCountrySpinner.setSelection(i);
+//                        break;
+//                    }
+//                }
         }
     }
 
@@ -2663,16 +2647,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (recipient.getCountryId() != null) {
                 recipientCountryId = recipient.getCountryId();
-                for (int i = 0; i < countryList.size(); i++) {
-                    if (countryList.get(i).getId() == recipientCountryId) {
-                        recipientCountrySpinner.setSelection(i);
-                        break;
-                    }
-                }
             }
             if (recipient.getCityId() != null) {
                 recipientCityId = recipient.getCityId();
             }
+//                for (int i = 0; i < countryList.size(); i++) {
+//                    if (countryList.get(i).getId() == recipientCountryId) {
+//                        recipientCountrySpinner.setSelection(i);
+//                        break;
+//                    }
+//                }
         }
     }
 
@@ -2816,16 +2800,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (payer.getCountryId() != null) {
                 payerCountryId = payer.getCountryId();
-                for (int i = 0; i < countryList.size(); i++) {
-                    if (countryList.get(i).getId() == payerCountryId) {
-                        payerCountrySpinner.setSelection(i);
-                        break;
-                    }
-                }
             }
             if (payer.getCityId() != null) {
                 payerCityId = payer.getCityId();
             }
+//                for (int i = 0; i < countryList.size(); i++) {
+//                    if (countryList.get(i).getId() == payerCountryId) {
+//                        payerCountrySpinner.setSelection(i);
+//                        break;
+//                    }
+//                }
         }
     }
 
@@ -2840,15 +2824,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private void setCountryList(final List<Country> countryList) {
         if (countryList != null) {
             countryArrayAdapter.clear();
-            this.countryList = countryList;
-            for (final Country country : this.countryList) {
+
+            for (final Country country : countryList) {
                 countryArrayAdapter.add(country);
             }
-            if (isSenderCountryInitialPick) {
-                isSenderCountryInitialPick = false;
-                senderCountrySpinner.setSelection(208);
-            }
-            else if (senderCountryId >= 0) {
+            if (senderCountryId >= 0) {
                 for (int i = 0; i < countryList.size(); i++) {
                     if (countryList.get(i).getId() == senderCountryId) {
                         senderCountrySpinner.setSelection(i);
@@ -2856,13 +2836,18 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     }
                 }
             }
+            else {
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        int finalI = i;
+                        senderCountrySpinner.post(() -> senderCountrySpinner.setSelection(finalI));
+                        break;
+                    }
+                }
+            }
             senderCountryIsSet = true;
 
-            if (isRecipientCountryInitialPick) {
-                isRecipientCountryInitialPick = false;
-                recipientCountrySpinner.setSelection(208);
-            }
-            else if (recipientCountryId >= 0) {
+            if (recipientCountryId >= 0) {
                 for (int i = 0; i < countryList.size(); i++) {
                     if (countryList.get(i).getId() == recipientCountryId) {
                         recipientCountrySpinner.setSelection(i);
@@ -2870,16 +2855,30 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     }
                 }
             }
+            else {
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        int finalI = i;
+                        recipientCountrySpinner.post(() -> recipientCountrySpinner.setSelection(finalI));
+                        break;
+                    }
+                }
+            }
             recipientCountryIsSet = true;
 
-            if (isPayerCountryInitialPick) {
-                isPayerCountryInitialPick = false;
-                payerCountrySpinner.setSelection(208);
-            }
-            else if (payerCountryId >= 0) {
+            if (payerCountryId >= 0) {
                 for (int i = 0; i < countryList.size(); i++) {
                     if (countryList.get(i).getId() == payerCountryId) {
                         payerCountrySpinner.setSelection(i);
+                        break;
+                    }
+                }
+            }
+            else {
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        int finalI = i;
+                        payerCountrySpinner.post(() -> payerCountrySpinner.setSelection(finalI));
                         break;
                     }
                 }
@@ -2891,23 +2890,28 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private void setSenderCityList(final List<City> senderCityList) {
         if (senderCityList != null) {
             senderCityArrayAdapter.clear();
-            this.senderCityList = senderCityList;
 
-            for (final City city : this.senderCityList) {
+            for (final City city : senderCityList) {
                 senderCityArrayAdapter.add(city);
             }
             if (!senderCountryIsSet) {
                 return;
             }
             if (isSenderCityInitialPick) {
-                isSenderCityInitialPick = false;
-                senderCitySpinner.setSelection(85);
-                return;
+                for (int i = 0; i < senderCityList.size(); i++) {
+                    if (senderCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
+                        int finalI = i;
+                        senderCitySpinner.post(() -> senderCitySpinner.setSelection(finalI));
+                        isSenderCityInitialPick = false;
+                        return;
+                    }
+                }
             }
             if (senderCityId >= 0) {
                 for (int i = 0; i < senderCityList.size(); i++) {
                     if (senderCityList.get(i).getId() == senderCityId) {
-                        senderCitySpinner.setSelection(i);
+                        int finalI = i;
+                        senderCitySpinner.post(() -> senderCitySpinner.setSelection(finalI));
                         return;
                     }
                 }
@@ -2918,23 +2922,28 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private void setRecipientCityList(final List<City> recipientCityList) {
         if (recipientCityList != null) {
             recipientCityArrayAdapter.clear();
-            this.recipientCityList = recipientCityList;
 
-            for (final City city : this.recipientCityList) {
+            for (final City city : recipientCityList) {
                 recipientCityArrayAdapter.add(city);
             }
             if (!recipientCountryIsSet) {
                 return;
             }
             if (isRecipientCityInitialPick) {
-                isRecipientCityInitialPick = false;
-                recipientCitySpinner.setSelection(85);
-                return;
+                for (int i = 0; i < recipientCityList.size(); i++) {
+                    if (recipientCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
+                        int finalI = i;
+                        recipientCitySpinner.post(() -> recipientCitySpinner.setSelection(finalI));
+                        isRecipientCityInitialPick = false;
+                        return;
+                    }
+                }
             }
             if (recipientCityId >= 0) {
                 for (int i = 0; i < recipientCityList.size(); i++) {
                     if (recipientCityList.get(i).getId() == recipientCityId) {
-                        recipientCitySpinner.setSelection(i);
+                        int finalI = i;
+                        recipientCitySpinner.post(() -> recipientCitySpinner.setSelection(finalI));
                         return;
                     }
                 }
@@ -2945,23 +2954,28 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private void setPayerCityList(final List<City> payerCityList) {
         if (payerCityList != null) {
             payerCityArrayAdapter.clear();
-            this.payerCityList = payerCityList;
 
-            for (final City city : this.payerCityList) {
+            for (final City city : payerCityList) {
                 payerCityArrayAdapter.add(city);
             }
             if (!payerCountryIsSet) {
                 return;
             }
             if (isPayerCityInitialPick) {
-                isPayerCityInitialPick = false;
-                payerCitySpinner.setSelection(85);
-                return;
+                for (int i = 0; i < payerCityList.size(); i++) {
+                    if (payerCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
+                        int finalI = i;
+                        payerCitySpinner.post(() -> payerCitySpinner.setSelection(finalI));
+                        isPayerCityInitialPick = false;
+                        return;
+                    }
+                }
             }
             if (payerCityId >= 0) {
                 for (int i = 0; i < payerCityList.size(); i++) {
                     if (payerCityList.get(i).getId() == payerCityId) {
-                        payerCitySpinner.setSelection(i);
+                        int finalI = i;
+                        payerCitySpinner.post(() -> payerCitySpinner.setSelection(finalI));
                         return;
                     }
                 }

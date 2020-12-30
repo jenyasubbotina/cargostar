@@ -215,14 +215,16 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             comment = InvoiceDataFragmentArgs.fromBundle(getArguments()).getComment();
             consignmentQuantity = InvoiceDataFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
 
-            if (invoiceId > 0 && senderId > 0 && isRequest) {
-                fetchInvoiceRequestUUID = SyncWorkRequest.fetchInvoiceData(context, requestId, invoiceId, senderId, consignmentQuantity);
-            }
-            else if (senderId > 0 && isRequest) {
-                fetchInvoiceRequestUUID = SyncWorkRequest.fetchSenderData(context, requestId, senderId, consignmentQuantity);
-            }
-            else if (isRequest) {
-                fetchInvoiceRequestUUID = SyncWorkRequest.fetchRequestData(context, requestId, consignmentQuantity);
+            if (isRequest) {
+                if (invoiceId > 0 && senderId > 0) {
+                    fetchInvoiceRequestUUID = SyncWorkRequest.fetchInvoiceData(context, requestId, invoiceId, senderId, consignmentQuantity);
+                }
+                else if (senderId > 0) {
+                    fetchInvoiceRequestUUID = SyncWorkRequest.fetchSenderData(context, requestId, senderId, consignmentQuantity);
+                }
+                else {
+                    fetchInvoiceRequestUUID = SyncWorkRequest.fetchRequestData(context, requestId, consignmentQuantity);
+                }
             }
             else {
                 fetchInvoiceRequestUUID = null;

@@ -21,7 +21,7 @@ import java.util.List;
 
 public class CreateInvoiceViewModel extends AndroidViewModel {
     private final Repository repository;
-    private final LiveData<List<Country>> countryList;
+//    private final LiveData<List<Country>> countryList;
 
     /* sender data */
     private final MutableLiveData<Long> senderCountryId;
@@ -51,7 +51,7 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
         super(application);
         this.repository = Repository.getInstance(application);
 
-        this.countryList = repository.selectAllCountries();
+//        this.countryList = repository.selectAllCountries();
 
         this.senderCountryId = new MutableLiveData<>();
         this.recipientCountryId = new MutableLiveData<>();
@@ -74,7 +74,7 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
 
     /* location data */
     public LiveData<List<Country>> getCountryList() {
-        return countryList;
+        return repository.selectAllCountries();
     }
 
     public void setSenderCountryId(final long senderCountryId) {
