@@ -48,13 +48,24 @@ public interface ApiService {
     @GET("country")
     Call<List<Country>> getCountries(@Query("per-page") final int perPage);
 
+    @GET("country/new/")
+    Call<List<Country>> getCountries(@Query("per-page") final int perPage, @Query("id") final long lastId);
+
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("region")
     Call<List<Region>> getRegions(@Query("per-page") final int perPage);
 
+    @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("region/new/")
+    Call<List<Region>> getRegions(@Query("per-page") final int perPage, @Query("id") final long lastId);
+
     @Headers({"Content-Type: application/json; charset=utf-8;"})
     @GET("city")
     Call<List<City>> getCities(@Query("per-page") final int perPage);
+
+    @Headers({"Content-Type: application/json; charset=utf-8;"})
+    @GET("city/new/")
+    Call<List<City>> getCities(@Query("per-page") final int perPage, @Query("id") final long lastId);
 
     @Headers({"Content-Type: application/json; charset=utf-8;"})
     @GET("branche")

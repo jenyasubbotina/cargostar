@@ -98,12 +98,24 @@ public class RetrofitClient {
         return apiService.getCountries(perPage).execute();
     }
 
+    public Response<List<Country>> getCountries(final int perPage, final long lastId) throws IOException {
+        return apiService.getCountries(perPage, lastId).execute();
+    }
+
     public Response<List<Region>> getRegions(final int perPage) throws IOException {
         return apiService.getRegions(perPage).execute();
     }
 
+    public Response<List<Region>> getRegions(final int perPage, final long lastId) throws IOException {
+        return apiService.getRegions(perPage, lastId).execute();
+    }
+
     public Response<List<City>> getCities(final int perPage) throws IOException {
         return apiService.getCities(perPage).execute();
+    }
+
+    public Response<List<City>> getCities(final int perPage, final long lastId) throws IOException {
+        return apiService.getCities(perPage, lastId).execute();
     }
 
     public Response<List<Branche>> getBranches(final int perPage) throws IOException {

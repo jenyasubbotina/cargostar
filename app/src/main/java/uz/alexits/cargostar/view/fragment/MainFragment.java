@@ -1,3 +1,4 @@
+
 package uz.alexits.cargostar.view.fragment;
 
 import android.content.Context;
@@ -86,6 +87,7 @@ public class MainFragment extends Fragment {
             courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
         }).start();
 
+        SyncWorkRequest.fetchLocationData(context);
         SyncWorkRequest.fetchSenderList(context);
         SyncWorkRequest.fetchAddressBookList(context);
         SyncWorkRequest.fetchRequests(context);
@@ -171,16 +173,14 @@ public class MainFragment extends Fragment {
                 return;
             }
 
-            final MainFragmentDirections.ActionMainFragmentToCurrentTransportationsFragment action =
-                    MainFragmentDirections.actionMainFragmentToCurrentTransportationsFragment();
+            final MainFragmentDirections.ActionMainFragmentToCurrentTransportationsFragment action = MainFragmentDirections.actionMainFragmentToCurrentTransportationsFragment();
             action.setStatusFlag(IntentConstants.FRAGMENT_CURRENT_TRANSPORT);
             action.setCourierBranchId(courierBranchId);
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
         });
 
         transportationDeliveryImageView.setOnClickListener(v -> {
-            final MainFragmentDirections.ActionMainFragmentToCurrentTransportationsFragment action =
-                    MainFragmentDirections.actionMainFragmentToCurrentTransportationsFragment();
+            final MainFragmentDirections.ActionMainFragmentToCurrentTransportationsFragment action = MainFragmentDirections.actionMainFragmentToCurrentTransportationsFragment();
             action.setStatusFlag(IntentConstants.FRAGMENT_DELIVERY_TRANSPORT);
             action.setCourierBranchId(courierBranchId);
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);

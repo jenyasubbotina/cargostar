@@ -27,6 +27,7 @@ public class FetchCitiesWorker extends Worker {
     @Nullable private final String login;
     @Nullable private final String password;
     private final String token;
+    private final long lastId;
 
     public FetchCitiesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -34,6 +35,7 @@ public class FetchCitiesWorker extends Worker {
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
+        this.lastId = getInputData().getLong(Constants.LAST_CITY_ID, 0L);
     }
 
     @NonNull
@@ -47,12 +49,19 @@ public class FetchCitiesWorker extends Worker {
 
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<City>> response = RetrofitClient.getInstance(getApplicationContext()).getCities(perPage);
+            Response<List<City>> response = null;
+
+            if (lastId > 0) {
+                response = RetrofitClient.getInstance(getApplicationContext()).getCities(perPage, lastId);
+            }
+            else {
+                response = RetrofitClient.getInstance(getApplicationContext()).getCities(perPage);
+            }
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<City> cityList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).locationDao().dropAndInsertCities(cityList);
+                    LocalCache.getInstance(getApplicationContext()).locationDao().insertCities(cityList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

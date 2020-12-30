@@ -16,7 +16,6 @@ import uz.alexits.cargostar.model.calculation.Provider;
 
 import java.util.Date;
 
-//todo: add tariff_id
 @Entity(tableName = "invoice",
         foreignKeys = {
         @ForeignKey(entity = Customer.class, parentColumns = "id", childColumns = "sender_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),

@@ -94,11 +94,6 @@ public class FetchConsignmentListByRequestIdWorker extends Worker {
             Log.e(TAG, "fetchCargoList(): requestId <= 0");
             return ListenableWorker.Result.failure();
         }
-        if (consignmentQuantity <= 0) {
-            Log.e(TAG, "fetchCargoList(): consignmentQuantity <= 0");
-            return ListenableWorker.Result.success();
-        }
-
         final Data.Builder outputDataBuilder = new Data.Builder()
                 .putLong(Constants.KEY_REQUEST_ID, requestId)
                 .putLong(Constants.KEY_COURIER_ID, courierId)
@@ -129,6 +124,12 @@ public class FetchConsignmentListByRequestIdWorker extends Worker {
                 .putString(Constants.KEY_SENDER_TNT, senderTnt)
                 .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
                 .putInt(Constants.KEY_DISCOUNT, discount);
+
+        if (consignmentQuantity <= 0) {
+            Log.e(TAG, "fetchCargoList(): consignmentQuantity <= 0");
+            return ListenableWorker.Result.success(outputDataBuilder.build());
+        }
+
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));

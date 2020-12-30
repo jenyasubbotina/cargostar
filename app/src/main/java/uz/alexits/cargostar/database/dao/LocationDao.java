@@ -20,7 +20,7 @@ import java.util.List;
 public abstract class LocationDao {
     /* countries */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract long[] insertCountries(final List<Country> countryList);
+    public abstract long[] insertCountries(final List<Country> countryList);
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     public abstract long insertCountry(final Country country);
@@ -48,7 +48,7 @@ public abstract class LocationDao {
 
     /* regions */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract long[] insertRegions(final List<Region> regionList);
+    public abstract long[] insertRegions(final List<Region> regionList);
 
     @Query("DELETE FROM region")
     abstract void dropRegions();
@@ -152,4 +152,13 @@ public abstract class LocationDao {
 
     @Query("SELECT COUNT(id) FROM transitPoint")
     public abstract int getTransitPointsCount();
+
+    @Query("SELECT id FROM country ORDER BY id DESC LIMIT 1")
+    public abstract long getLastCountryId();
+
+    @Query("SELECT id FROM region ORDER BY id DESC LIMIT 1")
+    public abstract long getLastRegionId();
+
+    @Query("SELECT id FROM city ORDER BY id DESC LIMIT 1")
+    public abstract long getLastCityId();
 }

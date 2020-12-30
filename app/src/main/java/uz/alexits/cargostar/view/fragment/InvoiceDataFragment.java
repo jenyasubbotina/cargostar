@@ -175,7 +175,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
     private static volatile String serializedConsignmentList = null;
 
     private static volatile UUID fetchInvoiceRequestUUID;
-    private static volatile boolean consignmentListSet = false;
 
     public InvoiceDataFragment() {
         // Required empty public constructor
@@ -229,7 +228,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 fetchInvoiceRequestUUID = null;
             }
         }
-        consignmentListSet = false;
     }
 
     @Override
@@ -745,29 +743,32 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         /* consignment data */
         requestsViewModel.getConsignmentList().observe(getViewLifecycleOwner(), consignmentList -> {
             //for each cargo
-            int i = 0;
-            int j = 73;
+            if (consignmentList != null && !consignmentList.isEmpty()) {
+                int i = 0;
+                int j = 73;
 
-            if (consignmentQuantity > 0 && !consignmentListSet) {
-                for (final Consignment consignment : consignmentList) {
-                    consignment.setPackagingType(consignment.getPackagingId() != null ? String.valueOf(consignment.getPackagingId()) : null);
-                    itemList.set(j + i, new InvoiceData(getString(R.string.cargo_name), consignment.getName(), InvoiceData.TYPE_ITEM));
-                    j++;
-                    itemList.set(j + i, new InvoiceData(getString(R.string.cargo_description), consignment.getDescription(), InvoiceData.TYPE_ITEM));
-                    j++;
-                    itemList.set(j + i, new InvoiceData(getString(R.string.cargo_price), consignment.getCost(), InvoiceData.TYPE_ITEM));
-                    j++;
-                    itemList.set(j + i, new InvoiceData(getString(R.string.package_type), String.valueOf(consignment.getPackagingId()), InvoiceData.TYPE_ITEM));
-                    j++;
-                    itemList.set(j + i, new InvoiceData(getString(R.string.dimensions), String.valueOf(consignment.getDimensions()), InvoiceData.TYPE_ITEM));
-                    j++;
-                    itemList.set(j + i, new InvoiceData(getString(R.string.weight), String.valueOf(consignment.getWeight()), InvoiceData.TYPE_ITEM));
-                    j++;
-                    itemList.set(j + i, new InvoiceData(getString(R.string.qr_code), consignment.getQr(), InvoiceData.TYPE_ITEM));
-                    i++;
+                if (consignmentQuantity > 0) {
+                    for (final Consignment consignment : consignmentList) {
+                        consignment.setPackagingType(consignment.getPackagingId() != null ? String.valueOf(consignment.getPackagingId()) : null);
+                        itemList.set(j + i, new InvoiceData(getString(R.string.cargo_name), consignment.getName(), InvoiceData.TYPE_ITEM));
+                        j++;
+                        itemList.set(j + i, new InvoiceData(getString(R.string.cargo_description), consignment.getDescription(), InvoiceData.TYPE_ITEM));
+                        j++;
+                        itemList.set(j + i, new InvoiceData(getString(R.string.cargo_price), consignment.getCost(), InvoiceData.TYPE_ITEM));
+                        j++;
+                        itemList.set(j + i, new InvoiceData(getString(R.string.package_type), String.valueOf(consignment.getPackagingId()), InvoiceData.TYPE_ITEM));
+                        j++;
+                        itemList.set(j + i, new InvoiceData(getString(R.string.dimensions), String.valueOf(consignment.getDimensions()), InvoiceData.TYPE_ITEM));
+                        j++;
+                        itemList.set(j + i, new InvoiceData(getString(R.string.weight), String.valueOf(consignment.getWeight()), InvoiceData.TYPE_ITEM));
+                        j++;
+                        itemList.set(j + i, new InvoiceData(getString(R.string.qr_code), consignment.getQr(), InvoiceData.TYPE_ITEM));
+                        i++;
+                    }
+                    dataRecyclerView.post(() -> {
+                        adapter.notifyItemRangeChanged(72, forEachCargoList.size());
+                    });
                 }
-                adapter.notifyItemRangeChanged(81, forEachCargoList.size());
-                consignmentListSet = true;
             }
         });
 

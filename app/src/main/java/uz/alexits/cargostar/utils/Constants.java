@@ -164,6 +164,9 @@ public class Constants {
     public static final String KEY_CURRENT_STATUS_ID = "current_status_id";
     public static final String KEY_CURRENT_STATUS_NAME = "current_status_name";
 
+    public static final String LAST_COUNTRY_ID = "last_country_id";
+    public static final String LAST_REGION_ID = "last_region_id";
+    public static final String LAST_CITY_ID = "last_city_id";
     public static final String LAST_REQUEST_ID = "last_request_id";
     public static final String LAST_SENDER_ID = "last_sender_id";
     public static final String LAST_ADDRESS_BOOK_ID = "last_address_book_id";

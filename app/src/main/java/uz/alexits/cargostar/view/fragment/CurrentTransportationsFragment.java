@@ -116,7 +116,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
             statusFlag = CurrentTransportationsFragmentArgs.fromBundle(getArguments()).getStatusFlag();
             courierBrancheId = CurrentTransportationsFragmentArgs.fromBundle(getArguments()).getCourierBranchId();
         }
-
         SyncWorkRequest.fetchTransportationList(context);
     }
 
@@ -343,6 +342,10 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
         transportationViewModel.getCurrentTransportationList().observe(getViewLifecycleOwner(), transportationList -> {
             if (transportationList != null) {
+//                for (final Transportation transportation : transportationList) {
+//                    Log.i(TAG, "transport= " + transportation);
+//                }
+
                 transportationAdapter.setTransportationList(transportationList);
                 transportationAdapter.notifyDataSetChanged();
 
@@ -358,6 +361,12 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                         deliveredCheckBox.setChecked(true);
                     }
                 }
+            }
+        });
+
+        transportationViewModel.getAllTransportation().observe(getViewLifecycleOwner(), transportationList -> {
+            for (final Transportation transportation : transportationList) {
+                Log.i(TAG, "transport=" + transportation);
             }
         });
     }

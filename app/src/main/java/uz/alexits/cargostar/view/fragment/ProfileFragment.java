@@ -241,12 +241,18 @@ public class ProfileFragment extends Fragment {
         });
 
         logoutTextView.setOnClickListener(v -> {
-            SharedPrefs.getInstance(activity).putString(Constants.KEY_LOGIN, null);
+            final String login = SharedPrefs.getInstance(activity).getString(Constants.KEY_LOGIN);
+            final String password = SharedPrefs.getInstance(activity).getString(Constants.KEY_PASSWORD);
+
             SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, 0);
             SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, 0);
+            SharedPrefs.getInstance(activity).putString(Constants.KEY_LOGIN, null);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_PASSWORD, null);
             SharedPrefs.getInstance(activity).putBoolean(SharedPrefs.KEEP_LOGGED, false);
+
             final Intent logoutIntent = new Intent(activity.getApplicationContext(), SignInActivity.class);
+            logoutIntent.putExtra(Constants.KEY_LOGIN, login);
+            logoutIntent.putExtra(Constants.KEY_PASSWORD, password);
             logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
             logoutIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(logoutIntent);

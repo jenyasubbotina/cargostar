@@ -27,6 +27,7 @@ public class FetchRegionsWorker extends Worker {
     @Nullable private final String login;
     @Nullable private final String password;
     private final String token;
+    private final long lastId;
 
     public FetchRegionsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -34,6 +35,7 @@ public class FetchRegionsWorker extends Worker {
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
+        this.lastId = getInputData().getLong(Constants.LAST_REGION_ID, 0L);
     }
 
     @NonNull
@@ -47,12 +49,19 @@ public class FetchRegionsWorker extends Worker {
 
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<Region>> response = RetrofitClient.getInstance(getApplicationContext()).getRegions(perPage);
+            Response<List<Region>> response = null;
+
+            if (lastId > 0) {
+                response = RetrofitClient.getInstance(getApplicationContext()).getRegions(perPage, lastId);
+            }
+            else {
+                response = RetrofitClient.getInstance(getApplicationContext()).getRegions(perPage);
+            }
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<Region> regionList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).locationDao().dropAndInsertRegions(regionList);
+                    LocalCache.getInstance(getApplicationContext()).locationDao().insertRegions(regionList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

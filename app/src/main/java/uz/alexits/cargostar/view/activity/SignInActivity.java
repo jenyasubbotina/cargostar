@@ -47,6 +47,11 @@ public class SignInActivity extends AppCompatActivity {
 
         initUI();
 
+        if (getIntent() != null) {
+            loginEditText.setText(getIntent().getStringExtra(Constants.KEY_LOGIN));
+            passwordEditText.setText(getIntent().getStringExtra(Constants.KEY_PASSWORD));
+        }
+
         signInBtn.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
 
@@ -113,15 +118,6 @@ public class SignInActivity extends AppCompatActivity {
                 signInBtn.setEnabled(false);
             });
         });
-    }
-
-    private void initUI() {
-        loginEditText = findViewById(R.id.login_edit_text);
-        passwordEditText = findViewById(R.id.password_edit_text);
-        signInBtn = findViewById(R.id.sign_in_btn);
-        keepLoggingCheckBox = findViewById(R.id.keep_logging_check_box);
-        passwordEyeImageView = findViewById(R.id.password_eye_image_view);
-        progressBar = findViewById(R.id.progress_bar);
 
         loginEditText.setOnFocusChangeListener((v, hasFocus) -> {
             UiUtils.onFocusChanged(loginEditText, hasFocus);
@@ -143,5 +139,14 @@ public class SignInActivity extends AppCompatActivity {
                 showPassword = true;
             }
         });
+    }
+
+    private void initUI() {
+        loginEditText = findViewById(R.id.login_edit_text);
+        passwordEditText = findViewById(R.id.password_edit_text);
+        signInBtn = findViewById(R.id.sign_in_btn);
+        keepLoggingCheckBox = findViewById(R.id.keep_logging_check_box);
+        passwordEyeImageView = findViewById(R.id.password_eye_image_view);
+        progressBar = findViewById(R.id.progress_bar);
     }
 }

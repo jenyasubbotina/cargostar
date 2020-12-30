@@ -19,6 +19,7 @@ import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.Country;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -27,6 +28,7 @@ public class FetchCountriesWorker extends Worker {
     @Nullable private final String login;
     @Nullable private final String password;
     private final String token;
+    private final long lastId;
 
     public FetchCountriesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -34,6 +36,7 @@ public class FetchCountriesWorker extends Worker {
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
+        this.lastId = getInputData().getLong(Constants.LAST_COUNTRY_ID, 0L);
     }
 
     @NonNull
@@ -47,12 +50,19 @@ public class FetchCountriesWorker extends Worker {
 
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<Country>> response = RetrofitClient.getInstance(getApplicationContext()).getCountries(perPage);
+            Response<List<Country>> response = null;
+
+            if (lastId > 0) {
+                response = RetrofitClient.getInstance(getApplicationContext()).getCountries(perPage, lastId);
+            }
+            else {
+                response = RetrofitClient.getInstance(getApplicationContext()).getCountries(perPage);
+            }
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<Country> countryList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).locationDao().dropAndInsertCountries(countryList);
+                    LocalCache.getInstance(getApplicationContext()).locationDao().insertCountries(countryList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

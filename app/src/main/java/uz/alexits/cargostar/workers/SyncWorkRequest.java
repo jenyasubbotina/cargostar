@@ -41,6 +41,9 @@ import uz.alexits.cargostar.workers.location.FetchCitiesWorker;
 import uz.alexits.cargostar.workers.location.FetchCountriesWorker;
 import uz.alexits.cargostar.workers.location.FetchRegionsWorker;
 import uz.alexits.cargostar.workers.location.FetchTransitPointsWorker;
+import uz.alexits.cargostar.workers.location.GetLastCityId;
+import uz.alexits.cargostar.workers.location.GetLastCountryId;
+import uz.alexits.cargostar.workers.location.GetLastRegionId;
 import uz.alexits.cargostar.workers.login.SignInWorker;
 import uz.alexits.cargostar.workers.requests.BindRequestWorker;
 import uz.alexits.cargostar.workers.requests.FetchRequestDataWorker;
@@ -231,6 +234,65 @@ public class SyncWorkRequest {
     }
 
     /* Location Data */
+    public static void fetchLocationData(@NonNull final Context context) {
+        final Constraints dbConstraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+
+        final Data inputData = new Data.Builder()
+                .putInt(KEY_PER_PAGE, DEFAULT_PER_PAGE)
+                .build();
+
+        final OneTimeWorkRequest getLastCountryIdRequest = new OneTimeWorkRequest.Builder(GetLastCountryId.class)
+                .setConstraints(dbConstraints)
+                .setInputData(inputData)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchCountryDataRequest = new OneTimeWorkRequest.Builder(FetchCountriesWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest getLastRegionIdRequest = new OneTimeWorkRequest.Builder(GetLastRegionId.class)
+                .setConstraints(dbConstraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchRegionDataRequest = new OneTimeWorkRequest.Builder(FetchRegionsWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest getLastCityIdRequest = new OneTimeWorkRequest.Builder(GetLastCityId.class)
+                .setConstraints(dbConstraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+        final OneTimeWorkRequest fetchCityDataRequest = new OneTimeWorkRequest.Builder(FetchCitiesWorker.class)
+                .setConstraints(constraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
+                .build();
+
+        WorkManager.getInstance(context)
+                .beginWith(getLastCountryIdRequest)
+                .then(fetchCountryDataRequest)
+                .then(getLastRegionIdRequest)
+                .then(fetchRegionDataRequest)
+                .then(getLastCityIdRequest)
+                .then(fetchCityDataRequest)
+                .enqueue();
+    }
+
     public static UUID fetchTransitPoints(@NonNull final Context context) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)

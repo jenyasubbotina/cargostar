@@ -553,7 +553,7 @@ public class CreateUserFragment extends Fragment {
                 Toast.makeText(context, "Пароль должен сожержать минимум 6 символов", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(middleName) || TextUtils.isEmpty(lastName)) {
+            if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName)) {
                 Toast.makeText(context, "Имя не указано или указано не полностью", Toast.LENGTH_SHORT).show();
                 return;
             }
