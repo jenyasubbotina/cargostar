@@ -116,8 +116,6 @@ public class CreateUserFragment extends Fragment {
     private ProgressBar progressBar;
 
     private static volatile boolean countryIsSet;
-    private static volatile boolean countryInitialPick;
-    private static volatile boolean cityInitialPick;
 
 
     //ViewModel
@@ -132,8 +130,6 @@ public class CreateUserFragment extends Fragment {
         this.activity = getActivity();
 
         countryIsSet = false;
-        countryInitialPick = true;
-        cityInitialPick = true;
     }
 
     @Nullable
@@ -727,11 +723,14 @@ public class CreateUserFragment extends Fragment {
                 for (final Country country : countryList) {
                     countryArrayAdapter.add(country);
                 }
-                if (countryInitialPick) {
-                    countryInitialPick = false;
-                    countrySpinner.setSelection(208);
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        int finalI = i;
+                        countrySpinner.post(() -> countrySpinner.setSelection(finalI, false));
+                        countryIsSet = true;
+                        return;
+                    }
                 }
-                countryIsSet = true;
             }
         });
 
@@ -745,9 +744,12 @@ public class CreateUserFragment extends Fragment {
                 if (!countryIsSet) {
                     return;
                 }
-                if (cityInitialPick) {
-                    cityInitialPick = false;
-                    citySpinner.setSelection(85);
+                for (int i = 0; i < cityList.size(); i++) {
+                    if (cityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
+                        int finalI = i;
+                        citySpinner.post(() -> citySpinner.setSelection(finalI, false));
+                        return;
+                    }
                 }
             }
         });
