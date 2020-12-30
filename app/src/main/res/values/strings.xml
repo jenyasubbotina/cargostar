@@ -219,4 +219,6 @@
     <string name="choose_payer_from_address_book">Выберите плательщика</string>
     <string name="request_id">ID заявки</string>
     <string name="address">Адрес</string>
+    <string name="samarkand">samarkand</string>
+    <string name="tashkent">tashkent</string>
 </resources>

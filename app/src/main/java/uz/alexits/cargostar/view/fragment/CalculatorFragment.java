@@ -153,10 +153,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private static final List<Consignment> consignmentList = new ArrayList<>();
     private static final List<TariffPrice> tariffPriceList = new ArrayList<>();
 
-    private static volatile boolean countryFirstRun = true;
-    private static volatile boolean srcCityFirstRun = true;
-    private static volatile boolean destCityFirstRun = true;
-
     public CalculatorFragment() {
         // Required empty public constructor
     }
@@ -164,10 +160,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        countryFirstRun = true;
-        srcCityFirstRun = true;
-        destCityFirstRun = true;
 
         context = getContext();
         activity = getActivity();
@@ -739,10 +731,14 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 countryArrayAdapter.clear();
                 countryArrayAdapter.addAll(countryList);
 
-                if (countryFirstRun) {
-                    countryFirstRun = false;
-                    srcCountrySpinner.post(() -> srcCountrySpinner.setSelection(208, false));
-                    destCountrySpinner.post(() -> destCountrySpinner.setSelection(208, false));
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        int finalI = i;
+                        srcCountrySpinner.post(() -> srcCountrySpinner.setSelection(finalI, false));
+                        int finalI1 = i;
+                        destCountrySpinner.post(() -> destCountrySpinner.setSelection(finalI1, false));
+                        return;
+                    }
                 }
             }
         });
@@ -753,9 +749,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 srcCityArrayAdapter.clear();
                 srcCityArrayAdapter.addAll(srcCityList);
 
-                if (srcCityFirstRun) {
-                    srcCityFirstRun = false;
-                    srcCitySpinner.post(() -> srcCitySpinner.setSelection(88, false));
+                for (int i = 0; i < srcCityList.size(); i++) {
+                    if (srcCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
+                        int finalI = i;
+                        srcCitySpinner.post(() -> srcCitySpinner.setSelection(finalI, false));
+                        return;
+                    }
                 }
             }
         });
@@ -765,9 +764,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 destCityArrayAdapter.clear();
                 destCityArrayAdapter.addAll(destCityList);
 
-                if (destCityFirstRun) {
-                    destCityFirstRun = false;
-                    destCitySpinner.post(() -> destCitySpinner.setSelection(55, false));
+                for (int i = 0; i < destCityList.size(); i++) {
+                    if (destCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.samarkand))) {
+                        int finalI = i;
+                        destCitySpinner.post(() -> destCitySpinner.setSelection(finalI, false));
+                        return;
+                    }
                 }
             }
         });
