@@ -35,6 +35,7 @@ import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.model.actor.Courier;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.view.activity.InitializationActivity;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.UiUtils;
@@ -56,6 +57,7 @@ public class ProfileFragment extends Fragment {
     private ImageView profileImageView;
     private ImageView createUserImageView;
     private ImageView calculatorImageView;
+    private ImageView editProfileImageView;
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
     //main content views
@@ -124,6 +126,8 @@ public class ProfileFragment extends Fragment {
         calculatorImageView.setOnClickListener(v -> {
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
+
+        editProfileImageView.setOnClickListener(null);
 
         //main content views
         userIdEditText.setOnFocusChangeListener((v, hasFocus) -> {
@@ -244,13 +248,14 @@ public class ProfileFragment extends Fragment {
             final String login = SharedPrefs.getInstance(activity).getString(Constants.KEY_LOGIN);
             final String password = SharedPrefs.getInstance(activity).getString(Constants.KEY_PASSWORD);
 
-            SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, 0);
-            SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, 0);
+            SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, -1);
+            SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, -1);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_LOGIN, null);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_PASSWORD, null);
+            SharedPrefs.getInstance(activity).putString(Constants.KEY_TOKEN, null);
             SharedPrefs.getInstance(activity).putBoolean(SharedPrefs.KEEP_LOGGED, false);
 
-            final Intent logoutIntent = new Intent(activity.getApplicationContext(), SignInActivity.class);
+            final Intent logoutIntent = new Intent(activity.getApplicationContext(), InitializationActivity.class);
             logoutIntent.putExtra(Constants.KEY_LOGIN, login);
             logoutIntent.putExtra(Constants.KEY_PASSWORD, password);
             logoutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -477,6 +482,7 @@ public class ProfileFragment extends Fragment {
         profileImageView = activity.findViewById(R.id.profile_image_view);
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
+        editProfileImageView = activity.findViewById(R.id.edit_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views

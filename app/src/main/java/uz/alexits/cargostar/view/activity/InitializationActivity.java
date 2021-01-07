@@ -35,8 +35,6 @@ public class InitializationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initialization);
 
-        final ProgressBar progressBar = findViewById(R.id.progress_bar);
-
         createNotificationChannels(this);
 
         obtainFcmToken(this);
@@ -48,7 +46,14 @@ public class InitializationActivity extends AppCompatActivity {
             startActivity(new Intent(this, MainActivity.class));
         }
         else {
-            startActivity(new Intent(this, SignInActivity.class));
+            final Intent loginIntent = new Intent(this, SignInActivity.class);
+
+            if (getIntent() != null) {
+                loginIntent.putExtra(Constants.KEY_LOGIN, getIntent().getStringExtra(Constants.KEY_LOGIN));
+                loginIntent.putExtra(Constants.KEY_PASSWORD, getIntent().getStringExtra(Constants.KEY_PASSWORD));
+            }
+
+            startActivity(loginIntent);
         }
         finish();
     }

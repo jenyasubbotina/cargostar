@@ -241,8 +241,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private List<AddressBook> addressBookEntries;
 
     /* flags to handle UI initialization */
-    private static volatile boolean isSenderInitialPick;
-    private static volatile boolean addressBookInitialized;
     private static volatile boolean isRecipientInitialPick;
     private static volatile boolean isPayerInitialPick;
 
@@ -262,13 +260,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile long courierId = -1L;
     private static volatile long tariffId = -1L;
     private static volatile int deliveryType = 0;
-    private static volatile String invoiceNumber = null;
 
     private static volatile String comment = null;
     private static volatile int consignmentQuantity = 0;
     private static volatile double price = 0;
 
-    private static volatile long senderId = -1L;
     private static volatile String senderEmail = null;
     private static volatile String senderSignature = null;
     private static volatile String senderFirstName = null;
@@ -285,7 +281,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile String senderFedex = null;
     private static volatile int discount = 0;
 
-    private static volatile long recipientId = -1L;
     private static volatile String recipientEmail = null;
     private static volatile String recipientFirstName = null;
     private static volatile String recipientLastName = null;
@@ -300,7 +295,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile String recipientTnt = null;
     private static volatile String recipientFedex = null;
 
-    private static volatile long payerId = -1L;
     private static volatile String payerEmail = null;
     private static volatile String payerFirstName = null;
     private static volatile String payerLastName = null;
@@ -332,6 +326,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static List<Consignment> consignmentList;
     private static final List<TariffPrice> tariffPriceList = new ArrayList<>();
 
+    private List<Country> countryList;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -339,13 +335,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         requestKey = -1;
         requestId = -1;
         invoiceId = -1;
-        invoiceNumber = null;
         tariffId = -1;
         courierId = -1;
         providerId = -1;
-        senderId = -1;
-        recipientId = -1;
-        payerId = -1;
         senderCountryId = -1;
         recipientCountryId = -1;
         payerCountryId = -1;
@@ -409,7 +401,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             requestKey = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRequestKey();
             requestId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRequestId();
             invoiceId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getInvoiceId();
-            invoiceNumber = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getInvoiceNumber();
             tariffId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getTariffId();
             courierId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getCourierId();
             providerId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getProviderId();
@@ -418,7 +409,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             deliveryType = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDeliveryType();
             comment = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getComment();
 
-            senderId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderId();
             senderEmail = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderEmail();
             senderSignature = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderSignature();
             senderFirstName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFirstName();
@@ -435,7 +425,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             senderFedex = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFedex();
             discount = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDiscount();
 
-            recipientId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientId();
             recipientEmail = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientEmail();
             recipientFirstName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientFirstName();
             recipientLastName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientLastName();
@@ -450,7 +439,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             recipientTnt = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientTnt();
             recipientFedex = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientFedex();
 
-            payerId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerId();
             payerEmail = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerEmail();
             payerFirstName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerFirstName();
             payerLastName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerLastName();
@@ -491,10 +479,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_create_invoice, container, false);
 
-        isSenderInitialPick = true;
         isRecipientInitialPick = true;
         isPayerInitialPick = true;
-        addressBookInitialized = false;
 
         initUI(root);
 
@@ -553,9 +539,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         });
 
         /* location data view model */
-        createInvoiceViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
-            Log.i(TAG, "countryListSize: " + countryList.size());
-            setCountryList(countryList);
+        createInvoiceViewModel.getCountryList().observe(getViewLifecycleOwner(), countries -> {
+            countryList = countries;
+            setCountryList(countries);
         });
 
         createInvoiceViewModel.getSenderCityList().observe(getViewLifecycleOwner(), this::setSenderCityList);
@@ -572,12 +558,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         createInvoiceViewModel.getSender().observe(getViewLifecycleOwner(), sender -> {
             if (sender != null) {
-                addressBookInitialized = true;
                 createInvoiceViewModel.setSenderUserId(sender.getUserId());
                 updateSenderData(sender);
-                return;
             }
-            addressBookInitialized = false;
         });
 
         /* calculator data view model */
@@ -2546,12 +2529,12 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             if (sender.getCityId() != null) {
                 senderCityId = sender.getCityId();
             }
-//                for (int i = 0; i < countryList.size(); i++) {
-//                    if (countryList.get(i).getId() == senderCountryId) {
-//                        senderCountrySpinner.setSelection(i);
-//                        break;
-//                    }
-//                }
+            for (int i = 0; i < countryList.size(); i++) {
+                if (countryList.get(i).getId() == senderCountryId) {
+                    senderCountrySpinner.setSelection(i);
+                    return;
+                }
+            }
         }
     }
 
@@ -2651,12 +2634,12 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             if (recipient.getCityId() != null) {
                 recipientCityId = recipient.getCityId();
             }
-//                for (int i = 0; i < countryList.size(); i++) {
-//                    if (countryList.get(i).getId() == recipientCountryId) {
-//                        recipientCountrySpinner.setSelection(i);
-//                        break;
-//                    }
-//                }
+            for (int i = 0; i < countryList.size(); i++) {
+                if (countryList.get(i).getId() == recipientCountryId) {
+                    recipientCountrySpinner.setSelection(i);
+                    return;
+                }
+            }
         }
     }
 
@@ -2804,12 +2787,12 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             if (payer.getCityId() != null) {
                 payerCityId = payer.getCityId();
             }
-//                for (int i = 0; i < countryList.size(); i++) {
-//                    if (countryList.get(i).getId() == payerCountryId) {
-//                        payerCountrySpinner.setSelection(i);
-//                        break;
-//                    }
-//                }
+            for (int i = 0; i < countryList.size(); i++) {
+                if (countryList.get(i).getId() == payerCountryId) {
+                    payerCountrySpinner.setSelection(i);
+                    return;
+                }
+            }
         }
     }
 

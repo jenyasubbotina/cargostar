@@ -102,7 +102,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
     private ProgressBar progressBar;
 
     private static boolean isPublic = true;
-    private static boolean isRequest = true;
 
     private static volatile long requestId = -1L;
     private static volatile long invoiceId = -1L;
@@ -191,7 +190,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             //parcelId can be requestId
             requestId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRequestId();
             isPublic = InvoiceDataFragmentArgs.fromBundle(getArguments()).getIsPublic();
-            isRequest = InvoiceDataFragmentArgs.fromBundle(getArguments()).getIsRequest();
             invoiceId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getInvoiceId();
             invoiceCourierId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getCourierId();
             providerId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getProviderId();
@@ -215,19 +213,14 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             comment = InvoiceDataFragmentArgs.fromBundle(getArguments()).getComment();
             consignmentQuantity = InvoiceDataFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
 
-            if (isRequest) {
-                if (invoiceId > 0 && senderId > 0) {
-                    fetchInvoiceRequestUUID = SyncWorkRequest.fetchInvoiceData(context, requestId, invoiceId, senderId, consignmentQuantity);
-                }
-                else if (senderId > 0) {
-                    fetchInvoiceRequestUUID = SyncWorkRequest.fetchSenderData(context, requestId, senderId, consignmentQuantity);
-                }
-                else {
-                    fetchInvoiceRequestUUID = SyncWorkRequest.fetchRequestData(context, requestId, consignmentQuantity);
-                }
+            if (invoiceId > 0 && senderId > 0) {
+                fetchInvoiceRequestUUID = SyncWorkRequest.fetchInvoiceData(context, requestId, invoiceId, senderId, consignmentQuantity);
+            }
+            else if (senderId > 0) {
+                fetchInvoiceRequestUUID = SyncWorkRequest.fetchSenderData(context, requestId, senderId, consignmentQuantity);
             }
             else {
-                fetchInvoiceRequestUUID = null;
+                fetchInvoiceRequestUUID = SyncWorkRequest.fetchRequestData(context, requestId, consignmentQuantity);
             }
         }
     }
@@ -289,8 +282,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         }
 
         editInvoiceImageView.setOnClickListener(v -> {
-            final InvoiceDataFragmentDirections.ActionInvoiceDataFragmentToCreateInvoiceFragment action =
-                    InvoiceDataFragmentDirections.actionInvoiceDataFragmentToCreateInvoiceFragment();
+            final InvoiceDataFragmentDirections.ActionInvoiceDataFragmentToCreateInvoiceFragment action = InvoiceDataFragmentDirections.actionInvoiceDataFragmentToCreateInvoiceFragment();
             action.setRequestKey(IntentConstants.REQUEST_EDIT_INVOICE);
             action.setRequestId(requestId);
             action.setInvoiceId(invoiceId);
@@ -388,6 +380,12 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
         publicDataList.set(0, new InvoiceData(getString(R.string.invoice_id), invoiceId > 0 ? String.valueOf(invoiceId) : null, InvoiceData.TYPE_ITEM));
         publicDataList.set(1, new InvoiceData(getString(R.string.courier_id), invoiceCourierId > 0 ? String.valueOf(invoiceCourierId) : null, InvoiceData.TYPE_ITEM));
+
+        itemList.set(68, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(consignmentQuantity), InvoiceData.TYPE_ITEM));
+        adapter.notifyItemChanged(68);
+
+        transportationDataList.set(2, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(consignmentQuantity), InvoiceData.TYPE_ITEM));
+
 
         //header views
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
@@ -500,7 +498,9 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         itemList.set(9, new InvoiceData(getString(R.string.last_name), senderLastName, InvoiceData.TYPE_ITEM));
         itemList.set(10, new InvoiceData(getString(R.string.phone_number), senderPhone, InvoiceData.TYPE_ITEM));
         adapter.notifyItemRangeChanged(6, 5);
+
         itemList.set(14, new InvoiceData(getString(R.string.take_address), senderAddress, InvoiceData.TYPE_ITEM));
+
         senderDataList.set(0, new InvoiceData(getString(R.string.email), senderEmail, InvoiceData.TYPE_ITEM));
         senderDataList.set(1, new InvoiceData(getString(R.string.first_name), senderFirstName, InvoiceData.TYPE_ITEM));
         senderDataList.set(2, new InvoiceData(getString(R.string.middle_name), senderMiddleName, InvoiceData.TYPE_ITEM));
@@ -729,14 +729,12 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             if (transportation != null) {
                 itemList.set(66, new InvoiceData(getString(R.string.tracking_code_main), transportation.getTrackingCode(), InvoiceData.TYPE_ITEM));
                 itemList.set(67, new InvoiceData(getString(R.string.qr_code), transportation.getQrCode(), InvoiceData.TYPE_ITEM));
-                itemList.set(68, new InvoiceData(getString(R.string.destination_quantity), null, InvoiceData.TYPE_ITEM));
                 itemList.set(69, new InvoiceData(getString(R.string.arrival_date), transportation.getArrivalDate(), InvoiceData.TYPE_ITEM));
                 itemList.set(70, new InvoiceData(getString(R.string.courier_guidelines), transportation.getInstructions(), InvoiceData.TYPE_ITEM));
                 adapter.notifyItemRangeChanged(66, 5);
 
                 transportationDataList.set(0, new InvoiceData(getString(R.string.tracking_code_main), transportation.getTrackingCode(), InvoiceData.TYPE_ITEM));
                 transportationDataList.set(1, new InvoiceData(getString(R.string.qr_code), transportation.getQrCode(), InvoiceData.TYPE_ITEM));
-                transportationDataList.set(2, new InvoiceData(getString(R.string.destination_quantity), null, InvoiceData.TYPE_ITEM));
                 transportationDataList.set(3, new InvoiceData(getString(R.string.arrival_date), transportation.getArrivalDate(), InvoiceData.TYPE_ITEM));
                 transportationDataList.set(4, new InvoiceData(getString(R.string.courier_guidelines), transportation.getInstructions(), InvoiceData.TYPE_ITEM));
             }

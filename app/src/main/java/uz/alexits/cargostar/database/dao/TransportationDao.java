@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import uz.alexits.cargostar.model.transportation.Invoice;
 import uz.alexits.cargostar.model.transportation.Route;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.model.transportation.TransportationData;
@@ -48,8 +49,12 @@ public abstract class TransportationDao {
             "invoice_id IN (SELECT id FROM invoice WHERE recipient_signature IS NULL) ORDER BY id DESC")
     public abstract LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId);
 
-    @Query("SELECT id FROM transportation WHERE invoice_id IN (SELECT id FROM invoice WHERE recipient_signature IS NULL ORDER BY id DESC)")
+    @Query("SELECT id FROM transportation ORDER BY invoice_id DESC")
+//    @Query("SELECT id FROM transportation WHERE invoice_id IN (SELECT id FROM invoice WHERE recipient_signature IS NULL ORDER BY id DESC)")
     public abstract LiveData<List<Long>> getEmptySignature();
+
+    @Query("SELECT * FROM invoice ORDER BY id DESC")
+    public abstract LiveData<List<Invoice>> getAllInvoices();
 
     @Query("DELETE FROM transportation WHERE id == :transportationId")
     public abstract void deleteTransportation(final long transportationId);

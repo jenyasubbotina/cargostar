@@ -62,6 +62,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     private ImageView calculatorImageView;
     private ImageView profileImageView;
     private TextView badgeCounterTextView;
+    private ImageView notificationsImageView;
     //main content views
     private final List<Notification> notificationList = new ArrayList<>();
     private RecyclerView notificationRecyclerView;
@@ -99,6 +100,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
         profileImageView = activity.findViewById(R.id.profile_image_view);
+        notificationsImageView = activity.findViewById(R.id.notifications_image_view);
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //main content views
         notificationRecyclerView = root.findViewById(R.id.notificationRecyclerView);
@@ -132,6 +134,8 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         editImageView.setOnClickListener(v -> {
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
+
+        notificationsImageView.setOnClickListener(null);
     }
 
     @Override

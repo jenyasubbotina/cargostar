@@ -232,6 +232,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         new Thread(() -> requestsViewModel.readReceipt(currentItem.getId())).start();
 
         final MyRequestsFragmentDirections.ActionMyBidsFragmentToParcelDataFragment action = MyRequestsFragmentDirections.actionMyBidsFragmentToParcelDataFragment();
+
         action.setRequestId(currentItem.getId());
         action.setIsPublic(false);
         action.setIsRequest(true);
@@ -255,6 +256,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         action.setDeliveryType(currentItem.getDeliveryType());
         action.setComment(currentItem.getComment());
         action.setConsignmentQuantity(currentItem.getConsignmentQuantity());
+
         UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
     }
 

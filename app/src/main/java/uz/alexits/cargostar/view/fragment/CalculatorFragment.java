@@ -81,6 +81,7 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private ImageView profileImageView;
     private ImageView editImageView;
     private ImageView createUserImageView;
+    private ImageView calculatorImageView;
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
     //main content views
@@ -183,6 +184,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
+        calculatorImageView = activity.findViewById(R.id.calculator_image_view);
+
         //main content views
         srcCountryField = root.findViewById(R.id.source_country_field);
         destCountryField = root.findViewById(R.id.destination_country_field);
@@ -275,6 +278,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         profileImageView.setOnClickListener(v -> {
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
         });
+
+        calculatorImageView.setOnClickListener(null);
 
         weightEditText.setOnFocusChangeListener((v, hasFocus) -> {
             UiUtils.onFocusChanged(weightEditText, hasFocus);

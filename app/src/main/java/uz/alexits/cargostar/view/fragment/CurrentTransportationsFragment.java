@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,6 +35,7 @@ import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.transportation.Invoice;
 import uz.alexits.cargostar.model.transportation.Transportation;
@@ -82,7 +84,7 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
     private RelativeLayout transitPointField;
     private Spinner transitPointSpinner;
-
+    private ArrayAdapter<TransitPoint> transitPointArrayAdapter;
     private EditText qrCodeEditText;
     private ImageView scanQrImageView;
 
@@ -151,7 +153,12 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
         qrCodeEditText = root.findViewById(R.id.qr_code_edit_text);
         scanQrImageView = root.findViewById(R.id.camera_image_view);
         transitPointField = root.findViewById(R.id.city_field);
+
         transitPointSpinner = root.findViewById(R.id.city_spinner);
+        transitPointArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
+        transitPointArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        transitPointSpinner.setAdapter(transitPointArrayAdapter);
+
         currentTransportationListRecyclerView = root.findViewById(R.id.current_parcels_recycler_view);
 
         transportationAdapter = new TransportationAdapter(context, this);
@@ -336,9 +343,8 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
                 if (isFirstSpinnerPick) {
                     isFirstSpinnerPick = false;
-
                     for (int i = 0; i < transitPointList.size(); i++) {
-                        if (transitPointList.get(i).getBrancheId().compareTo(courierBrancheId) == 0) {
+                        if (transitPointList.get(i).getBrancheId() == courierBrancheId) {
                             transitPointSpinner.setSelection(i);
                             return;
                         }
@@ -349,10 +355,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
         transportationViewModel.getCurrentTransportationList().observe(getViewLifecycleOwner(), transportationList -> {
             if (transportationList != null) {
-                for (final Transportation transportation : transportationList) {
-                    Log.i(TAG, "transport= " + transportation);
-                }
-
                 transportationAdapter.setTransportationList(transportationList);
                 transportationAdapter.notifyDataSetChanged();
 
@@ -491,21 +493,21 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     @Override
     public void onTransportationSelected(Transportation currentItem) {
         Log.i(TAG, "currentItem: " + currentItem);
-        final CurrentTransportationsFragmentDirections.ActionCurrentTransportationsFragmentToTransportationStatusFragment action =
-                CurrentTransportationsFragmentDirections.actionCurrentTransportationsFragmentToTransportationStatusFragment(
-                        currentItem.getQrCode(),
-                        currentItem.getTrackingCode(),
-                        currentItem.getTransportationStatusName(),
-                        currentItem.getCityFrom(),
-                        currentItem.getCityTo(),
-                        currentItem.getPartyQrCode(),
-                        currentItem.getInstructions(),
-                        currentItem.getDirection(),
-                        currentItem.getArrivalDate());
 
+        final CurrentTransportationsFragmentDirections.ActionCurrentTransportationsFragmentToTransportationStatusFragment action = CurrentTransportationsFragmentDirections.actionCurrentTransportationsFragmentToTransportationStatusFragment(
+                currentItem.getQrCode(),
+                currentItem.getTrackingCode(),
+                currentItem.getTransportationStatusName(),
+                currentItem.getCityFrom(),
+                currentItem.getCityTo(),
+                currentItem.getPartyQrCode(),
+                currentItem.getInstructions(),
+                currentItem.getDirection(),
+                currentItem.getArrivalDate());
+
+        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : -1L);
         action.setTransportationId(currentItem.getId());
         action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
-        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : -1L);
         action.setTransportationStatusId(currentItem.getTransportationStatusId() != null ? currentItem.getTransportationStatusId() : -1L);
         action.setTransportationStatusName(currentItem.getTransportationStatusName());
         action.setPaymentStatusId(currentItem.getPaymentStatusId() != null ? currentItem.getPaymentStatusId() : -1L);
@@ -526,10 +528,19 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     }
 
     private void initCitySpinner(final List<TransitPoint> transitPointList) {
-        final CustomArrayAdapter<TransitPoint> cityAdapter = new CustomArrayAdapter<>(context, R.layout.spinner_item, transitPointList);
-        cityAdapter.setDropDownViewResource(R.layout.spinner_item);
-        transitPointSpinner.setAdapter(cityAdapter);
-        cityAdapter.notifyDataSetChanged();
+        if (transitPointList != null) {
+            transitPointArrayAdapter.clear();
+
+            for (final TransitPoint point : transitPointList) {
+                transitPointArrayAdapter.add(point);
+            }
+            for (int i = 0; i < transitPointList.size(); i++) {
+                if (transitPointList.get(i).getId() == courierBrancheId) {
+                    transitPointSpinner.setSelection(i);
+                    return;
+                }
+            }
+        }
     }
 
     @Override

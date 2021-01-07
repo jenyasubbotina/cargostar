@@ -328,10 +328,6 @@ public class Repository {
         return transportationDao.selectCurrentTransportations(statusArray, transitPointId);
     }
 
-//    public LiveData<List<Transportation>> selectTransportationDelivery(final List<Long> statusArray, final Long transitPointId) {
-//        return transportationDao.selectCurrentTransportations(statusArray, transitPointId);
-//    }
-
     public LiveData<Transportation> selectTransportationByInvoiceId(final long invoiceId) {
         return transportationDao.selectTransportationByInvoiceId(invoiceId);
     }

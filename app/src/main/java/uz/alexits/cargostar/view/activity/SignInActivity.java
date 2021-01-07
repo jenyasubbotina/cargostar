@@ -76,8 +76,6 @@ public class SignInActivity extends AppCompatActivity {
 
             final UUID synchronizeFirstTime = SyncWorkRequest.synchronizeFirstTime(this, login, password, token);
 
-            Log.i(TAG, "login=" + login + " password=" + password);
-
             WorkManager.getInstance(this).getWorkInfoByIdLiveData(synchronizeFirstTime).observe(this, workInfo -> {
                 if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                     progressBar.setVisibility(View.INVISIBLE);
@@ -92,12 +90,12 @@ public class SignInActivity extends AppCompatActivity {
                         Toast.makeText(this, "Ошибка: ID курьера пустой", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    SharedPrefs.getInstance(this).putBoolean(SharedPrefs.KEEP_LOGGED, keepLoggingCheckBox.isChecked());
+                    SharedPrefs.getInstance(this).putLong(SharedPrefs.ID, courierId);
+                    SharedPrefs.getInstance(this).putLong(SharedPrefs.BRANCH_ID, brancheId);
                     SharedPrefs.getInstance(this).putString(Constants.KEY_LOGIN, login);
                     SharedPrefs.getInstance(this).putString(Constants.KEY_PASSWORD, password);
                     SharedPrefs.getInstance(this).putString(Constants.KEY_TOKEN, token);
-                    SharedPrefs.getInstance(this).putLong(SharedPrefs.ID, courierId);
-                    SharedPrefs.getInstance(this).putLong(SharedPrefs.BRANCH_ID, brancheId);
+                    SharedPrefs.getInstance(this).putBoolean(SharedPrefs.KEEP_LOGGED, keepLoggingCheckBox.isChecked());
 
                     startActivity(new Intent(this, MainActivity.class));
                     finish();

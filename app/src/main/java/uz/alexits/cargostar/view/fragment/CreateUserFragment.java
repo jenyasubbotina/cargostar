@@ -63,9 +63,11 @@ public class CreateUserFragment extends Fragment {
     private ImageView requestSearchImageView;
     private ImageView editImageView;
     private ImageView profileImageView;
-    private ImageView notificationsImageView;
     private ImageView calculatorImageView;
+    private ImageView createUserImageView;
+    private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
+
     //user data
     private EditText passwordEditText;
     private EditText emailEditText;
@@ -147,6 +149,7 @@ public class CreateUserFragment extends Fragment {
         profileImageView = activity.findViewById(R.id.profile_image_view);
         notificationsImageView = activity.findViewById(R.id.notifications_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
+        createUserImageView = activity.findViewById(R.id.create_user_image_view);
         badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
         //user data
         passwordEditText = root.findViewById(R.id.password_edit_text);
@@ -402,6 +405,8 @@ public class CreateUserFragment extends Fragment {
         calculatorImageView.setOnClickListener(v -> {
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
+
+        createUserImageView.setOnClickListener(null);
 
         //country, region, city spinners
         countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

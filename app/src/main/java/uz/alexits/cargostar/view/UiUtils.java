@@ -29,8 +29,7 @@ public class UiUtils {
         v.setBackgroundResource(R.drawable.edit_text_locked);
     }
 
-    public static void hideSoftKeyboard (final Activity activity, View view)
-    {
+    public static void hideSoftKeyboard (final Activity activity, View view) {
         InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }

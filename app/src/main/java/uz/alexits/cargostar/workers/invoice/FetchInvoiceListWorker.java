@@ -55,6 +55,7 @@ public class FetchInvoiceListWorker extends Worker {
                     }
 
                     for (final Invoice invoice : invoiceList) {
+                        Log.i(TAG, "-> " + invoice);
                         LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoice(invoice);
                     }
 

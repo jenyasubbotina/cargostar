@@ -543,11 +543,6 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
 
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(updateStatusWork).observe(getViewLifecycleOwner(), workInfo -> {
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                final Data outputData = workInfo.getOutputData();
-//                final long pointId = outputData.getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, -1L);
-//                final long statusId = outputData.getLong(Constants.KEY_CURRENT_STATUS_ID, -1L);
-//                final String statusName = outputData.getString(Constants.KEY_CURRENT_STATUS_NAME);
-
                 if (currentPointId <= 0 || currentStatusId <= 0 || currentStatusName == null) {
                     progressBar.setVisibility(View.INVISIBLE);
                     checkImageView.setVisibility(View.INVISIBLE);
@@ -589,23 +584,26 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
 
     @Override
     public void onPartialSelected(Transportation currentItem) {
-        final TransportationStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action =
-                TransportationStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
-        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : -1L);
-        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
+        final TransportationStatusFragmentDirections.ActionParcelStatusFragmentToParcelDataFragment action = TransportationStatusFragmentDirections.actionParcelStatusFragmentToParcelDataFragment();
+
         action.setIsPublic(false);
         action.setIsRequest(false);
+        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : -1L);
+        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
         action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
         action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
         action.setClientId(senderId);
         action.setSenderCountryId(senderCountryId);
         action.setSenderRegionId(senderRegionId);
         action.setSenderCityId(senderCityId);
+
         action.setRecipientCountryId(recipientCountryId);
         action.setRecipientCityId(recipientCityId);
+
         action.setDeliveryType(deliveryType);
         action.setComment(comment);
         action.setConsignmentQuantity(consignmentQuantity);
+
         UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(action);
     }
 

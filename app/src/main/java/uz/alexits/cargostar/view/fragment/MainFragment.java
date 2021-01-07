@@ -51,6 +51,7 @@ public class MainFragment extends Fragment {
     private FragmentActivity activity;
     private Context context;
     //header views
+    private ImageView profileImageView;
     private TextView fullNameTextView;
     private TextView branchTextView;
     private TextView courierIdTextView;
@@ -104,6 +105,7 @@ public class MainFragment extends Fragment {
         courierIdTextView = activity.findViewById(R.id.courier_id_text_view);
         requestSearchEditText = activity.findViewById(R.id.search_edit_text);
         requestSearchImageView = activity.findViewById(R.id.search_btn);
+        profileImageView = activity.findViewById(R.id.profile_image_view);
         editImageView = activity.findViewById(R.id.edit_image_view);
         createUserImageView = activity.findViewById(R.id.create_user_image_view);
         calculatorImageView = activity.findViewById(R.id.calculator_image_view);
@@ -124,7 +126,10 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         //header views
+        profileImageView.setOnClickListener(null);
+
         editImageView.setOnClickListener(v -> {
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
