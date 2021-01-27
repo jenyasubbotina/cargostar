@@ -19,6 +19,7 @@ import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.model.location.Branche;
 import uz.alexits.cargostar.model.location.Country;
+import uz.alexits.cargostar.model.location.Region;
 import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
@@ -62,6 +63,7 @@ public class FetchCountriesWorker extends Worker {
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<Country> countryList = response.body();
+
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertCountries(countryList);
 
                     final Data outputData = new Data.Builder()

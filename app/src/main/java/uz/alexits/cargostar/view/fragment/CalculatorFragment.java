@@ -101,6 +101,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private Spinner srcCitySpinner;
     private Spinner destCitySpinner;
 
+    /* courier view model */
+    private CourierViewModel courierViewModel;
     /* location view model */
     private LocationDataViewModel locationDataViewModel;
     /* packaging view model */
@@ -166,8 +168,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         activity = getActivity();
 
         consignmentList.clear();
-
-        SyncWorkRequest.fetchPackagingData(context, 100000);
     }
 
     @Override
@@ -645,8 +645,9 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //header view model
-        final CourierViewModel courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
+        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
+        locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
+        calculatorViewModel = new ViewModelProvider(this).get(CalculatorViewModel.class);
 
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
@@ -726,9 +727,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                 Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
-        calculatorViewModel = new ViewModelProvider(this).get(CalculatorViewModel.class);
 
         /* countries */
         locationDataViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
@@ -1061,47 +1059,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         totalDimensionsTextView.setText(String.valueOf(new BigDecimal(Double.toString(totalVolume)).setScale(2, RoundingMode.HALF_UP).doubleValue()));
 
         tariffPriceAdapter.setItemList(tariffPriceList);
-    }
-
-    private void hidePackageTypeRadioBtns() {
-        packageTypeRadioGroup.setVisibility(View.INVISIBLE);
-        docTypeRadioBtn.setVisibility(View.INVISIBLE);
-        boxTypeRadioBtn.setVisibility(View.INVISIBLE);
-    }
-
-    private void showPackageTypeRadioBtns() {
-        packageTypeRadioGroup.setVisibility(View.VISIBLE);
-        docTypeRadioBtn.setVisibility(View.VISIBLE);
-        boxTypeRadioBtn.setVisibility(View.VISIBLE);
-    }
-
-    private void hideInputFields() {
-        packagingTypeSpinner.setVisibility(View.INVISIBLE);
-        packagingTypeField.setVisibility(View.INVISIBLE);
-
-        weightEditText.setVisibility(View.INVISIBLE);
-        lengthEditText.setVisibility(View.INVISIBLE);
-        widthEditText.setVisibility(View.INVISIBLE);
-        heightEditText.setVisibility(View.INVISIBLE);
-    }
-
-    private void showInputFields() {
-        packagingTypeSpinner.setVisibility(View.VISIBLE);
-        packagingTypeField.setVisibility(View.VISIBLE);
-
-        weightEditText.setVisibility(View.VISIBLE);
-        lengthEditText.setVisibility(View.VISIBLE);
-        widthEditText.setVisibility(View.VISIBLE);
-        heightEditText.setVisibility(View.VISIBLE);
-    }
-
-    private void hideNextViews() {
-        //radio group, radioBtn 1, radioBtn 2
-        //packageType spinner, its relative layout
-        //weight editText, length editText, widthEditText, height editText
-        //addItem btn
-        addBtn.setVisibility(View.INVISIBLE);
-        calculateBtn.setVisibility(View.INVISIBLE);
     }
 
     private static final String TAG = CalculatorFragment.class.toString();

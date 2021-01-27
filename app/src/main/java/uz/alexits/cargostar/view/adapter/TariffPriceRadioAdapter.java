@@ -34,11 +34,11 @@ public class TariffPriceRadioAdapter extends RecyclerView.Adapter<TariffPriceRad
     }
 
     public String getSelectedPrice() {
-        return itemList == null || itemList.isEmpty() ? null : itemList.get(lastCheckedPosition).getPrice();
+        return itemList == null || itemList.isEmpty() || lastCheckedPosition < 0 ? null : itemList.get(lastCheckedPosition).getPrice();
     }
 
     public long getSelectedPackagingId() {
-        return itemList == null || itemList.isEmpty() ? 0 : itemList.get(lastCheckedPosition).getTariffId();
+        return itemList == null || itemList.isEmpty() || lastCheckedPosition < 0 ? 0 : itemList.get(lastCheckedPosition).getTariffId();
     }
 
     public int getLastCheckedPosition() {

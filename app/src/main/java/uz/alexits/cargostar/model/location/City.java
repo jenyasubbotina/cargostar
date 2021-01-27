@@ -126,4 +126,14 @@ public class City {
     public String toString() {
         return nameEn;
     }
+
+//    @NonNull
+//    @Override
+//    public String toString() {
+//        return "City{" +
+//                "id=" + id +
+//                ", regionId=" + regionId +
+//                ", nameEn='" + nameEn + '\'' +
+//                '}';
+//    }
 }

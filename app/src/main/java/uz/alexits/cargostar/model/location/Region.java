@@ -133,4 +133,14 @@ public class Region {
     public String toString() {
         return name;
     }
+
+//    @NonNull
+//    @Override
+//    public String toString() {
+//        return "Region{" +
+//                "id=" + id +
+//                ", countryId=" + countryId +
+//                ", nameEn='" + nameEn + '\'' +
+//                '}';
+//    }
 }

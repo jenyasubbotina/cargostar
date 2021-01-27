@@ -52,7 +52,6 @@ public class InitializationActivity extends AppCompatActivity {
                 loginIntent.putExtra(Constants.KEY_LOGIN, getIntent().getStringExtra(Constants.KEY_LOGIN));
                 loginIntent.putExtra(Constants.KEY_PASSWORD, getIntent().getStringExtra(Constants.KEY_PASSWORD));
             }
-
             startActivity(loginIntent);
         }
         finish();

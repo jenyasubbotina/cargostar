@@ -22,7 +22,7 @@ public abstract class LocationDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long[] insertCountries(final List<Country> countryList);
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertCountry(final Country country);
 
     @Query("DELETE FROM country")
@@ -59,7 +59,7 @@ public abstract class LocationDao {
         return insertRegions(regionList);
     }
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertRegion(final Region region);
 
     @Query("SELECT * FROM region ORDER BY id ASC")
@@ -90,7 +90,7 @@ public abstract class LocationDao {
         return insertCities(cityList);
     }
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertCity(final City city);
 
     @Query("SELECT * FROM city ORDER BY name_en ASC")
@@ -115,7 +115,7 @@ public abstract class LocationDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long[] insertBranches(final List<Branche> brancheList);
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertBranche(final Branche branche);
 
     @Query("SELECT * FROM branche ORDER BY id ASC")
@@ -131,7 +131,7 @@ public abstract class LocationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long[] insertTransitPoints(final List<TransitPoint> transitPointList);
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertTransitPoint(final TransitPoint transitPoint);
 
     @Query("SELECT * FROM transitPoint ORDER BY id")
