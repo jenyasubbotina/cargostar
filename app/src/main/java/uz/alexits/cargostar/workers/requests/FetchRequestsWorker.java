@@ -60,11 +60,11 @@ public class FetchRequestsWorker extends Worker {
                     final List<Request> publicRequestList = response.body();
 
                     if (publicRequestList != null) {
-//                        LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
-                        for (final Request request : publicRequestList) {
-                            Log.i(TAG, "-> " + request);
-                            LocalCache.getInstance(getApplicationContext()).requestDao().insertRequest(request);
-                        }
+                        LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+//                        for (final Request request : publicRequestList) {
+//                            Log.i(TAG, "-> " + request);
+//                            LocalCache.getInstance(getApplicationContext()).requestDao().insertRequest(request);
+//                        }
                     }
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
