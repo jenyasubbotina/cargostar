@@ -54,10 +54,12 @@ public class FetchInvoiceListWorker extends Worker {
                         return Result.failure();
                     }
 
-                    for (final Invoice invoice : invoiceList) {
-                        Log.i(TAG, "-> " + invoice);
-                        LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoice(invoice);
-                    }
+                    LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoiceList(invoiceList);
+
+//                    for (final Invoice invoice : invoiceList) {
+//                        Log.i(TAG, "-> " + invoice);
+//                        LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoice(invoice);
+//                    }
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
