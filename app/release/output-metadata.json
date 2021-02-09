@@ -10,9 +10,9 @@
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 15,
-      "versionName": "1.0.4.1",
-      "outputFile": "CargoStar-1.0.4.1-release.apk"
+      "versionCode": 17,
+      "versionName": "1.0.4.3",
+      "outputFile": "CargoStar-1.0.4.3-release.apk"
     }
   ]
 }

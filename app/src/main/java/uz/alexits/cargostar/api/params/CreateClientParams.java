@@ -41,8 +41,8 @@ public class CreateClientParams {
     @SerializedName("country")
     private final String country;
 
-    @SerializedName("city")
-    private final String city;
+    @SerializedName("city_name")
+    private final String cityName;
 
     @SerializedName("address")
     private final String address;
@@ -99,7 +99,7 @@ public class CreateClientParams {
                               final String lastName,
                               final String phone,
                               final String country,
-                              final String city,
+                              final String cityName,
                               final String address,
                               final String geolocation,
                               final String zip,
@@ -126,7 +126,7 @@ public class CreateClientParams {
         this.lastName = lastName;
         this.phone = phone;
         this.country = country;
-        this.city = city;
+        this.cityName = cityName;
         this.address = address;
         this.geolocation = geolocation;
         this.zip = zip;
@@ -187,8 +187,8 @@ public class CreateClientParams {
         return country;
     }
 
-    public String getCity() {
-        return city;
+    public String getCityName() {
+        return cityName;
     }
 
     public String getAddress() {
@@ -266,7 +266,7 @@ public class CreateClientParams {
                 ", lastName='" + lastName + '\'' +
                 ", phone='" + phone + '\'' +
                 ", country='" + country + '\'' +
-                ", city='" + city + '\'' +
+                ", city='" + cityName + '\'' +
                 ", address='" + address + '\'' +
                 ", geolocation='" + geolocation + '\'' +
                 ", zip='" + zip + '\'' +

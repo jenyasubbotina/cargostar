@@ -71,6 +71,7 @@ public class CreateUserFragment extends Fragment {
     //user data
     private EditText passwordEditText;
     private EditText emailEditText;
+    
     //client data
     private EditText tntAccountNumberEditText;
     private EditText fedexAccountNumberEditText;
@@ -79,17 +80,13 @@ public class CreateUserFragment extends Fragment {
     private EditText middleNameEditText;
     private EditText phoneEditText;
     private EditText addressEditText;
+    private EditText cityEditText;
     private EditText geolocationEditText;
 
     //country spinner item
     private ArrayAdapter<Country> countryArrayAdapter;
     private Spinner countrySpinner;
     private RelativeLayout countryField;
-
-    //city spinner item
-    private ArrayAdapter<City> cityArrayAdapter;
-    private RelativeLayout cityField;
-    private Spinner citySpinner;
 
     private EditText zipEditText;
     private EditText signatureEditText;
@@ -118,7 +115,6 @@ public class CreateUserFragment extends Fragment {
     private ProgressBar progressBar;
 
     private static volatile boolean countryIsSet;
-
 
     //ViewModel
     private CourierViewModel courierViewModel;
@@ -166,10 +162,9 @@ public class CreateUserFragment extends Fragment {
 
         //country, region, city
         countryField = root.findViewById(R.id.country_field);
-        cityField = root.findViewById(R.id.city_field);
+        cityEditText = root.findViewById(R.id.city_edit_text);
 
         countrySpinner = root.findViewById(R.id.country_spinner);
-        citySpinner = root.findViewById(R.id.city_spinner);
 
         progressBar = root.findViewById(R.id.progress_bar);
 
@@ -200,10 +195,6 @@ public class CreateUserFragment extends Fragment {
         countryArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         countryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         countrySpinner.setAdapter(countryArrayAdapter);
-
-        cityArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
-        cityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        citySpinner.setAdapter(cityArrayAdapter);
 
         return root;
     }
@@ -290,6 +281,10 @@ public class CreateUserFragment extends Fragment {
 
         bankEditText.setOnFocusChangeListener((v, hasFocus) -> {
             UiUtils.onFocusChanged(bankEditText, hasFocus);
+        });
+
+        cityEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            UiUtils.onFocusChanged(cityEditText, hasFocus);
         });
 
         passportSerialEditText.addTextChangedListener(new TextWatcher() {
@@ -430,27 +425,6 @@ public class CreateUserFragment extends Fragment {
             }
         });
 
-        citySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                final TextView itemTextView = (TextView) view;
-                final City selectedCity = (City) parent.getSelectedItem();
-
-                if (itemTextView != null) {
-                    if (position < parent.getCount()) {
-                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
-                        cityField.setBackgroundResource(R.drawable.edit_text_active);
-                    }
-                }
-                final int selectedPosition = citySpinner.getSelectedItemPosition();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
         requestSearchImageView.setOnClickListener(v -> {
             final String invoiceIdStr = requestSearchEditText.getText().toString();
 
@@ -530,7 +504,7 @@ public class CreateUserFragment extends Fragment {
             final String fedexAccountNumber = fedexAccountNumberEditText.getText().toString();
 
             final Country country = (Country) countrySpinner.getSelectedItem();
-            final City city = (City) citySpinner.getSelectedItem();
+            final String city = cityEditText.getText().toString();
 
             final String zip = zipEditText.getText().toString();
             final String address = addressEditText.getText().toString();
@@ -564,10 +538,6 @@ public class CreateUserFragment extends Fragment {
             }
             if (country == null) {
                 Toast.makeText(context, "Страна не указана", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (city == null) {
-                Toast.makeText(context, "Город не указан", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(address)) {
@@ -656,7 +626,7 @@ public class CreateUserFragment extends Fragment {
                     lastName,
                     phone,
                     country.getNameEn(),
-                    city.getNameEn(),
+                    city,
                     address,
                     geolocation,
                     zip,
@@ -733,26 +703,6 @@ public class CreateUserFragment extends Fragment {
                         int finalI = i;
                         countrySpinner.post(() -> countrySpinner.setSelection(finalI, false));
                         countryIsSet = true;
-                        return;
-                    }
-                }
-            }
-        });
-
-        locationDataViewModel.getCityList().observe(getViewLifecycleOwner(), cityList -> {
-            if (cityList != null) {
-                cityArrayAdapter.clear();
-
-                for (final City city : cityList) {
-                    cityArrayAdapter.add(city);
-                }
-                if (!countryIsSet) {
-                    return;
-                }
-                for (int i = 0; i < cityList.size(); i++) {
-                    if (cityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
-                        int finalI = i;
-                        citySpinner.post(() -> citySpinner.setSelection(finalI, false));
                         return;
                     }
                 }

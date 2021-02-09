@@ -404,23 +404,22 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/city"/>
 
-        <RelativeLayout
-            android:id="@+id/city_field"
+        <EditText
+            android:id="@+id/city_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/country_field"
             app:layout_constraintBottom_toBottomOf="@id/country_field"
             app:layout_constraintStart_toStartOf="@id/geolocation_edit_text"
             app:layout_constraintEnd_toEndOf="@id/geolocation_edit_text"
-            android:background="@drawable/edit_text_locked">
-
-            <Spinner
-                android:id="@+id/city_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="8dp" />
-        </RelativeLayout>
+            android:inputType="textCapWords"
+            android:background="@drawable/edit_text_locked"
+            android:textSize="16sp"
+            android:fontFamily="@font/geometria_actual"
+            android:textColor="@color/colorBlack"
+            android:padding="17dp"
+            android:autofillHints="@string/city"
+            android:labelFor="@id/city_text_view"/>
 
         <TextView
             android:id="@+id/zip_text_view"

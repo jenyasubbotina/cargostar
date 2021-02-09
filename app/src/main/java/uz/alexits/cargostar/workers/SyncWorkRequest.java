@@ -547,7 +547,7 @@ public class SyncWorkRequest {
                                   final String lastName,
                                   final String phone,
                                   final String country,
-                                  final String city,
+                                  final String cityName,
                                   final String address,
                                   final String geolocation,
                                   final String zip,
@@ -580,7 +580,7 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_LAST_NAME, lastName)
                 .putString(Constants.KEY_PHONE, phone)
                 .putString(Constants.KEY_COUNTRY, country)
-                .putString(Constants.KEY_CITY, city)
+                .putString(Constants.KEY_CITY_NAME, cityName)
                 .putString(Constants.KEY_ADDRESS, address)
                 .putString(Constants.KEY_GEOLOCATION, geolocation)
                 .putString(Constants.KEY_ZIP, zip)

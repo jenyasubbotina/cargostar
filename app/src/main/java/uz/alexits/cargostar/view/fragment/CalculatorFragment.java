@@ -93,18 +93,12 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
     private RelativeLayout srcCountryField;
     private RelativeLayout destCountryField;
 
-    /* city spinner items */
-    private ArrayAdapter<City> srcCityArrayAdapter;
-    private ArrayAdapter<City> destCityArrayAdapter;
-    private RelativeLayout srcCityField;
-    private RelativeLayout destCityField;
-    private Spinner srcCitySpinner;
-    private Spinner destCitySpinner;
-
     /* courier view model */
     private CourierViewModel courierViewModel;
+
     /* location view model */
     private LocationDataViewModel locationDataViewModel;
+
     /* packaging view model */
     private CalculatorViewModel calculatorViewModel;
 
@@ -190,14 +184,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         srcCountryField = root.findViewById(R.id.source_country_field);
         destCountryField = root.findViewById(R.id.destination_country_field);
 
-        srcCityField = root.findViewById(R.id.source_city_field);
-        destCityField = root.findViewById(R.id.destination_city_field);
-
         srcCountrySpinner = root.findViewById(R.id.source_country_spinner);
         destCountrySpinner = root.findViewById(R.id.destination_country_spinner);
-
-        srcCitySpinner = root.findViewById(R.id.source_city_spinner);
-        destCitySpinner = root.findViewById(R.id.destination_city_spinner);
 
         packagingTypeSpinner = root.findViewById(R.id.package_type_spinner);
         packagingTypeField = root.findViewById(R.id.package_type_field);
@@ -221,13 +209,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
         countryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         srcCountrySpinner.setAdapter(countryArrayAdapter);
         destCountrySpinner.setAdapter(countryArrayAdapter);
-
-        srcCityArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
-        destCityArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
-        srcCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        destCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        srcCitySpinner.setAdapter(srcCityArrayAdapter);
-        destCitySpinner.setAdapter(destCityArrayAdapter);
 
         packagingTypeArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         packagingTypeArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -508,44 +489,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             }
         });
 
-        srcCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                final TextView itemTextView = (TextView) view;
-
-                if (itemTextView != null) {
-                    if (i < adapterView.getCount()) {
-                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
-                        srcCityField.setBackgroundResource(R.drawable.edit_text_active);
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        destCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                final TextView itemTextView = (TextView) view;
-
-                if (itemTextView != null) {
-                    if (i < adapterView.getCount()) {
-                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
-                        destCityField.setBackgroundResource(R.drawable.edit_text_active);
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
         /* providers */
         firstCard.setOnClickListener(v -> {
             firstCardRadioBtn.setChecked(true);
@@ -740,37 +683,6 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                         srcCountrySpinner.post(() -> srcCountrySpinner.setSelection(finalI, false));
                         int finalI1 = i;
                         destCountrySpinner.post(() -> destCountrySpinner.setSelection(finalI1, false));
-                        return;
-                    }
-                }
-            }
-        });
-
-        /* cities */
-        calculatorViewModel.getSrcCities().observe(getViewLifecycleOwner(), srcCityList -> {
-            if (srcCityList != null) {
-                srcCityArrayAdapter.clear();
-                srcCityArrayAdapter.addAll(srcCityList);
-
-                for (int i = 0; i < srcCityList.size(); i++) {
-                    if (srcCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
-                        int finalI = i;
-                        srcCitySpinner.post(() -> srcCitySpinner.setSelection(finalI, false));
-                        return;
-                    }
-                }
-            }
-        });
-
-        calculatorViewModel.getDestCities().observe(getViewLifecycleOwner(), destCityList -> {
-            if (destCityList != null) {
-                destCityArrayAdapter.clear();
-                destCityArrayAdapter.addAll(destCityList);
-
-                for (int i = 0; i < destCityList.size(); i++) {
-                    if (destCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.samarkand))) {
-                        int finalI = i;
-                        destCitySpinner.post(() -> destCitySpinner.setSelection(finalI, false));
                         return;
                     }
                 }

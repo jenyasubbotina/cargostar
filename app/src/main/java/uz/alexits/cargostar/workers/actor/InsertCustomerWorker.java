@@ -29,7 +29,7 @@ public class InsertCustomerWorker extends Worker {
     private final String lastName;
     private final String phone;
     private final String country;
-    private final String city;
+    private final String cityName;
     private final String address;
     private final String geolocation;
     private final String zip;
@@ -57,7 +57,7 @@ public class InsertCustomerWorker extends Worker {
         this.lastName = getInputData().getString(Constants.KEY_LAST_NAME);
         this.phone = getInputData().getString(Constants.KEY_PHONE);
         this.country = getInputData().getString(Constants.KEY_COUNTRY);
-        this.city = getInputData().getString(Constants.KEY_CITY);
+        this.cityName = getInputData().getString(Constants.KEY_CITY_NAME);
         this.address = getInputData().getString(Constants.KEY_ADDRESS);
         this.geolocation = getInputData().getString(Constants.KEY_GEOLOCATION);
         this.zip = getInputData().getString(Constants.KEY_ZIP);
@@ -101,7 +101,7 @@ public class InsertCustomerWorker extends Worker {
                             lastName,
                             phone,
                             country,
-                            city,
+                            cityName,
                             address,
                             geolocation,
                             zip,

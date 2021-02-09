@@ -23,8 +23,7 @@ public class SharedPrefs {
         this.prefs = context.getSharedPreferences(context.getPackageName() + PREFS_FILENAME, Context.MODE_PRIVATE);
     }
 
-    public static SharedPrefs getInstance(final Context context)
-    {
+    public static SharedPrefs getInstance(final Context context) {
         if (INSTANCE == null) {
             synchronized (SharedPrefs.class) {
                 if (INSTANCE == null) {
@@ -51,8 +50,7 @@ public class SharedPrefs {
         this.prefs.edit().putLong(key, value).apply();
     }
 
-    public String getString(final String key)
-    {
+    public String getString(final String key) {
         return this.prefs.getString(key, null);
     }
 
@@ -60,8 +58,7 @@ public class SharedPrefs {
         return this.prefs.getInt(key, -1);
     }
 
-    public boolean getBoolean(final String key)
-    {
+    public boolean getBoolean(final String key) {
         return this.prefs.getBoolean(key, false);
     }
 

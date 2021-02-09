@@ -14,7 +14,7 @@ public class Constants {
     public static final String KEY_PHONE = "phone";
     public static final String KEY_COUNTRY = "country";
     public static final String KEY_REGION = "region";
-    public static final String KEY_CITY = "city";
+//    public static final String KEY_CITY = "city";
     public static final String KEY_ADDRESS = "address";
     public static final String KEY_GEOLOCATION = "geolocation";
     public static final String KEY_ZIP = "zip";
@@ -67,6 +67,7 @@ public class Constants {
     public static final String KEY_SENDER_COUNTRY_ID = "country_id";
     public static final String KEY_SENDER_REGION_ID = "region_id";
     public static final String KEY_SENDER_CITY_ID = "city_id";
+    public static final String KEY_CITY_NAME = "city_name";
     public static final String KEY_USER_ID = "user_id";
     public static final String KEY_CLIENT_ID = "client_id";
     public static final String KEY_EMPLOYEE_ID = "employee_id";
