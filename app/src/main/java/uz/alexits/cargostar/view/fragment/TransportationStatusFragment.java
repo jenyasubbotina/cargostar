@@ -595,10 +595,10 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
         action.setClientId(senderId);
         action.setSenderCountryId(senderCountryId);
         action.setSenderRegionId(senderRegionId);
-        action.setSenderCityId(senderCityId);
-
         action.setRecipientCountryId(recipientCountryId);
-        action.setRecipientCityId(recipientCityId);
+
+//        action.setSenderCityName(senderCityId);
+//        action.setRecipientCityName(recipientCityId);
 
         action.setDeliveryType(deliveryType);
         action.setComment(comment);

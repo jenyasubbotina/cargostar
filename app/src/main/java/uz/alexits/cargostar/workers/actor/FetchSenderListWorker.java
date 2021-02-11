@@ -66,8 +66,8 @@ public class FetchSenderListWorker extends Worker {
                     final long[] rowsInserted = LocalCache.getInstance(getApplicationContext()).actorDao().insertSenderList(senderList);
 
                     if (rowsInserted.length <= 0) {
-                        Log.e(TAG, "fetchAllCustomers(): couldn't insert entries");
-                        return Result.failure();
+                        Log.w(TAG, "fetchAllCustomers(): empty response");
+                        return Result.success();
                     }
                     Log.i(TAG, "fetchAllCustomers(): successfully inserted entries");
 

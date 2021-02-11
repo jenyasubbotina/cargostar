@@ -23,7 +23,7 @@ public class FetchSenderWorker extends Worker {
     private final long invoiceId;
     private final long userId;
     private final long recipientCountryId;
-    private final long recipientCityId;
+    private final String recipientCityName;
     private final String recipientCity;
     private final int deliveryType;
     private final String paymentStatus;
@@ -39,7 +39,7 @@ public class FetchSenderWorker extends Worker {
         this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
         this.userId = getInputData().getLong(Constants.KEY_USER_ID, -1L);
         this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-        this.recipientCityId = getInputData().getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
+        this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
         this.recipientCity = getInputData().getString(Constants.KEY_RECIPIENT_CITY);
         this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
         this.paymentStatus = getInputData().getString(Constants.KEY_PAYMENT_STATUS);
@@ -85,7 +85,7 @@ public class FetchSenderWorker extends Worker {
                             .putLong(Constants.KEY_INVOICE_ID, invoiceId)
                             .putLong(Constants.KEY_USER_ID, userId)
                             .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
-                            .putLong(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId)
+                            .putString(Constants.KEY_RECIPIENT_CITY_NAME, recipientCityName)
                             .putString(Constants.KEY_RECIPIENT_CITY, recipientCity)
                             .putInt(Constants.KEY_DELIVERY_TYPE, deliveryType)
                             .putString(Constants.KEY_PAYMENT_STATUS, paymentStatus)
@@ -101,7 +101,7 @@ public class FetchSenderWorker extends Worker {
                             .putString(Constants.KEY_SENDER_ADDRESS, sender.getAddress())
                             .putLong(Constants.KEY_SENDER_COUNTRY_ID, sender.getCountryId() != null ? sender.getCountryId() : -1L)
                             .putLong(Constants.KEY_SENDER_REGION_ID, sender.getRegionId() != null ? sender.getRegionId() : -1L)
-                            .putLong(Constants.KEY_SENDER_CITY_ID, sender.getCityId() != null ? sender.getCityId() : -1L)
+                            .putString(Constants.KEY_SENDER_CITY_NAME, sender.getCityName())
                             .putString(Constants.KEY_SENDER_ZIP, sender.getZip())
                             .putString(Constants.KEY_SENDER_COMPANY_NAME, sender.getCompany())
                             .putString(Constants.KEY_SENDER_CARGOSTAR, sender.getCargostarAccountNumber())

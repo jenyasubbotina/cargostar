@@ -256,25 +256,26 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/city"/>
 
-        <Spinner
-            android:id="@+id/sender_city_spinner"
+        <EditText
+            android:id="@+id/sender_city_edit_text"
             android:layout_width="0dp"
             android:layout_height="56dp"
             app:layout_constraintTop_toTopOf="@id/sender_country_spinner"
             app:layout_constraintBottom_toBottomOf="@id/sender_country_spinner"
             app:layout_constraintStart_toStartOf="@id/sender_phone_edit_text"
             app:layout_constraintEnd_toEndOf="@id/sender_phone_edit_text"
+            android:inputType="textCapWords"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
-            android:paddingHorizontal="4dp"
+            android:padding="17dp"
             android:textColor="@color/colorBlack"/>
 
         <TextView
             android:id="@+id/sender_address_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/sender_city_spinner"
+            app:layout_constraintTop_toBottomOf="@id/sender_city_edit_text"
             app:layout_constraintStart_toStartOf="@id/sender_country_text_view"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
@@ -314,8 +315,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/sender_address_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/sender_address_edit_text"
-            app:layout_constraintStart_toStartOf="@id/sender_city_spinner"
-            app:layout_constraintEnd_toEndOf="@id/sender_city_spinner"
+            app:layout_constraintStart_toStartOf="@id/sender_city_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/sender_city_edit_text"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -618,18 +619,19 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/city"/>
 
-        <Spinner
-            android:id="@+id/recipient_city_spinner"
+        <EditText
+            android:id="@+id/recipient_city_edit_text"
             android:layout_width="0dp"
             android:layout_height="56dp"
             app:layout_constraintTop_toTopOf="@id/recipient_country_spinner"
             app:layout_constraintBottom_toBottomOf="@id/recipient_country_spinner"
             app:layout_constraintStart_toStartOf="@id/recipient_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/recipient_middle_name_edit_text"
+            android:inputType="textCapWords"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
-            android:paddingHorizontal="4dp"
+            android:padding="17dp"
             android:textColor="@color/colorBlack"/>
 
         <TextView
@@ -676,8 +678,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/recipient_address_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/recipient_address_edit_text"
-            app:layout_constraintStart_toStartOf="@id/recipient_city_spinner"
-            app:layout_constraintEnd_toEndOf="@id/recipient_city_spinner"
+            app:layout_constraintStart_toStartOf="@id/recipient_city_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/recipient_city_edit_text"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -1039,18 +1041,19 @@
             android:fontFamily="@font/geometria_actual"
             android:text="@string/city"/>
 
-        <Spinner
-            android:id="@+id/payer_city_spinner"
+        <EditText
+            android:id="@+id/payer_city_edit_text"
             android:layout_width="0dp"
             android:layout_height="56dp"
             app:layout_constraintTop_toTopOf="@id/payer_country_spinner"
             app:layout_constraintBottom_toBottomOf="@id/payer_country_spinner"
             app:layout_constraintStart_toStartOf="@id/payer_middle_name_edit_text"
             app:layout_constraintEnd_toEndOf="@id/payer_middle_name_edit_text"
+            android:inputType="textCapWords"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
-            android:paddingHorizontal="4dp"
+            android:padding="17dp"
             android:textColor="@color/colorBlack"/>
 
         <TextView
@@ -1097,8 +1100,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/payer_address_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/payer_address_edit_text"
-            app:layout_constraintStart_toStartOf="@id/payer_city_spinner"
-            app:layout_constraintEnd_toEndOf="@id/payer_city_spinner"
+            app:layout_constraintStart_toStartOf="@id/payer_city_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/payer_city_edit_text"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"

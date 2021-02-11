@@ -44,8 +44,8 @@ public class CreateInvoiceParams {
     private String senderCountryId;
 
     @Expose
-    @SerializedName("sender_city_id")
-    private String senderCityId;
+    @SerializedName("sender_city_name")
+    private String senderCityName;
 
     @Expose
     @SerializedName("sender_address")
@@ -101,8 +101,8 @@ public class CreateInvoiceParams {
     private String recipientCountryId;
 
     @Expose
-    @SerializedName("recipient_city_id")
-    private String recipientCityId;
+    @SerializedName("recipient_city_name")
+    private String recipientCityName;
 
     @Expose
     @SerializedName("recipient_address")
@@ -158,8 +158,8 @@ public class CreateInvoiceParams {
     private String payerCountryId;
 
     @Expose
-    @SerializedName("payer_city_id")
-    private String payerCityId;
+    @SerializedName("payer_city_name")
+    private String payerCityName;
 
     @Expose
     @SerializedName("payer_address")
@@ -348,12 +348,12 @@ public class CreateInvoiceParams {
         this.senderCountryId = senderCountryId;
     }
 
-    public String getSenderCityId() {
-        return senderCityId;
+    public String getSenderCityName() {
+        return senderCityName;
     }
 
-    public void setSenderCityId(final String senderCityId) {
-        this.senderCityId = senderCityId;
+    public void setSenderCityName(final String senderCityName) {
+        this.senderCityName = senderCityName;
     }
 
     public String getSenderAddress() {
@@ -444,12 +444,12 @@ public class CreateInvoiceParams {
         this.recipientCountryId = recipientCountryId;
     }
 
-    public String getRecipientCityId() {
-        return recipientCityId;
+    public String getRecipientCityName() {
+        return recipientCityName;
     }
 
-    public void setRecipientCityId(final String recipientCityId) {
-        this.recipientCityId = recipientCityId;
+    public void setRecipientCityName(final String recipientCityName) {
+        this.recipientCityName = recipientCityName;
     }
 
     public String getRecipientAddress() {
@@ -540,12 +540,12 @@ public class CreateInvoiceParams {
         this.payerCountryId = payerCountryId;
     }
 
-    public String getPayerCityId() {
-        return payerCityId;
+    public String getPayerCityName() {
+        return payerCityName;
     }
 
-    public void setPayerCityId(final String payerCityId) {
-        this.payerCityId = payerCityId;
+    public void setPayerCityName(final String payerCityName) {
+        this.payerCityName = payerCityName;
     }
 
     public String getPayerAddress() {
@@ -816,7 +816,7 @@ public class CreateInvoiceParams {
                 ", senderTntAccountNumber='" + senderTntAccountNumber + '\'' +
                 ", senderFedexAccountNumber='" + senderFedexAccountNumber + '\'' +
                 ", senderCountryId=" + senderCountryId +
-                ", senderCityId=" + senderCityId +
+                ", senderCityId=" + senderCityName +
                 ", senderAddress='" + senderAddress + '\'' +
                 ", senderZip='" + senderZip + '\'' +
                 ", senderFirstName='" + senderFirstName + '\'' +
@@ -830,7 +830,7 @@ public class CreateInvoiceParams {
                 ", recipientTntAccountNumber='" + recipientTntAccountNumber + '\'' +
                 ", recipientFedexAccountNumber='" + recipientFedexAccountNumber + '\'' +
                 ", recipientCountryId=" + recipientCountryId +
-                ", recipientCityId=" + recipientCityId +
+                ", recipientCityId=" + recipientCityName +
                 ", recipientAddress='" + recipientAddress + '\'' +
                 ", recipientZip='" + recipientZip + '\'' +
                 ", recipientFirstName='" + recipientFirstName + '\'' +
@@ -844,7 +844,7 @@ public class CreateInvoiceParams {
                 ", payerTntAccountNumber='" + payerTntAccountNumber + '\'' +
                 ", payerFedexAccountNumber='" + payerFedexAccountNumber + '\'' +
                 ", payerCountryId=" + payerCountryId +
-                ", payerCityId=" + payerCityId +
+                ", payerCityId=" + payerCityName +
                 ", payerAddress='" + payerAddress + '\'' +
                 ", payerZip='" + payerZip + '\'' +
                 ", payerFirstName='" + payerFirstName + '\'' +

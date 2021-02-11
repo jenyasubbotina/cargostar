@@ -209,7 +209,7 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setSenderFedexAccountNumber(senderFedex);
         createInvoiceParams.setSenderAddress(senderAddress);
         createInvoiceParams.setSenderCountryId(senderCountryId);
-        createInvoiceParams.setSenderCityId(senderCity);
+        createInvoiceParams.setSenderCityName(senderCity);
         createInvoiceParams.setSenderZip(senderZip);
         createInvoiceParams.setSenderFirstName(senderFirstName);
         createInvoiceParams.setSenderMiddleName(senderMiddleName);
@@ -225,7 +225,7 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setRecipientFedexAccountNumber(recipientFedex);
         createInvoiceParams.setRecipientAddress(recipientAddress);
         createInvoiceParams.setRecipientCountryId(recipientCountryId);
-        createInvoiceParams.setRecipientCityId(recipientCity);
+        createInvoiceParams.setRecipientCityName(recipientCity);
         createInvoiceParams.setRecipientZip(recipientZip);
         createInvoiceParams.setRecipientFirstName(recipientFirstName);
         createInvoiceParams.setRecipientMiddleName(recipientMiddleName);
@@ -237,7 +237,7 @@ public class SendInvoiceWorker extends Worker {
         /* payer data */
         createInvoiceParams.setPayerEmail(payerEmail);
         createInvoiceParams.setPayerCountryId(payerCountryId);
-        createInvoiceParams.setPayerCityId(payerCity);
+        createInvoiceParams.setPayerCityName(payerCity);
         createInvoiceParams.setPayerAddress(payerAddress);
         createInvoiceParams.setPayerZip(payerZip);
         createInvoiceParams.setPayerFirstName(payerFirstName);

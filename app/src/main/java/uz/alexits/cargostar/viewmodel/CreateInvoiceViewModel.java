@@ -51,8 +51,6 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
         super(application);
         this.repository = Repository.getInstance(application);
 
-//        this.countryList = repository.selectAllCountries();
-
         this.senderCountryId = new MutableLiveData<>();
         this.recipientCountryId = new MutableLiveData<>();
         this.payerCountryId = new MutableLiveData<>();
@@ -87,18 +85,6 @@ public class CreateInvoiceViewModel extends AndroidViewModel {
 
     public void setPayerCountryId(final long payerCountryId) {
         this.payerCountryId.setValue(payerCountryId);
-    }
-
-    public LiveData<List<City>> getSenderCityList() {
-        return Transformations.switchMap(senderCountryId, repository::selectCitiesByCountryId);
-    }
-
-    public LiveData<List<City>> getRecipientCityList() {
-        return Transformations.switchMap(recipientCountryId, repository::selectCitiesByCountryId);
-    }
-
-    public LiveData<List<City>> getPayerCityList() {
-        return Transformations.switchMap(payerCountryId, repository::selectCitiesByCountryId);
     }
 
     /* address book data*/

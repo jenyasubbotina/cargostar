@@ -3,7 +3,6 @@ package uz.alexits.cargostar.model.actor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
-import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
@@ -14,17 +13,15 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 
 @Entity(tableName = "user",
         foreignKeys = {
         @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
         indices = {
-        @Index(value = {"country_id"}), @Index(value = {"region_id"}), @Index(value = {"city_id"}), @Index(value = "email")})
+        @Index(value = {"country_id"}), @Index(value = {"region_id"}), @Index(value = "email")})
 public abstract class User {
     @Expose
     @SerializedName("id")
@@ -48,9 +45,9 @@ public abstract class User {
     protected final Long regionId;
 
     @Expose
-    @SerializedName("city_id")
-    @ColumnInfo(name = "city_id")
-    protected final Long cityId;
+    @SerializedName("city_name")
+    @ColumnInfo(name = "city_name")
+    protected final String cityName;
 
     @Expose
     @SerializedName("firstname")
@@ -111,7 +108,7 @@ public abstract class User {
                 final long userId,
                 final Long countryId,
                 final Long regionId,
-                final Long cityId,
+                final String cityName,
                 @NonNull final String firstName,
                 @Nullable final String middleName,
                 @NonNull final String lastName,
@@ -127,7 +124,7 @@ public abstract class User {
         this.userId = userId;
         this.countryId = countryId;
         this.regionId = regionId;
-        this.cityId = cityId;
+        this.cityName = cityName;
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -159,8 +156,8 @@ public abstract class User {
         return regionId;
     }
 
-    public Long getCityId() {
-        return cityId;
+    public String getCityName() {
+        return cityName;
     }
 
     @NonNull
@@ -252,7 +249,7 @@ public abstract class User {
                 ", userId=" + userId +
                 ", countryId=" + countryId +
                 ", regionId=" + regionId +
-                ", cityId=" + cityId +
+                ", cityId=" + cityName +
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +
                 ", lastName='" + lastName + '\'' +

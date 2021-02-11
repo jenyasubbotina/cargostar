@@ -151,10 +151,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private Country recipientCountry;
     private Country payerCountry;
 
-    private City senderCity;
-    private City recipientCity;
-    private City payerCity;
-
     /* show current cargoList */
     private ConsignmentAdapter consignmentAdapter;
     private RecyclerView itemRecyclerView;
@@ -221,9 +217,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private Spinner recipientCountrySpinner;
     private Spinner payerCountrySpinner;
 
-    private Spinner senderCitySpinner;
-    private Spinner recipientCitySpinner;
-    private Spinner payerCitySpinner;
+    private EditText senderCityNameEditText;
+    private EditText recipientCityNameEditText;
+    private EditText payerCityNameEditText;
 
     private Spinner recipientAddressBookSpinner;
     private Spinner payerAddressBookSpinner;
@@ -233,9 +229,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private RadioButton recipientIsPayerRadioBtn;
 
     private ArrayAdapter<Country> countryArrayAdapter;
-    private ArrayAdapter<City> senderCityArrayAdapter;
-    private ArrayAdapter<City> recipientCityArrayAdapter;
-    private ArrayAdapter<City> payerCityArrayAdapter;
     private ArrayAdapter<AddressBook> recipientAddressBookArrayAdapter;
     private ArrayAdapter<AddressBook> payerAddressBookArrayAdapter;
     private List<AddressBook> addressBookEntries;
@@ -273,7 +266,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile String senderPhone = null;
     private static volatile String senderAddress = null;
     private static volatile long senderCountryId = -1L;
-    private static volatile long senderCityId = -1L;
     private static volatile String senderZip = null;
     private static volatile String senderCompany = null;
     private static volatile String senderCargo = null;
@@ -288,7 +280,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile String recipientPhone = null;
     private static volatile String recipientAddress = null;
     private static volatile long recipientCountryId = -1L;
-    private static volatile long recipientCityId = -1L;
     private static volatile String recipientZip = null;
     private static volatile String recipientCompany = null;
     private static volatile String recipientCargo = null;
@@ -302,7 +293,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile String payerPhone = null;
     private static volatile String payerAddress = null;
     private static volatile long payerCountryId = -1L;
-    private static volatile long payerCityId = -1L;
     private static volatile String payerZip = null;
     private static volatile String payerCompany = null;
     private static volatile String payerCargo = null;
@@ -417,7 +407,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             senderPhone = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPhone();
             senderAddress = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderAddress();
             senderCountryId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCountryId();
-            senderCityId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCityId();
+//            senderCityName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCityName();
             senderZip = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderZip();
             senderCompany = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCompany();
             senderCargo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCargo();
@@ -432,7 +422,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             recipientPhone = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientPhone();
             recipientAddress = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientAddress();
             recipientCountryId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCountryId();
-            recipientCityId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCityId();
+//            recipientCityName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCityName();
             recipientZip = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientZip();
             recipientCompany = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCompany();
             recipientCargo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCargo();
@@ -446,7 +436,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             payerPhone = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerPhone();
             payerAddress = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerAddress();
             payerCountryId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCountryId();
-            payerCityId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCityId();
+//            payerCityName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCityName();
             payerZip = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerZip();
             payerCompany = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCompany();
             payerCargo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCargo();
@@ -543,12 +533,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             countryList = countries;
             setCountryList(countries);
         });
-
-        createInvoiceViewModel.getSenderCityList().observe(getViewLifecycleOwner(), this::setSenderCityList);
-
-        createInvoiceViewModel.getRecipientCityList().observe(getViewLifecycleOwner(), this::setRecipientCityList);
-
-        createInvoiceViewModel.getPayerCityList().observe(getViewLifecycleOwner(), this::setPayerCityList);
 
         createInvoiceViewModel.getSenderAddressBook().observe(getViewLifecycleOwner(), senderAddressBook -> {
             if (senderAddressBook != null) {
@@ -998,65 +982,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
         });
 
-        senderCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                senderCity = (City) parent.getSelectedItem();
-
-                final TextView itemTextView = (TextView) view;
-                if (itemTextView != null) {
-                    if (position < parent.getCount()) {
-                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
-                        senderCitySpinner.setBackgroundResource(R.drawable.edit_text_active);
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        recipientCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                recipientCity = (City) parent.getSelectedItem();
-
-                final TextView itemTextView = (TextView) view;
-                if (itemTextView != null) {
-                    if (position < parent.getCount()) {
-                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
-                        recipientCitySpinner.setBackgroundResource(R.drawable.edit_text_active);
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        payerCitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                payerCity = (City) parent.getSelectedItem();
-
-                final TextView itemTextView = (TextView) view;
-                if (itemTextView != null) {
-                    if (position < parent.getCount()) {
-                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
-                        payerCitySpinner.setBackgroundResource(R.drawable.edit_text_active);
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         recipientAddressBookSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -1255,9 +1180,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerTntEditText.setText(senderTntEditText.getText().toString().trim());
                 payerFedexEditText.setText(senderFedexEditText.getText().toString().trim());
                 payerCompanyEditText.setText(senderCompanyEditText.getText().toString().trim());
+                payerCityNameEditText.setText(senderCityNameEditText.getText().toString().trim());
 
                 payerCountrySpinner.setSelection(senderCountrySpinner.getSelectedItemPosition());
-                payerCityId = ((City) senderCitySpinner.getSelectedItem()).getId();
                 return;
             }
             if (checkedId == recipientIsPayerRadioBtn.getId()) {
@@ -1273,9 +1198,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerTntEditText.setText(recipientTntEditText.getText().toString().trim());
                 payerFedexEditText.setText(recipientFedexEditText.getText().toString().trim());
                 payerCompanyEditText.setText(recipientCompanyEditText.getText().toString().trim());
+                payerCityNameEditText.setText(recipientCityNameEditText.getText().toString().trim());
 
                 payerCountrySpinner.setSelection(recipientCountrySpinner.getSelectedItemPosition());
-                payerCityId = ((City) recipientCitySpinner.getSelectedItem()).getId();
             }
         });
     }
@@ -1295,7 +1220,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         senderAddressEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        senderCitySpinner.setOnFocusChangeListener(UiUtils::onFocusChanged);
+        senderCityNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
         senderZipEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
@@ -1314,7 +1239,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         recipientMiddleNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        recipientCitySpinner.setOnFocusChangeListener(UiUtils::onFocusChanged);
+        recipientCityNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
         recipientAddressEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
@@ -1343,7 +1268,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         payerZipEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        payerCitySpinner.setOnFocusChangeListener(UiUtils::onFocusChanged);
+        payerCityNameEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
         payerPhoneEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
@@ -1532,24 +1457,15 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         recipientCountrySpinner = root.findViewById(R.id.recipient_country_spinner);
         payerCountrySpinner = root.findViewById(R.id.payer_country_spinner);
 
-        senderCitySpinner = root.findViewById(R.id.sender_city_spinner);
-        recipientCitySpinner = root.findViewById(R.id.recipient_city_spinner);
-        payerCitySpinner = root.findViewById(R.id.payer_city_spinner);
+        senderCityNameEditText = root.findViewById(R.id.sender_city_edit_text);
+        recipientCityNameEditText = root.findViewById(R.id.recipient_city_edit_text);
+        payerCityNameEditText = root.findViewById(R.id.payer_city_edit_text);
 
         recipientAddressBookSpinner = root.findViewById(R.id.recipient_address_book_spinner);
         payerAddressBookSpinner = root.findViewById(R.id.payer_address_book_spinner);
 
         countryArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
         countryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        senderCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
-        senderCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        recipientCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
-        recipientCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        payerCityArrayAdapter = new CustomArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
-        payerCityArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         recipientAddressBookArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, addressBookEntries);
         recipientAddressBookArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -1560,10 +1476,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         senderCountrySpinner.setAdapter(countryArrayAdapter);
         recipientCountrySpinner.setAdapter(countryArrayAdapter);
         payerCountrySpinner.setAdapter(countryArrayAdapter);
-
-        senderCitySpinner.setAdapter(senderCityArrayAdapter);
-        recipientCitySpinner.setAdapter(recipientCityArrayAdapter);
-        payerCitySpinner.setAdapter(payerCityArrayAdapter);
 
         recipientAddressBookSpinner.setAdapter(recipientAddressBookArrayAdapter);
         payerAddressBookSpinner.setAdapter(payerAddressBookArrayAdapter);
@@ -2004,7 +1916,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         final String senderPhone = senderPhoneEditText.getText().toString().trim();
         final String senderAddress = senderAddressEditText.getText().toString().trim();
         final String senderCountryId = senderCountry != null ? String.valueOf(senderCountry.getId()) : null;
-        final String senderCityId = senderCity != null ? String.valueOf(senderCity.getId()) : null;
+        final String senderCityName = senderCityNameEditText.getText().toString().trim();
         final String senderZip = senderZipEditText.getText().toString().trim();
         final String senderCompanyName = senderCompanyEditText.getText().toString().trim();
         final String senderTnt = senderTntEditText.getText().toString().trim();
@@ -2018,7 +1930,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         final String recipientMiddleName = recipientMiddleNameEditText.getText().toString().trim();
         final String recipientAddress = recipientAddressEditText.getText().toString().trim();
         final String recipientCountryId = recipientCountry != null ? String.valueOf(recipientCountry.getId()) : null;
-        final String recipientCityId = recipientCity != null ? String.valueOf(recipientCity.getId()) : null;
+        final String recipientCityName = recipientCityNameEditText.getText().toString().trim();
         final String recipientZip = recipientZipEditText.getText().toString().trim();
         final String recipientPhone = recipientPhoneEditText.getText().toString().trim();
         final String recipientCargo = recipientCargoEditText.getText().toString().trim();
@@ -2034,7 +1946,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         final String payerMiddleName = payerMiddleNameEditText.getText().toString().trim();
         final String payerAddress = payerAddressEditText.getText().toString().trim();
         final String payerCountryId = payerCountry != null ? String.valueOf(payerCountry.getId()) : null;
-        final String payerCityId = payerCity != null ? String.valueOf(payerCity.getId()) : null;
+        final String payerCityName = payerCityNameEditText.getText().toString().trim();
         final String payerZip = payerZipEditText.getText().toString().trim();
         final String payerPhone = payerPhoneEditText.getText().toString().trim();
         final String discount = discountEditText.getText().toString().trim();
@@ -2275,7 +2187,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 senderTnt,
                 senderFedex,
                 senderCountryId,
-                senderCityId,
+                senderCityName,
                 senderAddress,
                 senderZip,
                 senderFirstName,
@@ -2289,7 +2201,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 recipientTnt,
                 recipientFedex,
                 recipientCountryId,
-                recipientCityId,
+                recipientCityName,
                 recipientAddress,
                 recipientZip,
                 recipientFirstName,
@@ -2300,7 +2212,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 recipientType,
                 payerEmail,
                 payerCountryId,
-                payerCityId,
+                payerCityName,
                 payerAddress,
                 payerZip,
                 payerFirstName,
@@ -2523,11 +2435,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 discountEditText.setText(null);
                 discountEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
+            if (!TextUtils.isEmpty(sender.getCityName())) {
+                senderCityNameEditText.setText(sender.getCityName());
+                senderCityNameEditText.setBackgroundResource(R.drawable.edit_text_active);
+            }
+            else {
+                senderCityNameEditText.setText(null);
+                senderCityNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
             if (sender.getCountryId() != null) {
                 senderCountryId = sender.getCountryId();
-            }
-            if (sender.getCityId() != null) {
-                senderCityId = sender.getCityId();
             }
             for (int i = 0; i < countryList.size(); i++) {
                 if (countryList.get(i).getId() == senderCountryId) {
@@ -2628,11 +2545,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 recipientCompanyEditText.setText(null);
                 recipientCompanyEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
+            if (!TextUtils.isEmpty(recipient.getCityName())) {
+                recipientCityNameEditText.setText(recipient.getCityName());
+                recipientCityNameEditText.setBackgroundResource(R.drawable.edit_text_active);
+            }
+            else {
+                recipientCityNameEditText.setText(null);
+                recipientCityNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
             if (recipient.getCountryId() != null) {
                 recipientCountryId = recipient.getCountryId();
-            }
-            if (recipient.getCityId() != null) {
-                recipientCityId = recipient.getCityId();
             }
             for (int i = 0; i < countryList.size(); i++) {
                 if (countryList.get(i).getId() == recipientCountryId) {
@@ -2781,11 +2703,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 okedEditText.setText(null);
                 okedEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
+            if (!TextUtils.isEmpty(payer.getCityName())) {
+                payerCityNameEditText.setText(payer.getCityName());
+                payerCityNameEditText.setBackgroundResource(R.drawable.edit_text_active);
+            }
+            else {
+                payerCityNameEditText.setText(null);
+                payerCityNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
             if (payer.getCountryId() != null) {
                 payerCountryId = payer.getCountryId();
-            }
-            if (payer.getCityId() != null) {
-                payerCityId = payer.getCityId();
             }
             for (int i = 0; i < countryList.size(); i++) {
                 if (countryList.get(i).getId() == payerCountryId) {
@@ -2867,102 +2794,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 }
             }
             payerCountryIsSet = true;
-        }
-    }
-
-    private void setSenderCityList(final List<City> senderCityList) {
-        if (senderCityList != null) {
-            senderCityArrayAdapter.clear();
-
-            for (final City city : senderCityList) {
-                senderCityArrayAdapter.add(city);
-            }
-            if (!senderCountryIsSet) {
-                return;
-            }
-            if (isSenderCityInitialPick) {
-                for (int i = 0; i < senderCityList.size(); i++) {
-                    if (senderCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
-                        int finalI = i;
-                        senderCitySpinner.post(() -> senderCitySpinner.setSelection(finalI));
-                        isSenderCityInitialPick = false;
-                        return;
-                    }
-                }
-            }
-            if (senderCityId >= 0) {
-                for (int i = 0; i < senderCityList.size(); i++) {
-                    if (senderCityList.get(i).getId() == senderCityId) {
-                        int finalI = i;
-                        senderCitySpinner.post(() -> senderCitySpinner.setSelection(finalI));
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
-    private void setRecipientCityList(final List<City> recipientCityList) {
-        if (recipientCityList != null) {
-            recipientCityArrayAdapter.clear();
-
-            for (final City city : recipientCityList) {
-                recipientCityArrayAdapter.add(city);
-            }
-            if (!recipientCountryIsSet) {
-                return;
-            }
-            if (isRecipientCityInitialPick) {
-                for (int i = 0; i < recipientCityList.size(); i++) {
-                    if (recipientCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
-                        int finalI = i;
-                        recipientCitySpinner.post(() -> recipientCitySpinner.setSelection(finalI));
-                        isRecipientCityInitialPick = false;
-                        return;
-                    }
-                }
-            }
-            if (recipientCityId >= 0) {
-                for (int i = 0; i < recipientCityList.size(); i++) {
-                    if (recipientCityList.get(i).getId() == recipientCityId) {
-                        int finalI = i;
-                        recipientCitySpinner.post(() -> recipientCitySpinner.setSelection(finalI));
-                        return;
-                    }
-                }
-            }
-        }
-    }
-
-    private void setPayerCityList(final List<City> payerCityList) {
-        if (payerCityList != null) {
-            payerCityArrayAdapter.clear();
-
-            for (final City city : payerCityList) {
-                payerCityArrayAdapter.add(city);
-            }
-            if (!payerCountryIsSet) {
-                return;
-            }
-            if (isPayerCityInitialPick) {
-                for (int i = 0; i < payerCityList.size(); i++) {
-                    if (payerCityList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.tashkent))) {
-                        int finalI = i;
-                        payerCitySpinner.post(() -> payerCitySpinner.setSelection(finalI));
-                        isPayerCityInitialPick = false;
-                        return;
-                    }
-                }
-            }
-            if (payerCityId >= 0) {
-                for (int i = 0; i < payerCityList.size(); i++) {
-                    if (payerCityList.get(i).getId() == payerCityId) {
-                        int finalI = i;
-                        payerCitySpinner.post(() -> payerCitySpinner.setSelection(finalI));
-                        return;
-                    }
-                }
-            }
         }
     }
 

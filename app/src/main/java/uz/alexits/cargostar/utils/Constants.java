@@ -67,6 +67,7 @@ public class Constants {
     public static final String KEY_SENDER_COUNTRY_ID = "country_id";
     public static final String KEY_SENDER_REGION_ID = "region_id";
     public static final String KEY_SENDER_CITY_ID = "city_id";
+    public static final String KEY_SENDER_CITY_NAME = "sender_city_name";
     public static final String KEY_CITY_NAME = "city_name";
     public static final String KEY_USER_ID = "user_id";
     public static final String KEY_CLIENT_ID = "client_id";
@@ -78,6 +79,7 @@ public class Constants {
     public static final String KEY_SENDER_ADDRESS = "adres";
     public static final String KEY_RECIPIENT_COUNTRY_ID = "country_to";
     public static final String KEY_RECIPIENT_CITY_ID = "city_to";
+    public static final String KEY_RECIPIENT_CITY_NAME = "recipient_city_name";
     public static final String KEY_COMMENT = "comment";
 
     public static final String KEY_TRANSPORTATION_STATUS = "status_transportation";
@@ -173,4 +175,5 @@ public class Constants {
     public static final String LAST_ADDRESS_BOOK_ID = "last_address_book_id";
     public static final String LAST_TRANSPORTATION_ID = "last_transportation_id";
     public static final String KEY_QR_POSITION = "qr_position";
+    public static final String KEY_PAYER_CITY_NAME = "payer_city_name";
 }

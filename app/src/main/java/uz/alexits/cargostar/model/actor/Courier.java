@@ -46,7 +46,7 @@ public class Courier extends User {
                    final long userId,
                    final Long countryId,
                    final Long regionId,
-                   final Long cityId,
+                   final String cityName,
                    @NonNull final String firstName,
                    @NonNull final String middleName,
                    @NonNull final String lastName,
@@ -65,7 +65,7 @@ public class Courier extends User {
                 userId,
                 countryId,
                 regionId,
-                cityId,
+                cityName,
                 firstName,
                 middleName,
                 lastName,
@@ -136,7 +136,7 @@ public class Courier extends User {
                 ", id=" + id +
                 ", countryId=" + countryId +
                 ", regionId=" + regionId +
-                ", cityId=" + cityId +
+                ", cityId=" + cityName +
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +
                 ", lastName='" + lastName + '\'' +

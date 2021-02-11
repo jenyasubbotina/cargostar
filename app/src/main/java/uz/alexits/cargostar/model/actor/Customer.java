@@ -94,7 +94,7 @@ public class Customer extends User {
                     final long userId,
                     final Long countryId,
                     final Long regionId,
-                    final Long cityId,
+                    final String cityName,
                     @NonNull final String firstName,
                     @Nullable final String middleName,
                     @NonNull final String lastName,
@@ -106,14 +106,14 @@ public class Customer extends User {
                     final int status,
                     @Nullable final Date createdAt,
                     @Nullable final Date updatedAt) {
-        super(id, userId, countryId, regionId, cityId, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
+        super(id, userId, countryId, regionId, cityName, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
     }
 
     public Customer(final long id,
                     final long userId,
                     final Long countryId,
                     final Long regionId,
-                    final Long cityId,
+                    final String cityName,
                     @NonNull final String firstName,
                     @Nullable final String middleName,
                     @NonNull final String lastName,
@@ -140,7 +140,7 @@ public class Customer extends User {
                     @Nullable final String oked,
                     @Nullable final String checkingAccount,
                     @Nullable final String registrationCode) {
-        super(id, userId, countryId, regionId, cityId, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
+        super(id, userId, countryId, regionId, cityName, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
         this.cargostarAccountNumber = cargostarAccountNumber;
         this.tntAccountNumber = tntAccountNumber;
         this.fedexAccountNumber = fedexAccountNumber;
@@ -313,7 +313,7 @@ public class Customer extends User {
                 ", id=" + id +
                 ", countryId=" + countryId +
                 ", regionId=" + regionId +
-                ", cityId=" + cityId +
+                ", cityId=" + cityName +
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +
                 ", lastName='" + lastName + '\'' +

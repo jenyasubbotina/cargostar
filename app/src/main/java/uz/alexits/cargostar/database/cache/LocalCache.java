@@ -68,7 +68,7 @@ import uz.alexits.cargostar.model.transportation.TransportationStatus;
         TransportationStatus.class,
         TransportationData.class,
         Route.class,
-        Vat.class}, version = 89, exportSchema = false)
+        Vat.class}, version = 90, exportSchema = false)
 @TypeConverters({ PaymentStatusConverter.class, DateConverter.class })
 public abstract class LocalCache extends RoomDatabase {
     private static final String DB_NAME = "cargo_cache.db";

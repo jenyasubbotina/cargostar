@@ -44,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
                 action.setClientId(getIntent().getLongExtra(Constants.KEY_CLIENT_ID, -1L));
                 action.setSenderCountryId(getIntent().getLongExtra(Constants.KEY_SENDER_COUNTRY_ID, -1L));
                 action.setSenderRegionId(getIntent().getLongExtra(Constants.KEY_SENDER_REGION_ID, -1L));
-                action.setSenderCityId(getIntent().getLongExtra(Constants.KEY_SENDER_CITY_ID, -1L));
+                action.setSenderCityName(getIntent().getStringExtra(Constants.KEY_SENDER_CITY_NAME));
                 action.setRecipientCountryId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
-                action.setRecipientCityId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_CITY_ID, -1L));
+                action.setRecipientCityName(getIntent().getStringExtra(Constants.KEY_RECIPIENT_CITY_NAME));
                 action.setProviderId(getIntent().getLongExtra(Constants.KEY_PROVIDER_ID, -1L));
                 Navigation.findNavController(this, R.id.main_fragment_container).navigate(action);
             }

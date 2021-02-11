@@ -181,9 +181,10 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
-            android:name="sender_city_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:name="sender_city_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
         <argument
             android:name="sender_zip"
             app:argType="string"
@@ -256,9 +257,10 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
-            android:name="recipient_city_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:name="recipient_city_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
         <argument
             android:name="recipient_zip"
             app:argType="string"
@@ -328,9 +330,10 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
-            android:name="payer_city_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:name="payer_city_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
         <argument
             android:name="payer_zip"
             app:argType="string"
@@ -595,9 +598,10 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
-            android:name="sender_city_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:name="sender_city_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
         <argument
             android:name="recipient_country_id"
             app:argType="long"
@@ -607,9 +611,10 @@
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
-            android:name="recipient_city_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:name="recipient_city_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
         <argument
             android:name="consignment_quantity"
             app:argType="integer"

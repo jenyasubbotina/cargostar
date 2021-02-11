@@ -249,9 +249,9 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         action.setSenderAddress(currentItem.getSenderAddress());
         action.setSenderCountryId(currentItem.getSenderCountryId() != null ? currentItem.getSenderCountryId() : -1L);
         action.setSenderRegionId(currentItem.getSenderRegionId() != null ? currentItem.getSenderRegionId() : -1L);
-        action.setSenderCityId(currentItem.getSenderCityId() != null ? currentItem.getSenderCityId() : -1L);
+        action.setSenderCityName(currentItem.getSenderCity());
         action.setRecipientCountryId(currentItem.getRecipientCountryId() != null ? currentItem.getRecipientCountryId() : -1L);
-        action.setRecipientCityId(currentItem.getRecipientCityId() != null ? currentItem.getRecipientCityId() : -1L);
+        action.setRecipientCityName(currentItem.getRecipientCity());
 
         action.setDeliveryType(currentItem.getDeliveryType());
         action.setComment(currentItem.getComment());

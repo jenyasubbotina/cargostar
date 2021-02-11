@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.work.Data;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
@@ -40,7 +39,6 @@ import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.activity.SignInActivity;
 import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -284,12 +282,10 @@ public class ProfileFragment extends Fragment {
                 if (courier.getRegionId() != null) {
                     courierViewModel.setCourierRegionId(courier.getRegionId());
                 }
-                if (courier.getCityId() != null) {
-                    courierViewModel.setCourierCityId(courier.getCityId());
-                }
 
                 userIdEditText.setText(String.valueOf(courier.getId()));
                 userIdEditText.setBackgroundResource(R.drawable.edit_text_active);
+
                 if (!TextUtils.isEmpty(courier.getLogin())) {
                     loginEditText.setText(courier.getLogin());
                     loginEditText.setBackgroundResource(R.drawable.edit_text_active);
@@ -353,6 +349,14 @@ public class ProfileFragment extends Fragment {
                 else {
                     photoEditText.setBackgroundResource(R.drawable.edit_text_locked);
                 }
+                if (!TextUtils.isEmpty(courier.getCityName())) {
+                    cityEditText.setText(courier.getCityName());
+                    cityEditText.setBackgroundResource(R.drawable.edit_text_active);
+                }
+                else {
+                    cityEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                }
+
                 fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
             }
@@ -396,17 +400,6 @@ public class ProfileFragment extends Fragment {
                 }
                 else {
                     regionEditText.setBackgroundResource(R.drawable.edit_text_locked);
-                }
-            }
-        });
-        courierViewModel.getCourierCity().observe(getViewLifecycleOwner(), city ->  {
-            if (city != null) {
-                if (!TextUtils.isEmpty(city.getName())) {
-                    cityEditText.setText(city.getName());
-                    cityEditText.setBackgroundResource(R.drawable.edit_text_active);
-                }
-                else {
-                    cityEditText.setBackgroundResource(R.drawable.edit_text_locked);
                 }
             }
         });

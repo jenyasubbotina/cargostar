@@ -18,14 +18,12 @@ public class CourierViewModel extends AndroidViewModel {
     private final Repository repository;
     private final MutableLiveData<Long> countryIdLiveData;
     private final MutableLiveData<Long> regionIdLiveData;
-    private final MutableLiveData<Long> cityIdLiveData;
 
     public CourierViewModel(@NonNull Application application) {
         super(application);
         this.repository = Repository.getInstance(application);
         this.countryIdLiveData = new MutableLiveData<>();
         this.regionIdLiveData = new MutableLiveData<>();
-        this.cityIdLiveData = new MutableLiveData<>();
     }
 
     public LiveData<Courier> selectCourierByLogin(final String login) {
@@ -35,10 +33,6 @@ public class CourierViewModel extends AndroidViewModel {
     public LiveData<Branche> selectBrancheById(final long brancheId) {
         return repository.selectBrancheById(brancheId);
     }
-
-//    public LiveData<Request> getInvoice(final long requestId) {
-//        return repository.selectRequest(requestId);
-//    }
 
     public LiveData<Integer> selectNewNotificationsCount() {
         return repository.selectNewNotificationsCount();
@@ -56,19 +50,11 @@ public class CourierViewModel extends AndroidViewModel {
         this.regionIdLiveData.setValue(courierRegionId);
     }
 
-    public void setCourierCityId(final long courierCityId) {
-        this.cityIdLiveData.setValue(courierCityId);
-    }
-
     public LiveData<Country> getCourierCountry() {
         return Transformations.switchMap(countryIdLiveData, repository::selectCountryById);
     }
 
     public LiveData<Region> getCourierRegion() {
         return Transformations.switchMap(regionIdLiveData, repository::selectRegionById);
-    }
-
-    public LiveData<City> getCourierCity() {
-        return Transformations.switchMap(cityIdLiveData, repository::selectCityById);
     }
 }

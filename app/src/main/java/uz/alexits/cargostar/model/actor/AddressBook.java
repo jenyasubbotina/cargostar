@@ -12,16 +12,14 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-import uz.alexits.cargostar.model.location.City;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.Region;
 
 @Entity(tableName = "address_book",
         foreignKeys = {
                 @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = {"country_id"}), @Index(value = "region_id"), @Index(value = "city_id"), @Index(value = "user_id")})
+                @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {@Index(value = {"country_id"}), @Index(value = "region_id"), @Index(value = "user_id")})
 public class AddressBook {
     @Expose
     @SerializedName("id")
@@ -41,8 +39,8 @@ public class AddressBook {
     @ColumnInfo(name = "region_id") private final Long regionId;
 
     @Expose
-    @SerializedName("city_id")
-    @ColumnInfo(name = "city_id") private final Long cityId;
+    @SerializedName("city_name")
+    @ColumnInfo(name = "city_name") private final String cityName;
 
     @Expose
     @SerializedName("address")
@@ -136,7 +134,7 @@ public class AddressBook {
                        final long userId,
                        final Long countryId,
                        final Long regionId,
-                       final Long cityId,
+                       final String cityName,
                        final String address,
                        final String zip,
                        final String firstName,
@@ -163,7 +161,7 @@ public class AddressBook {
         this.userId = userId;
         this.countryId = countryId;
         this.regionId = regionId;
-        this.cityId = cityId;
+        this.cityName = cityName;
         this.address = address;
         this.zip = zip;
         this.firstName = firstName;
@@ -200,8 +198,8 @@ public class AddressBook {
         return regionId;
     }
 
-    public Long getCityId() {
-        return cityId;
+    public String getCityName() {
+        return cityName;
     }
 
     public String getAddress() {
