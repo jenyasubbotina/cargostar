@@ -44,11 +44,14 @@ public class ScanQrActivity extends AppCompatActivity {
             }
             else {
                 if (data != null) {
-                    final String scannedData = data.getStringExtra("SCAN_RESULT");
+                    String scannedData = data.getStringExtra("SCAN_RESULT");
 
                     if (scannedData != null) {
                         Log.i(TAG, "scanResult=" + scannedData + " position=" + position);
 
+                        if (scannedData.length() > 12 && (scannedData.length() - 12 >= 0)) {
+                            scannedData = scannedData.substring(scannedData.length() - 12);
+                        }
                         final Intent resultIntent = new Intent();
 
                         resultIntent.putExtra(IntentConstants.INTENT_RESULT_VALUE, scannedData);
