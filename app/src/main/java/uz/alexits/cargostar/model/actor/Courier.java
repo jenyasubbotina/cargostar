@@ -37,8 +37,6 @@ public class Courier extends User {
     @ColumnInfo(name = "position")
     @NonNull private String position;
 
-//    @Expose
-//    @SerializedName("photo")
     @ColumnInfo(name = "photo_url")
     @Nullable private String photoUrl;
 

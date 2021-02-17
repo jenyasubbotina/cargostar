@@ -447,6 +447,7 @@ public class SyncWorkRequest {
                                      final long senderCountryId,
                                      final long senderRegionId,
                                      final long senderCityId,
+                                     final String senderCityName,
                                      final long userId,
                                      final long senderId,
                                      final long courierId,
@@ -459,6 +460,7 @@ public class SyncWorkRequest {
                                      final String senderAddress,
                                      final long recipientCountryId,
                                      final long recipientCityId,
+                                     final String recipientCityName,
                                      final String comment,
                                      final String cityFrom,
                                      final String cityTo,
@@ -502,6 +504,8 @@ public class SyncWorkRequest {
                 .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, consignmentQuantity)
                 .putString(Constants.KEY_PAYMENT_STATUS, paymentStatus)
                 .putInt(Constants.KEY_DELIVERY_TYPE, deliveryType)
+                .putString(Constants.KEY_SENDER_CITY_NAME, senderCityName)
+                .putString(Constants.KEY_RECIPIENT_CITY_NAME, recipientCityName)
                 .build();
 
         final OneTimeWorkRequest createRequestRequest = new OneTimeWorkRequest.Builder(InsertRequestWorker.class)

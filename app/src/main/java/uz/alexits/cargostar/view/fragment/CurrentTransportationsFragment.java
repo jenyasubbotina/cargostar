@@ -35,6 +35,7 @@ import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.database.dao.TransportationDao;
 import uz.alexits.cargostar.model.location.Country;
 import uz.alexits.cargostar.model.location.TransitPoint;
 import uz.alexits.cargostar.model.transportation.Invoice;
@@ -492,8 +493,6 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
 
     @Override
     public void onTransportationSelected(Transportation currentItem) {
-        Log.i(TAG, "currentItem: " + currentItem);
-
         final CurrentTransportationsFragmentDirections.ActionCurrentTransportationsFragmentToTransportationStatusFragment action = CurrentTransportationsFragmentDirections.actionCurrentTransportationsFragmentToTransportationStatusFragment(
                 currentItem.getQrCode(),
                 currentItem.getTrackingCode(),

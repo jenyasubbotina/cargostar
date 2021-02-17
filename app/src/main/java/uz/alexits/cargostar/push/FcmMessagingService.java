@@ -218,6 +218,9 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final Long updated_at = updatedAt != null && !TextUtils.isEmpty(updatedAt) ? Long.parseLong(updatedAt.trim()) : null;
         final int delivery_type = deliveryType != null && !TextUtils.isEmpty(deliveryType) ? Integer.parseInt(deliveryType) : 0;
 
+        final String senderCityName = dataPayload.get("city_name");
+        final String recipientCityName = dataPayload.get("city_to_name");
+
         return new Request(
                 request_id,
                 senderFirstName,
@@ -229,8 +232,10 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 sender_country_id,
                 sender_region_id,
                 sender_city_id,
+                senderCityName,
                 recipient_country_id,
                 recipient_city_id,
+                recipientCityName,
                 comment,
                 user_id,
                 sender_id,

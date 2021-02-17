@@ -309,6 +309,8 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
             statusViewModel.setPartialId(partialId);
         }
 
+        Log.i(TAG, "onActivityCreated: ");
+
         sourceTextView.setText(cityFrom);
         destinationTextView.setText(cityTo);
 

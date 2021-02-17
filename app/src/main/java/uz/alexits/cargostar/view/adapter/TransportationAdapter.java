@@ -48,7 +48,7 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
 
             holder.indexTextView.setText(parcelIndex);
 
-            final Long invoiceId = currentTransportation.getInvoiceId();
+            final Long transportId = currentTransportation.getId();
 
             holder.fromTextView.setText(currentTransportation.getCityFrom());
             holder.toTextView.setText(currentTransportation.getCityTo());
@@ -78,9 +78,7 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
                     holder.statusTextView.setBackgroundResource(R.drawable.bg_red);
                 }
             }
-            if (invoiceId != null) {
-                holder.transportationIdTextView.setText(String.valueOf(invoiceId));
-            }
+            holder.transportationIdTextView.setText(String.valueOf(transportId));
             holder.bind(currentTransportation, callback);
         }
     }

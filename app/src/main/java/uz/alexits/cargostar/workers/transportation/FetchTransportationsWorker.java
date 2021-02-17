@@ -56,9 +56,7 @@ public class FetchTransportationsWorker extends Worker {
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<Transportation> currentTransportations = response.body();
-
                     final long[] rowsInserted = LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationList(currentTransportations);
-
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)

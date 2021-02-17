@@ -54,6 +54,11 @@ public class Request {
     private Long senderCityId;
 
     @Expose
+    @SerializedName("city_name")
+    @ColumnInfo(name = "sender_city_name")
+    private String senderCityName;
+
+    @Expose
     @SerializedName("user_id")
     @ColumnInfo(name = "user_id")
     private Long userId;
@@ -119,6 +124,11 @@ public class Request {
     private Long recipientCityId;
 
     @Expose
+    @SerializedName("city_to_name")
+    @ColumnInfo(name = "recipient_city_name")
+    private String recipientCityName;
+
+    @Expose
     @SerializedName("delivery_type")
     @ColumnInfo(name = "delivery_type")
     private int deliveryType;
@@ -181,8 +191,10 @@ public class Request {
                    final Long senderCountryId,
                    final Long senderRegionId,
                    final Long senderCityId,
+                   final String senderCityName,
                    final Long recipientCountryId,
                    final Long recipientCityId,
+                   final String recipientCityName,
                    final String comment,
                    final Long userId,
                    final Long clientId,
@@ -207,8 +219,10 @@ public class Request {
         this.senderCountryId = senderCountryId;
         this.senderRegionId = senderRegionId;
         this.senderCityId = senderCityId;
+        this.senderCityName = senderCityName;
         this.recipientCountryId = recipientCountryId;
         this.recipientCityId = recipientCityId;
+        this.recipientCityName = recipientCityName;
         this.comment = comment;
         this.userId = userId;
         this.clientId = clientId;
@@ -478,6 +492,14 @@ public class Request {
         this.paymentStatus = paymentStatus;
     }
 
+    public String getRecipientCityName() {
+        return recipientCityName;
+    }
+
+    public String getSenderCityName() {
+        return senderCityName;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -485,7 +507,7 @@ public class Request {
                 "id=" + id +
                 ", senderCountryId=" + senderCountryId +
                 ", senderRegionId=" + senderRegionId +
-                ", senderCityId=" + senderCityId +
+                ", senderCityName=" + senderCityName +
                 ", userId=" + userId +
                 ", clientId=" + clientId +
                 ", courierId=" + courierId +
@@ -498,7 +520,7 @@ public class Request {
                 ", senderPhone='" + senderPhone + '\'' +
                 ", senderAddress='" + senderAddress + '\'' +
                 ", recipientCountryId=" + recipientCountryId +
-                ", recipientCityId=" + recipientCityId +
+                ", recipientCityName=" + recipientCityName +
                 ", deliveryType=" + deliveryType +
                 ", comment='" + comment + '\'' +
                 ", isNew=" + isNew +

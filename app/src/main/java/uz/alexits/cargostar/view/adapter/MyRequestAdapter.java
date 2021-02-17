@@ -1,6 +1,7 @@
 package uz.alexits.cargostar.view.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,10 +47,14 @@ public class MyRequestAdapter extends RecyclerView.Adapter<MyRequestViewHolder> 
             final String requestId = "# " + currentRequest.getId();
             holder.indexTextView.setText(requestIndex);
             holder.parcelIdTextView.setText(requestId);
-            holder.fromTextView.setText(currentRequest.getSenderCity());
-
             holder.isNewIndicatorImageView.setVisibility(View.INVISIBLE);
 
+            if (TextUtils.isEmpty(currentRequest.getSenderCityName())) {
+                holder.fromTextView.setText(currentRequest.getSenderCity());
+            }
+            else {
+                holder.fromTextView.setText(currentRequest.getSenderCityName());
+            }
             if (currentRequest.isNew()) {
                 holder.isNewIndicatorImageView.setVisibility(View.VISIBLE);
             }

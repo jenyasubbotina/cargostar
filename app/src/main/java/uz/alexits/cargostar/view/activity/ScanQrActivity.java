@@ -49,7 +49,7 @@ public class ScanQrActivity extends AppCompatActivity {
                     if (scannedData != null) {
                         Log.i(TAG, "scanResult=" + scannedData + " position=" + position);
 
-                        if (scannedData.length() > 12 && (scannedData.length() - 12 >= 0)) {
+                        if (scannedData.length() - 12 >= 0) {
                             scannedData = scannedData.substring(scannedData.length() - 12);
                         }
                         final Intent resultIntent = new Intent();

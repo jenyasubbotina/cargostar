@@ -38,6 +38,9 @@ public class InsertRequestWorker extends Worker {
     private final long updatedAt;
     private final int deliveryType;
 
+    private final String senderCityName;
+    private final String recipientCityName;
+
     public InsertRequestWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
@@ -66,6 +69,9 @@ public class InsertRequestWorker extends Worker {
         this.createdAt = getInputData().getLong(Constants.KEY_CREATED_AT, -1L);
         this.updatedAt = getInputData().getLong(Constants.KEY_UPDATED_AT, -1L);
         this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
+
+        this.senderCityName = getInputData().getString(Constants.KEY_SENDER_CITY_NAME);
+        this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
     }
 
     @NonNull
@@ -88,8 +94,10 @@ public class InsertRequestWorker extends Worker {
                     senderCountryId != -1L ? senderCountryId : null,
                     senderRegionId != -1L ? senderRegionId : null,
                     senderCityId != -1L ? senderCityId : null,
+                    senderCityName,
                     recipientCountryId != -1L ? recipientCountryId : null,
                     recipientCityId != -1L ? recipientCityId : null,
+                    recipientCityName,
                     comment,
                     userId != -1L ? userId : null,
                     senderId != -1L ? senderId : null,
