@@ -14,7 +14,6 @@ public class Constants {
     public static final String KEY_PHONE = "phone";
     public static final String KEY_COUNTRY = "country";
     public static final String KEY_REGION = "region";
-//    public static final String KEY_CITY = "city";
     public static final String KEY_ADDRESS = "address";
     public static final String KEY_GEOLOCATION = "geolocation";
     public static final String KEY_ZIP = "zip";
@@ -23,11 +22,6 @@ public class Constants {
     public static final String KEY_PASSPORT_SERIAL = "passport_serial";
     public static final String KEY_INN = "inn";
     public static final String KEY_COMPANY = "company";
-    public static final String KEY_PAYER_BANK = "bank";
-    public static final String KEY_PAYER_MFO = "mfo";
-    public static final String KEY_PAYER_OKED = "oked";
-    public static final String KEY_PAYER_CHECKING_ACCOUNT = "checking_account";
-    public static final String KEY_VAT = "vat";
     public static final String KEY_PHOTO = "photo";
     public static final String KEY_SIGNATURE = "signature";
 
@@ -41,10 +35,6 @@ public class Constants {
     public static final String KEY_STATUS = "status";
     public static final String KEY_CREATED_AT = "created_at";
     public static final String KEY_UPDATED_AT = "updated_at";
-
-    public static final String KEY_SENDER_ID = "sender_id";
-    public static final String KEY_RECIPIENT_ID = "recipient_id";
-    public static final String KEY_PAYER_ID = "payer_id";
 
     /* calculation */
     public static final String KEY_COUNTRY_ID = "country_id";
@@ -64,22 +54,11 @@ public class Constants {
     public static final String PUSH_SUBTYPE = "type2";
     public static final String KEY_TITLE = "title";
     public static final String KEY_ID = "id";
-    public static final String KEY_SENDER_COUNTRY_ID = "country_id";
-    public static final String KEY_SENDER_REGION_ID = "region_id";
-    public static final String KEY_SENDER_CITY_ID = "city_id";
-    public static final String KEY_SENDER_CITY_NAME = "sender_city_name";
+
     public static final String KEY_CITY_NAME = "city_name";
     public static final String KEY_USER_ID = "user_id";
     public static final String KEY_CLIENT_ID = "client_id";
     public static final String KEY_EMPLOYEE_ID = "employee_id";
-    public static final String KEY_SENDER_FIRST_NAME = "firstname";
-    public static final String KEY_SENDER_MIDDLE_NAME = "middlename";
-    public static final String KEY_SENDER_LAST_NAME = "lastname";
-    public static final String KEY_SENDER_PHONE = "telephone";
-    public static final String KEY_SENDER_ADDRESS = "adres";
-    public static final String KEY_RECIPIENT_COUNTRY_ID = "country_to";
-    public static final String KEY_RECIPIENT_CITY_ID = "city_to";
-    public static final String KEY_RECIPIENT_CITY_NAME = "recipient_city_name";
     public static final String KEY_COMMENT = "comment";
 
     public static final String KEY_TRANSPORTATION_STATUS = "status_transportation";
@@ -103,13 +82,29 @@ public class Constants {
     public static final String KEY_OPERATOR_ID = "operator_id";
     public static final String KEY_ACCOUNTANT_ID = "accountant_id";
 
+    public static final String KEY_SENDER_ID = "sender_id";
+    public static final String KEY_SENDER_USER_ID = "sender_user_id";
     public static final String KEY_SENDER_SIGNATURE = "sender_signature";
     public static final String KEY_SENDER_EMAIL = "sender_email";
+    public static final String KEY_SENDER_COUNTRY_ID = "country_id";
+    public static final String KEY_SENDER_REGION_ID = "region_id";
+    public static final String KEY_SENDER_CITY_ID = "city_id";
+    public static final String KEY_SENDER_CITY_NAME = "sender_city_name";
+    public static final String KEY_SENDER_FIRST_NAME = "firstname";
+    public static final String KEY_SENDER_MIDDLE_NAME = "middlename";
+    public static final String KEY_SENDER_LAST_NAME = "lastname";
+    public static final String KEY_SENDER_PHONE = "telephone";
+    public static final String KEY_SENDER_ADDRESS = "adres";
     public static final String KEY_SENDER_CARGOSTAR = "sender_cargostar";
     public static final String KEY_SENDER_TNT = "sender_tnt";
     public static final String KEY_SENDER_FEDEX = "sender_fedex";
     public static final String KEY_SENDER_ZIP = "sender_zip";
+    public static final String KEY_SENDER_PHOTO = "sender_photo";
+    public static final String KEY_SENDER_PASSPORT = "sender_passport";
+    public static final String KEY_SENDER_INN = "sender_inn";
 
+    public static final String KEY_RECIPIENT_ID = "recipient_id";
+    public static final String KEY_RECIPIENT_USER_ID = "recipient_user_id";
     public static final String KEY_RECIPIENT_SIGNATURE = "recipient_signature";
     public static final String KEY_RECIPIENT_EMAIL = "recipient_email";
     public static final String KEY_RECIPIENT_CARGOSTAR = "recipient_cargostar";
@@ -118,11 +113,19 @@ public class Constants {
     public static final String KEY_RECIPIENT_REGION_ID = "recipient_region_id";
     public static final String KEY_RECIPIENT_ADDRESS = "recipient_address";
     public static final String KEY_RECIPIENT_ZIP = "recipient_zip";
+    public static final String KEY_RECIPIENT_COUNTRY_ID = "country_to";
+    public static final String KEY_RECIPIENT_CITY_ID = "city_to";
+    public static final String KEY_RECIPIENT_CITY_NAME = "recipient_city_name";
     public static final String KEY_RECIPIENT_FIRST_NAME = "recipient_first_name";
     public static final String KEY_RECIPIENT_MIDDLE_NAME = "recipient_middle_name";
     public static final String KEY_RECIPIENT_LAST_NAME = "recipient_last_name";
     public static final String KEY_RECIPIENT_PHONE = "recipient_phone";
+    public static final String KEY_RECIPIENT_INN = "recipient_inn";
+    public static final String KEY_RECIPIENT_CONTRACT_NUMBER = "recipient_contract_number";
+    public static final String KEY_RECIPIENT_PASSPORT = "recipient_passport";
 
+    public static final String KEY_PAYER_ID = "payer_id";
+    public static final String KEY_PAYER_USER_ID = "payer_user_id";
     public static final String KEY_PAYER_EMAIL = "payer_email";
     public static final String KEY_PAYER_CARGOSTAR = "payer_cargostar";
     public static final String KEY_PAYER_TNT = "payer_tnt";
@@ -136,8 +139,9 @@ public class Constants {
     public static final String KEY_PAYER_MIDDLE_NAME = "payer_middle_name";
     public static final String KEY_PAYER_LAST_NAME = "payer_last_name";
     public static final String KEY_PAYER_PHONE = "payer_phone";
+    public static final String KEY_PAYER_CONTRACT_NUMBER = "payer_contract_number";
+    public static final String KEY_PAYER_PASSPORT = "payer_passport";
 
-    public static final String KEY_PAYER_REGISTRATION_CODE = "registration_code";
     public static final String KEY_TRANSPORTATION_QR = "transportation_qr";
     public static final String KEY_PACKAGING_ID = "packaging_id";
     public static final String KEY_PAYMENT_METHOD = "payment_method";

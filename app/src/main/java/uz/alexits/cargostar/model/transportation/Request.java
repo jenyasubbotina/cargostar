@@ -530,4 +530,12 @@ public class Request {
                 ", paymentStatus='" + paymentStatus + '\'' +
                 '}';
     }
+
+    public void setSenderCityName(String senderCityName) {
+        this.senderCityName = senderCityName;
+    }
+
+    public void setRecipientCityName(String recipientCityName) {
+        this.recipientCityName = recipientCityName;
+    }
 }

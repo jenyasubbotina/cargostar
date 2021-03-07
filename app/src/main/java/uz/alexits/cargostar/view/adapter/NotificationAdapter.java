@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.push.Notification;
+import uz.alexits.cargostar.utils.DateUtils;
 import uz.alexits.cargostar.view.callback.NotificationCallback;
 import uz.alexits.cargostar.view.viewholder.NotificationViewHolder;
 
@@ -45,6 +46,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
         if (currentNot != null) {
             holder.titleTextView.setText(currentNot.getTitle());
             holder.linkTextView.setText(currentNot.getBody());
+            holder.dateTextView.setText(DateUtils.dateToStr(currentNot.getReceiveDate()));
 
             if (currentNot.isRead()) {
                 holder.readIndicatorImageView.setVisibility(View.INVISIBLE);

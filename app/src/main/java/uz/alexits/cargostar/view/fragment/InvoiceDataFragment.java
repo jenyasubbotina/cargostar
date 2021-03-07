@@ -29,7 +29,11 @@ import android.widget.Toast;
 import uz.alexits.cargostar.R;
 
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.model.actor.AddressBook;
+import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
@@ -40,11 +44,9 @@ import uz.alexits.cargostar.view.adapter.InvoiceDataAdapter;
 import uz.alexits.cargostar.view.callback.InvoiceDataCallback;
 import uz.alexits.cargostar.viewmodel.RequestsViewModel;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback {
@@ -103,73 +105,12 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
     private static boolean isPublic = true;
 
-    private static volatile long requestId = -1L;
-    private static volatile long invoiceId = -1L;
-    private static volatile long providerId = -1L;
-    private static volatile long invoiceCourierId = -1L;
-    private static volatile long tariffId = -1L;
-    private static volatile int deliveryType = 0;
-    private static volatile String invoiceNumber = null;
+    private Customer sender;
+    private AddressBook recipient;
+    private AddressBook payer;
 
-    private static volatile String comment = null;
-    private static volatile int consignmentQuantity = 0;
-    private static volatile double price = 0;
-
-    private static volatile long senderId = -1L;
-    private static volatile String senderEmail = null;
-    private static volatile String senderSignature = null;
-    private static volatile String senderFirstName = null;
-    private static volatile String senderLastName = null;
-    private static volatile String senderMiddleName = null;
-    private static volatile String senderPhone = null;
-    private static volatile String senderAddress = null;
-    private static volatile long senderCountryId = -1L;
-    private static volatile long senderRegionId = -1L;
-    private static volatile String senderCityName = null;
-    private static volatile String senderZip = null;
-    private static volatile String senderCompany = null;
-    private static volatile String senderCargo = null;
-    private static volatile String senderTnt = null;
-    private static volatile String senderFedex = null;
-    private static volatile int discount = 0;
-
-    private static volatile long recipientId = -1L;
-    private static volatile String recipientEmail = null;
-    private static volatile String recipientFirstName = null;
-    private static volatile String recipientLastName = null;
-    private static volatile String recipientMiddleName = null;
-    private static volatile String recipientPhone = null;
-    private static volatile String recipientAddress = null;
-    private static volatile long recipientCountryId = -1L;
-    private static volatile long recipientRegionId = -1L;
-    private static volatile String recipientCityName = null;
-    private static volatile String recipientZip = null;
-    private static volatile String recipientCompany = null;
-    private static volatile String recipientCargo = null;
-    private static volatile String recipientTnt = null;
-    private static volatile String recipientFedex = null;
-
-    private static volatile long payerId = -1L;
-    private static volatile String payerEmail = null;
-    private static volatile String payerFirstName = null;
-    private static volatile String payerLastName = null;
-    private static volatile String payerMiddleName = null;
-    private static volatile String payerPhone = null;
-    private static volatile String payerAddress = null;
-    private static volatile long payerCountryId = -1L;
-    private static volatile long payerRegionId = -1L;
-    private static volatile String payerCityName = null;
-    private static volatile String payerZip = null;
-    private static volatile String payerCompany = null;
-    private static volatile String payerCargo = null;
-    private static volatile String payerTnt = null;
-    private static volatile String payerFedex = null;
-    private static volatile String payerInn = null;
-    private static volatile String payerBank = null;
-    private static volatile String payerCheckingAccount = null;
-    private static volatile String payerRegistrationCode = null;
-    private static volatile String payerMfo = null;
-    private static volatile String payerOked = null;
+    private Request request;
+    private Invoice invoice;
 
     private static volatile String serializedConsignmentList = null;
 
@@ -188,39 +129,44 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
         if (getArguments() != null) {
             //parcelId can be requestId
-            requestId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRequestId();
             isPublic = InvoiceDataFragmentArgs.fromBundle(getArguments()).getIsPublic();
-            invoiceId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getInvoiceId();
-            invoiceCourierId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getCourierId();
-            providerId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getProviderId();
 
-            senderId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getClientId();
+            request = new Request(
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getRequestId(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderFirstName(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderMiddleName(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderLastName(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderEmail(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderPhone(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderAddress(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCountryId(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderRegionId(),
+                    senderCityId,
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCityName(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCountryId(),
+                    recipientCityId,
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCityName(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getComment(),
+                    senderUserId,
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getClientId(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getCourierId(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getProviderId(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getInvoiceId(),
+                    1, new Date(), new Date(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCityName(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCityName(),
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity(),
+                    paymentStatus,
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getDeliveryType());
 
-            senderEmail = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderEmail();
-            senderFirstName = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderFirstName();
-            senderLastName = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderLastName();
-            senderMiddleName = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderMiddleName();
-            senderPhone = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderPhone();
-            senderAddress = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderAddress();
-            senderCountryId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCountryId();
-            senderRegionId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderRegionId();
-            senderCityName = InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCityName();
-
-            recipientCountryId = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCountryId();
-            recipientCityName = InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCityName();
-
-            deliveryType = InvoiceDataFragmentArgs.fromBundle(getArguments()).getDeliveryType();
-            comment = InvoiceDataFragmentArgs.fromBundle(getArguments()).getComment();
-            consignmentQuantity = InvoiceDataFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
-
-            if (invoiceId > 0 && senderId > 0) {
-                fetchInvoiceRequestUUID = SyncWorkRequest.fetchInvoiceData(context, requestId, invoiceId, senderId, consignmentQuantity);
+            if (request.getInvoiceId() > 0 && request.getClientId() > 0) {
+                fetchInvoiceRequestUUID = SyncWorkRequest.fetchInvoiceData(context, request.getId(), request.getInvoiceId(), request.getClientId(), request.getConsignmentQuantity());
             }
-            else if (senderId > 0) {
-                fetchInvoiceRequestUUID = SyncWorkRequest.fetchSenderData(context, requestId, senderId, consignmentQuantity);
+            else if (request.getClientId() > 0) {
+                fetchInvoiceRequestUUID = SyncWorkRequest.fetchSenderData(context, request.getId(), request.getClientId(), request.getConsignmentQuantity());
             }
             else {
-                fetchInvoiceRequestUUID = SyncWorkRequest.fetchRequestData(context, requestId, consignmentQuantity);
+                fetchInvoiceRequestUUID = SyncWorkRequest.fetchRequestData(context, request.getId(), request.getConsignmentQuantity());
             }
         }
     }
@@ -284,72 +230,68 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         editInvoiceImageView.setOnClickListener(v -> {
             final InvoiceDataFragmentDirections.ActionInvoiceDataFragmentToCreateInvoiceFragment action = InvoiceDataFragmentDirections.actionInvoiceDataFragmentToCreateInvoiceFragment();
             action.setRequestKey(IntentConstants.REQUEST_EDIT_INVOICE);
-            action.setRequestId(requestId);
-            action.setInvoiceId(invoiceId);
-            action.setInvoiceNumber(invoiceNumber);
-            action.setTariffId(tariffId);
-            action.setCourierId(invoiceCourierId);
-            action.setProviderId(providerId);
-            action.setPrice((float) price);
-            action.setDeliveryType(deliveryType);
-            action.setComment(comment);
-            action.setConsignmentQuantity(consignmentQuantity);
+            action.setRequestId(request.getId());
+            action.setInvoiceId(request.getInvoiceId());
+            action.setInvoiceNumber(invoice.getNumber());
+            action.setTariffId(invoice.getTariffId());
+            action.setCourierId(request.getCourierId());
+            action.setProviderId(request.getProviderId());
+            action.setPrice((float) invoice.getPrice());
+            action.setDeliveryType(request.getDeliveryType());
+            action.setComment(request.getComment());
+            action.setConsignmentQuantity(request.getConsignmentQuantity());
 
-            action.setSenderId(senderId);
-            action.setSenderEmail(senderEmail);
-            action.setSenderSignature(senderSignature);
-            action.setSenderFirstName(senderFirstName);
-            action.setSenderLastName(senderLastName);
-            action.setSenderMiddleName(senderMiddleName);
-            action.setSenderPhone(senderPhone);
-            action.setSenderAddress(senderAddress);
-            action.setSenderCountryId(senderCountryId);
-            action.setSenderRegionId(senderRegionId);
-            action.setSenderCityName(senderCityName);
-            action.setSenderZip(senderZip);
-            action.setSenderCompany(senderCompany);
-            action.setSenderCargo(senderCargo);
-            action.setSenderTnt(senderTnt);
-            action.setSenderFedex(senderFedex);
-            action.setDiscount(discount);
+            action.setSenderId(sender.getId());
+            action.setSenderEmail(sender.getEmail());
+            action.setSenderSignature(sender.getSignatureUrl());
+            action.setSenderFirstName(sender.getFirstName());
+            action.setSenderLastName(sender.getLastName());
+            action.setSenderMiddleName(sender.getMiddleName());
+            action.setSenderPhone(sender.getPhone());
+            action.setSenderAddress(sender.getAddress());
+            action.setSenderCountryId(sender.getCountryId());
+            action.setSenderRegionId(sender.getRegionId());
+            action.setSenderCityName(sender.getCityName());
+            action.setSenderZip(sender.getZip());
+            action.setSenderCompany(sender.getCompany());
+            action.setSenderCargo(sender.getCargostarAccountNumber());
+            action.setSenderTnt(sender.getTntAccountNumber());
+            action.setSenderFedex(sender.getFedexAccountNumber());
+            action.setDiscount(sender.getDiscount());
 
-            action.setRecipientId(recipientId);
-            action.setRecipientEmail(recipientEmail);
-            action.setRecipientFirstName(recipientFirstName);
-            action.setRecipientLastName(recipientLastName);
-            action.setRecipientMiddleName(recipientMiddleName);
-            action.setRecipientPhone(recipientPhone);
-            action.setRecipientAddress(recipientAddress);
-            action.setRecipientCountryId(recipientCountryId);
-            action.setRecipientRegionId(recipientRegionId);
-            action.setRecipientCityName(recipientCityName);
-            action.setRecipientZip(recipientZip);
-            action.setRecipientCompany(recipientCompany);
-            action.setRecipientCargo(recipientCargo);
-            action.setRecipientTnt(recipientTnt);
-            action.setRecipientFedex(recipientFedex);
+            action.setRecipientId(recipient.getId());
+            action.setRecipientEmail(recipient.getEmail());
+            action.setRecipientFirstName(recipient.getFirstName());
+            action.setRecipientLastName(recipient.getLastName());
+            action.setRecipientMiddleName(recipient.getMiddleName());
+            action.setRecipientPhone(recipient.getPhone());
+            action.setRecipientAddress(recipient.getAddress());
+            action.setRecipientCountryId(recipient.getCountryId());
+            action.setRecipientRegionId(recipient.getRegionId());
+            action.setRecipientCityName(recipient.getCityName());
+            action.setRecipientZip(recipient.getZip());
+            action.setRecipientCompany(recipient.getCompany());
+            action.setRecipientCargo(recipient.getCargostarAccountNumber());
+            action.setRecipientTnt(recipient.getTntAccountNumber());
+            action.setRecipientFedex(recipient.getFedexAccountNumber());
 
-            action.setPayerId(payerId);
-            action.setPayerEmail(payerEmail);
-            action.setPayerFirstName(payerFirstName);
-            action.setPayerLastName(payerLastName);
-            action.setPayerMiddleName(payerMiddleName);
-            action.setPayerPhone(payerPhone);
-            action.setPayerAddress(payerAddress);
-            action.setPayerCountryId(payerCountryId);
-            action.setPayerRegionId(payerRegionId);
-            action.setPayerCityName(payerCityName);
-            action.setPayerZip(payerZip);
-            action.setPayerCompany(payerCompany);
-            action.setPayerCargo(payerCargo);
-            action.setPayerTnt(payerTnt);
-            action.setPayerFedex(payerFedex);
-            action.setPayerInn(payerInn);
-            action.setPayerBank(payerBank);
-            action.setPayerCheckingAccount(payerCheckingAccount);
-            action.setPayerRegistrationCode(payerRegistrationCode);
-            action.setPayerMfo(payerMfo);
-            action.setPayerOked(payerOked);
+            action.setPayerId(payer.getId());
+            action.setPayerEmail(payer.getEmail());
+            action.setPayerFirstName(payer.getFirstName());
+            action.setPayerLastName(payer.getLastName());
+            action.setPayerMiddleName(payer.getMiddleName());
+            action.setPayerPhone(payer.getPhone());
+            action.setPayerAddress(payer.getAddress());
+            action.setPayerCountryId(payer.getCountryId());
+            action.setPayerRegionId(payer.getRegionId());
+            action.setPayerCityName(payer.getCityName());
+            action.setPayerZip(payer.getZip());
+            action.setPayerCompany(payer.getCompany());
+            action.setPayerCargo(payer.getCargostarAccountNumber());
+            action.setPayerTnt(payer.getTntAccountNumber());
+            action.setPayerFedex(payer.getFedexAccountNumber());
+            action.setPayerInn(payer.getInn());
+            action.setContractNumber(payer.getContractNumber());
 
             action.setSerializedConsignmentList(serializedConsignmentList);
 
@@ -364,25 +306,25 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         final CourierViewModel courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
         final RequestsViewModel requestsViewModel = new ViewModelProvider(this).get(RequestsViewModel.class);
 
-        requestsViewModel.setRequestId(requestId);
-        requestsViewModel.setProviderId(providerId);
-        requestsViewModel.setSenderId(senderId);
-        requestsViewModel.setInvoiceId(invoiceId);
-        requestsViewModel.setSenderCountryId(senderCountryId);
-        requestsViewModel.setSenderRegionId(senderRegionId);
-        requestsViewModel.setRecipientCountryId(recipientCountryId);
+        requestsViewModel.setRequestId(request.getId());
+        requestsViewModel.setProviderId(request.getProviderId());
+        requestsViewModel.setSenderId(request.getClientId());
+        requestsViewModel.setInvoiceId(request.getInvoiceId());
+        requestsViewModel.setSenderCountryId(request.getSenderCountryId());
+        requestsViewModel.setSenderRegionId(request.getSenderRegionId());
+        requestsViewModel.setRecipientCountryId(request.getRecipientCountryId());
 
-        itemList.set(1, new InvoiceData(getString(R.string.invoice_id), invoiceId > 0 ? String.valueOf(invoiceId) : null, InvoiceData.TYPE_ITEM));
-        itemList.set(2, new InvoiceData(getString(R.string.courier_id), invoiceCourierId > 0 ? String.valueOf(invoiceCourierId) : null, InvoiceData.TYPE_ITEM));
+        itemList.set(1, new InvoiceData(getString(R.string.invoice_id), request.getInvoiceId() > 0 ? String.valueOf(request.getInvoiceId()) : null, InvoiceData.TYPE_ITEM));
+        itemList.set(2, new InvoiceData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(request.getCourierId()) : null, InvoiceData.TYPE_ITEM));
         adapter.notifyItemRangeChanged(1, 2);
 
-        publicDataList.set(0, new InvoiceData(getString(R.string.invoice_id), invoiceId > 0 ? String.valueOf(invoiceId) : null, InvoiceData.TYPE_ITEM));
-        publicDataList.set(1, new InvoiceData(getString(R.string.courier_id), invoiceCourierId > 0 ? String.valueOf(invoiceCourierId) : null, InvoiceData.TYPE_ITEM));
+        publicDataList.set(0, new InvoiceData(getString(R.string.invoice_id), request.getInvoiceId() > 0 ? String.valueOf(request.getInvoiceId()) : null, InvoiceData.TYPE_ITEM));
+        publicDataList.set(1, new InvoiceData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(request.getCourierId()) : null, InvoiceData.TYPE_ITEM));
 
-        itemList.set(64, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(consignmentQuantity), InvoiceData.TYPE_ITEM));
+        itemList.set(64, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(request.getConsignmentQuantity()), InvoiceData.TYPE_ITEM));
         adapter.notifyItemChanged(64);
 
-        transportationDataList.set(2, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(consignmentQuantity), InvoiceData.TYPE_ITEM));
+        transportationDataList.set(2, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(request.getConsignmentQuantity()), InvoiceData.TYPE_ITEM));
 
         //header views
         courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
@@ -427,30 +369,18 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
 
-                        requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                        invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
-
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
-                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
-                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, courierId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, senderCityId);
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId);
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId);
-                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
+                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, outputData.getLong(Constants.KEY_REQUEST_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, outputData.getLong(Constants.KEY_INVOICE_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, outputData.getLong(Constants.KEY_CLIENT_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_COURIER_ID, outputData.getLong(Constants.KEY_COURIER_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, outputData.getLong(Constants.KEY_PROVIDER_ID, -1L));
                         startActivity(mainIntent);
 
                         requestSearchEditText.setEnabled(true);
@@ -488,25 +418,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 paymentDataList.set(2, new InvoiceData(getString(R.string.tariff), tariff.getName(), InvoiceData.TYPE_ITEM));
             }
         });
-
-//        /* sender data */
-//        itemList.set(6, new InvoiceData(getString(R.string.email), senderEmail, InvoiceData.TYPE_ITEM));
-//        itemList.set(7, new InvoiceData(getString(R.string.first_name), senderFirstName, InvoiceData.TYPE_ITEM));
-//        itemList.set(8, new InvoiceData(getString(R.string.middle_name), senderMiddleName, InvoiceData.TYPE_ITEM));
-//        itemList.set(9, new InvoiceData(getString(R.string.last_name), senderLastName, InvoiceData.TYPE_ITEM));
-//        itemList.set(10, new InvoiceData(getString(R.string.phone_number), senderPhone, InvoiceData.TYPE_ITEM));
-//        adapter.notifyItemRangeChanged(6, 5);
-//
-//        itemList.set(12, new InvoiceData(getString(R.string.city), senderCityName, InvoiceData.TYPE_ITEM));
-//        itemList.set(13, new InvoiceData(getString(R.string.take_address), senderAddress, InvoiceData.TYPE_ITEM));
-//        adapter.notifyItemRangeChanged(12, 2);
-//
-//        senderDataList.set(0, new InvoiceData(getString(R.string.email), senderEmail, InvoiceData.TYPE_ITEM));
-//        senderDataList.set(1, new InvoiceData(getString(R.string.first_name), senderFirstName, InvoiceData.TYPE_ITEM));
-//        senderDataList.set(2, new InvoiceData(getString(R.string.middle_name), senderMiddleName, InvoiceData.TYPE_ITEM));
-//        senderDataList.set(3, new InvoiceData(getString(R.string.last_name), senderLastName, InvoiceData.TYPE_ITEM));
-//        senderDataList.set(4, new InvoiceData(getString(R.string.phone_number), senderPhone, InvoiceData.TYPE_ITEM));
-//        senderDataList.set(7, new InvoiceData(getString(R.string.take_address), senderAddress, InvoiceData.TYPE_ITEM));
 
         requestsViewModel.getSender().observe(getViewLifecycleOwner(), sender -> {
             if (sender != null) {
@@ -630,18 +541,10 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 payerDataList.set(11, new InvoiceData(getString(R.string.fedex_account_number), payer.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
 
                 //account data
-                itemList.set(50, new InvoiceData(getString(R.string.checking_account), payer.getCheckingAccount(), InvoiceData.TYPE_ITEM));
-                itemList.set(51, new InvoiceData(getString(R.string.bank), payer.getBank(), InvoiceData.TYPE_ITEM));
-                itemList.set(52, new InvoiceData(getString(R.string.payer_registration_code), payer.getRegistrationCode(), InvoiceData.TYPE_ITEM));
-                itemList.set(53, new InvoiceData(getString(R.string.mfo), payer.getMfo(), InvoiceData.TYPE_ITEM));
-                itemList.set(54, new InvoiceData(getString(R.string.oked), payer.getOked(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(50, 5);
+                itemList.set(50, new InvoiceData(getString(R.string.contract_number), payer.getContractNumber(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(50);
 
-                accountDataList.set(0, new InvoiceData(getString(R.string.checking_account), payer.getCheckingAccount(), InvoiceData.TYPE_ITEM));
-                accountDataList.set(1, new InvoiceData(getString(R.string.bank), payer.getBank(), InvoiceData.TYPE_ITEM));
-                accountDataList.set(2, new InvoiceData(getString(R.string.payer_registration_code), payer.getRegistrationCode(), InvoiceData.TYPE_ITEM));
-                accountDataList.set(3, new InvoiceData(getString(R.string.mfo), payer.getMfo(), InvoiceData.TYPE_ITEM));
-                accountDataList.set(4, new InvoiceData(getString(R.string.oked), payer.getOked(), InvoiceData.TYPE_ITEM));
+                accountDataList.set(0, new InvoiceData(getString(R.string.checking_account), payer.getContractNumber(), InvoiceData.TYPE_ITEM));
             }
         });
 
@@ -661,8 +564,8 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 requestsViewModel.setPayerId(invoice.getPayerId());
                 requestsViewModel.setTariffId(invoice.getTariffId());
 
-                itemList.set(57, new InvoiceData(getString(R.string.cost), String.valueOf(invoice.getPrice()), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(57);
+                itemList.set(53, new InvoiceData(getString(R.string.cost), String.valueOf(invoice.getPrice()), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(53);
 
                 paymentDataList.set(0, new InvoiceData(getString(R.string.cost), String.valueOf(invoice.getPrice()), InvoiceData.TYPE_ITEM));
             }
@@ -671,12 +574,12 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         /* transportation data */
         requestsViewModel.getTransportation().observe(getViewLifecycleOwner(), transportation -> {
             if (transportation != null) {
-                itemList.set(62, new InvoiceData(getString(R.string.tracking_code_main), transportation.getTrackingCode(), InvoiceData.TYPE_ITEM));
-                itemList.set(63, new InvoiceData(getString(R.string.qr_code), transportation.getQrCode(), InvoiceData.TYPE_ITEM));
-                itemList.set(65, new InvoiceData(getString(R.string.arrival_date), transportation.getArrivalDate(), InvoiceData.TYPE_ITEM));
-                itemList.set(66, new InvoiceData(getString(R.string.courier_guidelines), transportation.getInstructions(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(62, 2);
-                adapter.notifyItemRangeChanged(65, 2);
+                itemList.set(58, new InvoiceData(getString(R.string.tracking_code_main), transportation.getTrackingCode(), InvoiceData.TYPE_ITEM));
+                itemList.set(59, new InvoiceData(getString(R.string.qr_code), transportation.getQrCode(), InvoiceData.TYPE_ITEM));
+                itemList.set(61, new InvoiceData(getString(R.string.arrival_date), transportation.getArrivalDate(), InvoiceData.TYPE_ITEM));
+                itemList.set(62, new InvoiceData(getString(R.string.courier_guidelines), transportation.getInstructions(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(58, 2);
+                adapter.notifyItemRangeChanged(61, 2);
 
                 transportationDataList.set(0, new InvoiceData(getString(R.string.tracking_code_main), transportation.getTrackingCode(), InvoiceData.TYPE_ITEM));
                 transportationDataList.set(1, new InvoiceData(getString(R.string.qr_code), transportation.getQrCode(), InvoiceData.TYPE_ITEM));
@@ -690,9 +593,9 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             //for each cargo
             if (consignmentList != null && !consignmentList.isEmpty()) {
                 int i = 0;
-                int j = 69;
+                int j = 65;
 
-                if (consignmentQuantity > 0) {
+                if (request.getConsignmentQuantity() > 0) {
                     for (final Consignment consignment : consignmentList) {
                         consignment.setPackagingType(consignment.getPackagingId() != null ? String.valueOf(consignment.getPackagingId()) : null);
                         itemList.set(j + i, new InvoiceData(getString(R.string.cargo_name), consignment.getName(), InvoiceData.TYPE_ITEM));
@@ -711,7 +614,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                         i++;
                     }
                     dataRecyclerView.post(() -> {
-                        adapter.notifyItemRangeChanged(68, forEachCargoList.size());
+                        adapter.notifyItemRangeChanged(64, forEachCargoList.size());
                     });
                 }
             }
@@ -722,76 +625,124 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                     final Data outputData = workInfo.getOutputData();
 
-                    requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                    invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                    invoiceNumber = outputData.getString(Constants.KEY_NUMBER);
-                    providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
-                    tariffId = outputData.getLong(Constants.KEY_TARIFF_ID, -1L);
-                    senderId = outputData.getLong(Constants.KEY_SENDER_ID, -1L);
-                    recipientId = outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L);
-                    payerId = outputData.getLong(Constants.KEY_PAYER_ID, -1L);
-                    price = outputData.getDouble(Constants.KEY_PRICE, -1);
-                    invoiceCourierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
+                    if (request == null) {
+                        request = new Request();
+                    }
+                    request.setId(outputData.getLong(Constants.KEY_REQUEST_ID, -1L));
+                    request.setSenderCountryId(outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L));
+                    request.setSenderRegionId(outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L));
+                    request.setSenderCityId(outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L));
+                    request.setSenderCity(outputData.getString(Constants.KEY_SENDER_CITY_NAME));
+                    request.setSenderCityName(outputData.getString(Constants.KEY_SENDER_CITY_NAME));
+                    request.setUserId(outputData.getLong(Constants.KEY_SENDER_USER_ID, -1L));
+                    request.setClientId(outputData.getLong(Constants.KEY_SENDER_ID, -1L));
+                    request.setCourierId(outputData.getLong(Constants.KEY_COURIER_ID, -1L));
+                    request.setProviderId(outputData.getLong(Constants.KEY_PROVIDER_ID, -1L));
+                    request.setInvoiceId(outputData.getLong(Constants.KEY_INVOICE_ID, -1L));
+                    request.setSenderFirstName(outputData.getString(Constants.KEY_SENDER_FIRST_NAME));
+                    request.setSenderMiddleName(outputData.getString(Constants.KEY_SENDER_MIDDLE_NAME));
+                    request.setSenderLastName(outputData.getString(Constants.KEY_SENDER_LAST_NAME));
+                    request.setSenderEmail(outputData.getString(Constants.KEY_SENDER_EMAIL));
+                    request.setSenderPhone(outputData.getString(Constants.KEY_SENDER_PHONE));
+                    request.setSenderAddress(outputData.getString(Constants.KEY_SENDER_ADDRESS));
+                    request.setRecipientCountryId(outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
+                    request.setRecipientCityId(outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L));
+                    request.setRecipientCityName(outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME));
+                    request.setDeliveryType(outputData.getInt(Constants.KEY_DELIVERY_TYPE, 0));
+                    request.setComment(outputData.getString(Constants.KEY_COMMENT));
+                    request.setConsignmentQuantity(outputData.getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0));
+                    request.setPaymentStatus(outputData.getString(Constants.KEY_PAYMENT_STATUS));
 
-                    senderEmail = outputData.getString(Constants.KEY_SENDER_EMAIL);
-                    senderSignature = outputData.getString(Constants.KEY_SENDER_SIGNATURE);
-                    senderFirstName = outputData.getString(Constants.KEY_SENDER_FIRST_NAME);
-                    senderLastName = outputData.getString(Constants.KEY_SENDER_LAST_NAME);
-                    senderMiddleName = outputData.getString(Constants.KEY_SENDER_MIDDLE_NAME);
-                    senderPhone = outputData.getString(Constants.KEY_SENDER_PHONE);
-                    senderAddress = outputData.getString(Constants.KEY_SENDER_ADDRESS);
-                    senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                    senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                    senderCityName = outputData.getString(Constants.KEY_SENDER_CITY_NAME);
-                    senderZip = outputData.getString(Constants.KEY_SENDER_ZIP);
-                    senderCompany = outputData.getString(Constants.KEY_SENDER_COMPANY_NAME);
-                    senderCargo = outputData.getString(Constants.KEY_SENDER_CARGOSTAR);
-                    senderTnt = outputData.getString(Constants.KEY_SENDER_TNT);
-                    senderFedex = outputData.getString(Constants.KEY_SENDER_FEDEX);
-                    discount = outputData.getInt(Constants.KEY_DISCOUNT, 0);
+                    invoice = new Invoice(
+                            outputData.getLong(Constants.KEY_INVOICE_ID, -1L),
+                            outputData.getString(Constants.KEY_NUMBER),
+                            outputData.getLong(Constants.KEY_SENDER_ID, -1L),
+                            outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L),
+                            recipientSignatureUrl,
+                            outputData.getLong(Constants.KEY_PAYER_ID, -1L),
+                            outputData.getLong(Constants.KEY_PROVIDER_ID, -1L),
+                            outputData.getLong(Constants.KEY_REQUEST_ID, -1L),
+                            outputData.getLong(Constants.KEY_TARIFF_ID, -1L),
+                            outputData.getDouble(Constants.KEY_PRICE, -1),
+                            1, new Date(), new Date());
 
-                    recipientEmail = outputData.getString(Constants.KEY_RECIPIENT_EMAIL);
-                    recipientFirstName = outputData.getString(Constants.KEY_RECIPIENT_FIRST_NAME);
-                    recipientLastName = outputData.getString(Constants.KEY_RECIPIENT_LAST_NAME);
-                    recipientMiddleName = outputData.getString(Constants.KEY_RECIPIENT_MIDDLE_NAME);
-                    recipientPhone = outputData.getString(Constants.KEY_RECIPIENT_PHONE);
-                    recipientAddress = outputData.getString(Constants.KEY_RECIPIENT_ADDRESS);
-                    recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                    recipientRegionId = outputData.getLong(Constants.KEY_RECIPIENT_REGION_ID, -1L);
-                    recipientCityName = outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME);
-                    recipientZip = outputData.getString(Constants.KEY_RECIPIENT_ZIP);
-                    recipientCompany = outputData.getString(Constants.KEY_RECIPIENT_COMPANY_NAME);
-                    recipientCargo = outputData.getString(Constants.KEY_RECIPIENT_CARGOSTAR);
-                    recipientTnt = outputData.getString(Constants.KEY_RECIPIENT_TNT);
-                    recipientFedex = outputData.getString(Constants.KEY_RECIPIENT_FEDEX);
+                    sender = new Customer(
+                            outputData.getLong(Constants.KEY_SENDER_ID, -1L),
+                            outputData.getLong(Constants.KEY_SENDER_USER_ID, -1L),
+                            outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L),
+                            outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L),
+                            outputData.getString(Constants.KEY_SENDER_CITY_NAME),
+                            outputData.getString(Constants.KEY_SENDER_FIRST_NAME),
+                            outputData.getString(Constants.KEY_SENDER_MIDDLE_NAME),
+                            outputData.getString(Constants.KEY_SENDER_LAST_NAME),
+                            outputData.getString(Constants.KEY_SENDER_PHONE),
+                            outputData.getString(Constants.KEY_SENDER_SIGNATURE),
+                            outputData.getString(Constants.KEY_SENDER_ADDRESS),
+                            null,
+                            outputData.getString(Constants.KEY_SENDER_ZIP),
+                            1, new Date(), new Date(),
+                            outputData.getString(Constants.KEY_SENDER_CARGOSTAR),
+                            outputData.getString(Constants.KEY_SENDER_TNT),
+                            outputData.getString(Constants.KEY_SENDER_FEDEX),
+                            outputData.getInt(Constants.KEY_DISCOUNT, 0),
+                            outputData.getString(Constants.KEY_SENDER_PHOTO),
+                            outputData.getString(Constants.KEY_SENDER_SIGNATURE),
+                            outputData.getInt(Constants.KEY_SENDER_TYPE, 0),
+                            outputData.getString(Constants.KEY_SENDER_PASSPORT),
+                            outputData.getString(Constants.KEY_SENDER_INN),
+                            outputData.getString(Constants.KEY_SENDER_COMPANY_NAME));
 
-                    payerEmail = outputData.getString(Constants.KEY_PAYER_EMAIL);
-                    payerFirstName = outputData.getString(Constants.KEY_PAYER_FIRST_NAME);
-                    payerLastName = outputData.getString(Constants.KEY_PAYER_LAST_NAME);
-                    payerMiddleName = outputData.getString(Constants.KEY_PAYER_MIDDLE_NAME);
-                    payerPhone = outputData.getString(Constants.KEY_PAYER_PHONE);
-                    payerAddress = outputData.getString(Constants.KEY_PAYER_ADDRESS);
-                    payerCountryId = outputData.getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L);
-                    payerRegionId = outputData.getLong(Constants.KEY_PAYER_REGION_ID, -1L);
-                    payerCityName = outputData.getString(Constants.KEY_PAYER_CITY_NAME);
-                    payerZip = outputData.getString(Constants.KEY_PAYER_ZIP);
-                    payerCompany = outputData.getString(Constants.KEY_PAYER_COMPANY_NAME);
-                    payerCargo = outputData.getString(Constants.KEY_PAYER_CARGOSTAR);
-                    payerTnt = outputData.getString(Constants.KEY_PAYER_TNT);
-                    payerFedex = outputData.getString(Constants.KEY_PAYER_FEDEX);
+                    recipient = new AddressBook(
+                            outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L),
+                            outputData.getLong(Constants.KEY_RECIPIENT_USER_ID, -1L),
+                            outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L),
+                            outputData.getLong(Constants.KEY_RECIPIENT_REGION_ID, -1L),
+                            outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME),
+                            outputData.getString(Constants.KEY_RECIPIENT_ADDRESS),
+                            outputData.getString(Constants.KEY_RECIPIENT_ZIP),
+                            outputData.getString(Constants.KEY_RECIPIENT_FIRST_NAME),
+                            outputData.getString(Constants.KEY_RECIPIENT_MIDDLE_NAME),
+                            outputData.getString(Constants.KEY_RECIPIENT_LAST_NAME),
+                            outputData.getString(Constants.KEY_RECIPIENT_EMAIL),
+                            outputData.getString(Constants.KEY_RECIPIENT_PHONE),
+                            outputData.getString(Constants.KEY_RECIPIENT_CARGOSTAR),
+                            outputData.getString(Constants.KEY_RECIPIENT_TNT),
+                            outputData.getString(Constants.KEY_RECIPIENT_FEDEX),
+                            outputData.getString(Constants.KEY_RECIPIENT_COMPANY_NAME),
+                            outputData.getString(Constants.KEY_RECIPIENT_INN),
+                            outputData.getString(Constants.KEY_RECIPIENT_CONTRACT_NUMBER),
+                            outputData.getString(Constants.KEY_RECIPIENT_PASSPORT),
+                            outputData.getInt(Constants.KEY_RECIPIENT_TYPE, 0),
+                            1, new Date(), new Date());
 
-                    payerInn = outputData.getString(Constants.KEY_PAYER_INN);
-                    payerBank = outputData.getString(Constants.KEY_PAYER_BANK);
-                    payerCheckingAccount = outputData.getString(Constants.KEY_PAYER_CHECKING_ACCOUNT);
-                    payerRegistrationCode = outputData.getString(Constants.KEY_PAYER_REGISTRATION_CODE);
-                    payerMfo = outputData.getString(Constants.KEY_PAYER_MFO);
-                    payerOked = outputData.getString(Constants.KEY_PAYER_OKED);
+                    payer = new AddressBook(
+                            outputData.getLong(Constants.KEY_PAYER_ID, -1L),
+                            outputData.getLong(Constants.KEY_PAYER_USER_ID, -1L),
+                            outputData.getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L),
+                            outputData.getLong(Constants.KEY_PAYER_REGION_ID, -1L),
+                            outputData.getString(Constants.KEY_PAYER_CITY_NAME),
+                            outputData.getString(Constants.KEY_PAYER_ADDRESS),
+                            outputData.getString(Constants.KEY_PAYER_ZIP),
+                            outputData.getString(Constants.KEY_PAYER_FIRST_NAME),
+                            outputData.getString(Constants.KEY_PAYER_MIDDLE_NAME),
+                            outputData.getString(Constants.KEY_PAYER_LAST_NAME),
+                            outputData.getString(Constants.KEY_PAYER_EMAIL),
+                            outputData.getString(Constants.KEY_PAYER_PHONE),
+                            outputData.getString(Constants.KEY_PAYER_CARGOSTAR),
+                            outputData.getString(Constants.KEY_PAYER_TNT),
+                            outputData.getString(Constants.KEY_PAYER_FEDEX),
+                            outputData.getString(Constants.KEY_PAYER_COMPANY_NAME),
+                            outputData.getString(Constants.KEY_PAYER_INN),
+                            outputData.getString(Constants.KEY_PAYER_CONTRACT_NUMBER),
+                            outputData.getString(Constants.KEY_PAYER_PASSPORT),
+                            outputData.getInt(Constants.KEY_PAYER_TYPE, 0),
+                            1, new Date(), new Date());
 
                     serializedConsignmentList = outputData.getString(Constants.KEY_SERIALIZED_CONSIGNMENT_LIST);
 
                     progressBar.setVisibility(View.GONE);
 
-                    if (invoiceCourierId > 0) {
+                    if (request.getCourierId() > 0) {
                         editInvoiceImageView.setVisibility(View.VISIBLE);
                     }
                     else {
@@ -932,19 +883,11 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
         //accounts data
         itemList.add(accountDataHeading);
-        itemList.add(new InvoiceData(getString(R.string.checking_account), null, InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.bank), null, InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.payer_registration_code), null, InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.mfo), null, InvoiceData.TYPE_ITEM));
-        itemList.add(new InvoiceData(getString(R.string.oked), null, InvoiceData.TYPE_ITEM));
+        itemList.add(new InvoiceData(getString(R.string.contract_number), null, InvoiceData.TYPE_ITEM));
         itemList.add(new InvoiceData(null, null, InvoiceData.TYPE_STROKE));
 
         //accounts data
-        accountDataList.add(new InvoiceData(getString(R.string.checking_account), null, InvoiceData.TYPE_ITEM));
-        accountDataList.add(new InvoiceData(getString(R.string.bank), null, InvoiceData.TYPE_ITEM));
-        accountDataList.add(new InvoiceData(getString(R.string.payer_registration_code), null, InvoiceData.TYPE_ITEM));
-        accountDataList.add(new InvoiceData(getString(R.string.mfo), null, InvoiceData.TYPE_ITEM));
-        accountDataList.add(new InvoiceData(getString(R.string.oked), null, InvoiceData.TYPE_ITEM));
+        accountDataList.add(new InvoiceData(getString(R.string.contract_number), null, InvoiceData.TYPE_ITEM));
 
         //payment data
         itemList.add(paymentDataHeading);
@@ -977,7 +920,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         //consignment
         itemList.add(forEachCargoHeading);
 
-        for (int i = 0; i < consignmentQuantity; i++) {
+        for (int i = 0; i < request.getConsignmentQuantity(); i++) {
             itemList.add(new InvoiceData(getString(R.string.cargo_name), null, InvoiceData.TYPE_ITEM));
             itemList.add(new InvoiceData(getString(R.string.cargo_description), null, InvoiceData.TYPE_ITEM));
             itemList.add(new InvoiceData(getString(R.string.cargo_price), null, InvoiceData.TYPE_ITEM));
@@ -997,8 +940,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
     public void onArrowTapped(final int position) {
         final InvoiceData currentItem = itemList.get(position);
         currentItem.isHidden = !currentItem.isHidden;
-
-
 
         /* public data */
         if (currentItem.equals(publicDataHeading)) {
@@ -1054,7 +995,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 itemList.addAll(position + 1, accountDataList);
             }
             else {
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 1; i++) {
                     itemList.remove(position + 1);
                 }
             }
@@ -1102,6 +1043,5 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         adapter.notifyDataSetChanged();
     }
 
-    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
     private static final String TAG = InvoiceDataFragment.class.toString();
 }

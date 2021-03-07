@@ -80,11 +80,7 @@ public class SendInvoiceWorker extends Worker {
     private final double discount;
     private final String payerInn;
     private final String payerCompanyName;
-    private final String checkingAccount;
-    private final String bank;
-    private final String mfo;
-    private final String oked;
-    private final String registrationCode;
+    private final String contractNumber;
 
     /* invoice data */
     private final long requestId;
@@ -163,11 +159,7 @@ public class SendInvoiceWorker extends Worker {
         this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, -1);
         this.payerInn = getInputData().getString(Constants.KEY_PAYER_INN);
         this.payerCompanyName = getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME);
-        this.checkingAccount = getInputData().getString(Constants.KEY_PAYER_CHECKING_ACCOUNT);
-        this.bank = getInputData().getString(Constants.KEY_PAYER_BANK);
-        this.mfo = getInputData().getString(Constants.KEY_PAYER_MFO);
-        this.oked = getInputData().getString(Constants.KEY_PAYER_OKED);
-        this.registrationCode = getInputData().getString(Constants.KEY_PAYER_REGISTRATION_CODE);
+        this.contractNumber = getInputData().getString(Constants.KEY_PAYER_CONTRACT_NUMBER);
 
         this.instructions = getInputData().getString(Constants.KEY_INSTRUCTIONS);
 
@@ -255,11 +247,7 @@ public class SendInvoiceWorker extends Worker {
         createInvoiceParams.setPayerCompanyName(payerCompanyName);
 
         /* account data */
-        createInvoiceParams.setCheckingAccount(checkingAccount);
-        createInvoiceParams.setBank(bank);
-        createInvoiceParams.setRegistrationCode(registrationCode);
-        createInvoiceParams.setMfo(mfo);
-        createInvoiceParams.setOked(oked);
+        createInvoiceParams.setContractNumber(contractNumber);
 
         createInvoiceParams.setInstructions(instructions);
 

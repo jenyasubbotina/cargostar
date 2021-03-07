@@ -223,4 +223,5 @@
     <string name="address">Адрес</string>
     <string name="samarkand">samarkand</string>
     <string name="tashkent">tashkent</string>
+    <string name="contract_number">Номер контракта</string>
 </resources>

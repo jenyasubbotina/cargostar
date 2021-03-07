@@ -209,26 +209,9 @@ public class CreateInvoiceParams {
     @SerializedName("discount")
     private double discount;
 
-    /* Payment */
     @Expose
-    @SerializedName("payer_account")
-    private String checkingAccount;
-
-    @Expose
-    @SerializedName("payer_bank")
-    private String bank;
-
-    @Expose
-    @SerializedName("payer_code")
-    private String registrationCode;
-
-    @Expose
-    @SerializedName("payer_mfo")
-    private String mfo;
-
-    @Expose
-    @SerializedName("payer_oked")
-    private String oked;
+    @SerializedName("payer_contract_number")
+    private String contractNumber;
 
     /* Transportation */
     @Expose
@@ -604,44 +587,12 @@ public class CreateInvoiceParams {
         this.discount = discount;
     }
 
-    public String getCheckingAccount() {
-        return checkingAccount;
+    public String getContractNumber() {
+        return contractNumber;
     }
 
-    public void setCheckingAccount(String checkingAccount) {
-        this.checkingAccount = checkingAccount;
-    }
-
-    public String getBank() {
-        return bank;
-    }
-
-    public void setBank(String bank) {
-        this.bank = bank;
-    }
-
-    public String getRegistrationCode() {
-        return registrationCode;
-    }
-
-    public void setRegistrationCode(String registrationCode) {
-        this.registrationCode = registrationCode;
-    }
-
-    public String getMfo() {
-        return mfo;
-    }
-
-    public void setMfo(String mfo) {
-        this.mfo = mfo;
-    }
-
-    public String getOked() {
-        return oked;
-    }
-
-    public void setOked(String oked) {
-        this.oked = oked;
+    public void setContractNumber(final String contractNumber) {
+        this.contractNumber = contractNumber;
     }
 
     public String getTransportationQr() {
@@ -696,7 +647,7 @@ public class CreateInvoiceParams {
         return packagingId;
     }
 
-    public void setPackagingId(long packagingId) {
+    public void setPackagingId(final long packagingId) {
         this.packagingId = packagingId;
     }
 
@@ -811,7 +762,7 @@ public class CreateInvoiceParams {
                 "requestId=" + requestId +
                 ", invoiceId=" + invoiceId +
                 ", courierId=" + courierId +
-                ", senderSignature='" + senderSignature + '\'' +
+//                ", senderSignature='" + senderSignature + '\'' +
                 ", senderEmail='" + senderEmail + '\'' +
                 ", senderTntAccountNumber='" + senderTntAccountNumber + '\'' +
                 ", senderFedexAccountNumber='" + senderFedexAccountNumber + '\'' +
@@ -857,11 +808,7 @@ public class CreateInvoiceParams {
                 ", payerTntTaxId='" + payerTntTaxId + '\'' +
                 ", payerFedexTaxId=" + payerFedexTaxId +
                 ", discount=" + discount +
-                ", checkingAccount='" + checkingAccount + '\'' +
-                ", bank='" + bank + '\'' +
-                ", registrationCode='" + registrationCode + '\'' +
-                ", mfo='" + mfo + '\'' +
-                ", oked='" + oked + '\'' +
+                ", contractNumber='" + contractNumber + '\'' +
                 ", transportationQr='" + transportationQr + '\'' +
                 ", instructions='" + instructions + '\'' +
                 ", consignmentList=" + consignmentList +

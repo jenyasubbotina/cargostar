@@ -38,11 +38,7 @@ public class InsertCustomerWorker extends Worker {
     private final String passportSerial;
     private final String inn;
     private final String company;
-    private final String bank;
-    private final String mfo;
-    private final String oked;
-    private final String checkingAccount;
-    private final String vat;
+    private final String contractNumber;
     private final String signatureUrl;
 
     public InsertCustomerWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -66,11 +62,7 @@ public class InsertCustomerWorker extends Worker {
         this.passportSerial = getInputData().getString(Constants.KEY_PASSPORT_SERIAL);
         this.inn = getInputData().getString(Constants.KEY_INN);
         this.company = getInputData().getString(Constants.KEY_COMPANY);
-        this.bank = getInputData().getString(Constants.KEY_PAYER_BANK);
-        this.mfo = getInputData().getString(Constants.KEY_PAYER_MFO);
-        this.oked = getInputData().getString(Constants.KEY_PAYER_OKED);
-        this.checkingAccount = getInputData().getString(Constants.KEY_PAYER_CHECKING_ACCOUNT);
-        this.vat = getInputData().getString(Constants.KEY_VAT);
+        this.contractNumber = getInputData().getString(Constants.KEY_PAYER_CONTRACT_NUMBER);
         this.signatureUrl = getInputData().getString(Constants.KEY_SIGNATURE);
     }
 
@@ -110,11 +102,7 @@ public class InsertCustomerWorker extends Worker {
                             passportSerial,
                             inn,
                             company,
-                            bank,
-                            mfo,
-                            oked,
-                            checkingAccount,
-                            vat,
+                            contractNumber,
                             signatureBytesStr);
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

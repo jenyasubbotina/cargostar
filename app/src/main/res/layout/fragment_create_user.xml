@@ -80,7 +80,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/email" />
 
         <TextView
             android:id="@+id/password_text_view"
@@ -91,6 +92,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/password_edit_text"
             android:text="@string/password"/>
 
         <EditText
@@ -107,7 +109,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/password" />
 
         <View
             android:id="@+id/client_account_numbers_stroke"
@@ -141,6 +144,7 @@
             android:layout_marginTop="29dp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/tnt_account_number_edit_text"
             android:text="@string/tnt_account_number"/>
 
         <EditText
@@ -155,7 +159,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/tnt_account_number" />
 
         <TextView
             android:id="@+id/fedex_account_number_text_view"
@@ -167,6 +172,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/fedex_account_number_edit_text"
             android:text="@string/fedex_account_number"/>
 
         <EditText
@@ -183,7 +189,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/fedex_account_number" />
 
         <View
             android:id="@+id/personal_information_stroke"
@@ -217,6 +224,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/first_name_edit_text"
             android:text="@string/first_name"/>
 
         <EditText
@@ -232,7 +240,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/first_name" />
 
         <TextView
             android:id="@+id/last_name_text_view"
@@ -243,6 +252,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/last_name_edit_text"
             android:text="@string/last_name"/>
 
         <EditText
@@ -257,7 +267,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/last_name" />
 
         <TextView
             android:id="@+id/middle_name_text_view"
@@ -269,6 +280,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/middle_name_edit_text"
             android:text="@string/middle_name"/>
 
         <EditText
@@ -284,7 +296,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/middle_name" />
 
         <TextView
             android:id="@+id/phone_number_text_view"
@@ -295,6 +308,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/phone_number_edit_text"
             android:text="@string/phone_number"/>
 
         <EditText
@@ -309,7 +323,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/phone_number" />
 
         <TextView
             android:id="@+id/address_text_view"
@@ -321,6 +336,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/address_edit_text"
             android:text="@string/main_address"/>
 
         <EditText
@@ -336,7 +352,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/address" />
 
         <TextView
             android:id="@+id/geolocation_text_view"
@@ -347,6 +364,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/geolocation_edit_text"
             android:text="@string/geolocation"/>
 
         <EditText
@@ -361,7 +379,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/geolocation" />
 
         <TextView
             android:id="@+id/country_text_view"
@@ -402,6 +421,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/city_edit_text"
             android:text="@string/city"/>
 
         <EditText
@@ -431,6 +451,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/zip_edit_text"
             android:text="@string/post_index"/>
 
         <EditText
@@ -446,7 +467,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/post_index" />
 
         <TextView
             android:id="@+id/signature_text_view"
@@ -457,6 +479,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/signature_edit_text"
             android:text="@string/signature"/>
 
         <RelativeLayout
@@ -481,7 +504,8 @@
                 android:paddingHorizontal="36dp"
                 android:cursorVisible="false"
                 android:focusable="false"
-                android:focusableInTouchMode="false"/>
+                android:focusableInTouchMode="false"
+                android:autofillHints="@string/signature" />
 
             <ImageView
                 android:id="@+id/success_signature_image_view"
@@ -527,6 +551,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/password_edit_text"
             android:text="@string/passport_serial"/>
 
         <EditText
@@ -542,7 +567,8 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/passport_serial" />
 
         <TextView
             android:id="@+id/commercial_text_view"
@@ -566,6 +592,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/inn_edit_text"
             android:text="@string/INN"/>
 
         <EditText
@@ -581,6 +608,7 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
+            android:autofillHints="@string/INN"
             android:padding="17dp"/>
 
         <TextView
@@ -592,6 +620,7 @@
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
+            android:labelFor="@id/company_edit_text"
             android:text="@string/company_name"/>
 
         <EditText
@@ -606,159 +635,36 @@
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
+            android:padding="17dp"
+            android:autofillHints="@string/company_name" />
 
-        <View
-            android:id="@+id/payment_data_stroke"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            app:layout_constraintStart_toStartOf="@id/authorization_data_stroke"
-            app:layout_constraintEnd_toEndOf="@id/authorization_data_stroke"
+        <TextView
+            android:id="@+id/contract_number_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/inn_edit_text"
-            android:layout_marginTop="46dp"
-            android:background="#F2F2F2" />
-
-        <TextView
-            android:id="@+id/payment_data_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payment_data_stroke"
-            app:layout_constraintStart_toStartOf="@id/create_user_text_view"
-            android:layout_marginTop="46dp"
-            android:textSize="19sp"
-            android:textColor="@color/colorBlack"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/payment_data"/>
-
-        <TextView
-            android:id="@+id/checking_account_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payment_data_text_view"
             app:layout_constraintStart_toStartOf="@id/email_text_view"
-            android:layout_marginTop="29dp"
+            android:layout_marginTop="17dp"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
-            android:text="@string/checking_account"/>
+            android:labelFor="@id/contract_number_edit_text"
+            android:text="@string/contract_number"/>
 
         <EditText
-            android:id="@+id/checking_account_edit_text"
+            android:id="@+id/contract_number_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/checking_account_text_view"
             app:layout_constraintStart_toStartOf="@id/email_edit_text"
             app:layout_constraintEnd_toEndOf="@id/email_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/contract_number_text_view"
             android:layout_marginTop="4dp"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
-
-        <TextView
-            android:id="@+id/bank_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/checking_account_text_view"
-            app:layout_constraintStart_toStartOf="@id/password_text_view"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/bank"/>
-
-        <EditText
-            android:id="@+id/bank_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/checking_account_edit_text"
-            app:layout_constraintStart_toStartOf="@id/password_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/password_edit_text"
             android:inputType="text"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"
             android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
-
-        <TextView
-            android:id="@+id/vat_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/checking_account_edit_text"
-            app:layout_constraintStart_toStartOf="@id/email_text_view"
-            android:layout_marginTop="29dp"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/NDC"/>
-
-        <EditText
-            android:id="@+id/vat_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/vat_text_view"
-            app:layout_constraintStart_toStartOf="@id/email_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/email_edit_text"
-            android:layout_marginTop="4dp"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
-
-        <TextView
-            android:id="@+id/mfo_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/vat_text_view"
-            app:layout_constraintStart_toStartOf="@id/password_text_view"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/mfo"/>
-
-        <EditText
-            android:id="@+id/mfo_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/vat_edit_text"
-            app:layout_constraintStart_toStartOf="@id/password_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/password_edit_text"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:textColor="@color/colorBlack"
-            android:padding="17dp"/>
-
-        <TextView
-            android:id="@+id/oked_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/vat_edit_text"
-            app:layout_constraintStart_toStartOf="@id/email_text_view"
-            android:layout_marginTop="29dp"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/oked"/>
-
-        <EditText
-            android:id="@+id/oked_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/oked_text_view"
-            app:layout_constraintStart_toStartOf="@id/email_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/email_edit_text"
-            android:layout_marginTop="4dp"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:textColor="@color/colorBlack"
+            android:autofillHints="@string/contract_number"
             android:padding="17dp"/>
 
         <Button
@@ -766,7 +672,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/email_text_view"
-            app:layout_constraintTop_toBottomOf="@id/oked_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/contract_number_edit_text"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="42dp"
             android:layout_marginBottom="37dp"
@@ -784,8 +690,8 @@
             android:id="@+id/progress_bar"
             app:layout_constraintTop_toTopOf="@id/create_btn"
             app:layout_constraintBottom_toBottomOf="@id/create_btn"
-            app:layout_constraintStart_toStartOf="@id/mfo_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/mfo_edit_text"
+            app:layout_constraintStart_toStartOf="@id/company_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/company_edit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="invisible"/>

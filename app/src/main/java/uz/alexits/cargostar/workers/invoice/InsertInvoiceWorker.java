@@ -17,91 +17,105 @@ public class InsertInvoiceWorker extends Worker {
     private final long invoiceId;
     private final String number;
     private final long providerId;
-    private final long courierId;
     private final long tariffId;
-    private final long senderId;
-    private final long recipientId;
-    private final String recipientSignatureUrl;
-    private final long payerId;
+    private final long courierId;
     private final double price;
+    private final int deliveryType;
+    private final String paymentStatus;
+    private final String comment;
+
     private final int status;
     private final long createdAtTime;
     private final long updatedAtTime;
 
+    private final long senderId;
+    private final long senderUserId;
     private final String senderEmail;
-    private final String senderSignature;
     private final String senderFirstName;
     private final String senderLastName;
     private final String senderMiddleName;
     private final String senderPhone;
     private final String senderAddress;
+    private final String senderZip;
     private final long senderCountryId;
     private final long senderRegionId;
-    private final long senderCityId;
-    private final String senderZip;
-    private final String senderCompany;
+    private final String senderCityName;
     private final String senderCargo;
     private final String senderTnt;
     private final String senderFedex;
-    private final int discount;
+    private final int senderDiscount;
+    private final String senderPassport;
+    private final String senderInn;
+    private final String senderCompany;
+    private final String senderPhoto;
+    private final String senderSignature;
+    private final int senderType;
 
+    private final long recipientId;
+    private final long recipientUserId;
     private final String recipientEmail;
     private final String recipientFirstName;
     private final String recipientLastName;
     private final String recipientMiddleName;
     private final String recipientPhone;
     private final String recipientAddress;
+    private final String recipientZip;
     private final long recipientCountryId;
     private final long recipientRegionId;
-    private final long recipientCityId;
-    private final String recipientZip;
-    private final String recipientCompany;
+    private final String recipientCityName;
     private final String recipientCargo;
     private final String recipientTnt;
     private final String recipientFedex;
+    private final String recipientPassport;
+    private final String recipientInn;
+    private final String recipientCompany;
+    private final String recipientSignature;
+    private final int recipientType;
 
+    private final long payerId;
+    private final long payerUserId;
     private final String payerEmail;
     private final String payerFirstName;
     private final String payerLastName;
     private final String payerMiddleName;
     private final String payerPhone;
     private final String payerAddress;
+    private final String payerZip;
     private final long payerCountryId;
     private final long payerRegionId;
-    private final long payerCityId;
-    private final String payerZip;
-    private final String payerCompany;
+    private final String payerCityName;
     private final String payerCargo;
     private final String payerTnt;
     private final String payerFedex;
     private final String payerInn;
-    private final String payerCheckingAccount;
-    private final String payerBank;
-    private final String payerRegistrationCode;
-    private final String payerMfo;
-    private final String payerOked;
+    private final String payerCompany;
+    private final String payerContractNumber;
+    private final String payerPassport;
+    private final int payerType;
 
     private final int consignmentQuantity;
 
     public InsertInvoiceWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
+
         this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
         this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
         this.number = getInputData().getString(Constants.KEY_NUMBER);
         this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, -1L);
         this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
         this.tariffId = getInputData().getLong(Constants.KEY_TARIFF_ID, -1L);
-        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1L);
-        this.recipientId = getInputData().getLong(Constants.KEY_RECIPIENT_ID, -1L);
-        this.recipientSignatureUrl = getInputData().getString(Constants.KEY_RECIPIENT_SIGNATURE);
-        this.payerId = getInputData().getLong(Constants.KEY_PAYER_ID, -1L);
         this.price = getInputData().getDouble(Constants.KEY_PRICE, -1);
+        this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, -1);
+        this.paymentStatus = getInputData().getString(Constants.KEY_PAYMENT_STATUS);
+        this.comment = getInputData().getString(Constants.KEY_COMMENT);
+
         this.status = getInputData().getInt(Constants.KEY_STATUS, -1);
         this.createdAtTime = getInputData().getLong(Constants.KEY_CREATED_AT, -1L);
         this.updatedAtTime = getInputData().getLong(Constants.KEY_UPDATED_AT, -1L);
 
+        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1L);
+        this.senderUserId = getInputData().getLong(Constants.KEY_SENDER_USER_ID, -1L);
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
-        this.senderSignature = getInputData().getString(Constants.KEY_SENDER_SIGNATURE);
         this.senderFirstName = getInputData().getString(Constants.KEY_SENDER_FIRST_NAME);
         this.senderLastName = getInputData().getString(Constants.KEY_SENDER_LAST_NAME);
         this.senderMiddleName = getInputData().getString(Constants.KEY_SENDER_MIDDLE_NAME);
@@ -109,29 +123,42 @@ public class InsertInvoiceWorker extends Worker {
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
         this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
         this.senderRegionId = getInputData().getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-        this.senderCityId = getInputData().getLong(Constants.KEY_SENDER_CITY_ID, -1L);
+        this.senderCityName = getInputData().getString(Constants.KEY_SENDER_CITY_NAME);
         this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
-        this.senderCompany = getInputData().getString(Constants.KEY_SENDER_COMPANY_NAME);
         this.senderCargo = getInputData().getString(Constants.KEY_SENDER_CARGOSTAR);
         this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
         this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
-        this.discount = getInputData().getInt(Constants.KEY_DISCOUNT, 0);
+        this.senderDiscount = getInputData().getInt(Constants.KEY_DISCOUNT, 0);
+        this.senderSignature = getInputData().getString(Constants.KEY_SENDER_SIGNATURE);
+        this.senderPassport = getInputData().getString(Constants.KEY_SENDER_PASSPORT);
+        this.senderInn = getInputData().getString(Constants.KEY_SENDER_INN);
+        this.senderCompany = getInputData().getString(Constants.KEY_SENDER_COMPANY_NAME);
+        this.senderPhoto = getInputData().getString(Constants.KEY_SENDER_PHOTO);
+        this.senderType = getInputData().getInt(Constants.KEY_SENDER_TYPE, 0);
 
+        this.recipientId = getInputData().getLong(Constants.KEY_RECIPIENT_ID, -1L);
+        this.recipientUserId = getInputData().getLong(Constants.KEY_RECIPIENT_USER_ID, -1L);
         this.recipientEmail = getInputData().getString(Constants.KEY_RECIPIENT_EMAIL);
         this.recipientFirstName = getInputData().getString(Constants.KEY_RECIPIENT_FIRST_NAME);
         this.recipientLastName = getInputData().getString(Constants.KEY_RECIPIENT_LAST_NAME);
         this.recipientMiddleName = getInputData().getString(Constants.KEY_RECIPIENT_MIDDLE_NAME);
         this.recipientPhone = getInputData().getString(Constants.KEY_RECIPIENT_PHONE);
         this.recipientAddress = getInputData().getString(Constants.KEY_RECIPIENT_ADDRESS);
+        this.recipientZip = getInputData().getString(Constants.KEY_RECIPIENT_ZIP);
         this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
         this.recipientRegionId = getInputData().getLong(Constants.KEY_RECIPIENT_REGION_ID, -1L);
-        this.recipientCityId = getInputData().getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-        this.recipientZip = getInputData().getString(Constants.KEY_RECIPIENT_ZIP);
-        this.recipientCompany = getInputData().getString(Constants.KEY_RECIPIENT_COMPANY_NAME);
+        this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
         this.recipientCargo = getInputData().getString(Constants.KEY_RECIPIENT_CARGOSTAR);
         this.recipientTnt = getInputData().getString(Constants.KEY_RECIPIENT_TNT);
         this.recipientFedex = getInputData().getString(Constants.KEY_RECIPIENT_FEDEX);
+        this.recipientSignature = getInputData().getString(Constants.KEY_RECIPIENT_SIGNATURE);
+        this.recipientPassport = getInputData().getString(Constants.KEY_RECIPIENT_PASSPORT);
+        this.recipientInn = getInputData().getString(Constants.KEY_RECIPIENT_INN);
+        this.recipientCompany = getInputData().getString(Constants.KEY_RECIPIENT_COMPANY_NAME);
+        this.recipientType = getInputData().getInt(Constants.KEY_RECIPIENT_TYPE, 0);
 
+        this.payerId = getInputData().getLong(Constants.KEY_PAYER_ID, -1L);
+        this.payerUserId = getInputData().getLong(Constants.KEY_PAYER_USER_ID, -1L);
         this.payerEmail = getInputData().getString(Constants.KEY_PAYER_EMAIL);
         this.payerFirstName = getInputData().getString(Constants.KEY_PAYER_FIRST_NAME);
         this.payerLastName = getInputData().getString(Constants.KEY_PAYER_LAST_NAME);
@@ -140,19 +167,16 @@ public class InsertInvoiceWorker extends Worker {
         this.payerAddress = getInputData().getString(Constants.KEY_PAYER_ADDRESS);
         this.payerCountryId = getInputData().getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L);
         this.payerRegionId = getInputData().getLong(Constants.KEY_PAYER_REGION_ID, -1L);
-        this.payerCityId = getInputData().getLong(Constants.KEY_PAYER_CITY_ID, -1L);
+        this.payerCityName = getInputData().getString(Constants.KEY_PAYER_CITY_NAME);
         this.payerZip = getInputData().getString(Constants.KEY_PAYER_ZIP);
-        this.payerCompany = getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME);
         this.payerCargo = getInputData().getString(Constants.KEY_PAYER_CARGOSTAR);
         this.payerTnt = getInputData().getString(Constants.KEY_PAYER_TNT);
         this.payerFedex = getInputData().getString(Constants.KEY_PAYER_FEDEX);
-
+        this.payerPassport = getInputData().getString(Constants.KEY_PAYER_PASSPORT);
+        this.payerType = getInputData().getInt(Constants.KEY_PAYER_TYPE, 0);
         this.payerInn = getInputData().getString(Constants.KEY_PAYER_INN);
-        this.payerBank = getInputData().getString(Constants.KEY_PAYER_BANK);
-        this.payerCheckingAccount = getInputData().getString(Constants.KEY_PAYER_CHECKING_ACCOUNT);
-        this.payerRegistrationCode = getInputData().getString(Constants.KEY_PAYER_REGISTRATION_CODE);
-        this.payerMfo = getInputData().getString(Constants.KEY_PAYER_MFO);
-        this.payerOked = getInputData().getString(Constants.KEY_PAYER_OKED);
+        this.payerCompany = getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME);
+        this.payerContractNumber = getInputData().getString(Constants.KEY_PAYER_CONTRACT_NUMBER);
 
         this.consignmentQuantity = getInputData().getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0);
     }
@@ -186,7 +210,7 @@ public class InsertInvoiceWorker extends Worker {
                     number,
                     senderId,
                     recipientId,
-                    recipientSignatureUrl,
+                    recipientSignature,
                     payerId,
                     providerId,
                     requestId,
@@ -212,15 +236,17 @@ public class InsertInvoiceWorker extends Worker {
                     .putLong(Constants.KEY_PROVIDER_ID, providerId)
                     .putLong(Constants.KEY_COURIER_ID, courierId)
                     .putLong(Constants.KEY_TARIFF_ID, tariffId)
-                    .putLong(Constants.KEY_SENDER_ID, senderId)
-                    .putLong(Constants.KEY_RECIPIENT_ID, recipientId)
-                    .putString(Constants.KEY_RECIPIENT_SIGNATURE, recipientSignatureUrl)
-                    .putLong(Constants.KEY_PAYER_ID, payerId)
                     .putDouble(Constants.KEY_PRICE, price)
+                    .putInt(Constants.KEY_DELIVERY_TYPE, deliveryType)
+                    .putString(Constants.KEY_PAYMENT_STATUS, paymentStatus)
+                    .putString(Constants.KEY_COMMENT, comment)
+
                     .putLong(Constants.KEY_STATUS, status)
                     .putLong(Constants.KEY_CREATED_AT, createdAtTime)
                     .putLong(Constants.KEY_UPDATED_AT, updatedAtTime)
 
+                    .putLong(Constants.KEY_SENDER_ID, senderId)
+                    .putLong(Constants.KEY_SENDER_USER_ID, senderUserId)
                     .putString(Constants.KEY_SENDER_EMAIL, senderEmail)
                     .putString(Constants.KEY_SENDER_SIGNATURE, senderSignature)
                     .putString(Constants.KEY_SENDER_FIRST_NAME, senderFirstName)
@@ -228,51 +254,62 @@ public class InsertInvoiceWorker extends Worker {
                     .putString(Constants.KEY_SENDER_MIDDLE_NAME, senderMiddleName)
                     .putString(Constants.KEY_SENDER_PHONE, senderPhone)
                     .putString(Constants.KEY_SENDER_ADDRESS, senderAddress)
+                    .putString(Constants.KEY_SENDER_ZIP, senderZip)
                     .putLong(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
                     .putLong(Constants.KEY_SENDER_REGION_ID, senderRegionId)
-                    .putLong(Constants.KEY_SENDER_CITY_ID, senderCityId)
-                    .putString(Constants.KEY_SENDER_ZIP, senderZip)
-                    .putString(Constants.KEY_SENDER_COMPANY_NAME, senderCompany)
+                    .putString(Constants.KEY_SENDER_CITY_NAME, senderCityName)
                     .putString(Constants.KEY_SENDER_CARGOSTAR, senderCargo)
                     .putString(Constants.KEY_SENDER_TNT, senderTnt)
                     .putString(Constants.KEY_SENDER_FEDEX, senderFedex)
-                    .putInt(Constants.KEY_DISCOUNT, discount)
+                    .putInt(Constants.KEY_DISCOUNT, senderDiscount)
+                    .putString(Constants.KEY_SENDER_PASSPORT, senderPassport)
+                    .putString(Constants.KEY_SENDER_COMPANY_NAME, senderCompany)
+                    .putString(Constants.KEY_SENDER_INN, senderInn)
+                    .putString(Constants.KEY_SENDER_PHOTO, senderPhoto)
+                    .putInt(Constants.KEY_SENDER_TYPE, senderType)
 
+                    .putLong(Constants.KEY_RECIPIENT_ID, recipientId)
+                    .putLong(Constants.KEY_RECIPIENT_USER_ID, recipientUserId)
                     .putString(Constants.KEY_RECIPIENT_EMAIL, recipientEmail)
                     .putString(Constants.KEY_RECIPIENT_FIRST_NAME, recipientFirstName)
                     .putString(Constants.KEY_RECIPIENT_LAST_NAME, recipientLastName)
                     .putString(Constants.KEY_RECIPIENT_MIDDLE_NAME, recipientMiddleName)
                     .putString(Constants.KEY_RECIPIENT_PHONE, recipientPhone)
                     .putString(Constants.KEY_RECIPIENT_ADDRESS, recipientAddress)
+                    .putString(Constants.KEY_RECIPIENT_ZIP, recipientZip)
                     .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
                     .putLong(Constants.KEY_RECIPIENT_REGION_ID, recipientRegionId)
-                    .putLong(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId)
-                    .putString(Constants.KEY_RECIPIENT_ZIP, recipientZip)
-                    .putString(Constants.KEY_RECIPIENT_COMPANY_NAME, recipientCompany)
+                    .putString(Constants.KEY_RECIPIENT_CITY_NAME, recipientCityName)
                     .putString(Constants.KEY_RECIPIENT_CARGOSTAR, recipientCargo)
                     .putString(Constants.KEY_RECIPIENT_TNT, recipientTnt)
                     .putString(Constants.KEY_RECIPIENT_FEDEX, recipientFedex)
+                    .putString(Constants.KEY_RECIPIENT_SIGNATURE, recipientSignature)
+                    .putString(Constants.KEY_RECIPIENT_PASSPORT, recipientPassport)
+                    .putString(Constants.KEY_RECIPIENT_INN, recipientInn)
+                    .putString(Constants.KEY_RECIPIENT_COMPANY_NAME, recipientCompany)
+                    .putInt(Constants.KEY_RECIPIENT_TYPE, recipientType)
 
+                    .putLong(Constants.KEY_PAYER_ID, payerId)
+                    .putLong(Constants.KEY_PAYER_USER_ID, payerUserId)
                     .putString(Constants.KEY_PAYER_EMAIL, payerEmail)
                     .putString(Constants.KEY_PAYER_FIRST_NAME, payerFirstName)
                     .putString(Constants.KEY_PAYER_LAST_NAME, payerLastName)
                     .putString(Constants.KEY_PAYER_MIDDLE_NAME, payerMiddleName)
                     .putString(Constants.KEY_PAYER_PHONE, payerPhone)
                     .putString(Constants.KEY_PAYER_ADDRESS, payerAddress)
+                    .putString(Constants.KEY_PAYER_ZIP, payerZip)
                     .putLong(Constants.KEY_PAYER_COUNTRY_ID, payerCountryId)
                     .putLong(Constants.KEY_PAYER_REGION_ID, payerRegionId)
-                    .putLong(Constants.KEY_PAYER_CITY_ID, payerCityId)
-                    .putString(Constants.KEY_PAYER_ZIP, payerZip)
-                    .putString(Constants.KEY_PAYER_COMPANY_NAME, payerCompany)
+                    .putString(Constants.KEY_PAYER_CITY_NAME, payerCityName)
                     .putString(Constants.KEY_PAYER_CARGOSTAR, payerCargo)
                     .putString(Constants.KEY_PAYER_TNT, payerTnt)
                     .putString(Constants.KEY_PAYER_FEDEX, payerFedex)
+                    .putString(Constants.KEY_PAYER_CONTRACT_NUMBER, payerContractNumber)
+                    .putString(Constants.KEY_PAYER_PASSPORT, payerPassport)
                     .putString(Constants.KEY_PAYER_INN, payerInn)
-                    .putString(Constants.KEY_PAYER_CHECKING_ACCOUNT, payerCheckingAccount)
-                    .putString(Constants.KEY_PAYER_BANK, payerBank)
-                    .putString(Constants.KEY_PAYER_REGISTRATION_CODE, payerRegistrationCode)
-                    .putString(Constants.KEY_PAYER_MFO, payerMfo)
-                    .putString(Constants.KEY_PAYER_OKED, payerOked)
+                    .putString(Constants.KEY_PAYER_COMPANY_NAME, payerCompany)
+                    .putInt(Constants.KEY_PAYER_TYPE, payerType)
+
                     .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, consignmentQuantity)
                     .build();
 

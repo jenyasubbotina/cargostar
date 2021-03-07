@@ -79,7 +79,6 @@ public class RequestsViewModel extends AndroidViewModel {
 
         this.providerId = new MutableLiveData<>();
         this.tariffId =  new MutableLiveData<>();
-
     }
 
     public LiveData<List<Request>> getPublicRequests() {
@@ -159,13 +158,6 @@ public class RequestsViewModel extends AndroidViewModel {
         this.senderRegionId.setValue(senderRegionId);
     }
 
-//    public void setSenderCityId(final Long senderCityId) {
-//        if (senderCityId == null) {
-//            return;
-//        }
-//        this.senderCityId.setValue(senderCityId);
-//    }
-
     public void setRecipientCountryId(final Long recipientCountryId) {
         if (recipientCountryId == null) {
             return;
@@ -180,13 +172,6 @@ public class RequestsViewModel extends AndroidViewModel {
         this.recipientRegionId.setValue(recipientRegionId);
     }
 
-//    public void setRecipientCityId(final Long recipientCityId) {
-//        if (recipientCityId == null) {
-//            return;
-//        }
-//        this.recipientCityId.setValue(recipientCityId);
-//    }
-
     public void setPayerCountryId(final Long payerCountryId) {
         if (payerCountryId == null) {
             return;
@@ -200,13 +185,6 @@ public class RequestsViewModel extends AndroidViewModel {
         }
         this.payerRegionId.setValue(payerRegionId);
     }
-
-//    public void setPayerCityId(final Long payerCityId) {
-//        if (payerCityId == null) {
-//            return;
-//        }
-//        this.payerCityId.setValue(payerCityId);
-//    }
 
 //    /* getters */
     public LiveData<Invoice> getInvoice() {
@@ -237,10 +215,6 @@ public class RequestsViewModel extends AndroidViewModel {
         return Transformations.switchMap(senderRegionId, repository::selectRegionById);
     }
 
-//    public LiveData<City> getSenderCity() {
-//        return Transformations.switchMap(senderCityId, repository::selectCityById);
-//    }
-
     public LiveData<Country> getRecipientCountry() {
         return Transformations.switchMap(recipientCountryId, repository::selectCountryById);
     }
@@ -249,10 +223,6 @@ public class RequestsViewModel extends AndroidViewModel {
         return Transformations.switchMap(recipientRegionId, repository::selectRegionById);
     }
 
-//    public LiveData<City> getRecipientCity() {
-//        return Transformations.switchMap(recipientCityId, repository::selectCityById);
-//    }
-
     public LiveData<Country> getPayerCountry() {
         return Transformations.switchMap(payerCountryId, repository::selectCountryById);
     }
@@ -260,10 +230,6 @@ public class RequestsViewModel extends AndroidViewModel {
     public LiveData<Region> getPayerRegion() {
         return Transformations.switchMap(payerRegionId, repository::selectRegionById);
     }
-
-//    public LiveData<City> getPayerCity() {
-//        return Transformations.switchMap(payerCityId, repository::selectCityById);
-//    }
 
     public LiveData<Packaging> getTariff() {
         return Transformations.switchMap(tariffId, repository::selectPackagingById);

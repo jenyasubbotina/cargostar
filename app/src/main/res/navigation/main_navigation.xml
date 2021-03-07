@@ -365,27 +365,7 @@
             app:nullable="true"
             android:defaultValue="null" />
         <argument
-            android:name="payer_bank"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
-        <argument
-            android:name="payer_checking_account"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
-        <argument
-            android:name="payer_registration_code"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
-        <argument
-            android:name="payer_mfo"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
-        <argument
-            android:name="payer_oked"
+            android:name="contract_number"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null" />

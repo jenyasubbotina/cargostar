@@ -16,19 +16,20 @@ import uz.alexits.cargostar.model.actor.Customer;
 import uz.alexits.cargostar.utils.Constants;
 
 public class FetchSenderWorker extends Worker {
-    private final long senderId;
     private final long requestId;
     private final long courierId;
     private final long providerId;
     private final long invoiceId;
-    private final long userId;
-    private final long recipientCountryId;
-    private final String recipientCityName;
-    private final String recipientCity;
     private final int deliveryType;
     private final String paymentStatus;
     private final int consignmentQuantity;
     private final String comment;
+
+    private final long recipientCountryId;
+    private final String recipientCityName;
+    private final String recipientCity;
+
+    private final long senderId;
 
     public FetchSenderWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
@@ -37,7 +38,6 @@ public class FetchSenderWorker extends Worker {
         this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
         this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID,-1L);
         this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
-        this.userId = getInputData().getLong(Constants.KEY_USER_ID, -1L);
         this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
         this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
         this.recipientCity = getInputData().getString(Constants.KEY_RECIPIENT_CITY);
@@ -83,7 +83,6 @@ public class FetchSenderWorker extends Worker {
                             .putLong(Constants.KEY_COURIER_ID, courierId)
                             .putLong(Constants.KEY_PROVIDER_ID, providerId)
                             .putLong(Constants.KEY_INVOICE_ID, invoiceId)
-                            .putLong(Constants.KEY_USER_ID, userId)
                             .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
                             .putString(Constants.KEY_RECIPIENT_CITY_NAME, recipientCityName)
                             .putString(Constants.KEY_RECIPIENT_CITY, recipientCity)
@@ -91,9 +90,10 @@ public class FetchSenderWorker extends Worker {
                             .putString(Constants.KEY_PAYMENT_STATUS, paymentStatus)
                             .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, consignmentQuantity)
                             .putString(Constants.KEY_COMMENT, comment)
+
                             .putLong(Constants.KEY_SENDER_ID, sender.getId())
+                            .putLong(Constants.KEY_SENDER_USER_ID, sender.getUserId())
                             .putString(Constants.KEY_SENDER_EMAIL, sender.getEmail())
-                            .putString(Constants.KEY_SENDER_SIGNATURE, sender.getSignatureUrl())
                             .putString(Constants.KEY_SENDER_FIRST_NAME, sender.getFirstName())
                             .putString(Constants.KEY_SENDER_LAST_NAME, sender.getLastName())
                             .putString(Constants.KEY_SENDER_MIDDLE_NAME, sender.getMiddleName())
@@ -103,11 +103,16 @@ public class FetchSenderWorker extends Worker {
                             .putLong(Constants.KEY_SENDER_REGION_ID, sender.getRegionId() != null ? sender.getRegionId() : -1L)
                             .putString(Constants.KEY_SENDER_CITY_NAME, sender.getCityName())
                             .putString(Constants.KEY_SENDER_ZIP, sender.getZip())
-                            .putString(Constants.KEY_SENDER_COMPANY_NAME, sender.getCompany())
                             .putString(Constants.KEY_SENDER_CARGOSTAR, sender.getCargostarAccountNumber())
                             .putString(Constants.KEY_SENDER_TNT, sender.getTntAccountNumber())
                             .putString(Constants.KEY_SENDER_FEDEX, sender.getFedexAccountNumber())
                             .putInt(Constants.KEY_DISCOUNT, sender.getDiscount())
+                            .putString(Constants.KEY_SENDER_INN, sender.getInn())
+                            .putString(Constants.KEY_SENDER_COMPANY_NAME, sender.getCompany())
+                            .putString(Constants.KEY_SENDER_PASSPORT, sender.getPassportSerial())
+                            .putString(Constants.KEY_SENDER_PHOTO, sender.getPhotoUrl())
+                            .putString(Constants.KEY_SENDER_SIGNATURE, sender.getSignatureUrl())
+                            .putInt(Constants.KEY_SENDER_TYPE, sender.getUserType())
                             .build();
                     return Result.success(outputData);
                 }

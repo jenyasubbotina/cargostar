@@ -97,16 +97,8 @@ public class CreateUserFragment extends Fragment {
     private EditText innEditText;
     private TextView companyTextView;
     private EditText companyEditText;
-    private TextView checkingAccountTextView;
-    private EditText checkingAccountEditText;
-    private TextView bankTextView;
-    private EditText bankEditText;
-    private TextView vatTextView;
-    private EditText vatEditText;
-    private TextView mfoTextView;
-    private EditText mfoEditText;
-    private TextView okedTextView;
-    private EditText okedEditText;
+    private TextView contractNumberTextView;
+    private EditText contractNumberEditText;
     private Button createBtn;
 
     private ImageView signatureImageView;
@@ -177,16 +169,8 @@ public class CreateUserFragment extends Fragment {
         innEditText = root.findViewById(R.id.inn_edit_text);
         companyTextView = root.findViewById(R.id.company_text_view);
         companyEditText = root.findViewById(R.id.company_edit_text);
-        checkingAccountTextView = root.findViewById(R.id.checking_account_text_view);
-        checkingAccountEditText = root.findViewById(R.id.checking_account_edit_text);
-        bankTextView = root.findViewById(R.id.bank_text_view);
-        bankEditText = root.findViewById(R.id.bank_edit_text);
-        vatTextView = root.findViewById(R.id.vat_text_view);
-        vatEditText = root.findViewById(R.id.vat_edit_text);
-        mfoTextView = root.findViewById(R.id.mfo_text_view);
-        mfoEditText = root.findViewById(R.id.mfo_edit_text);
-        okedTextView = root.findViewById(R.id.oked_text_view);
-        okedEditText = root.findViewById(R.id.oked_edit_text);
+        contractNumberTextView = root.findViewById(R.id.contract_number_text_view);
+        contractNumberEditText = root.findViewById(R.id.contract_number_edit_text);
         createBtn = root.findViewById(R.id.create_btn);
 
         signatureImageView = root.findViewById(R.id.signature_image_view);
@@ -263,24 +247,8 @@ public class CreateUserFragment extends Fragment {
             UiUtils.onFocusChanged(innEditText, hasFocus);
         });
 
-        checkingAccountEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(checkingAccountEditText, hasFocus);
-        });
-
-        mfoEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(mfoEditText, hasFocus);
-        });
-
-        okedEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(okedEditText, hasFocus);
-        });
-
-        vatEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(vatEditText, hasFocus);
-        });
-
-        bankEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            UiUtils.onFocusChanged(bankEditText, hasFocus);
+        contractNumberEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            UiUtils.onFocusChanged(contractNumberEditText, hasFocus);
         });
 
         cityEditText.setOnFocusChangeListener((v, hasFocus) -> {
@@ -306,32 +274,16 @@ public class CreateUserFragment extends Fragment {
                     innEditText.setVisibility(View.INVISIBLE);
                     companyTextView.setVisibility(View.INVISIBLE);
                     companyEditText.setVisibility(View.INVISIBLE);
-                    checkingAccountTextView.setVisibility(View.INVISIBLE);
-                    checkingAccountEditText.setVisibility(View.INVISIBLE);
-                    bankTextView.setVisibility(View.INVISIBLE);
-                    bankEditText.setVisibility(View.INVISIBLE);
-                    vatTextView.setVisibility(View.INVISIBLE);
-                    vatEditText.setVisibility(View.INVISIBLE);
-                    mfoTextView.setVisibility(View.INVISIBLE);
-                    mfoEditText.setVisibility(View.INVISIBLE);
-                    okedTextView.setVisibility(View.INVISIBLE);
-                    okedEditText.setVisibility(View.INVISIBLE);
+                    contractNumberTextView.setVisibility(View.INVISIBLE);
+                    contractNumberEditText.setVisibility(View.INVISIBLE);
                     return;
                 }
                 innTextView.setVisibility(View.VISIBLE);
                 innEditText.setVisibility(View.VISIBLE);
                 companyTextView.setVisibility(View.VISIBLE);
                 companyEditText.setVisibility(View.VISIBLE);
-                checkingAccountTextView.setVisibility(View.VISIBLE);
-                checkingAccountEditText.setVisibility(View.VISIBLE);
-                bankTextView.setVisibility(View.VISIBLE);
-                bankEditText.setVisibility(View.VISIBLE);
-                vatTextView.setVisibility(View.VISIBLE);
-                vatEditText.setVisibility(View.VISIBLE);
-                mfoTextView.setVisibility(View.VISIBLE);
-                mfoEditText.setVisibility(View.VISIBLE);
-                okedTextView.setVisibility(View.VISIBLE);
-                okedEditText.setVisibility(View.VISIBLE);
+                contractNumberTextView.setVisibility(View.VISIBLE);
+                contractNumberEditText.setVisibility(View.VISIBLE);
             }
         });
 
@@ -517,11 +469,7 @@ public class CreateUserFragment extends Fragment {
             //PaymentData
             final String inn = innEditText.getText().toString();
             final String company = companyEditText.getText().toString();
-            final String checkingAccount = checkingAccountEditText.getText().toString();
-            final String bank = bankEditText.getText().toString();
-            final String vat = vatEditText.getText().toString();
-            final String mfo = mfoEditText.getText().toString();
-            final String oked = okedEditText.getText().toString();
+            final String contractNumber = contractNumberEditText.getText().toString();
 
             /* check for empty fields */
             if (password.length() < 6) {
@@ -598,7 +546,6 @@ public class CreateUserFragment extends Fragment {
                     return;
                 }
             }
-
             if (!TextUtils.isEmpty(geolocation)) {
                 if (!Regex.isGeolocation(geolocation)) {
                     Toast.makeText(context, "Геолокация должна быть указана в формате ХХ.ХХ", Toast.LENGTH_SHORT).show();
@@ -635,11 +582,7 @@ public class CreateUserFragment extends Fragment {
                     passportSerial,
                     inn,
                     company,
-                    bank,
-                    mfo,
-                    oked,
-                    checkingAccount,
-                    vat,
+                    contractNumber,
                     !TextUtils.isEmpty(signature) ? signature : null);
             WorkManager.getInstance(context).getWorkInfoByIdLiveData(createUserWorkerId).observe(getViewLifecycleOwner(), workInfo -> {
                 if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {

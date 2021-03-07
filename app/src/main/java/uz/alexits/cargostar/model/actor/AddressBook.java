@@ -91,24 +91,8 @@ public class AddressBook {
     @ColumnInfo(name = "inn") private final String inn;
 
     @Expose
-    @SerializedName("account")
-    @ColumnInfo(name = "checking_account") private final String checkingAccount;
-
-    @Expose
-    @SerializedName("bank")
-    @ColumnInfo(name = "bank") private final String bank;
-
-    @Expose
-    @SerializedName("code")
-    @ColumnInfo(name = "registration_code") private final String registrationCode;
-
-    @Expose
-    @SerializedName("mfo")
-    @ColumnInfo(name = "mfo") private final String mfo;
-
-    @Expose
-    @SerializedName("oked")
-    @ColumnInfo(name = "oked") private final String oked;
+    @SerializedName("contract_number")
+    @ColumnInfo(name = "contract_number") private final String contractNumber;
 
     @Expose
     @SerializedName("passport")
@@ -147,11 +131,7 @@ public class AddressBook {
                        final String fedexAccountNumber,
                        final String company,
                        final String inn,
-                       final String checkingAccount,
-                       final String bank,
-                       final String registrationCode,
-                       final String mfo,
-                       final String oked,
+                       final String contractNumber,
                        final String passportSerial,
                        final int type,
                        final int status,
@@ -174,11 +154,7 @@ public class AddressBook {
         this.fedexAccountNumber = fedexAccountNumber;
         this.company = company;
         this.inn = inn;
-        this.checkingAccount = checkingAccount;
-        this.bank = bank;
-        this.registrationCode = registrationCode;
-        this.mfo = mfo;
-        this.oked = oked;
+        this.contractNumber = contractNumber;
         this.passportSerial = passportSerial;
         this.type = type;
         this.status = status;
@@ -250,24 +226,8 @@ public class AddressBook {
         return inn;
     }
 
-    public String getCheckingAccount() {
-        return checkingAccount;
-    }
-
-    public String getBank() {
-        return bank;
-    }
-
-    public String getRegistrationCode() {
-        return registrationCode;
-    }
-
-    public String getMfo() {
-        return mfo;
-    }
-
-    public String getOked() {
-        return oked;
+    public String getContractNumber() {
+        return contractNumber;
     }
 
     public String getPassportSerial() {

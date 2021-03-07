@@ -72,20 +72,8 @@ public class CreateClientParams {
     @SerializedName("company")
     private final String company;
 
-    @SerializedName("bank")
-    private final String bank;
-
-    @SerializedName("mfo")
-    private final String mfo;
-
-    @SerializedName("oked")
-    private final String oked;
-
-    @SerializedName("account")
-    private final String checkingAccount;
-
-    @SerializedName("code")
-    private final String registrationCode;
+    @SerializedName("contract_number")
+    private final String contractNumber;
 
 
     public CreateClientParams(final String login,
@@ -108,11 +96,7 @@ public class CreateClientParams {
                               final String passportSerial,
                               final String inn,
                               final String company,
-                              final String bank,
-                              final String mfo,
-                              final String oked,
-                              final String checkingAccount,
-                              final String registrationCode,
+                              final String contractNumber,
                               final String signatureUrl) {
         this.login = login;
         this.password = password;
@@ -136,11 +120,7 @@ public class CreateClientParams {
         this.passportSerial = passportSerial;
         this.inn = inn;
         this.company = company;
-        this.bank = bank;
-        this.mfo = mfo;
-        this.oked = oked;
-        this.checkingAccount = checkingAccount;
-        this.registrationCode = registrationCode;
+        this.contractNumber = contractNumber;
     }
 
     public String getLogin() {
@@ -227,24 +207,8 @@ public class CreateClientParams {
         return company;
     }
 
-    public String getBank() {
-        return bank;
-    }
-
-    public String getMfo() {
-        return mfo;
-    }
-
-    public String getOked() {
-        return oked;
-    }
-
-    public String getCheckingAccount() {
-        return checkingAccount;
-    }
-
-    public String getRegistrationCode() {
-        return registrationCode;
+    public String getContractNumber() {
+        return contractNumber;
     }
 
     public String getPasswordRepeat() {
@@ -276,11 +240,7 @@ public class CreateClientParams {
                 ", passportSerial='" + passportSerial + '\'' +
                 ", inn='" + inn + '\'' +
                 ", company='" + company + '\'' +
-                ", bank='" + bank + '\'' +
-                ", mfo='" + mfo + '\'' +
-                ", oked='" + oked + '\'' +
-                ", checkingAccount='" + checkingAccount + '\'' +
-                ", registrationCode='" + registrationCode + '\'' +
+                ", bank='" + contractNumber + '\'' +
                 '}';
     }
 }

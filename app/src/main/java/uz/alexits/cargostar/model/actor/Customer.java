@@ -16,17 +16,17 @@ public class Customer extends User {
     @Expose
     @SerializedName("cargo")
     @ColumnInfo(name = "cargostar_account_number")
-    @Nullable private String cargostarAccountNumber;
+    private String cargostarAccountNumber;
 
     @Expose
     @SerializedName("tnt")
     @ColumnInfo(name = "tnt_account_number")
-    @Nullable private String tntAccountNumber;
+    private String tntAccountNumber;
 
     @Expose
     @SerializedName("fedex")
     @ColumnInfo(name = "fedex_account_number")
-    @Nullable private String fedexAccountNumber;
+    private String fedexAccountNumber;
 
     @Expose
     @SerializedName("discount")
@@ -36,12 +36,12 @@ public class Customer extends User {
     @Expose
     @SerializedName("photo")
     @ColumnInfo(name = "photo_url")
-    @Nullable private String photoUrl;
+    private String photoUrl;
 
     @Expose
     @SerializedName("signature")
     @ColumnInfo(name = "signature_url")
-    @Nullable private String signatureUrl;
+    private String signatureUrl;
 
     //1 - physical, 2 - juridical
     @Expose
@@ -52,42 +52,17 @@ public class Customer extends User {
     @Expose
     @SerializedName("passport")
     @ColumnInfo(name = "passport_serial")
-    @Nullable private String passportSerial;
+    private String passportSerial;
 
     @Expose
     @SerializedName("inn")
     @ColumnInfo(name = "inn")
-    @Nullable private String inn;
+    private String inn;
 
     @Expose
     @SerializedName("company")
     @ColumnInfo(name = "company")
-    @Nullable private String company;
-
-    @Expose
-    @SerializedName("bank")
-    @ColumnInfo(name = "bank")
-    @Nullable private String bank;
-
-    @Expose
-    @SerializedName("mfo")
-    @ColumnInfo(name = "mfo")
-    @Nullable private String mfo;
-
-    @Expose
-    @SerializedName("oked")
-    @ColumnInfo(name = "oked")
-    @Nullable private String oked;
-
-    @Expose
-    @SerializedName("account")
-    @ColumnInfo(name = "checking_account")
-    @Nullable private String checkingAccount;
-
-    @Expose
-    @SerializedName("code")
-    @ColumnInfo(name = "registration_code")
-    @Nullable private String registrationCode;
+    private String company;
 
     @Ignore
     public Customer(final long id,
@@ -95,17 +70,17 @@ public class Customer extends User {
                     final Long countryId,
                     final Long regionId,
                     final String cityName,
-                    @NonNull final String firstName,
-                    @Nullable final String middleName,
-                    @NonNull final String lastName,
-                    @NonNull final String phone,
-                    @NonNull final String email,
-                    @Nullable final String address,
-                    @Nullable final String geo,
-                    @Nullable final String zip,
+                    final String firstName,
+                    final String middleName,
+                    final String lastName,
+                    final String phone,
+                    final String email,
+                    final String address,
+                    final String geo,
+                    final String zip,
                     final int status,
-                    @Nullable final Date createdAt,
-                    @Nullable final Date updatedAt) {
+                    final Date createdAt,
+                    final Date updatedAt) {
         super(id, userId, countryId, regionId, cityName, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
     }
 
@@ -114,32 +89,27 @@ public class Customer extends User {
                     final Long countryId,
                     final Long regionId,
                     final String cityName,
-                    @NonNull final String firstName,
-                    @Nullable final String middleName,
-                    @NonNull final String lastName,
-                    @NonNull final String phone,
-                    @NonNull final String email,
-                    @Nullable final String address,
-                    @Nullable final String geo,
-                    @Nullable final String zip,
+                    final String firstName,
+                    final String middleName,
+                    final String lastName,
+                    final String phone,
+                    final String email,
+                    final String address,
+                    final String geo,
+                    final String zip,
                     final int status,
-                    @Nullable final Date createdAt,
-                    @Nullable final Date updatedAt,
-                    @Nullable final String cargostarAccountNumber,
-                    @Nullable final String tntAccountNumber,
-                    @Nullable final String fedexAccountNumber,
+                    final Date createdAt,
+                    final Date updatedAt,
+                    final String cargostarAccountNumber,
+                    final String tntAccountNumber,
+                    final String fedexAccountNumber,
                     final int discount,
-                    @Nullable final String photoUrl,
-                    @Nullable final String signatureUrl,
+                    final String photoUrl,
+                    final String signatureUrl,
                     final int userType,
-                    @Nullable final String passportSerial,
-                    @Nullable final String inn,
-                    @Nullable final String company,
-                    @Nullable final String bank,
-                    @Nullable final String mfo,
-                    @Nullable final String oked,
-                    @Nullable final String checkingAccount,
-                    @Nullable final String registrationCode) {
+                    final String passportSerial,
+                    final String inn,
+                    final String company) {
         super(id, userId, countryId, regionId, cityName, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
         this.cargostarAccountNumber = cargostarAccountNumber;
         this.tntAccountNumber = tntAccountNumber;
@@ -151,37 +121,29 @@ public class Customer extends User {
         this.passportSerial = passportSerial;
         this.inn = inn;
         this.company = company;
-        this.bank = bank;
-        this.mfo = mfo;
-        this.oked = oked;
-        this.checkingAccount = checkingAccount;
-        this.registrationCode = registrationCode;
     }
 
-    @Nullable
     public String getCargostarAccountNumber() {
         return cargostarAccountNumber;
     }
 
-    public void setCargostarAccountNumber(@Nullable String cargostarAccountNumber) {
+    public void setCargostarAccountNumber(final String cargostarAccountNumber) {
         this.cargostarAccountNumber = cargostarAccountNumber;
     }
 
-    @Nullable
     public String getTntAccountNumber() {
         return tntAccountNumber;
     }
 
-    public void setTntAccountNumber(@Nullable String tntAccountNumber) {
+    public void setTntAccountNumber(final String tntAccountNumber) {
         this.tntAccountNumber = tntAccountNumber;
     }
 
-    @Nullable
     public String getFedexAccountNumber() {
         return fedexAccountNumber;
     }
 
-    public void setFedexAccountNumber(@Nullable String fedexAccountNumber) {
+    public void setFedexAccountNumber(final String fedexAccountNumber) {
         this.fedexAccountNumber = fedexAccountNumber;
     }
 
@@ -193,21 +155,19 @@ public class Customer extends User {
         this.discount = discount;
     }
 
-    @Nullable
     public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setPhotoUrl(@Nullable String photoUrl) {
+    public void setPhotoUrl(final String photoUrl) {
         this.photoUrl = photoUrl;
     }
 
-    @Nullable
     public String getSignatureUrl() {
         return signatureUrl;
     }
 
-    public void setSignatureUrl(@Nullable String signatureUrl) {
+    public void setSignatureUrl(final String signatureUrl) {
         this.signatureUrl = signatureUrl;
     }
 
@@ -219,76 +179,28 @@ public class Customer extends User {
         this.userType = userType;
     }
 
-    @Nullable
     public String getPassportSerial() {
         return passportSerial;
     }
 
-    public void setPassportSerial(@Nullable String passportSerial) {
+    public void setPassportSerial(final String passportSerial) {
         this.passportSerial = passportSerial;
     }
 
-    @Nullable
     public String getInn() {
         return inn;
     }
 
-    public void setInn(@Nullable String inn) {
+    public void setInn(final String inn) {
         this.inn = inn;
     }
 
-    @Nullable
     public String getCompany() {
         return company;
     }
 
-    public void setCompany(@Nullable String company) {
+    public void setCompany(final String company) {
         this.company = company;
-    }
-
-    @Nullable
-    public String getBank() {
-        return bank;
-    }
-
-    public void setBank(@Nullable String bank) {
-        this.bank = bank;
-    }
-
-    @Nullable
-    public String getMfo() {
-        return mfo;
-    }
-
-    public void setMfo(@Nullable String mfo) {
-        this.mfo = mfo;
-    }
-
-    @Nullable
-    public String getOked() {
-        return oked;
-    }
-
-    public void setOked(@Nullable String oked) {
-        this.oked = oked;
-    }
-
-    @Nullable
-    public String getCheckingAccount() {
-        return checkingAccount;
-    }
-
-    public void setCheckingAccount(@Nullable String checkingAccount) {
-        this.checkingAccount = checkingAccount;
-    }
-
-    @Nullable
-    public String getRegistrationCode() {
-        return registrationCode;
-    }
-
-    public void setRegistrationCode(@Nullable String registrationCode) {
-        this.registrationCode = registrationCode;
     }
 
     @NonNull
@@ -305,11 +217,6 @@ public class Customer extends User {
                 ", passportSerial='" + passportSerial + '\'' +
                 ", inn='" + inn + '\'' +
                 ", company='" + company + '\'' +
-                ", bank='" + bank + '\'' +
-                ", mfo='" + mfo + '\'' +
-                ", oked='" + oked + '\'' +
-                ", checkingAccount='" + checkingAccount + '\'' +
-                ", registrationCode='" + registrationCode + '\'' +
                 ", id=" + id +
                 ", countryId=" + countryId +
                 ", regionId=" + regionId +

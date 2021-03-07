@@ -1136,11 +1136,90 @@
             android:padding="17dp"
             android:textColor="@color/colorBlack"/>
 
+        <TextView
+            android:id="@+id/payer_company_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/payer_phone_text_view"
+            app:layout_constraintStart_toStartOf="@id/payer_zip_text_view"
+            android:textSize="16sp"
+            android:textColor="#A5ABC0"
+            android:fontFamily="@font/geometria_actual"
+            android:text="@string/company_name"/>
+
+        <EditText
+            android:id="@+id/payer_company_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/payer_phone_edit_text"
+            app:layout_constraintBottom_toBottomOf="@id/payer_phone_edit_text"
+            app:layout_constraintStart_toStartOf="@id/payer_zip_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/payer_zip_edit_text"
+            android:inputType="text"
+            android:background="@drawable/edit_text_locked"
+            android:textSize="16sp"
+            android:fontFamily="@font/geometria_actual"
+            android:padding="17dp"
+            android:textColor="@color/colorBlack"/>
+
+        <TextView
+            android:id="@+id/payer_inn_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/payer_phone_edit_text"
+            app:layout_constraintStart_toStartOf="@id/payer_phone_text_view"
+            android:layout_marginTop="24dp"
+            android:textSize="16sp"
+            android:textColor="#A5ABC0"
+            android:fontFamily="@font/geometria_actual"
+            android:text="@string/INN"/>
+
+        <EditText
+            android:id="@+id/payer_inn_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/payer_inn_text_view"
+            app:layout_constraintStart_toStartOf="@id/payer_phone_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/payer_phone_edit_text"
+            android:layout_marginTop="4dp"
+            android:inputType="numberDecimal"
+            android:background="@drawable/edit_text_locked"
+            android:textSize="16sp"
+            android:fontFamily="@font/geometria_actual"
+            android:padding="17dp"
+            android:textColor="@color/colorBlack"/>
+
+        <TextView
+            android:id="@+id/contract_number_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/payer_inn_text_view"
+            app:layout_constraintStart_toStartOf="@id/payer_zip_text_view"
+            android:textSize="16sp"
+            android:textColor="#A5ABC0"
+            android:fontFamily="@font/geometria_actual"
+            android:text="@string/contract_number"/>
+
+        <EditText
+            android:id="@+id/contract_number_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/payer_inn_edit_text"
+            app:layout_constraintBottom_toBottomOf="@id/payer_inn_edit_text"
+            app:layout_constraintStart_toStartOf="@id/payer_zip_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/payer_zip_edit_text"
+            android:inputType="text"
+            android:background="@drawable/edit_text_locked"
+            android:textSize="16sp"
+            android:fontFamily="@font/geometria_actual"
+            android:padding="17dp"
+            android:textColor="@color/colorBlack"/>
+
         <View
             android:id="@+id/payer_stroke"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@id/payer_phone_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/contract_number_edit_text"
             app:layout_constraintStart_toStartOf="@id/sender_stroke"
             app:layout_constraintEnd_toEndOf="@id/sender_stroke"
             android:layout_marginTop="41dp"
@@ -1278,220 +1357,12 @@
             android:textColor="@color/colorBlack"/>
 
         <View
-            android:id="@+id/payment_stroke"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@id/payer_fedex_edit_text"
-            app:layout_constraintStart_toStartOf="@id/recipient_stroke"
-            app:layout_constraintEnd_toEndOf="@id/recipient_stroke"
-            android:layout_marginTop="41dp"
-            android:background="@color/colorGrey" />
-
-        <TextView
-            android:id="@+id/payment_data_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payment_stroke"
-            app:layout_constraintStart_toStartOf="@id/payer_data_text_view"
-            android:layout_marginTop="29dp"
-            android:textSize="19sp"
-            android:textColor="@color/colorBlack"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/payment"/>
-
-        <TextView
-            android:id="@+id/payer_inn_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payment_data_text_view"
-            app:layout_constraintStart_toStartOf="@id/payment_data_text_view"
-            android:layout_marginTop="24dp"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/INN"/>
-
-        <EditText
-            android:id="@+id/payer_inn_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payer_inn_text_view"
-            app:layout_constraintStart_toStartOf="@id/payer_fedex_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/payer_fedex_edit_text"
-            android:layout_marginTop="4dp"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:padding="17dp"
-            android:textColor="@color/colorBlack"/>
-
-        <TextView
-            android:id="@+id/payer_company_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/payer_inn_text_view"
-            app:layout_constraintStart_toStartOf="@id/payer_fedex_tax_id_text_view"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/company_name"/>
-
-        <EditText
-            android:id="@+id/payer_company_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/payer_inn_edit_text"
-            app:layout_constraintBottom_toBottomOf="@id/payer_inn_edit_text"
-            app:layout_constraintStart_toStartOf="@id/payer_fedex_tax_id_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/payer_fedex_tax_id_edit_text"
-            android:inputType="text"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:padding="17dp"
-            android:textColor="@color/colorBlack"/>
-
-        <TextView
-            android:id="@+id/checking_account_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payer_inn_edit_text"
-            app:layout_constraintStart_toStartOf="@id/payer_inn_text_view"
-            android:layout_marginTop="24dp"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/checking_account"/>
-
-        <EditText
-            android:id="@+id/checking_account_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/checking_account_text_view"
-            app:layout_constraintStart_toStartOf="@id/payer_inn_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/payer_inn_edit_text"
-            android:layout_marginTop="4dp"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:padding="17dp"
-            android:textColor="@color/colorBlack"/>
-
-        <TextView
-            android:id="@+id/bank_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/checking_account_text_view"
-            app:layout_constraintStart_toStartOf="@id/payer_company_text_view"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/bank"/>
-
-        <EditText
-            android:id="@+id/bank_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/checking_account_edit_text"
-            app:layout_constraintBottom_toBottomOf="@id/checking_account_edit_text"
-            app:layout_constraintStart_toStartOf="@id/payer_company_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/payer_company_edit_text"
-            android:inputType="text"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:padding="17dp"
-            android:textColor="@color/colorBlack"/>
-
-        <TextView
-            android:id="@+id/registration_code_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/checking_account_edit_text"
-            app:layout_constraintStart_toStartOf="@id/checking_account_text_view"
-            android:layout_marginTop="24dp"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/payer_registration_code"/>
-
-        <EditText
-            android:id="@+id/registration_code_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/registration_code_text_view"
-            app:layout_constraintStart_toStartOf="@id/checking_account_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/checking_account_edit_text"
-            android:layout_marginTop="4dp"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:padding="17dp"
-            android:textColor="@color/colorBlack"/>
-
-        <TextView
-            android:id="@+id/mfo_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/registration_code_text_view"
-            app:layout_constraintStart_toStartOf="@id/bank_text_view"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/mfo"/>
-
-        <EditText
-            android:id="@+id/mfo_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/registration_code_edit_text"
-            app:layout_constraintBottom_toBottomOf="@id/registration_code_edit_text"
-            app:layout_constraintStart_toStartOf="@id/bank_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/bank_edit_text"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:padding="17dp"
-            android:textColor="@color/colorBlack"/>
-
-        <TextView
-            android:id="@+id/oked_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/registration_code_edit_text"
-            app:layout_constraintStart_toStartOf="@id/registration_code_text_view"
-            android:layout_marginTop="24dp"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/oked"/>
-
-        <EditText
-            android:id="@+id/oked_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/oked_text_view"
-            app:layout_constraintStart_toStartOf="@id/registration_code_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/registration_code_edit_text"
-            android:layout_marginTop="4dp"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:padding="17dp"
-            android:textColor="@color/colorBlack"/>
-
-        <View
             android:id="@+id/consignment_stroke"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            app:layout_constraintTop_toBottomOf="@id/oked_edit_text"
-            app:layout_constraintStart_toStartOf="@id/payment_stroke"
-            app:layout_constraintEnd_toEndOf="@id/payment_stroke"
+            app:layout_constraintTop_toBottomOf="@id/payer_fedex_tax_id_edit_text"
+            app:layout_constraintStart_toStartOf="@id/payer_stroke"
+            app:layout_constraintEnd_toEndOf="@id/payer_stroke"
             android:layout_marginTop="41dp"
             android:background="@color/colorGrey" />
 
@@ -1878,8 +1749,8 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             app:layout_constraintTop_toBottomOf="@id/add_item_btn"
-            app:layout_constraintStart_toStartOf="@id/payment_stroke"
-            app:layout_constraintEnd_toEndOf="@id/payment_stroke"
+            app:layout_constraintStart_toStartOf="@id/consignment_stroke"
+            app:layout_constraintEnd_toEndOf="@id/consignment_stroke"
             android:layout_marginTop="41dp"
             android:background="@color/colorGrey" />
 
@@ -1897,8 +1768,8 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             app:layout_constraintTop_toBottomOf="@id/calculations_recycler_view"
-            app:layout_constraintStart_toStartOf="@id/payment_stroke"
-            app:layout_constraintEnd_toEndOf="@id/payment_stroke"
+            app:layout_constraintStart_toStartOf="@id/consignment_stroke"
+            app:layout_constraintEnd_toEndOf="@id/consignment_stroke"
             android:layout_marginTop="41dp"
             android:background="@color/colorGrey" />
 

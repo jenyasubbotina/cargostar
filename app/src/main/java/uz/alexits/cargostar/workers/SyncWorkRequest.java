@@ -1,7 +1,6 @@
 package uz.alexits.cargostar.workers;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.BackoffPolicy;
@@ -560,11 +559,7 @@ public class SyncWorkRequest {
                                   final String passportSerial,
                                   final String inn,
                                   final String company,
-                                  final String bank,
-                                  final String mfo,
-                                  final String oked,
-                                  final String checkingAccount,
-                                  final String vat,
+                                  final String contractNumber,
                                   final String signatureUrl) {
         final Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -593,11 +588,7 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_PASSPORT_SERIAL, passportSerial)
                 .putString(Constants.KEY_INN, inn)
                 .putString(Constants.KEY_COMPANY, company)
-                .putString(Constants.KEY_PAYER_BANK, bank)
-                .putString(Constants.KEY_PAYER_MFO, mfo)
-                .putString(Constants.KEY_PAYER_OKED, oked)
-                .putString(Constants.KEY_PAYER_CHECKING_ACCOUNT, checkingAccount)
-                .putString(Constants.KEY_VAT, vat)
+                .putString(Constants.KEY_PAYER_CONTRACT_NUMBER, contractNumber)
                 .putString(Constants.KEY_SIGNATURE, signatureUrl)
                 .build();
 
@@ -910,12 +901,8 @@ public class SyncWorkRequest {
                                    final int payerType,
                                    final double discount,
                                    final String payerInn,
-                                   final String checkingAccount,
-                                   final String bank,
-                                   final String mfo,
-                                   final String oked,
-                                   final String registrationCode,
-                                   final String instructions,
+                                   final String contractNumber,
+                                  final String instructions,
                                    final long providerId,
                                    final long packagingId,
                                    final int deliveryType,
@@ -986,12 +973,7 @@ public class SyncWorkRequest {
                 .putString(Constants.KEY_PAYER_INN, payerInn)
                 .putDouble(Constants.KEY_DISCOUNT, discount)
 
-                .putString(Constants.KEY_PAYER_CHECKING_ACCOUNT, checkingAccount)
-                .putString(Constants.KEY_PAYER_BANK, bank)
-                .putString(Constants.KEY_PAYER_MFO, mfo)
-                .putString(Constants.KEY_PAYER_OKED, oked)
-                .putString(Constants.KEY_PAYER_REGISTRATION_CODE, registrationCode)
-
+                .putString(Constants.KEY_PAYER_CONTRACT_NUMBER, contractNumber)
                 .putString(Constants.KEY_INSTRUCTIONS, instructions)
 
                 .putLong(Constants.KEY_PROVIDER_ID, providerId)

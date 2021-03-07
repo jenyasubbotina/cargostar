@@ -197,11 +197,7 @@ public class RetrofitClient {
                                            final String passportSerial,
                                            final String inn,
                                            final String company,
-                                           final String bank,
-                                           final String mfo,
-                                           final String oked,
-                                           final String checkingAccount,
-                                           final String registrationCode,
+                                           final String contractNumber,
                                            final String signatureUrl) throws IOException {
         final CreateClientParams clientParams = new CreateClientParams(
                 login,
@@ -224,11 +220,7 @@ public class RetrofitClient {
                 passportSerial,
                 inn,
                 company,
-                bank,
-                mfo,
-                oked,
-                checkingAccount,
-                registrationCode,
+                contractNumber,
                 signatureUrl);
         return apiService.createClient(clientParams).execute();
     }
@@ -274,6 +266,8 @@ public class RetrofitClient {
     /* Invoice */
     public Response<CreateInvoiceResponse> createInvoice(@NonNull final CreateInvoiceParams createInvoiceParams) throws IOException {
         return apiService.createInvoice(createInvoiceParams).execute();
+//        Log.i(TAG, "createInvoice(): " + createInvoiceParams);
+//        return null;
     }
 
     public Response<Invoice> getInvoice(final long invoiceId) throws IOException {

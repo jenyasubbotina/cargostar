@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -207,11 +208,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private EditText payerFedexTaxIdEditText;
     private EditText payerInnEditText;
     private EditText payerCompanyEditText;
-    private EditText checkingAccountEditText;
-    private EditText bankEditText;
-    private EditText registrationCodeEditText;
-    private EditText mfoEditText;
-    private EditText okedEditText;
+    private EditText contractNumberEditText;
 
     private Spinner senderCountrySpinner;
     private Spinner recipientCountrySpinner;
@@ -254,56 +251,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile long tariffId = -1L;
     private static volatile int deliveryType = 0;
 
-    private static volatile String comment = null;
-    private static volatile int consignmentQuantity = 0;
-    private static volatile double price = 0;
-
-    private static volatile String senderEmail = null;
-    private static volatile String senderSignature = null;
-    private static volatile String senderFirstName = null;
-    private static volatile String senderLastName = null;
-    private static volatile String senderMiddleName = null;
-    private static volatile String senderPhone = null;
-    private static volatile String senderAddress = null;
-    private static volatile long senderCountryId = -1L;
-    private static volatile String senderZip = null;
-    private static volatile String senderCompany = null;
-    private static volatile String senderCargo = null;
-    private static volatile String senderTnt = null;
-    private static volatile String senderFedex = null;
-    private static volatile int discount = 0;
-
-    private static volatile String recipientEmail = null;
-    private static volatile String recipientFirstName = null;
-    private static volatile String recipientLastName = null;
-    private static volatile String recipientMiddleName = null;
-    private static volatile String recipientPhone = null;
-    private static volatile String recipientAddress = null;
-    private static volatile long recipientCountryId = -1L;
-    private static volatile String recipientZip = null;
-    private static volatile String recipientCompany = null;
-    private static volatile String recipientCargo = null;
-    private static volatile String recipientTnt = null;
-    private static volatile String recipientFedex = null;
-
-    private static volatile String payerEmail = null;
-    private static volatile String payerFirstName = null;
-    private static volatile String payerLastName = null;
-    private static volatile String payerMiddleName = null;
-    private static volatile String payerPhone = null;
-    private static volatile String payerAddress = null;
-    private static volatile long payerCountryId = -1L;
-    private static volatile String payerZip = null;
-    private static volatile String payerCompany = null;
-    private static volatile String payerCargo = null;
-    private static volatile String payerTnt = null;
-    private static volatile String payerFedex = null;
-    private static volatile String payerInn = null;
-    private static volatile String payerBank = null;
-    private static volatile String payerCheckingAccount = null;
-    private static volatile String payerRegistrationCode = null;
-    private static volatile String payerMfo = null;
-    private static volatile String payerOked = null;
+    private Customer sender;
+    private AddressBook recipient;
+    private AddressBook payer;
 
     /* selected items */
     private Long selectedCountryId = null;
@@ -312,6 +262,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private List<Long> selectedPackagingIdList = new ArrayList<>();
     private List<ZoneSettings> selectedZoneSettingsList = null;
     private Vat selectedVat = null;
+
+    private static volatile String comment = null;
+    private static volatile int consignmentQuantity = 0;
+    private static volatile double price = 0;
 
     private static List<Consignment> consignmentList;
     private static final List<TariffPrice> tariffPriceList = new ArrayList<>();
@@ -328,58 +282,15 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         tariffId = -1;
         courierId = -1;
         providerId = -1;
-        senderCountryId = -1;
-        recipientCountryId = -1;
-        payerCountryId = -1;
 
         price = 0;
         deliveryType = 0;
         comment = null;
         consignmentQuantity = 0;
 
-        senderEmail = null;
-        senderSignature = null;
-        senderFirstName = null;
-        senderLastName = null;
-        senderMiddleName = null;
-        senderPhone = null;
-        senderAddress = null;
-        senderZip = null;
-        senderCompany = null;
-        senderCargo = null;
-        senderTnt = null;
-        senderFedex = null;
-        discount = 0;
-
-        recipientEmail = null;
-        recipientFirstName = null;
-        recipientLastName = null;
-        recipientMiddleName = null;
-        recipientPhone = null;
-        recipientAddress = null;
-        recipientZip = null;
-        recipientCompany = null;
-        recipientCargo = null;
-        recipientTnt = null;
-        recipientFedex = null;
-
-        payerEmail = null;
-        payerFirstName = null;
-        payerLastName = null;
-        payerMiddleName = null;
-        payerPhone = null;
-        payerAddress = null;
-        payerZip = null;
-        payerCompany = null;
-        payerCargo = null;
-        payerTnt = null;
-        payerFedex = null;
-        payerInn = null;
-        payerBank = null;
-        payerCheckingAccount = null;
-        payerRegistrationCode = null;
-        payerMfo = null;
-        payerOked = null;
+        sender = null;
+        recipient = null;
+        payer = null;
 
         context = getContext();
         activity = getActivity();
@@ -399,55 +310,77 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             deliveryType = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDeliveryType();
             comment = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getComment();
 
-            senderEmail = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderEmail();
-            senderSignature = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderSignature();
-            senderFirstName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFirstName();
-            senderLastName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderLastName();
-            senderMiddleName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderMiddleName();
-            senderPhone = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPhone();
-            senderAddress = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderAddress();
-            senderCountryId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCountryId();
-//            senderCityName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCityName();
-            senderZip = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderZip();
-            senderCompany = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCompany();
-            senderCargo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCargo();
-            senderTnt = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderTnt();
-            senderFedex = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFedex();
-            discount = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDiscount();
+            sender = new Customer(
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderId(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderUserId(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCountryId(),
+                    0L,
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCityName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFirstName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderMiddleName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderLastName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPhone(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderEmail(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderAddress(),
+                    null,
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderZip(),
+                    1, new Date(), new Date(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCargo(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderTnt(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFedex(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDiscount(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPhotoUrl(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderSignature(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderUserType(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPassportSerial(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderInn(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCompany());
 
-            recipientEmail = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientEmail();
-            recipientFirstName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientFirstName();
-            recipientLastName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientLastName();
-            recipientMiddleName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientMiddleName();
-            recipientPhone = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientPhone();
-            recipientAddress = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientAddress();
-            recipientCountryId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCountryId();
-//            recipientCityName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCityName();
-            recipientZip = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientZip();
-            recipientCompany = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCompany();
-            recipientCargo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCargo();
-            recipientTnt = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientTnt();
-            recipientFedex = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientFedex();
+            recipient = new AddressBook(
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientId(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientUserId(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCountryId(),
+                    0L,
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCityName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientAddress(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientZip(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientFirstName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientMiddleName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientLastName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientEmail(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientPhone(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCargo(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientTnt(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientFedex(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCompany(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientInn(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientContractNumber(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientPassportSerial(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientUserType(),
+                    1, new Date(), new Date());
 
-            payerEmail = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerEmail();
-            payerFirstName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerFirstName();
-            payerLastName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerLastName();
-            payerMiddleName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerMiddleName();
-            payerPhone = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerPhone();
-            payerAddress = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerAddress();
-            payerCountryId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCountryId();
-//            payerCityName = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCityName();
-            payerZip = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerZip();
-            payerCompany = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCompany();
-            payerCargo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCargo();
-            payerTnt = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerTnt();
-            payerFedex = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerFedex();
-            payerInn = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerInn();
-            payerBank = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerBank();
-            payerCheckingAccount = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCheckingAccount();
-            payerRegistrationCode = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerRegistrationCode();
-            payerMfo = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerMfo();
-            payerOked = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerOked();
+            payer = new AddressBook(
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerId(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerUserId(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCountryId(),
+                    0L,
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCityName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerAddress(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerZip(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerFirstName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerMiddleName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerLastName(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerEmail(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerPhone(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCargo(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerTnt(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerFedex(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCompany(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerInn(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getContractNumber(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerPassportSerial(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerUserType(),
+                    1, new Date(), new Date());
             consignmentQuantity = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
 
             if (consignmentQuantity > 0) {
@@ -548,7 +481,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         });
 
         /* calculator data view model */
-
         if (requestKey == IntentConstants.REQUEST_EDIT_INVOICE) {
             calculatorViewModel.setProviderId(providerId);
         }
@@ -689,50 +621,30 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         });
 
         //content views
-         profileImageView.setOnClickListener(v -> {
-             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
-         });
+         profileImageView.setOnClickListener(v -> UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment));
 
-        createUserImageView.setOnClickListener(v -> {
-            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.createUserFragment);
-        });
+        createUserImageView.setOnClickListener(v -> UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.createUserFragment));
 
-        notificationsImageView.setOnClickListener(v -> {
-            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.notificationsFragment);
-        });
+        notificationsImageView.setOnClickListener(v -> UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.notificationsFragment));
 
-        calculatorImageView.setOnClickListener(v -> {
-            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
-        });
+        calculatorImageView.setOnClickListener(v -> UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment));
 
-        editImageView.setOnClickListener(v -> {
-            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
-        });
+        editImageView.setOnClickListener(v -> UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment));
 
         senderSignatureImageView.setOnClickListener(v -> {
             startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_SENDER_SIGNATURE);
         });
 
-        addBtn.setOnClickListener(v -> {
-            addCargoToInvoice();
-        });
+        addBtn.setOnClickListener(v -> addCargoToInvoice());
 
-        calculateBtn.setOnClickListener(v -> {
-            calculateTotalPrice();
-        });
+        calculateBtn.setOnClickListener(v -> calculateTotalPrice());
 
-        createInvoiceBtn.setOnClickListener(v -> {
-            createInvoice();
-        });
+        createInvoiceBtn.setOnClickListener(v -> createInvoice());
 
         /* providers */
-        firstProviderCard.setOnClickListener(v -> {
-            firstProviderRadioBtn.setChecked(true);
-        });
+        firstProviderCard.setOnClickListener(v -> firstProviderRadioBtn.setChecked(true));
 
-        secondProviderCard.setOnClickListener(v -> {
-            secondProviderRadioBtn.setChecked(true);
-        });
+        secondProviderCard.setOnClickListener(v -> secondProviderRadioBtn.setChecked(true));
 
         /* spinners */
         senderCountrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -1169,38 +1081,44 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         payerIsSomeoneRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == senderIsPayerRadioBtn.getId()) {
-                payerEmailEditText.setText(senderEmailEditText.getText().toString().trim());
                 payerFirstNameEditText.setText(senderFirstNameEditText.getText().toString().trim());
                 payerLastNameEditText.setText(senderLastNameEditText.getText().toString().trim());
                 payerMiddleNameEditText.setText(senderMiddleNameEditText.getText().toString().trim());
+                payerEmailEditText.setText(senderEmailEditText.getText().toString().trim());
+                payerPhoneEditText.setText(senderPhoneEditText.getText().toString().trim());
+
                 payerAddressEditText.setText(senderAddressEditText.getText().toString().trim());
                 payerZipEditText.setText(senderZipEditText.getText().toString().trim());
-                payerPhoneEditText.setText(senderPhoneEditText.getText().toString().trim());
+                payerCountrySpinner.setSelection(senderCountrySpinner.getSelectedItemPosition());
+                payerCityNameEditText.setText(senderCityNameEditText.getText().toString().trim());
+
                 payerCargoEditText.setText(null);
                 payerTntEditText.setText(senderTntEditText.getText().toString().trim());
                 payerFedexEditText.setText(senderFedexEditText.getText().toString().trim());
-                payerCompanyEditText.setText(senderCompanyEditText.getText().toString().trim());
-                payerCityNameEditText.setText(senderCityNameEditText.getText().toString().trim());
 
-                payerCountrySpinner.setSelection(senderCountrySpinner.getSelectedItemPosition());
+                payerInnEditText.setText(sender.getInn());
+                payerCompanyEditText.setText(senderCompanyEditText.getText().toString().trim());
+
                 return;
             }
             if (checkedId == recipientIsPayerRadioBtn.getId()) {
-                payerEmailEditText.setText(recipientEmailEditText.getText().toString().trim());
                 payerFirstNameEditText.setText(recipientFirstNameEditText.getText().toString().trim());
                 payerLastNameEditText.setText(recipientLastNameEditText.getText().toString().trim());
                 payerMiddleNameEditText.setText(recipientMiddleNameEditText.getText().toString().trim());
+                payerEmailEditText.setText(recipientEmailEditText.getText().toString().trim());
+                payerPhoneEditText.setText(recipientPhoneEditText.getText().toString().trim());
+
                 payerAddressEditText.setText(recipientAddressEditText.getText().toString().trim());
                 payerZipEditText.setText(recipientZipEditText.getText().toString().trim());
-                payerPhoneEditText.setText(recipientPhoneEditText.getText().toString().trim());
+                payerCountrySpinner.setSelection(recipientCountrySpinner.getSelectedItemPosition());
+                payerCityNameEditText.setText(recipientCityNameEditText.getText().toString().trim());
 
                 payerCargoEditText.setText(recipientCargoEditText.getText().toString().trim());
                 payerTntEditText.setText(recipientTntEditText.getText().toString().trim());
                 payerFedexEditText.setText(recipientFedexEditText.getText().toString().trim());
-                payerCompanyEditText.setText(recipientCompanyEditText.getText().toString().trim());
-                payerCityNameEditText.setText(recipientCityNameEditText.getText().toString().trim());
 
-                payerCountrySpinner.setSelection(recipientCountrySpinner.getSelectedItemPosition());
+                payerInnEditText.setText(recipient.getInn());
+                payerCompanyEditText.setText(recipientCompanyEditText.getText().toString().trim());
             }
         });
     }
@@ -1288,15 +1206,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         payerCompanyEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
-        checkingAccountEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
-
-        bankEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
-
-        registrationCodeEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
-
-        mfoEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
-
-        okedEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
+        contractNumberEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
         instructionsEditText.setOnFocusChangeListener(UiUtils::onFocusChanged);
 
@@ -1380,11 +1290,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         payerFedexTaxIdEditText = root.findViewById(R.id.payer_fedex_tax_id_edit_text);
         payerInnEditText = root.findViewById(R.id.payer_inn_edit_text);
         payerCompanyEditText = root.findViewById(R.id.payer_company_edit_text);
-        checkingAccountEditText = root.findViewById(R.id.checking_account_edit_text);
-        bankEditText = root.findViewById(R.id.bank_edit_text);
-        registrationCodeEditText = root.findViewById(R.id.registration_code_edit_text);
-        mfoEditText = root.findViewById(R.id.mfo_edit_text);
-        okedEditText = root.findViewById(R.id.oked_edit_text);
+        contractNumberEditText = root.findViewById(R.id.contract_number_edit_text);
 
         //below recycler view
         totalQuantityTextView = root.findViewById(R.id.total_quantity_value_text_view);
@@ -1483,14 +1389,14 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         bindOnFocusChangeListeners();
     }
 
-    private void updateUI() {
+    private void updateUI(final Customer sender, final AddressBook recipient, final AddressBook payer) {
         /* update sender data */
-        if (!TextUtils.isEmpty(senderEmail)) {
-            senderEmailEditText.setText(senderEmail);
+        if (!TextUtils.isEmpty(sender.getEmail())) {
+            senderEmailEditText.setText(sender.getEmail());
             senderEmailEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderSignature)) {
-            senderSignatureEditText.setText(senderSignature);
+        if (!TextUtils.isEmpty(sender.getSignatureUrl())) {
+            senderSignatureEditText.setText(sender.getSignatureUrl());
             senderSignatureEditText.setBackgroundResource(R.drawable.edit_text_active);
             senderSignatureResultImageView.setImageResource(R.drawable.ic_image_green);
         }
@@ -1499,157 +1405,141 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
         senderSignatureResultImageView.setVisibility(View.VISIBLE);
 
-        if (!TextUtils.isEmpty(senderFirstName)) {
-            senderFirstNameEditText.setText(senderFirstName);
+        if (!TextUtils.isEmpty(sender.getFirstName())) {
+            senderFirstNameEditText.setText(sender.getFirstName());
             senderFirstNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderLastName)) {
-            senderLastNameEditText.setText(senderLastName);
+        if (!TextUtils.isEmpty(sender.getLastName())) {
+            senderLastNameEditText.setText(sender.getLastName());
             senderLastNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderMiddleName)) {
-            senderMiddleNameEditText.setText(senderMiddleName);
+        if (!TextUtils.isEmpty(sender.getMiddleName())) {
+            senderMiddleNameEditText.setText(sender.getMiddleName());
             senderMiddleNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderPhone)) {
-            senderPhoneEditText.setText(senderPhone);
+        if (!TextUtils.isEmpty(sender.getPhone())) {
+            senderPhoneEditText.setText(sender.getPhone());
             senderPhoneEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderAddress)) {
-            senderAddressEditText.setText(senderAddress);
+        if (!TextUtils.isEmpty(sender.getAddress())) {
+            senderAddressEditText.setText(sender.getAddress());
             senderAddressEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderZip)) {
-            senderZipEditText.setText(senderZip);
+        if (!TextUtils.isEmpty(sender.getZip())) {
+            senderZipEditText.setText(sender.getZip());
             senderZipEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderCompany)) {
-            senderCompanyEditText.setText(senderCompany);
+        if (!TextUtils.isEmpty(sender.getCompany())) {
+            senderCompanyEditText.setText(sender.getCompany());
             senderCompanyEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderTnt)) {
-            senderTntEditText.setText(senderTnt);
+        if (!TextUtils.isEmpty(sender.getTntAccountNumber())) {
+            senderTntEditText.setText(sender.getTntAccountNumber());
             senderTntEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(senderFedex)) {
-            senderFedexEditText.setText(senderFedex);
+        if (!TextUtils.isEmpty(sender.getFedexAccountNumber())) {
+            senderFedexEditText.setText(sender.getFedexAccountNumber());
             senderFedexEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
 
         /* update recipient data */
-        if (!TextUtils.isEmpty(recipientEmail)) {
-            recipientEmailEditText.setText(recipientEmail);
+        if (!TextUtils.isEmpty(recipient.getEmail())) {
+            recipientEmailEditText.setText(recipient.getEmail());
             recipientEmailEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientFirstName)) {
-            recipientFirstNameEditText.setText(recipientFirstName);
+        if (!TextUtils.isEmpty(recipient.getFirstName())) {
+            recipientFirstNameEditText.setText(recipient.getFirstName());
             recipientFirstNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientLastName)) {
-            recipientLastNameEditText.setText(recipientLastName);
+        if (!TextUtils.isEmpty(recipient.getLastName())) {
+            recipientLastNameEditText.setText(recipient.getLastName());
             recipientLastNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientMiddleName)) {
-            recipientMiddleNameEditText.setText(recipientMiddleName);
+        if (!TextUtils.isEmpty(recipient.getMiddleName())) {
+            recipientMiddleNameEditText.setText(recipient.getMiddleName());
             recipientMiddleNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientAddress)) {
-            recipientAddressEditText.setText(recipientAddress);
+        if (!TextUtils.isEmpty(recipient.getAddress())) {
+            recipientAddressEditText.setText(recipient.getAddress());
             recipientAddressEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientZip)) {
-            recipientZipEditText.setText(recipientZip);
+        if (!TextUtils.isEmpty(recipient.getZip())) {
+            recipientZipEditText.setText(recipient.getZip());
             recipientZipEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientPhone)) {
-            recipientPhoneEditText.setText(recipientPhone);
+        if (!TextUtils.isEmpty(recipient.getPhone())) {
+            recipientPhoneEditText.setText(recipient.getPhone());
             recipientPhoneEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientCargo)) {
-            recipientCargoEditText.setText(recipientCargo);
+        if (!TextUtils.isEmpty(recipient.getCargostarAccountNumber())) {
+            recipientCargoEditText.setText(recipient.getCargostarAccountNumber());
             recipientCargoEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientTnt)) {
-            recipientTntEditText.setText(recipientTnt);
+        if (!TextUtils.isEmpty(recipient.getTntAccountNumber())) {
+            recipientTntEditText.setText(recipient.getTntAccountNumber());
             recipientTntEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientFedex)) {
-            recipientFedexEditText.setText(recipientFedex);
+        if (!TextUtils.isEmpty(recipient.getFedexAccountNumber())) {
+            recipientFedexEditText.setText(recipient.getFedexAccountNumber());
             recipientFedexEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(recipientCompany)) {
-            recipientCompanyEditText.setText(recipientCompany);
+        if (!TextUtils.isEmpty(recipient.getCompany())) {
+            recipientCompanyEditText.setText(recipient.getCompany());
             recipientCompanyEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
 
         /* update payer data */
-        if (!TextUtils.isEmpty(payerEmail)) {
-            payerEmailEditText.setText(payerEmail);
+        if (!TextUtils.isEmpty(payer.getEmail())) {
+            payerEmailEditText.setText(payer.getEmail());
             payerEmailEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerFirstName)) {
-            payerFirstNameEditText.setText(payerFirstName);
+        if (!TextUtils.isEmpty(payer.getFirstName())) {
+            payerFirstNameEditText.setText(payer.getFirstName());
             payerFirstNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerLastName)) {
-            payerLastNameEditText.setText(payerLastName);
+        if (!TextUtils.isEmpty(payer.getLastName())) {
+            payerLastNameEditText.setText(payer.getLastName());
             payerLastNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerMiddleName)) {
-            payerMiddleNameEditText.setText(payerMiddleName);
+        if (!TextUtils.isEmpty(payer.getMiddleName())) {
+            payerMiddleNameEditText.setText(payer.getMiddleName());
             payerMiddleNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerAddress)) {
-            payerAddressEditText.setText(payerAddress);
+        if (!TextUtils.isEmpty(payer.getAddress())) {
+            payerAddressEditText.setText(payer.getAddress());
             payerAddressEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerZip)) {
-            payerZipEditText.setText(payerZip);
+        if (!TextUtils.isEmpty(payer.getZip())) {
+            payerZipEditText.setText(payer.getZip());
             payerZipEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerPhone)) {
-            payerPhoneEditText.setText(payerPhone);
+        if (!TextUtils.isEmpty(payer.getPhone())) {
+            payerPhoneEditText.setText(payer.getPhone());
             payerPhoneEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerCargo)) {
-            payerCargoEditText.setText(payerCargo);
+        if (!TextUtils.isEmpty(payer.getCargostarAccountNumber())) {
+            payerCargoEditText.setText(payer.getCargostarAccountNumber());
             payerCargoEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerTnt)) {
-            payerTntEditText.setText(payerTnt);
+        if (!TextUtils.isEmpty(payer.getTntAccountNumber())) {
+            payerTntEditText.setText(payer.getTntAccountNumber());
             payerTntEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerFedex)) {
-            payerFedexEditText.setText(payerFedex);
+        if (!TextUtils.isEmpty(payer.getFedexAccountNumber())) {
+            payerFedexEditText.setText(payer.getFedexAccountNumber());
             payerFedexEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerInn)) {
-            payerInnEditText.setText(payerInn);
+        if (!TextUtils.isEmpty(payer.getInn())) {
+            payerInnEditText.setText(payer.getInn());
             payerInnEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerCompany)) {
-            payerCompanyEditText.setText(payerCompany);
+        if (!TextUtils.isEmpty(payer.getCompany())) {
+            payerCompanyEditText.setText(payer.getCompany());
             payerCompanyEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
-        if (!TextUtils.isEmpty(payerCheckingAccount)) {
-            checkingAccountEditText.setText(payerCheckingAccount);
-            checkingAccountEditText.setBackgroundResource(R.drawable.edit_text_active);
-        }
-        if (!TextUtils.isEmpty(payerBank)) {
-            bankEditText.setText(payerBank);
-            bankEditText.setBackgroundResource(R.drawable.edit_text_active);
-        }
-        if (!TextUtils.isEmpty(payerRegistrationCode)) {
-            registrationCodeEditText.setText(payerRegistrationCode);
-            registrationCodeEditText.setBackgroundResource(R.drawable.edit_text_active);
-        }
-        if (!TextUtils.isEmpty(payerMfo)) {
-            mfoEditText.setText(payerMfo);
-            mfoEditText.setBackgroundResource(R.drawable.edit_text_active);
-        }
-        if (!TextUtils.isEmpty(payerOked)) {
-            okedEditText.setText(payerOked);
-            okedEditText.setBackgroundResource(R.drawable.edit_text_active);
+        if (!TextUtils.isEmpty(payer.getContractNumber())) {
+            contractNumberEditText.setText(payer.getContractNumber());
+            contractNumberEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
 
         /* update invoice data */
@@ -1715,7 +1605,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             boxTypeRadioBtn.setChecked(true);
         }
 
-        if (!TextUtils.isEmpty(payerCompany)) {
+        if (!TextUtils.isEmpty(payer.getCompany())) {
             cashRadioBtn.setVisibility(View.GONE);
             terminalRadioBtn.setVisibility(View.GONE);
             transferRadioBtn.setVisibility(View.VISIBLE);
@@ -1880,8 +1770,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             if (totalPrice > 0) {
                 if (correspondingTariff != null) {
-                    if (discount > 0 && discount < 100) {
-                        totalPrice = totalPrice * (100 - discount) / 100;
+                    if (sender.getDiscount() > 0 && sender.getDiscount() < 100) {
+                        totalPrice = totalPrice * (100 - sender.getDiscount()) / 100;
                     }
                     
                     if (packageTypeRadioGroup.getCheckedRadioButtonId() == boxTypeRadioBtn.getId()) {
@@ -1959,11 +1849,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         final String payerFedexTax = payerFedexTaxIdEditText.getText().toString().trim();
         final String payerInn = payerInnEditText.getText().toString().trim();
         final String payerCompany = payerCompanyEditText.getText().toString().trim();
-        final String checkingAccount = checkingAccountEditText.getText().toString().trim();
-        final String bank = bankEditText.getText().toString().trim();
-        final String registrationCode = registrationCodeEditText.getText().toString().trim();
-        final String mfo = mfoEditText.getText().toString().trim();
-        final String oked = okedEditText.getText().toString().trim();
+        final String contractNumber = contractNumberEditText.getText().toString().trim();
 
         final String instructions = instructionsEditText.getText().toString().trim();
 
@@ -2076,6 +1962,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             Toast.makeText(context, "Для создания заявки укажите почтовый индекс плательщика", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (TextUtils.isEmpty(payerInn)) {
+            Log.e(TAG, "sendInvoice(): payerInn is empty");
+            Toast.makeText(context, "Для создания заявки укажите ИНН плательщика", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(contractNumber)) {
+            Log.e(TAG, "sendInvoice(): contractNumber is empty");
+            Toast.makeText(context, "Для создания заявки укажите номер контракта плательщика", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (!TextUtils.isEmpty(senderCompanyName)) {
             senderType = 2;
@@ -2175,7 +2071,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
 
         final String serializedConsignmentList = new Gson().toJson(consignmentList);
-
         final UUID sendInvoiceWorkUUID = SyncWorkRequest.sendInvoice(
                 context,
                 requestId,
@@ -2228,11 +2123,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerType,
                 !TextUtils.isEmpty(discount) ? Double.parseDouble(discount) : -1,
                 payerInn,
-                checkingAccount,
-                bank,
-                mfo,
-                oked,
-                registrationCode,
+                contractNumber,
                 instructions,
                 selectedProvider.getId(),
                 tariffPriceRadioAdapter.getSelectedPackagingId() <= 0 ? tariffId : tariffPriceRadioAdapter.getSelectedPackagingId(),
@@ -2429,7 +2320,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             if (sender.getDiscount() > 0) {
                 discountEditText.setText(String.valueOf(sender.getDiscount()));
                 discountEditText.setBackgroundResource(R.drawable.edit_text_active);
-                discount = sender.getDiscount();
             }
             else {
                 discountEditText.setText(null);
@@ -2444,12 +2334,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 senderCityNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
             if (sender.getCountryId() != null) {
-                senderCountryId = sender.getCountryId();
-            }
-            for (int i = 0; i < countryList.size(); i++) {
-                if (countryList.get(i).getId() == senderCountryId) {
-                    senderCountrySpinner.setSelection(i);
-                    return;
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == sender.getCountryId()) {
+                        senderCountrySpinner.setSelection(i);
+                        return;
+                    }
                 }
             }
         }
@@ -2554,12 +2443,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 recipientCityNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
             if (recipient.getCountryId() != null) {
-                recipientCountryId = recipient.getCountryId();
-            }
-            for (int i = 0; i < countryList.size(); i++) {
-                if (countryList.get(i).getId() == recipientCountryId) {
-                    recipientCountrySpinner.setSelection(i);
-                    return;
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == recipient.getCountryId()) {
+                        recipientCountrySpinner.setSelection(i);
+                        return;
+                    }
                 }
             }
         }
@@ -2663,45 +2551,13 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerCompanyEditText.setText(null);
                 payerCompanyEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
-            if (!TextUtils.isEmpty(payer.getCheckingAccount())) {
-                checkingAccountEditText.setText(payer.getCheckingAccount());
-                checkingAccountEditText.setBackgroundResource(R.drawable.edit_text_active);
+            if (!TextUtils.isEmpty(payer.getContractNumber())) {
+                contractNumberEditText.setText(payer.getContractNumber());
+                contractNumberEditText.setBackgroundResource(R.drawable.edit_text_active);
             }
             else {
-                checkingAccountEditText.setText(null);
-                checkingAccountEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(payer.getBank())) {
-                bankEditText.setText(payer.getBank());
-                bankEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                bankEditText.setText(null);
-                bankEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(payer.getRegistrationCode())) {
-                registrationCodeEditText.setText(payer.getRegistrationCode());
-                registrationCodeEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                registrationCodeEditText.setText(null);
-                registrationCodeEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(payer.getMfo())) {
-                mfoEditText.setText(payer.getMfo());
-                mfoEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                mfoEditText.setText(null);
-                mfoEditText.setBackgroundResource(R.drawable.edit_text_locked);
-            }
-            if (!TextUtils.isEmpty(payer.getOked())) {
-                okedEditText.setText(payer.getOked());
-                okedEditText.setBackgroundResource(R.drawable.edit_text_active);
-            }
-            else {
-                okedEditText.setText(null);
-                okedEditText.setBackgroundResource(R.drawable.edit_text_locked);
+                contractNumberEditText.setText(null);
+                contractNumberEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
             if (!TextUtils.isEmpty(payer.getCityName())) {
                 payerCityNameEditText.setText(payer.getCityName());
@@ -2712,12 +2568,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerCityNameEditText.setBackgroundResource(R.drawable.edit_text_locked);
             }
             if (payer.getCountryId() != null) {
-                payerCountryId = payer.getCountryId();
-            }
-            for (int i = 0; i < countryList.size(); i++) {
-                if (countryList.get(i).getId() == payerCountryId) {
-                    payerCountrySpinner.setSelection(i);
-                    return;
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (countryList.get(i).getId() == payer.getCountryId()) {
+                        payerCountrySpinner.setSelection(i);
+                        return;
+                    }
                 }
             }
         }
@@ -2738,9 +2593,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             for (final Country country : countryList) {
                 countryArrayAdapter.add(country);
             }
-            if (senderCountryId >= 0) {
+            if (sender.getCountryId() >= 0) {
                 for (int i = 0; i < countryList.size(); i++) {
-                    if (countryList.get(i).getId() == senderCountryId) {
+                    if (countryList.get(i).getId() == sender.getCountryId()) {
                         senderCountrySpinner.setSelection(i);
                         break;
                     }
@@ -2757,9 +2612,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             senderCountryIsSet = true;
 
-            if (recipientCountryId >= 0) {
+            if (recipient.getCountryId() >= 0) {
                 for (int i = 0; i < countryList.size(); i++) {
-                    if (countryList.get(i).getId() == recipientCountryId) {
+                    if (countryList.get(i).getId() == recipient.getCountryId()) {
                         recipientCountrySpinner.setSelection(i);
                         break;
                     }
@@ -2776,9 +2631,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
             recipientCountryIsSet = true;
 
-            if (payerCountryId >= 0) {
+            if (payer.getCountryId() >= 0) {
                 for (int i = 0; i < countryList.size(); i++) {
-                    if (countryList.get(i).getId() == payerCountryId) {
+                    if (countryList.get(i).getId() == payer.getCountryId()) {
                         payerCountrySpinner.setSelection(i);
                         break;
                     }
