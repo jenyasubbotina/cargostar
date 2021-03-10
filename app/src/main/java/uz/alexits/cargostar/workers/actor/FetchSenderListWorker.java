@@ -51,7 +51,6 @@ public class FetchSenderListWorker extends Worker {
             }
             else {
                 response = RetrofitClient.getInstance(getApplicationContext()).getClients(perPage);
-//                response = RetrofitClient.getInstance(getApplicationContext()).getClients(perPage, 1);
             }
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
@@ -63,13 +62,7 @@ public class FetchSenderListWorker extends Worker {
                         return Result.failure();
                     }
 
-                    final long[] rowsInserted = LocalCache.getInstance(getApplicationContext()).actorDao().insertSenderList(senderList);
-
-                    if (rowsInserted.length <= 0) {
-                        Log.w(TAG, "fetchAllCustomers(): empty response");
-                        return Result.success();
-                    }
-                    Log.i(TAG, "fetchAllCustomers(): successfully inserted entries");
+                    LocalCache.getInstance(getApplicationContext()).actorDao().insertSenderList(senderList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

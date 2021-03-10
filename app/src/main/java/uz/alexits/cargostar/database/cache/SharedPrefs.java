@@ -8,6 +8,13 @@ Copyright © 2019 Wings Solutions. All rights reserved
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Класс для работы с sharedPreferences
@@ -51,22 +58,64 @@ public class SharedPrefs {
     }
 
     public String getString(final String key) {
-        return this.prefs.getString(key, null);
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        final Callable<String> callable = () -> this.prefs.getString(key, null);
+        final Future<String> value = executorService.submit(callable);
+        executorService.shutdown();
+        try {
+            return value.get();
+        }
+        catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, "getString(): ", e);
+            return null;
+        }
     }
 
     public int getInt(final String key) {
-        return this.prefs.getInt(key, -1);
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        final Callable<Integer> callable = () -> this.prefs.getInt(key, -1);
+        final Future<Integer> value = executorService.submit(callable);
+        executorService.shutdown();
+        try {
+            return value.get();
+        }
+        catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, "getInt(): ", e);
+            return -1;
+        }
     }
 
     public boolean getBoolean(final String key) {
-        return this.prefs.getBoolean(key, false);
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        final Callable<Boolean> callable = () -> this.prefs.getBoolean(key, true);
+        final Future<Boolean> value = executorService.submit(callable);
+        executorService.shutdown();
+        try {
+            return value.get();
+        }
+        catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, "getBoolean(): ", e);
+            return false;
+        }
     }
 
     public long getLong(final String key) {
-        return this.prefs.getLong(key, -1);
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        final Callable<Long> callable = () -> this.prefs.getLong(key, -1L);
+        final Future<Long> value = executorService.submit(callable);
+        executorService.shutdown();
+        try {
+            return value.get();
+        }
+        catch (ExecutionException | InterruptedException e) {
+            Log.e(TAG, "getLong(): ", e);
+            return -1L;
+        }
     }
 
     public static final String ID = "id";
     public static final String BRANCH_ID = "branch_id";
     public static final String KEEP_LOGGED = "keep_logged";
+    public static final String IS_LOGGED = "is_logged";
+    private static final String TAG = SharedPrefs.class.toString();
 }

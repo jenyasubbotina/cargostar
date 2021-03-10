@@ -68,7 +68,6 @@ public class Customer extends User {
     public Customer(final long id,
                     final long userId,
                     final Long countryId,
-                    final Long regionId,
                     final String cityName,
                     final String firstName,
                     final String middleName,
@@ -81,13 +80,12 @@ public class Customer extends User {
                     final int status,
                     final Date createdAt,
                     final Date updatedAt) {
-        super(id, userId, countryId, regionId, cityName, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
+        super(id, userId, countryId, cityName, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
     }
 
     public Customer(final long id,
                     final long userId,
                     final Long countryId,
-                    final Long regionId,
                     final String cityName,
                     final String firstName,
                     final String middleName,
@@ -110,7 +108,7 @@ public class Customer extends User {
                     final String passportSerial,
                     final String inn,
                     final String company) {
-        super(id, userId, countryId, regionId, cityName, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
+        super(id, userId, countryId, cityName, firstName, middleName, lastName, phone, email, address, geo, zip, status, createdAt, updatedAt);
         this.cargostarAccountNumber = cargostarAccountNumber;
         this.tntAccountNumber = tntAccountNumber;
         this.fedexAccountNumber = fedexAccountNumber;
@@ -219,7 +217,6 @@ public class Customer extends User {
                 ", company='" + company + '\'' +
                 ", id=" + id +
                 ", countryId=" + countryId +
-                ", regionId=" + regionId +
                 ", cityId=" + cityName +
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +

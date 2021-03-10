@@ -65,13 +65,6 @@ public class FetchCitiesWorker extends Worker {
 
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertCities(cityList);
 
-//                    if (cityList != null) {
-//                        for (final City city : cityList) {
-//                            Log.i(TAG, "-> " + city);
-//                            LocalCache.getInstance(getApplicationContext()).locationDao().insertCity(city);
-//                        }
-//                    }
-
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)

@@ -32,20 +32,14 @@ public class RequestsViewModel extends AndroidViewModel {
     /* sender data */
     private final MutableLiveData<Long> senderId;
     private final MutableLiveData<Long> senderCountryId;
-    private final MutableLiveData<Long> senderRegionId;
-    private final MutableLiveData<Long> senderCityId;
 
     /* recipient data */
     private final MutableLiveData<Long> recipientId;
     private final MutableLiveData<Long> recipientCountryId;
-    private final MutableLiveData<Long> recipientRegionId;
-    private final MutableLiveData<Long> recipientCityId;
 
     /* payer data */
     private final MutableLiveData<Long> payerId;
     private final MutableLiveData<Long> payerCountryId;
-    private final MutableLiveData<Long> payerRegionId;
-    private final MutableLiveData<Long> payerCityId;
 
     /* invoice data */
     private final MutableLiveData<Long> providerId;
@@ -64,18 +58,12 @@ public class RequestsViewModel extends AndroidViewModel {
 
         this.senderId = new MutableLiveData<>();
         this.senderCountryId = new MutableLiveData<>();
-        this.senderCityId = new MutableLiveData<>();
-        this.senderRegionId = new MutableLiveData<>();
 
         this.recipientId = new MutableLiveData<>();
         this.recipientCountryId = new MutableLiveData<>();
-        this.recipientRegionId = new MutableLiveData<>();
-        this.recipientCityId = new MutableLiveData<>();
 
         this.payerId = new MutableLiveData<>();
         this.payerCountryId = new MutableLiveData<>();
-        this.payerRegionId = new MutableLiveData<>();
-        this.payerCityId = new MutableLiveData<>();
 
         this.providerId = new MutableLiveData<>();
         this.tariffId =  new MutableLiveData<>();
@@ -151,25 +139,11 @@ public class RequestsViewModel extends AndroidViewModel {
         this.senderCountryId.setValue(senderCountryId);
     }
 
-    public void setSenderRegionId(final Long senderRegionId) {
-        if (senderRegionId == null) {
-            return;
-        }
-        this.senderRegionId.setValue(senderRegionId);
-    }
-
     public void setRecipientCountryId(final Long recipientCountryId) {
         if (recipientCountryId == null) {
             return;
         }
         this.recipientCountryId.setValue(recipientCountryId);
-    }
-
-    public void setRecipientRegionId(final Long recipientRegionId) {
-        if (recipientRegionId == null) {
-            return;
-        }
-        this.recipientRegionId.setValue(recipientRegionId);
     }
 
     public void setPayerCountryId(final Long payerCountryId) {
@@ -179,14 +153,7 @@ public class RequestsViewModel extends AndroidViewModel {
         this.payerCountryId.setValue(payerCountryId);
     }
 
-    public void setPayerRegionId(final Long payerRegionId) {
-        if (payerRegionId == null) {
-            return;
-        }
-        this.payerRegionId.setValue(payerRegionId);
-    }
-
-//    /* getters */
+    /* getters */
     public LiveData<Invoice> getInvoice() {
         return Transformations.switchMap(invoiceId, repository::selectInvoiceById);
     }
@@ -211,24 +178,12 @@ public class RequestsViewModel extends AndroidViewModel {
         return Transformations.switchMap(senderCountryId, repository::selectCountryById);
     }
 
-    public LiveData<Region> getSenderRegion() {
-        return Transformations.switchMap(senderRegionId, repository::selectRegionById);
-    }
-
     public LiveData<Country> getRecipientCountry() {
         return Transformations.switchMap(recipientCountryId, repository::selectCountryById);
     }
 
-    public LiveData<Region> getRecipientRegion() {
-        return Transformations.switchMap(recipientRegionId, repository::selectRegionById);
-    }
-
     public LiveData<Country> getPayerCountry() {
         return Transformations.switchMap(payerCountryId, repository::selectCountryById);
-    }
-
-    public LiveData<Region> getPayerRegion() {
-        return Transformations.switchMap(payerRegionId, repository::selectRegionById);
     }
 
     public LiveData<Packaging> getTariff() {

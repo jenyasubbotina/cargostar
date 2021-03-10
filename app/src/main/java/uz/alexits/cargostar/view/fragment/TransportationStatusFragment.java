@@ -469,10 +469,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
             if (currentRequest != null) {
                 senderId = currentRequest.getClientId() != null ? currentRequest.getClientId() : 0;
                 senderCountryId = currentRequest.getSenderCountryId() != null ? currentRequest.getSenderCountryId() : 0;
-                senderRegionId = currentRequest.getSenderRegionId() != null ? currentRequest.getSenderRegionId() : 0;
-                senderCityId = currentRequest.getSenderCityId() != null ? currentRequest.getSenderCityId() : 0;
                 recipientCountryId = currentRequest.getRecipientCountryId() != null ? currentRequest.getRecipientCountryId() : 0;
-                recipientCityId = currentRequest.getRecipientCityId() != null ? currentRequest.getRecipientCityId() : 0;
                 deliveryType = currentRequest.getDeliveryType();
                 comment = currentRequest.getComment();
                 consignmentQuantity = currentRequest.getConsignmentQuantity();
@@ -596,9 +593,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
         action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
         action.setClientId(senderId);
         action.setSenderCountryId(senderCountryId);
-        action.setSenderRegionId(senderRegionId);
         action.setRecipientCountryId(recipientCountryId);
-
 //        action.setSenderCityName(senderCityId);
 //        action.setRecipientCityName(recipientCityId);
 

@@ -37,7 +37,6 @@ public class FetchInvoiceWorker extends Worker {
     private final String senderPhone;
     private final String senderAddress;
     private final long senderCountryId;
-    private final long senderRegionId;
     private final long senderCityId;
     private final String senderCityName;
     private final String senderZip;
@@ -78,7 +77,6 @@ public class FetchInvoiceWorker extends Worker {
         this.senderPhone = getInputData().getString(Constants.KEY_SENDER_PHONE);
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
         this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-        this.senderRegionId = getInputData().getLong(Constants.KEY_SENDER_REGION_ID, -1L);
         this.senderCityId = getInputData().getLong(Constants.KEY_SENDER_CITY_ID, -1L);
         this.senderCityName = getInputData().getString(Constants.KEY_SENDER_CITY_NAME);
         this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
@@ -130,7 +128,6 @@ public class FetchInvoiceWorker extends Worker {
                             .putString(Constants.KEY_SENDER_ADDRESS, senderAddress)
                             .putString(Constants.KEY_SENDER_ZIP, senderZip)
                             .putLong(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
-                            .putLong(Constants.KEY_SENDER_REGION_ID, senderRegionId)
                             .putLong(Constants.KEY_SENDER_CITY_ID, senderCityId)
                             .putString(Constants.KEY_SENDER_CITY_NAME, senderCityName)
                             .putString(Constants.KEY_SENDER_CARGOSTAR, senderCargo)

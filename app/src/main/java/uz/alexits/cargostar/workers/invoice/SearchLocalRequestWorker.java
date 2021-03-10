@@ -40,10 +40,7 @@ public class SearchLocalRequestWorker extends Worker {
         outputData.putLong(Constants.KEY_COURIER_ID, request.getCourierId() != null ? request.getCourierId() : 0);
         outputData.putLong(Constants.KEY_CLIENT_ID, request.getClientId() != null ? request.getClientId() : 0);
         outputData.putLong(Constants.KEY_SENDER_COUNTRY_ID, request.getSenderCountryId() != null ? request.getSenderCountryId() : 0);
-        outputData.putLong(Constants.KEY_SENDER_REGION_ID, request.getSenderRegionId() != null ? request.getSenderRegionId() : 0);
-        outputData.putLong(Constants.KEY_SENDER_CITY_ID, request.getSenderCityId() != null ? request.getSenderCityId() : 0);
         outputData.putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, request.getRecipientCountryId() != null ? request.getRecipientCountryId() : 0);
-        outputData.putLong(Constants.KEY_RECIPIENT_CITY_ID, request.getRecipientCityId() != null ? request.getRecipientCityId() : 0);
         outputData.putLong(Constants.KEY_PROVIDER_ID, request.getProviderId() != null ? request.getProviderId() : 0);
         outputData.putInt(Constants.KEY_DELIVERY_TYPE, request.getDeliveryType());
         outputData.putString(Constants.KEY_COMMENT, request.getComment());

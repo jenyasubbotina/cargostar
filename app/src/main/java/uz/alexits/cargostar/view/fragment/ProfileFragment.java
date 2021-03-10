@@ -246,8 +246,8 @@ public class ProfileFragment extends Fragment {
             final String login = SharedPrefs.getInstance(activity).getString(Constants.KEY_LOGIN);
             final String password = SharedPrefs.getInstance(activity).getString(Constants.KEY_PASSWORD);
 
-            SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, -1);
-            SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, -1);
+            SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, -1L);
+            SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, -1L);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_LOGIN, null);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_PASSWORD, null);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_TOKEN, null);
@@ -278,10 +278,6 @@ public class ProfileFragment extends Fragment {
             if (courier != null) {
                 currentCourier = courier;
                 courierViewModel.setCourierCountryId(courier.getCountryId());
-
-                if (courier.getRegionId() != null) {
-                    courierViewModel.setCourierRegionId(courier.getRegionId());
-                }
 
                 userIdEditText.setText(String.valueOf(courier.getId()));
                 userIdEditText.setBackgroundResource(R.drawable.edit_text_active);

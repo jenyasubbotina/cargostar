@@ -17,9 +17,8 @@ import uz.alexits.cargostar.model.location.Region;
 
 @Entity(tableName = "address_book",
         foreignKeys = {
-                @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = {"country_id"}), @Index(value = "region_id"), @Index(value = "user_id")})
+                @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {@Index(value = {"country_id"}), @Index(value = "user_id")})
 public class AddressBook {
     @Expose
     @SerializedName("id")
@@ -33,10 +32,6 @@ public class AddressBook {
     @Expose
     @SerializedName("country_id")
     @ColumnInfo(name = "country_id") private final Long countryId;
-
-    @Expose
-    @SerializedName("region_id")
-    @ColumnInfo(name = "region_id") private final Long regionId;
 
     @Expose
     @SerializedName("city_name")
@@ -117,7 +112,6 @@ public class AddressBook {
     public AddressBook(final long id,
                        final long userId,
                        final Long countryId,
-                       final Long regionId,
                        final String cityName,
                        final String address,
                        final String zip,
@@ -140,7 +134,6 @@ public class AddressBook {
         this.id = id;
         this.userId = userId;
         this.countryId = countryId;
-        this.regionId = regionId;
         this.cityName = cityName;
         this.address = address;
         this.zip = zip;
@@ -168,10 +161,6 @@ public class AddressBook {
 
     public Long getCountryId() {
         return countryId;
-    }
-
-    public Long getRegionId() {
-        return regionId;
     }
 
     public String getCityName() {

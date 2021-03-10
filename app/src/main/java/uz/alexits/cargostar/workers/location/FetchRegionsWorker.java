@@ -63,13 +63,6 @@ public class FetchRegionsWorker extends Worker {
                     final List<Region> regionList = response.body();
                     LocalCache.getInstance(getApplicationContext()).locationDao().insertRegions(regionList);
 
-//                    if (regionList != null) {
-//                        for (final Region region : regionList) {
-//                            Log.i(TAG, "-> " + region);
-//                            LocalCache.getInstance(getApplicationContext()).locationDao().insertRegion(region);
-//                        }
-//                    }
-
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)

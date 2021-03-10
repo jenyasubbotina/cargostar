@@ -140,14 +140,11 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderPhone(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderAddress(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCountryId(),
-                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderRegionId(),
-                    senderCityId,
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCityName(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCountryId(),
-                    recipientCityId,
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCityName(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getComment(),
-                    senderUserId,
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderUserId(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getClientId(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getCourierId(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getProviderId(),
@@ -156,7 +153,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getSenderCityName(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getRecipientCityName(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity(),
-                    paymentStatus,
+                    InvoiceDataFragmentArgs.fromBundle(getArguments()).getPaymentStatus(),
                     InvoiceDataFragmentArgs.fromBundle(getArguments()).getDeliveryType());
 
             if (request.getInvoiceId() > 0 && request.getClientId() > 0) {
@@ -202,6 +199,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         //header views
         profileImageView.setOnClickListener(v -> {
             UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
@@ -242,40 +240,47 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             action.setConsignmentQuantity(request.getConsignmentQuantity());
 
             action.setSenderId(sender.getId());
+            action.setSenderUserId(sender.getUserId());
             action.setSenderEmail(sender.getEmail());
-            action.setSenderSignature(sender.getSignatureUrl());
             action.setSenderFirstName(sender.getFirstName());
             action.setSenderLastName(sender.getLastName());
             action.setSenderMiddleName(sender.getMiddleName());
             action.setSenderPhone(sender.getPhone());
             action.setSenderAddress(sender.getAddress());
-            action.setSenderCountryId(sender.getCountryId());
-            action.setSenderRegionId(sender.getRegionId());
-            action.setSenderCityName(sender.getCityName());
             action.setSenderZip(sender.getZip());
-            action.setSenderCompany(sender.getCompany());
+            action.setSenderCountryId(sender.getCountryId());
+            action.setSenderCityName(sender.getCityName());
             action.setSenderCargo(sender.getCargostarAccountNumber());
             action.setSenderTnt(sender.getTntAccountNumber());
             action.setSenderFedex(sender.getFedexAccountNumber());
-            action.setDiscount(sender.getDiscount());
+            action.setSenderPassport(sender.getPassportSerial());
+            action.setSenderInn(sender.getInn());
+            action.setSenderCompany(sender.getCompany());
+            action.setSenderPhoto(sender.getPhotoUrl());
+            action.setSenderSignature(sender.getSignatureUrl());
+            action.setSenderDiscount(sender.getDiscount());
 
             action.setRecipientId(recipient.getId());
+            action.setRecipientUserId(recipient.getUserId());
             action.setRecipientEmail(recipient.getEmail());
             action.setRecipientFirstName(recipient.getFirstName());
             action.setRecipientLastName(recipient.getLastName());
             action.setRecipientMiddleName(recipient.getMiddleName());
             action.setRecipientPhone(recipient.getPhone());
             action.setRecipientAddress(recipient.getAddress());
-            action.setRecipientCountryId(recipient.getCountryId());
-            action.setRecipientRegionId(recipient.getRegionId());
-            action.setRecipientCityName(recipient.getCityName());
             action.setRecipientZip(recipient.getZip());
-            action.setRecipientCompany(recipient.getCompany());
+            action.setRecipientCountryId(recipient.getCountryId());
+            action.setRecipientCityName(recipient.getCityName());
             action.setRecipientCargo(recipient.getCargostarAccountNumber());
             action.setRecipientTnt(recipient.getTntAccountNumber());
             action.setRecipientFedex(recipient.getFedexAccountNumber());
+            action.setRecipientPassport(recipient.getPassportSerial());
+            action.setRecipientInn(recipient.getInn());
+            action.setRecipientCompany(recipient.getCompany());
+            action.setRecipientUserType(recipient.getType());
 
             action.setPayerId(payer.getId());
+            action.setPayerUserId(payer.getUserId());
             action.setPayerEmail(payer.getEmail());
             action.setPayerFirstName(payer.getFirstName());
             action.setPayerLastName(payer.getLastName());
@@ -283,15 +288,16 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             action.setPayerPhone(payer.getPhone());
             action.setPayerAddress(payer.getAddress());
             action.setPayerCountryId(payer.getCountryId());
-            action.setPayerRegionId(payer.getRegionId());
             action.setPayerCityName(payer.getCityName());
             action.setPayerZip(payer.getZip());
-            action.setPayerCompany(payer.getCompany());
             action.setPayerCargo(payer.getCargostarAccountNumber());
             action.setPayerTnt(payer.getTntAccountNumber());
             action.setPayerFedex(payer.getFedexAccountNumber());
+            action.setPayerUserType(payer.getType());
+            action.setPayerPassport(payer.getPassportSerial());
             action.setPayerInn(payer.getInn());
-            action.setContractNumber(payer.getContractNumber());
+            action.setPayerCompany(payer.getCompany());
+            action.setPayerContractNumber(payer.getContractNumber());
 
             action.setSerializedConsignmentList(serializedConsignmentList);
 
@@ -311,7 +317,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         requestsViewModel.setSenderId(request.getClientId());
         requestsViewModel.setInvoiceId(request.getInvoiceId());
         requestsViewModel.setSenderCountryId(request.getSenderCountryId());
-        requestsViewModel.setSenderRegionId(request.getSenderRegionId());
         requestsViewModel.setRecipientCountryId(request.getRecipientCountryId());
 
         itemList.set(1, new InvoiceData(getString(R.string.invoice_id), request.getInvoiceId() > 0 ? String.valueOf(request.getInvoiceId()) : null, InvoiceData.TYPE_ITEM));
@@ -321,8 +326,8 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         publicDataList.set(0, new InvoiceData(getString(R.string.invoice_id), request.getInvoiceId() > 0 ? String.valueOf(request.getInvoiceId()) : null, InvoiceData.TYPE_ITEM));
         publicDataList.set(1, new InvoiceData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(request.getCourierId()) : null, InvoiceData.TYPE_ITEM));
 
-        itemList.set(64, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(request.getConsignmentQuantity()), InvoiceData.TYPE_ITEM));
-        adapter.notifyItemChanged(64);
+        itemList.set(60, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(request.getConsignmentQuantity()), InvoiceData.TYPE_ITEM));
+        adapter.notifyItemChanged(60);
 
         transportationDataList.set(2, new InvoiceData(getString(R.string.destination_quantity), String.valueOf(request.getConsignmentQuantity()), InvoiceData.TYPE_ITEM));
 
@@ -400,9 +405,9 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         requestsViewModel.getProvider().observe(getViewLifecycleOwner(), provider -> {
             if (provider != null) {
                 itemList.set(3, new InvoiceData(getString(R.string.service_provider), provider.getNameEn(), InvoiceData.TYPE_ITEM));
-                itemList.set(58, new InvoiceData(getString(R.string.fuel_tax), String.valueOf(provider.getFuel()), InvoiceData.TYPE_ITEM));
+                itemList.set(54, new InvoiceData(getString(R.string.fuel_tax), String.valueOf(provider.getFuel()), InvoiceData.TYPE_ITEM));
                 adapter.notifyItemChanged(3);
-                adapter.notifyItemChanged(58);
+                adapter.notifyItemChanged(54);
 
                 publicDataList.set(2, new InvoiceData(getString(R.string.service_provider), null, InvoiceData.TYPE_ITEM));
                 paymentDataList.set(1, new InvoiceData(getString(R.string.fuel_tax), String.valueOf(provider.getFuel()), InvoiceData.TYPE_ITEM));
@@ -412,8 +417,8 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         /* payment data */
         requestsViewModel.getTariff().observe(getViewLifecycleOwner(), tariff -> {
             if (tariff != null) {
-                itemList.set(59, new InvoiceData(getString(R.string.tariff), tariff.getName(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(59);
+                itemList.set(55, new InvoiceData(getString(R.string.tariff), tariff.getName(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(55);
 
                 paymentDataList.set(2, new InvoiceData(getString(R.string.tariff), tariff.getName(), InvoiceData.TYPE_ITEM));
             }
@@ -436,7 +441,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 itemList.set(15, new InvoiceData(getString(R.string.cargostar_account_number), sender.getCargostarAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(16, new InvoiceData(getString(R.string.tnt_account_number), sender.getTntAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(17, new InvoiceData(getString(R.string.fedex_account_number), sender.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
-                itemList.set(18, new InvoiceData(getString(R.string.sender_signature), null, InvoiceData.TYPE_ITEM));
+                itemList.set(18, new InvoiceData(getString(R.string.sender_signature), sender.getSignatureUrl(), InvoiceData.TYPE_ITEM));
                 adapter.notifyItemRangeChanged(12, 7);
 
                 senderDataList.set(0, new InvoiceData(getString(R.string.email), sender.getEmail(), InvoiceData.TYPE_ITEM));
@@ -450,7 +455,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 senderDataList.set(9, new InvoiceData(getString(R.string.cargostar_account_number), sender.getCargostarAccountNumber(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(10, new InvoiceData(getString(R.string.tnt_account_number), sender.getTntAccountNumber(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(11, new InvoiceData(getString(R.string.fedex_account_number), sender.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
-                senderDataList.set(12, new InvoiceData(getString(R.string.sender_signature), null, InvoiceData.TYPE_ITEM));
+                senderDataList.set(12, new InvoiceData(getString(R.string.sender_signature), sender.getSignatureUrl(), InvoiceData.TYPE_ITEM));
             }
         });
 
@@ -630,8 +635,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                     }
                     request.setId(outputData.getLong(Constants.KEY_REQUEST_ID, -1L));
                     request.setSenderCountryId(outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L));
-                    request.setSenderRegionId(outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L));
-                    request.setSenderCityId(outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L));
                     request.setSenderCity(outputData.getString(Constants.KEY_SENDER_CITY_NAME));
                     request.setSenderCityName(outputData.getString(Constants.KEY_SENDER_CITY_NAME));
                     request.setUserId(outputData.getLong(Constants.KEY_SENDER_USER_ID, -1L));
@@ -646,7 +649,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                     request.setSenderPhone(outputData.getString(Constants.KEY_SENDER_PHONE));
                     request.setSenderAddress(outputData.getString(Constants.KEY_SENDER_ADDRESS));
                     request.setRecipientCountryId(outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
-                    request.setRecipientCityId(outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L));
                     request.setRecipientCityName(outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME));
                     request.setDeliveryType(outputData.getInt(Constants.KEY_DELIVERY_TYPE, 0));
                     request.setComment(outputData.getString(Constants.KEY_COMMENT));
@@ -658,7 +660,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                             outputData.getString(Constants.KEY_NUMBER),
                             outputData.getLong(Constants.KEY_SENDER_ID, -1L),
                             outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L),
-                            recipientSignatureUrl,
+                            outputData.getString(Constants.KEY_RECIPIENT_SIGNATURE),
                             outputData.getLong(Constants.KEY_PAYER_ID, -1L),
                             outputData.getLong(Constants.KEY_PROVIDER_ID, -1L),
                             outputData.getLong(Constants.KEY_REQUEST_ID, -1L),
@@ -670,13 +672,12 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                             outputData.getLong(Constants.KEY_SENDER_ID, -1L),
                             outputData.getLong(Constants.KEY_SENDER_USER_ID, -1L),
                             outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L),
-                            outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L),
                             outputData.getString(Constants.KEY_SENDER_CITY_NAME),
                             outputData.getString(Constants.KEY_SENDER_FIRST_NAME),
                             outputData.getString(Constants.KEY_SENDER_MIDDLE_NAME),
                             outputData.getString(Constants.KEY_SENDER_LAST_NAME),
                             outputData.getString(Constants.KEY_SENDER_PHONE),
-                            outputData.getString(Constants.KEY_SENDER_SIGNATURE),
+                            outputData.getString(Constants.KEY_SENDER_EMAIL),
                             outputData.getString(Constants.KEY_SENDER_ADDRESS),
                             null,
                             outputData.getString(Constants.KEY_SENDER_ZIP),
@@ -696,7 +697,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                             outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L),
                             outputData.getLong(Constants.KEY_RECIPIENT_USER_ID, -1L),
                             outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L),
-                            outputData.getLong(Constants.KEY_RECIPIENT_REGION_ID, -1L),
                             outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME),
                             outputData.getString(Constants.KEY_RECIPIENT_ADDRESS),
                             outputData.getString(Constants.KEY_RECIPIENT_ZIP),
@@ -719,7 +719,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                             outputData.getLong(Constants.KEY_PAYER_ID, -1L),
                             outputData.getLong(Constants.KEY_PAYER_USER_ID, -1L),
                             outputData.getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L),
-                            outputData.getLong(Constants.KEY_PAYER_REGION_ID, -1L),
                             outputData.getString(Constants.KEY_PAYER_CITY_NAME),
                             outputData.getString(Constants.KEY_PAYER_ADDRESS),
                             outputData.getString(Constants.KEY_PAYER_ZIP),

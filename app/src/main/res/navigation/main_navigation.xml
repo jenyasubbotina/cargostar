@@ -133,8 +133,13 @@
             android:name="price"
             app:argType="float"
             android:defaultValue="0.0"/>
+
         <argument
             android:name="sender_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="sender_user_id"
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
@@ -173,11 +178,12 @@
             app:nullable="true"
             android:defaultValue="null" />
         <argument
-            android:name="sender_country_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:name="sender_zip"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
         <argument
-            android:name="sender_region_id"
+            android:name="sender_country_id"
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
@@ -185,16 +191,6 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null"/>
-        <argument
-            android:name="sender_zip"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
-        <argument
-            android:name="sender_company"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
         <argument
             android:name="sender_cargo"
             app:argType="string"
@@ -211,11 +207,40 @@
             app:nullable="true"
             android:defaultValue="null" />
         <argument
-            android:name="discount"
+            android:name="sender_discount"
             app:argType="integer"
             android:defaultValue="0" />
         <argument
+            android:name="sender_passport"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_inn"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_company"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_photo"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_user_type"
+            app:argType="integer"
+            android:defaultValue="0" />
+
+        <argument
             android:name="recipient_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_user_id"
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
@@ -249,11 +274,12 @@
             app:nullable="true"
             android:defaultValue="null" />
         <argument
-            android:name="recipient_country_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:name="recipient_zip"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
         <argument
-            android:name="recipient_region_id"
+            android:name="recipient_country_id"
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
@@ -261,16 +287,6 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null"/>
-        <argument
-            android:name="recipient_zip"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
-        <argument
-            android:name="recipient_company"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
         <argument
             android:name="recipient_cargo"
             app:argType="string"
@@ -286,9 +302,37 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null" />
+        <argument
+            android:name="recipient_passport"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_inn"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_company"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_contract_number"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="recipient_user_type"
+            app:argType="integer"
+            android:defaultValue="0" />
 
         <argument
             android:name="payer_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="payer_user_id"
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
@@ -322,11 +366,12 @@
             app:nullable="true"
             android:defaultValue="null" />
         <argument
-            android:name="payer_country_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:name="payer_zip"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
         <argument
-            android:name="payer_region_id"
+            android:name="payer_country_id"
             app:argType="long"
             android:defaultValue="-1L"/>
         <argument
@@ -334,16 +379,6 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null"/>
-        <argument
-            android:name="payer_zip"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
-        <argument
-            android:name="payer_company"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
         <argument
             android:name="payer_cargo"
             app:argType="string"
@@ -360,15 +395,30 @@
             app:nullable="true"
             android:defaultValue="null" />
         <argument
+            android:name="payer_passport"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
             android:name="payer_inn"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null" />
         <argument
-            android:name="contract_number"
+            android:name="payer_company"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="null" />
+        <argument
+            android:name="payer_contract_number"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="payer_user_type"
+            app:argType="integer"
+            android:defaultValue="0" />
+
         <argument
             android:name="serialized_consignment_list"
             app:argType="string"
@@ -570,32 +620,6 @@
             app:argType="boolean"
             android:defaultValue="true"/>
         <argument
-            android:name="sender_country_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
-        <argument
-            android:name="sender_region_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
-        <argument
-            android:name="sender_city_name"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null"/>
-        <argument
-            android:name="recipient_country_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
-        <argument
-            android:name="recipient_region_id"
-            app:argType="long"
-            android:defaultValue="-1L"/>
-        <argument
-            android:name="recipient_city_name"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null"/>
-        <argument
             android:name="consignment_quantity"
             app:argType="integer"
             android:defaultValue="0"/>
@@ -603,6 +627,20 @@
             android:name="delivery_type"
             app:argType="integer"
             android:defaultValue="0"/>
+        <argument
+            android:name="payment_status"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="comment"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+        <argument
+            android:name="sender_user_id"
+            app:argType="long"
+            android:defaultValue="-1L" />
         <argument
             android:name="sender_first_name"
             app:argType="string"
@@ -634,10 +672,23 @@
             app:nullable="true"
             android:defaultValue="null" />
         <argument
-            android:name="comment"
+            android:name="sender_country_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="sender_city_name"
             app:argType="string"
             app:nullable="true"
-            android:defaultValue="null" />
+            android:defaultValue="null"/>
+        <argument
+            android:name="recipient_country_id"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+        <argument
+            android:name="recipient_city_name"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null"/>
         <action
             android:id="@+id/action_invoiceDataFragment_to_createUserFragment"
             app:destination="@id/createUserFragment" />

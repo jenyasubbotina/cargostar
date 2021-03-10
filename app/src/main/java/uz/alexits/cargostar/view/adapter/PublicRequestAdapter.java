@@ -46,8 +46,6 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
     public void onBindViewHolder(@NonNull PublicRequestViewHolder holder, int position) {
         final Request currentRequest = requestList.get(position);
 
-        Log.i(TAG, "onBindViewHolder(): currentRequest" + currentRequest);
-
         if (currentRequest != null) {
             final String requestIndex = (position + 1) + ".";
             final String requestId = "# " + currentRequest.getId();

@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
                 action.setCourierId(getIntent().getLongExtra(Constants.KEY_COURIER_ID, -1L));
                 action.setClientId(getIntent().getLongExtra(Constants.KEY_CLIENT_ID, -1L));
                 action.setSenderCountryId(getIntent().getLongExtra(Constants.KEY_SENDER_COUNTRY_ID, -1L));
-                action.setSenderRegionId(getIntent().getLongExtra(Constants.KEY_SENDER_REGION_ID, -1L));
                 action.setSenderCityName(getIntent().getStringExtra(Constants.KEY_SENDER_CITY_NAME));
                 action.setRecipientCountryId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
                 action.setRecipientCityName(getIntent().getStringExtra(Constants.KEY_RECIPIENT_CITY_NAME));

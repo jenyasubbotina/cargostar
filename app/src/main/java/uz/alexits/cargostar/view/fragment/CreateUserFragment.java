@@ -506,10 +506,6 @@ public class CreateUserFragment extends Fragment {
                 Toast.makeText(context, "Имя указано неверно", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (!Regex.isName(middleName)) {
-                Toast.makeText(context, "Отчество указано неверно", Toast.LENGTH_SHORT).show();
-                return;
-            }
             if (!Regex.isName(lastName)) {
                 Toast.makeText(context, "Фамилия указана неверно", Toast.LENGTH_SHORT).show();
                 return;

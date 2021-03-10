@@ -20,16 +20,11 @@ import java.util.Date;
 @Entity(tableName = "request",
         foreignKeys = {
         @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "sender_country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "sender_region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "sender_city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
         @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "recipient_country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = City.class, parentColumns = "id", childColumns = "recipient_city_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "sender_country_id"),
-                @Index(value = "sender_region_id"),
-                @Index(value = "sender_city_id"),
+        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "recipient_country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        indices = {
+                @Index(value = "sender_country_id"),
                 @Index(value = "recipient_country_id"),
-                @Index(value = "recipient_city_id"),
                 @Index(value = "provider_id")})
 public class Request {
     @Expose
@@ -42,16 +37,6 @@ public class Request {
     @SerializedName("country_id")
     @ColumnInfo(name = "sender_country_id")
     private Long senderCountryId;
-
-    @Expose
-    @SerializedName("region_id")
-    @ColumnInfo(name = "sender_region_id")
-    private Long senderRegionId;
-
-    @Expose
-    @SerializedName("city_id")
-    @ColumnInfo(name = "sender_city_id")
-    private Long senderCityId;
 
     @Expose
     @SerializedName("city_name")
@@ -119,11 +104,6 @@ public class Request {
     private Long recipientCountryId;
 
     @Expose
-    @SerializedName("city_to")
-    @ColumnInfo(name = "recipient_city_id")
-    private Long recipientCityId;
-
-    @Expose
     @SerializedName("city_to_name")
     @ColumnInfo(name = "recipient_city_name")
     private String recipientCityName;
@@ -189,11 +169,8 @@ public class Request {
                    final String senderPhone,
                    final String senderAddress,
                    final Long senderCountryId,
-                   final Long senderRegionId,
-                   final Long senderCityId,
                    final String senderCityName,
                    final Long recipientCountryId,
-                   final Long recipientCityId,
                    final String recipientCityName,
                    final String comment,
                    final Long userId,
@@ -217,11 +194,8 @@ public class Request {
         this.senderPhone = senderPhone;
         this.senderAddress = senderAddress;
         this.senderCountryId = senderCountryId;
-        this.senderRegionId = senderRegionId;
-        this.senderCityId = senderCityId;
         this.senderCityName = senderCityName;
         this.recipientCountryId = recipientCountryId;
-        this.recipientCityId = recipientCityId;
         this.recipientCityName = recipientCityName;
         this.comment = comment;
         this.userId = userId;
@@ -250,14 +224,6 @@ public class Request {
 
     public void setSenderCountryId(Long senderCountryId) {
         this.senderCountryId = senderCountryId;
-    }
-
-    public void setSenderRegionId(Long senderRegionId) {
-        this.senderRegionId = senderRegionId;
-    }
-
-    public void setSenderCityId(Long senderCityId) {
-        this.senderCityId = senderCityId;
     }
 
     public void setUserId(Long userId) {
@@ -348,36 +314,12 @@ public class Request {
         this.senderCountryId = senderCountryId;
     }
 
-    public Long getSenderRegionId() {
-        return senderRegionId;
-    }
-
-    public void setSenderRegionId(long senderRegionId) {
-        this.senderRegionId = senderRegionId;
-    }
-
-    public Long getSenderCityId() {
-        return senderCityId;
-    }
-
-    public void setSenderCityId(long senderCityId) {
-        this.senderCityId = senderCityId;
-    }
-
     public Long getRecipientCountryId() {
         return recipientCountryId;
     }
 
     public void setRecipientCountryId(final long recipientCountryId) {
         this.recipientCountryId = recipientCountryId;
-    }
-
-    public Long getRecipientCityId() {
-        return recipientCityId;
-    }
-
-    public void setRecipientCityId(final long recipientCityId) {
-        this.recipientCityId = recipientCityId;
     }
 
     public String getComment() {
@@ -456,10 +398,6 @@ public class Request {
         this.recipientCountryId = recipientCountryId;
     }
 
-    public void setRecipientCityId(Long recipientCityId) {
-        this.recipientCityId = recipientCityId;
-    }
-
     public String getSenderCity() {
         return senderCity;
     }
@@ -506,7 +444,6 @@ public class Request {
         return "Request{" +
                 "id=" + id +
                 ", senderCountryId=" + senderCountryId +
-                ", senderRegionId=" + senderRegionId +
                 ", senderCityName=" + senderCityName +
                 ", userId=" + userId +
                 ", clientId=" + clientId +

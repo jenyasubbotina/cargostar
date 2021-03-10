@@ -56,11 +56,6 @@ public class FetchInvoiceListWorker extends Worker {
 
                     LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoiceList(invoiceList);
 
-//                    for (final Invoice invoice : invoiceList) {
-//                        Log.i(TAG, "-> " + invoice);
-//                        LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoice(invoice);
-//                    }
-
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
                             .putString(Constants.KEY_PASSWORD, password)

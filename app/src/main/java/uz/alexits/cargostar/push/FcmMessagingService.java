@@ -52,20 +52,6 @@ public class FcmMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        Log.i(TAG, "remoteMessage" +
-                "\nfrom=" + remoteMessage.getFrom() +
-                "\nto=" + remoteMessage.getTo() +
-                "\noriginalPriority=" + remoteMessage.getOriginalPriority() +
-                "\npriority=" + remoteMessage.getPriority() +
-                "\nid=" + remoteMessage.getMessageId() +
-                "\nsender_id=" + remoteMessage.getSenderId() +
-                "\nttl=" + remoteMessage.getTtl() +
-                "\ntype=" + remoteMessage.getMessageType());
-
-        if (remoteMessage.getNotification() != null) {
-            Log.i(TAG, "title=" + remoteMessage.getNotification().getTitle() + " body=" + remoteMessage.getNotification().getBody());
-        }
-
         final Map<String, String> dataPayload = remoteMessage.getData();
 
         if (dataPayload.isEmpty()) {
@@ -124,9 +110,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
             if (type2.equalsIgnoreCase(Constants.SUBTYPE_NEW)) {
                 Log.i(TAG, "onMessageReceived(): new transportation");
                 try {
-                    new Thread(() -> {
-                        LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation);
-                    }).start();
+                    new Thread(() -> LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation)).start();
                 }
                 catch (Exception e) {
                     Log.e(TAG, "insertTransportation(): ", e);
@@ -144,9 +128,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         showMessage(title, body, PACKAGE_NAME, intentValue, link);
         final Notification notification = new Notification(title, body, false, intentValue, link, new Date());
         try {
-            new Thread(() -> {
-                LocalCache.getInstance(getApplicationContext()).notificationDao().createNotification(notification);
-            }).start();
+            new Thread(() -> LocalCache.getInstance(getApplicationContext()).notificationDao().createNotification(notification)).start();
         }
         catch (Exception e) {
             Log.e(TAG, "insertNotification(): ", e);
@@ -163,7 +145,12 @@ public class FcmMessagingService extends FirebaseMessagingService {
             PendingIntent pendingIntent = stackBuilder.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT);
 
             final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DEFAULT_CHANNEL_ID);
-            notificationBuilder.setContentIntent(pendingIntent);
+
+            if (SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN) != null
+                    && SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD) != null) {
+                notificationBuilder.setContentIntent(pendingIntent);
+            }
+
             notificationBuilder.setContentTitle(title);
             notificationBuilder.setContentText(body);
             notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -230,11 +217,8 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 senderPhone,
                 senderAddress,
                 sender_country_id,
-                sender_region_id,
-                sender_city_id,
                 senderCityName,
                 recipient_country_id,
-                recipient_city_id,
                 recipientCityName,
                 comment,
                 user_id,

@@ -38,7 +38,6 @@ public class InsertInvoiceWorker extends Worker {
     private final String senderAddress;
     private final String senderZip;
     private final long senderCountryId;
-    private final long senderRegionId;
     private final String senderCityName;
     private final String senderCargo;
     private final String senderTnt;
@@ -61,7 +60,6 @@ public class InsertInvoiceWorker extends Worker {
     private final String recipientAddress;
     private final String recipientZip;
     private final long recipientCountryId;
-    private final long recipientRegionId;
     private final String recipientCityName;
     private final String recipientCargo;
     private final String recipientTnt;
@@ -82,7 +80,6 @@ public class InsertInvoiceWorker extends Worker {
     private final String payerAddress;
     private final String payerZip;
     private final long payerCountryId;
-    private final long payerRegionId;
     private final String payerCityName;
     private final String payerCargo;
     private final String payerTnt;
@@ -122,7 +119,6 @@ public class InsertInvoiceWorker extends Worker {
         this.senderPhone = getInputData().getString(Constants.KEY_SENDER_PHONE);
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
         this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-        this.senderRegionId = getInputData().getLong(Constants.KEY_SENDER_REGION_ID, -1L);
         this.senderCityName = getInputData().getString(Constants.KEY_SENDER_CITY_NAME);
         this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
         this.senderCargo = getInputData().getString(Constants.KEY_SENDER_CARGOSTAR);
@@ -146,7 +142,6 @@ public class InsertInvoiceWorker extends Worker {
         this.recipientAddress = getInputData().getString(Constants.KEY_RECIPIENT_ADDRESS);
         this.recipientZip = getInputData().getString(Constants.KEY_RECIPIENT_ZIP);
         this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-        this.recipientRegionId = getInputData().getLong(Constants.KEY_RECIPIENT_REGION_ID, -1L);
         this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
         this.recipientCargo = getInputData().getString(Constants.KEY_RECIPIENT_CARGOSTAR);
         this.recipientTnt = getInputData().getString(Constants.KEY_RECIPIENT_TNT);
@@ -166,7 +161,6 @@ public class InsertInvoiceWorker extends Worker {
         this.payerPhone = getInputData().getString(Constants.KEY_PAYER_PHONE);
         this.payerAddress = getInputData().getString(Constants.KEY_PAYER_ADDRESS);
         this.payerCountryId = getInputData().getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L);
-        this.payerRegionId = getInputData().getLong(Constants.KEY_PAYER_REGION_ID, -1L);
         this.payerCityName = getInputData().getString(Constants.KEY_PAYER_CITY_NAME);
         this.payerZip = getInputData().getString(Constants.KEY_PAYER_ZIP);
         this.payerCargo = getInputData().getString(Constants.KEY_PAYER_CARGOSTAR);
@@ -256,7 +250,6 @@ public class InsertInvoiceWorker extends Worker {
                     .putString(Constants.KEY_SENDER_ADDRESS, senderAddress)
                     .putString(Constants.KEY_SENDER_ZIP, senderZip)
                     .putLong(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId)
-                    .putLong(Constants.KEY_SENDER_REGION_ID, senderRegionId)
                     .putString(Constants.KEY_SENDER_CITY_NAME, senderCityName)
                     .putString(Constants.KEY_SENDER_CARGOSTAR, senderCargo)
                     .putString(Constants.KEY_SENDER_TNT, senderTnt)
@@ -278,7 +271,6 @@ public class InsertInvoiceWorker extends Worker {
                     .putString(Constants.KEY_RECIPIENT_ADDRESS, recipientAddress)
                     .putString(Constants.KEY_RECIPIENT_ZIP, recipientZip)
                     .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
-                    .putLong(Constants.KEY_RECIPIENT_REGION_ID, recipientRegionId)
                     .putString(Constants.KEY_RECIPIENT_CITY_NAME, recipientCityName)
                     .putString(Constants.KEY_RECIPIENT_CARGOSTAR, recipientCargo)
                     .putString(Constants.KEY_RECIPIENT_TNT, recipientTnt)
@@ -299,7 +291,6 @@ public class InsertInvoiceWorker extends Worker {
                     .putString(Constants.KEY_PAYER_ADDRESS, payerAddress)
                     .putString(Constants.KEY_PAYER_ZIP, payerZip)
                     .putLong(Constants.KEY_PAYER_COUNTRY_ID, payerCountryId)
-                    .putLong(Constants.KEY_PAYER_REGION_ID, payerRegionId)
                     .putString(Constants.KEY_PAYER_CITY_NAME, payerCityName)
                     .putString(Constants.KEY_PAYER_CARGOSTAR, payerCargo)
                     .putString(Constants.KEY_PAYER_TNT, payerTnt)

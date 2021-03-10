@@ -18,10 +18,9 @@ import uz.alexits.cargostar.model.location.Region;
 
 @Entity(tableName = "user",
         foreignKeys = {
-        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = Region.class, parentColumns = "id", childColumns = "region_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
+        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
         indices = {
-        @Index(value = {"country_id"}), @Index(value = {"region_id"}), @Index(value = "email")})
+        @Index(value = {"country_id"}), @Index(value = "email")})
 public abstract class User {
     @Expose
     @SerializedName("id")
@@ -38,11 +37,6 @@ public abstract class User {
     @SerializedName("country_id")
     @ColumnInfo(name = "country_id")
     protected final Long countryId;
-
-    @Expose
-    @SerializedName("region_id")
-    @ColumnInfo(name = "region_id")
-    protected final Long regionId;
 
     @Expose
     @SerializedName("city_name")
@@ -107,7 +101,6 @@ public abstract class User {
     public User(final long id,
                 final long userId,
                 final Long countryId,
-                final Long regionId,
                 final String cityName,
                 @NonNull final String firstName,
                 @Nullable final String middleName,
@@ -123,7 +116,6 @@ public abstract class User {
         this.id = id;
         this.userId = userId;
         this.countryId = countryId;
-        this.regionId = regionId;
         this.cityName = cityName;
         this.firstName = firstName;
         this.middleName = middleName;
@@ -150,10 +142,6 @@ public abstract class User {
 
     public Long getCountryId() {
         return countryId;
-    }
-
-    public Long getRegionId() {
-        return regionId;
     }
 
     public String getCityName() {
@@ -248,7 +236,6 @@ public abstract class User {
                 "id=" + id +
                 ", userId=" + userId +
                 ", countryId=" + countryId +
-                ", regionId=" + regionId +
                 ", cityId=" + cityName +
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +

@@ -64,13 +64,7 @@ public class FetchAddressBookWorker extends Worker {
                         return Result.failure();
                     }
 
-                    final long[] rowsInserted = LocalCache.getInstance(getApplicationContext()).invoiceDao().insertAddressBookEntries(addressBook);
-
-                    if (rowsInserted.length <= 0) {
-                        Log.w(TAG, "fetchAddressBook(): empty response");
-                        return Result.success();
-                    }
-                    Log.i(TAG, "fetchAddressBook(): successfully inserted entries");
+                    LocalCache.getInstance(getApplicationContext()).invoiceDao().insertAddressBookEntries(addressBook);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

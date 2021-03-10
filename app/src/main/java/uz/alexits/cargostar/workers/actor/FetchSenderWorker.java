@@ -100,7 +100,6 @@ public class FetchSenderWorker extends Worker {
                             .putString(Constants.KEY_SENDER_PHONE, sender.getPhone())
                             .putString(Constants.KEY_SENDER_ADDRESS, sender.getAddress())
                             .putLong(Constants.KEY_SENDER_COUNTRY_ID, sender.getCountryId() != null ? sender.getCountryId() : -1L)
-                            .putLong(Constants.KEY_SENDER_REGION_ID, sender.getRegionId() != null ? sender.getRegionId() : -1L)
                             .putString(Constants.KEY_SENDER_CITY_NAME, sender.getCityName())
                             .putString(Constants.KEY_SENDER_ZIP, sender.getZip())
                             .putString(Constants.KEY_SENDER_CARGOSTAR, sender.getCargostarAccountNumber())

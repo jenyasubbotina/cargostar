@@ -314,7 +314,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderId(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderUserId(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCountryId(),
-                    0L,
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCityName(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFirstName(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderMiddleName(),
@@ -328,11 +327,11 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCargo(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderTnt(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderFedex(),
-                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDiscount(),
-                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPhotoUrl(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderDiscount(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPhoto(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderSignature(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderUserType(),
-                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPassportSerial(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderPassport(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderInn(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getSenderCompany());
 
@@ -340,7 +339,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientId(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientUserId(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCountryId(),
-                    0L,
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCityName(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientAddress(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientZip(),
@@ -355,7 +353,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientCompany(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientInn(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientContractNumber(),
-                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientPassportSerial(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientPassport(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getRecipientUserType(),
                     1, new Date(), new Date());
 
@@ -363,7 +361,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerId(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerUserId(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCountryId(),
-                    0L,
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCityName(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerAddress(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerZip(),
@@ -377,8 +374,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerFedex(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerCompany(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerInn(),
-                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getContractNumber(),
-                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerPassportSerial(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerContractNumber(),
+                    CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerPassport(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerUserType(),
                     1, new Date(), new Date());
             consignmentQuantity = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
@@ -409,7 +406,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         if (requestKey == IntentConstants.REQUEST_EDIT_INVOICE) {
             createInvoiceBtn.setText(R.string.update_invoice);
-            updateUI();
+            updateUI(sender, recipient, payer);
         }
         else {
             createInvoiceBtn.setText(R.string.create_invoice);
