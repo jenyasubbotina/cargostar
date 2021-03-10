@@ -154,6 +154,10 @@ public class RequestsViewModel extends AndroidViewModel {
     }
 
     /* getters */
+    public LiveData<Request> getRequestData() {
+        return Transformations.switchMap(requestId, repository::selectRequest);
+    }
+
     public LiveData<Invoice> getInvoice() {
         return Transformations.switchMap(invoiceId, repository::selectInvoiceById);
     }

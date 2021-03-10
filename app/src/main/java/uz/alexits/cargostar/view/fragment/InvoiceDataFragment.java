@@ -402,6 +402,57 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         });
 
         /* public & payment data */
+        requestsViewModel.getRequestData().observe(getViewLifecycleOwner(), requestData -> {
+            if (requestData != null) {
+                itemList.set(6, new InvoiceData(getString(R.string.email), requestData.getSenderEmail(), InvoiceData.TYPE_ITEM));
+                itemList.set(7, new InvoiceData(getString(R.string.first_name), requestData.getSenderFirstName(), InvoiceData.TYPE_ITEM));
+                itemList.set(8, new InvoiceData(getString(R.string.middle_name), requestData.getSenderMiddleName(), InvoiceData.TYPE_ITEM));
+                itemList.set(9, new InvoiceData(getString(R.string.last_name), requestData.getSenderLastName(), InvoiceData.TYPE_ITEM));
+                itemList.set(10, new InvoiceData(getString(R.string.phone_number), requestData.getSenderPhone(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(6, 5);
+
+                itemList.set(12, new InvoiceData(getString(R.string.city), requestData.getSenderCityName(), InvoiceData.TYPE_ITEM));
+                itemList.set(13, new InvoiceData(getString(R.string.take_address), requestData.getSenderAddress(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(12, 2);
+
+                senderDataList.set(0, new InvoiceData(getString(R.string.email), requestData.getSenderEmail(), InvoiceData.TYPE_ITEM));
+                senderDataList.set(1, new InvoiceData(getString(R.string.first_name), requestData.getSenderFirstName(), InvoiceData.TYPE_ITEM));
+                senderDataList.set(2, new InvoiceData(getString(R.string.middle_name), requestData.getSenderMiddleName(), InvoiceData.TYPE_ITEM));
+                senderDataList.set(3, new InvoiceData(getString(R.string.last_name), requestData.getSenderLastName(), InvoiceData.TYPE_ITEM));
+                senderDataList.set(4, new InvoiceData(getString(R.string.phone_number), requestData.getSenderPhone(), InvoiceData.TYPE_ITEM));
+                senderDataList.set(6, new InvoiceData(getString(R.string.city), requestData.getSenderCityName(), InvoiceData.TYPE_ITEM));
+                senderDataList.set(7, new InvoiceData(getString(R.string.take_address), requestData.getSenderAddress(), InvoiceData.TYPE_ITEM));
+
+                if (requestData.getSenderCountryId() != null) {
+                    requestsViewModel.setSenderCountryId(requestData.getSenderCountryId());
+                }
+                if (requestData.getRecipientCountryId() != null) {
+                    requestsViewModel.setRecipientCountryId(requestData.getRecipientCountryId());
+                }
+                if (requestData.getInvoiceId() != null) {
+                    requestsViewModel.setInvoiceId(requestData.getInvoiceId());
+                }
+                if (requestData.getProviderId() != null) {
+                    requestsViewModel.setProviderId(requestData.getProviderId());
+                }
+
+                itemList.set(27, new InvoiceData(getString(R.string.city), requestData.getRecipientCityName(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(27);
+
+                recipientDataList.set(6, new InvoiceData(getString(R.string.city), requestData.getRecipientCityName(), InvoiceData.TYPE_ITEM));
+
+                itemList.set(62, new InvoiceData(getString(R.string.courier_guidelines), requestData.getComment(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(62);
+
+                transportationDataList.set(4, new InvoiceData(getString(R.string.courier_guidelines), requestData.getComment(), InvoiceData.TYPE_ITEM));
+
+                itemList.set(2, new InvoiceData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(requestData.getCourierId()) : null, InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(2);
+
+                publicDataList.set(1, new InvoiceData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(requestData.getCourierId()) : null, InvoiceData.TYPE_ITEM));
+            }
+        });
+
         requestsViewModel.getProvider().observe(getViewLifecycleOwner(), provider -> {
             if (provider != null) {
                 itemList.set(3, new InvoiceData(getString(R.string.service_provider), provider.getNameEn(), InvoiceData.TYPE_ITEM));
