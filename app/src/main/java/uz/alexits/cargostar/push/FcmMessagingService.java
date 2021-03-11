@@ -31,6 +31,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
     private static String DEFAULT_CHANNEL_ID;
     private static String PACKAGE_NAME;
     private long courierId;
+    private long brancheId;
 
     @Override
     public void onCreate() {
@@ -39,6 +40,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         PACKAGE_NAME = getPackageName();
         new Thread(() -> {
             courierId = SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID);
+            brancheId = SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.BRANCH_ID);
         }).start();
     }
 
@@ -137,17 +139,19 @@ public class FcmMessagingService extends FirebaseMessagingService {
 
     public void showMessage(final String title, final String body, final String packageName, final String intentValue, final String link) {
         if (packageName != null && intentValue != null && link != null) {
-            final Intent notifyIntent = new Intent();
-            notifyIntent.setComponent(new ComponentName(packageName, packageName + intentValue));
-            notifyIntent.putExtra(IntentConstants.INTENT_PUSH_KEY, link);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
-            stackBuilder.addNextIntentWithParentStack(notifyIntent);
-            PendingIntent pendingIntent = stackBuilder.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT);
-
             final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), DEFAULT_CHANNEL_ID);
 
-            if (SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN) != null
-                    && SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD) != null) {
+            if (SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN) != null &&
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD) != null) {
+                final Intent notifyIntent = new Intent();
+                notifyIntent.setComponent(new ComponentName(packageName, packageName + intentValue));
+                notifyIntent.putExtra(IntentConstants.INTENT_PUSH_KEY, link);
+                notifyIntent.putExtra(Constants.KEY_COURIER_ID, courierId);
+                notifyIntent.putExtra(Constants.KEY_BRANCHE_ID, brancheId);
+
+                final TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+                stackBuilder.addNextIntentWithParentStack(notifyIntent);
+                PendingIntent pendingIntent = stackBuilder.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT);
                 notificationBuilder.setContentIntent(pendingIntent);
             }
 

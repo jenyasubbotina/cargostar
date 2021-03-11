@@ -378,6 +378,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerPassport(),
                     CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPayerUserType(),
                     1, new Date(), new Date());
+
             consignmentQuantity = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getConsignmentQuantity();
 
             if (consignmentQuantity > 0) {
@@ -1426,6 +1427,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             senderZipEditText.setText(sender.getZip());
             senderZipEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
+        if (!TextUtils.isEmpty(sender.getCityName())) {
+            senderCityNameEditText.setText(sender.getCityName());
+            senderCityNameEditText.setBackgroundResource(R.drawable.edit_text_active);
+        }
         if (!TextUtils.isEmpty(sender.getCompany())) {
             senderCompanyEditText.setText(sender.getCompany());
             senderCompanyEditText.setBackgroundResource(R.drawable.edit_text_active);
@@ -1463,6 +1468,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         if (!TextUtils.isEmpty(recipient.getZip())) {
             recipientZipEditText.setText(recipient.getZip());
             recipientZipEditText.setBackgroundResource(R.drawable.edit_text_active);
+        }
+        if (!TextUtils.isEmpty(recipient.getCityName())) {
+            recipientCityNameEditText.setText(recipient.getCityName());
+            recipientCityNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
         if (!TextUtils.isEmpty(recipient.getPhone())) {
             recipientPhoneEditText.setText(recipient.getPhone());
@@ -1513,6 +1522,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         if (!TextUtils.isEmpty(payer.getPhone())) {
             payerPhoneEditText.setText(payer.getPhone());
             payerPhoneEditText.setBackgroundResource(R.drawable.edit_text_active);
+        }
+        if (!TextUtils.isEmpty(payer.getCityName())) {
+            payerCityNameEditText.setText(payer.getCityName());
+            payerCityNameEditText.setBackgroundResource(R.drawable.edit_text_active);
         }
         if (!TextUtils.isEmpty(payer.getCargostarAccountNumber())) {
             payerCargoEditText.setText(payer.getCargostarAccountNumber());

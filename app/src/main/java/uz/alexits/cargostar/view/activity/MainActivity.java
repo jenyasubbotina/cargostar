@@ -6,9 +6,12 @@ import androidx.navigation.Navigation;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
+
 import uz.alexits.cargostar.R;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.IntentConstants;
+import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.fragment.MainFragmentDirections;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,18 +23,31 @@ public class MainActivity extends AppCompatActivity {
 
         if (getIntent() != null) {
             final String pushIntentKey = getIntent().getStringExtra(IntentConstants.INTENT_PUSH_KEY);
+            final long courierId = getIntent().getLongExtra(Constants.KEY_COURIER_ID, 0);
+            final long courierBranchId = getIntent().getLongExtra(Constants.KEY_BRANCHE_ID, 0);
 
             if (pushIntentKey != null) {
-                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_PUBLIC_REQUESTS)) {
-                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_publicRequestsFragment);
+                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_PUBLIC_REQUESTS) && courierId > 0) {
+                    final MainFragmentDirections.ActionMainFragmentToPublicRequestsFragment action = MainFragmentDirections.actionMainFragmentToPublicRequestsFragment();
+                    action.setCourierId(courierId);
+                    UiUtils.getNavController(this, R.id.main_fragment_container).navigate(action);
                     return;
                 }
-                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_MY_REQUESTS)) {
-                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_myRequestsFragment);
+                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_MY_REQUESTS) && courierId > 0) {
+                    final MainFragmentDirections.ActionMainFragmentToMyRequestsFragment action = MainFragmentDirections.actionMainFragmentToMyRequestsFragment();
+                    action.setCourierId(courierId);
+                    UiUtils.getNavController(this, R.id.main_fragment_container).navigate(action);
                     return;
                 }
-                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_CURRENT_TRANSPORTATIONS)) {
-                    Navigation.findNavController(this, R.id.main_fragment_container).navigate(R.id.action_mainFragment_to_currentTransportationsFragment);
+                if (pushIntentKey.equalsIgnoreCase(IntentConstants.REQUEST_CURRENT_TRANSPORTATIONS) && courierBranchId > 0) {
+                    if (courierBranchId <= 0) {
+                        Toast.makeText(this, "Подождите...", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    final MainFragmentDirections.ActionMainFragmentToCurrentTransportationsFragment action = MainFragmentDirections.actionMainFragmentToCurrentTransportationsFragment();
+                    action.setStatusFlag(IntentConstants.FRAGMENT_CURRENT_TRANSPORT);
+                    action.setCourierBranchId(courierBranchId);
+                    UiUtils.getNavController(this, R.id.main_fragment_container).navigate(action);
                     return;
                 }
             }

@@ -249,7 +249,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             action.setSenderAddress(sender.getAddress());
             action.setSenderZip(sender.getZip());
             action.setSenderCountryId(sender.getCountryId());
-            action.setSenderCityName(sender.getCityName());
+            action.setSenderCityName(sender.getCityName() != null ? sender.getCityName() : request.getSenderCityName());
             action.setSenderCargo(sender.getCargostarAccountNumber());
             action.setSenderTnt(sender.getTntAccountNumber());
             action.setSenderFedex(sender.getFedexAccountNumber());
@@ -270,7 +270,7 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             action.setRecipientAddress(recipient.getAddress());
             action.setRecipientZip(recipient.getZip());
             action.setRecipientCountryId(recipient.getCountryId());
-            action.setRecipientCityName(recipient.getCityName());
+            action.setRecipientCityName(recipient.getCityName() != null ? recipient.getCityName() : request.getRecipientCityName());
             action.setRecipientCargo(recipient.getCargostarAccountNumber());
             action.setRecipientTnt(recipient.getTntAccountNumber());
             action.setRecipientFedex(recipient.getFedexAccountNumber());
@@ -409,18 +409,13 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 itemList.set(8, new InvoiceData(getString(R.string.middle_name), requestData.getSenderMiddleName(), InvoiceData.TYPE_ITEM));
                 itemList.set(9, new InvoiceData(getString(R.string.last_name), requestData.getSenderLastName(), InvoiceData.TYPE_ITEM));
                 itemList.set(10, new InvoiceData(getString(R.string.phone_number), requestData.getSenderPhone(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(6, 5);
-
-                itemList.set(12, new InvoiceData(getString(R.string.city), requestData.getSenderCityName(), InvoiceData.TYPE_ITEM));
                 itemList.set(13, new InvoiceData(getString(R.string.take_address), requestData.getSenderAddress(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(12, 2);
 
                 senderDataList.set(0, new InvoiceData(getString(R.string.email), requestData.getSenderEmail(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(1, new InvoiceData(getString(R.string.first_name), requestData.getSenderFirstName(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(2, new InvoiceData(getString(R.string.middle_name), requestData.getSenderMiddleName(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(3, new InvoiceData(getString(R.string.last_name), requestData.getSenderLastName(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(4, new InvoiceData(getString(R.string.phone_number), requestData.getSenderPhone(), InvoiceData.TYPE_ITEM));
-                senderDataList.set(6, new InvoiceData(getString(R.string.city), requestData.getSenderCityName(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(7, new InvoiceData(getString(R.string.take_address), requestData.getSenderAddress(), InvoiceData.TYPE_ITEM));
 
                 if (requestData.getSenderCountryId() != null) {
@@ -435,21 +430,28 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 if (requestData.getProviderId() != null) {
                     requestsViewModel.setProviderId(requestData.getProviderId());
                 }
-
-                itemList.set(27, new InvoiceData(getString(R.string.city), requestData.getRecipientCityName(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(27);
-
-                recipientDataList.set(6, new InvoiceData(getString(R.string.city), requestData.getRecipientCityName(), InvoiceData.TYPE_ITEM));
-
-                itemList.set(62, new InvoiceData(getString(R.string.courier_guidelines), requestData.getComment(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(62);
-
-                transportationDataList.set(4, new InvoiceData(getString(R.string.courier_guidelines), requestData.getComment(), InvoiceData.TYPE_ITEM));
-
+                if (requestData.getSenderCityName() != null) {
+                    itemList.set(12, new InvoiceData(getString(R.string.city), requestData.getSenderCityName(), InvoiceData.TYPE_ITEM));
+                    senderDataList.set(6, new InvoiceData(getString(R.string.city), requestData.getSenderCityName(), InvoiceData.TYPE_ITEM));
+                    request.setSenderCityName(requestData.getSenderCityName());
+                    adapter.notifyItemChanged(12);
+                }
+                if (requestData.getRecipientCityName() != null) {
+                    itemList.set(27, new InvoiceData(getString(R.string.city), requestData.getRecipientCityName(), InvoiceData.TYPE_ITEM));
+                    recipientDataList.set(6, new InvoiceData(getString(R.string.city), requestData.getRecipientCityName(), InvoiceData.TYPE_ITEM));
+                    request.setRecipientCityName(requestData.getRecipientCityName());
+                    adapter.notifyItemChanged(27);
+                }
                 itemList.set(2, new InvoiceData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(requestData.getCourierId()) : null, InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(2);
+                itemList.set(62, new InvoiceData(getString(R.string.courier_guidelines), requestData.getComment(), InvoiceData.TYPE_ITEM));
 
                 publicDataList.set(1, new InvoiceData(getString(R.string.courier_id), request.getCourierId() > 0 ? String.valueOf(requestData.getCourierId()) : null, InvoiceData.TYPE_ITEM));
+                transportationDataList.set(4, new InvoiceData(getString(R.string.courier_guidelines), requestData.getComment(), InvoiceData.TYPE_ITEM));
+
+                adapter.notifyItemChanged(2);
+                adapter.notifyItemRangeChanged(6, 5);
+                adapter.notifyItemChanged(13);
+                adapter.notifyItemChanged(62);
             }
         });
 
@@ -457,11 +459,10 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
             if (provider != null) {
                 itemList.set(3, new InvoiceData(getString(R.string.service_provider), provider.getNameEn(), InvoiceData.TYPE_ITEM));
                 itemList.set(54, new InvoiceData(getString(R.string.fuel_tax), String.valueOf(provider.getFuel()), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(3);
-                adapter.notifyItemChanged(54);
-
                 publicDataList.set(2, new InvoiceData(getString(R.string.service_provider), null, InvoiceData.TYPE_ITEM));
                 paymentDataList.set(1, new InvoiceData(getString(R.string.fuel_tax), String.valueOf(provider.getFuel()), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(3);
+                adapter.notifyItemChanged(54);
             }
         });
 
@@ -469,9 +470,8 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
         requestsViewModel.getTariff().observe(getViewLifecycleOwner(), tariff -> {
             if (tariff != null) {
                 itemList.set(55, new InvoiceData(getString(R.string.tariff), tariff.getName(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(55);
-
                 paymentDataList.set(2, new InvoiceData(getString(R.string.tariff), tariff.getName(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(55);
             }
         });
 
@@ -484,38 +484,42 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 itemList.set(8, new InvoiceData(getString(R.string.middle_name), sender.getMiddleName(), InvoiceData.TYPE_ITEM));
                 itemList.set(9, new InvoiceData(getString(R.string.last_name), sender.getLastName(), InvoiceData.TYPE_ITEM));
                 itemList.set(10, new InvoiceData(getString(R.string.phone_number), sender.getPhone(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(6, 5);
 
-                itemList.set(12, new InvoiceData(getString(R.string.city), sender.getCityName(), InvoiceData.TYPE_ITEM));
                 itemList.set(13, new InvoiceData(getString(R.string.take_address), sender.getAddress(), InvoiceData.TYPE_ITEM));
                 itemList.set(14, new InvoiceData(getString(R.string.post_index), sender.getZip(), InvoiceData.TYPE_ITEM));
                 itemList.set(15, new InvoiceData(getString(R.string.cargostar_account_number), sender.getCargostarAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(16, new InvoiceData(getString(R.string.tnt_account_number), sender.getTntAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(17, new InvoiceData(getString(R.string.fedex_account_number), sender.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(18, new InvoiceData(getString(R.string.sender_signature), sender.getSignatureUrl(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(12, 7);
 
                 senderDataList.set(0, new InvoiceData(getString(R.string.email), sender.getEmail(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(1, new InvoiceData(getString(R.string.first_name), sender.getFirstName(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(2, new InvoiceData(getString(R.string.middle_name), sender.getMiddleName(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(3, new InvoiceData(getString(R.string.last_name), sender.getLastName(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(4, new InvoiceData(getString(R.string.phone_number), sender.getPhone(), InvoiceData.TYPE_ITEM));
-                senderDataList.set(6, new InvoiceData(getString(R.string.city), sender.getCityName(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(7, new InvoiceData(getString(R.string.take_address), sender.getAddress(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(8, new InvoiceData(getString(R.string.post_index), sender.getZip(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(9, new InvoiceData(getString(R.string.cargostar_account_number), sender.getCargostarAccountNumber(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(10, new InvoiceData(getString(R.string.tnt_account_number), sender.getTntAccountNumber(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(11, new InvoiceData(getString(R.string.fedex_account_number), sender.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
                 senderDataList.set(12, new InvoiceData(getString(R.string.sender_signature), sender.getSignatureUrl(), InvoiceData.TYPE_ITEM));
+
+                if (sender.getCityName() != null) {
+                    itemList.set(12, new InvoiceData(getString(R.string.city), sender.getCityName(), InvoiceData.TYPE_ITEM));
+                    senderDataList.set(6, new InvoiceData(getString(R.string.city), sender.getCityName(), InvoiceData.TYPE_ITEM));
+                    adapter.notifyItemChanged(12);
+                }
+
+                adapter.notifyItemRangeChanged(6, 5);
+                adapter.notifyItemRangeChanged(13, 6);
             }
         });
 
         requestsViewModel.getSenderCountry().observe(getViewLifecycleOwner(), country -> {
             if (country != null) {
                 itemList.set(11, new InvoiceData(getString(R.string.country), country.getNameEn(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(11);
-
                 senderDataList.set(5, new InvoiceData(getString(R.string.country), country.getNameEn(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(11);
             }
         });
 
@@ -529,7 +533,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 itemList.set(23, new InvoiceData(getString(R.string.middle_name), recipient.getMiddleName(), InvoiceData.TYPE_ITEM));
                 itemList.set(24, new InvoiceData(getString(R.string.last_name), recipient.getLastName(), InvoiceData.TYPE_ITEM));
                 itemList.set(25, new InvoiceData(getString(R.string.phone_number), recipient.getPhone(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(21, 5);
 
                 itemList.set(27, new InvoiceData(getString(R.string.city), recipient.getCityName(), InvoiceData.TYPE_ITEM));
                 itemList.set(28, new InvoiceData(getString(R.string.delivery_address), recipient.getAddress(), InvoiceData.TYPE_ITEM));
@@ -538,7 +541,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 itemList.set(31, new InvoiceData(getString(R.string.tnt_account_number), recipient.getTntAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(32, new InvoiceData(getString(R.string.fedex_account_number), recipient.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(33, new InvoiceData(getString(R.string.receiver_signature), null, InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(27, 7);
 
                 recipientDataList.set(0, new InvoiceData(getString(R.string.email), recipient.getEmail(), InvoiceData.TYPE_ITEM));
                 recipientDataList.set(1, new InvoiceData(getString(R.string.first_name), recipient.getFirstName(), InvoiceData.TYPE_ITEM));
@@ -552,15 +554,17 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 recipientDataList.set(10, new InvoiceData(getString(R.string.tnt_account_number), recipient.getTntAccountNumber(), InvoiceData.TYPE_ITEM));
                 recipientDataList.set(11, new InvoiceData(getString(R.string.fedex_account_number), recipient.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
                 recipientDataList.set(12, new InvoiceData(getString(R.string.receiver_signature), null, InvoiceData.TYPE_ITEM));
+
+                adapter.notifyItemRangeChanged(21, 5);
+                adapter.notifyItemRangeChanged(27, 7);
             }
         });
 
         requestsViewModel.getRecipientCountry().observe(getViewLifecycleOwner(), country -> {
             if (country != null) {
                 itemList.set(26, new InvoiceData(getString(R.string.country), country.getNameEn(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemChanged(26);
-
                 recipientDataList.set(5, new InvoiceData(getString(R.string.country), country.getNameEn(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemChanged(26);
             }
         });
 
@@ -574,15 +578,13 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 itemList.set(38, new InvoiceData(getString(R.string.middle_name), payer.getMiddleName(), InvoiceData.TYPE_ITEM));
                 itemList.set(39, new InvoiceData(getString(R.string.last_name), payer.getLastName(), InvoiceData.TYPE_ITEM));
                 itemList.set(40, new InvoiceData(getString(R.string.phone_number), payer.getPhone(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(36, 5);
-
                 itemList.set(42, new InvoiceData(getString(R.string.city), payer.getCityName(), InvoiceData.TYPE_ITEM));
                 itemList.set(43, new InvoiceData(getString(R.string.address), payer.getAddress(), InvoiceData.TYPE_ITEM));
                 itemList.set(44, new InvoiceData(getString(R.string.post_index), payer.getZip(), InvoiceData.TYPE_ITEM));
                 itemList.set(45, new InvoiceData(getString(R.string.cargostar_account_number), payer.getCargostarAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(46, new InvoiceData(getString(R.string.tnt_account_number), payer.getTntAccountNumber(), InvoiceData.TYPE_ITEM));
                 itemList.set(47, new InvoiceData(getString(R.string.fedex_account_number), payer.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
-                adapter.notifyItemRangeChanged(42, 6);
+                itemList.set(50, new InvoiceData(getString(R.string.contract_number), payer.getContractNumber(), InvoiceData.TYPE_ITEM));
 
                 payerDataList.set(0, new InvoiceData(getString(R.string.email), payer.getEmail(), InvoiceData.TYPE_ITEM));
                 payerDataList.set(1, new InvoiceData(getString(R.string.first_name), payer.getFirstName(), InvoiceData.TYPE_ITEM));
@@ -595,12 +597,12 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                 payerDataList.set(9, new InvoiceData(getString(R.string.cargostar_account_number), payer.getCargostarAccountNumber(), InvoiceData.TYPE_ITEM));
                 payerDataList.set(10, new InvoiceData(getString(R.string.tnt_account_number), payer.getTntAccountNumber(), InvoiceData.TYPE_ITEM));
                 payerDataList.set(11, new InvoiceData(getString(R.string.fedex_account_number), payer.getFedexAccountNumber(), InvoiceData.TYPE_ITEM));
+                accountDataList.set(0, new InvoiceData(getString(R.string.checking_account), payer.getContractNumber(), InvoiceData.TYPE_ITEM));
 
                 //account data
-                itemList.set(50, new InvoiceData(getString(R.string.contract_number), payer.getContractNumber(), InvoiceData.TYPE_ITEM));
+                adapter.notifyItemRangeChanged(36, 5);
+                adapter.notifyItemRangeChanged(42, 6);
                 adapter.notifyItemChanged(50);
-
-                accountDataList.set(0, new InvoiceData(getString(R.string.checking_account), payer.getContractNumber(), InvoiceData.TYPE_ITEM));
             }
         });
 
@@ -686,8 +688,6 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                     }
                     request.setId(outputData.getLong(Constants.KEY_REQUEST_ID, -1L));
                     request.setSenderCountryId(outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L));
-                    request.setSenderCity(outputData.getString(Constants.KEY_SENDER_CITY_NAME));
-                    request.setSenderCityName(outputData.getString(Constants.KEY_SENDER_CITY_NAME));
                     request.setUserId(outputData.getLong(Constants.KEY_SENDER_USER_ID, -1L));
                     request.setClientId(outputData.getLong(Constants.KEY_SENDER_ID, -1L));
                     request.setCourierId(outputData.getLong(Constants.KEY_COURIER_ID, -1L));
@@ -700,12 +700,17 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                     request.setSenderPhone(outputData.getString(Constants.KEY_SENDER_PHONE));
                     request.setSenderAddress(outputData.getString(Constants.KEY_SENDER_ADDRESS));
                     request.setRecipientCountryId(outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
-                    request.setRecipientCityName(outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME));
                     request.setDeliveryType(outputData.getInt(Constants.KEY_DELIVERY_TYPE, 0));
                     request.setComment(outputData.getString(Constants.KEY_COMMENT));
                     request.setConsignmentQuantity(outputData.getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0));
                     request.setPaymentStatus(outputData.getString(Constants.KEY_PAYMENT_STATUS));
 
+                    if (outputData.getString(Constants.KEY_SENDER_CITY_NAME) != null) {
+                        request.setSenderCityName(outputData.getString(Constants.KEY_SENDER_CITY_NAME));
+                    }
+                    if (outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME) != null) {
+                        request.setRecipientCityName(outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME));
+                    }
                     invoice = new Invoice(
                             outputData.getLong(Constants.KEY_INVOICE_ID, -1L),
                             outputData.getString(Constants.KEY_NUMBER),
