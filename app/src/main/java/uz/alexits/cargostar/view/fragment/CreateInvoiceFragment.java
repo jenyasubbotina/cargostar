@@ -891,7 +891,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                         corporateRadioBtn.setVisibility(View.GONE);
                         return;
                     }
-                    onlineRadioBtn.setVisibility(View.VISIBLE);
+                    if (invoiceId > 0) {
+                        onlineRadioBtn.setVisibility(View.VISIBLE);
+                    }
                     cashRadioBtn.setVisibility(View.VISIBLE);
                     terminalRadioBtn.setVisibility(View.VISIBLE);
                     transferRadioBtn.setVisibility(View.VISIBLE);
@@ -1063,17 +1065,19 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (TextUtils.isEmpty(s.toString().trim())) {
-                    cashRadioBtn.setVisibility(View.VISIBLE);
-                    terminalRadioBtn.setVisibility(View.VISIBLE);
-                    transferRadioBtn.setVisibility(View.INVISIBLE);
-                    corporateRadioBtn.setVisibility(View.INVISIBLE);
-                }
-                else {
-                    cashRadioBtn.setVisibility(View.INVISIBLE);
-                    terminalRadioBtn.setVisibility(View.INVISIBLE);
-                    transferRadioBtn.setVisibility(View.VISIBLE);
-                    corporateRadioBtn.setVisibility(View.VISIBLE);
+                if (payerCountry != null && payerCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                    if (TextUtils.isEmpty(s.toString().trim())) {
+                        cashRadioBtn.setVisibility(View.VISIBLE);
+                        terminalRadioBtn.setVisibility(View.VISIBLE);
+                        transferRadioBtn.setVisibility(View.INVISIBLE);
+                        corporateRadioBtn.setVisibility(View.INVISIBLE);
+                    }
+                    else {
+                        cashRadioBtn.setVisibility(View.INVISIBLE);
+                        terminalRadioBtn.setVisibility(View.INVISIBLE);
+                        transferRadioBtn.setVisibility(View.VISIBLE);
+                        corporateRadioBtn.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         };
@@ -1687,7 +1691,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             corporateRadioBtn.setChecked(true);
             return;
         }
-        if (!TextUtils.isEmpty(payer.getCompany())) {
+        if (payerCountry != null && payerCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+            if (!TextUtils.isEmpty(payer.getCompany())) {
             cashRadioBtn.setVisibility(View.GONE);
             terminalRadioBtn.setVisibility(View.GONE);
             transferRadioBtn.setVisibility(View.VISIBLE);
@@ -1698,6 +1703,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             terminalRadioBtn.setVisibility(View.VISIBLE);
             transferRadioBtn.setVisibility(View.GONE);
             corporateRadioBtn.setVisibility(View.GONE);
+        }
         }
     }
 
