@@ -38,10 +38,8 @@ public class FcmMessagingService extends FirebaseMessagingService {
         super.onCreate();
         DEFAULT_CHANNEL_ID = getString(R.string.implicit_notification_channel_id);
         PACKAGE_NAME = getPackageName();
-        new Thread(() -> {
-            courierId = SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID);
-            brancheId = SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.BRANCH_ID);
-        }).start();
+        courierId = SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.ID);
+        brancheId = SharedPrefs.getInstance(getApplicationContext()).getLong(SharedPrefs.BRANCH_ID);
     }
 
     @Override
@@ -194,7 +192,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final String deliveryType = dataPayload.get(Constants.KEY_DELIVERY_TYPE);
         final String consignmentQuantity = dataPayload.get(Constants.KEY_CONSIGNMENT_QUANTITY);
 
-        final long request_id = requestId != null && !TextUtils.isEmpty(requestId) ? Long.parseLong(requestId.trim()) : -1L;
+        final long request_id = requestId != null && !TextUtils.isEmpty(requestId) ? Long.parseLong(requestId.trim()) : 0L;
         final Long sender_country_id = senderCountryId != null && !TextUtils.isEmpty(senderCountryId) ? Long.parseLong(senderCountryId.trim()) : null;
         final Long sender_region_id = senderRegionId != null && !TextUtils.isEmpty(senderRegionId) ? Long.parseLong(senderRegionId.trim()) : null;
         final Long sender_city_id = senderCityId != null && !TextUtils.isEmpty(senderCityId) ? Long.parseLong(senderCityId.trim()) : null;
@@ -264,7 +262,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
         final String createdAt = dataPayload.get(Constants.KEY_CREATED_AT);
         final String updatedAt = dataPayload.get(Constants.KEY_UPDATED_AT);
 
-        final long transportation_id = transportationId != null && !TextUtils.isEmpty(transportationId) ? Long.parseLong(transportationId.trim()) : -1L;
+        final long transportation_id = transportationId != null && !TextUtils.isEmpty(transportationId) ? Long.parseLong(transportationId.trim()) : 0L;
         final Long provider_id = providerId != null && !TextUtils.isEmpty(providerId) ? Long.parseLong(providerId.trim()) : null;
         final Long courier_id = courierId != null && !TextUtils.isEmpty(courierId) ? Long.parseLong(courierId.trim()) : null;
         final Long invoice_id = invoiceId != null && !TextUtils.isEmpty(invoiceId) ? Long.parseLong(invoiceId.trim()) : null;

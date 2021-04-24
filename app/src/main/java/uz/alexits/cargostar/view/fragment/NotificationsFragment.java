@@ -68,8 +68,8 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
     private RecyclerView notificationRecyclerView;
     private NotificationAdapter notificationAdapter;
 
-    private static volatile long courierId = -1;
-    private static volatile long courierBranchId = -1;
+    private static volatile long courierId = 0;
+    private static volatile long courierBranchId = 0;
 
     public NotificationsFragment() {
         // Required empty public constructor
@@ -80,10 +80,7 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
         super.onCreate(savedInstanceState);
         activity = getActivity();
         context = getContext();
-
-        new Thread(() -> {
-            courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
-        }).start();
+        courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
     }
 
     @Override
@@ -182,15 +179,15 @@ public class NotificationsFragment extends Fragment implements NotificationCallb
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
 
-                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, 0L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, 0L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, 0L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, 0L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);

@@ -36,6 +36,7 @@ import uz.alexits.cargostar.model.transportation.Request;
 import uz.alexits.cargostar.model.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.view.UiUtils;
+import uz.alexits.cargostar.view.dialog.ScanQrDialog;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.MainActivity;
@@ -71,8 +72,8 @@ public class MainFragment extends Fragment {
     private ImageView transportationDeliveryImageView;
     private TextView appVersionTextView;
 
-    private static volatile long courierId = -1;
-    private static volatile long courierBranchId = -1;
+    private static volatile long courierId = 0;
+    private static volatile long courierBranchId = 0;
 
     public MainFragment() {
         // Required empty public constructor
@@ -83,10 +84,7 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         context = getContext();
-
-        new Thread(() -> {
-            courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
-        }).start();
+        courierId = SharedPrefs.getInstance(context).getLong(SharedPrefs.ID);
 
         SyncWorkRequest.fetchLocationData(context);
         SyncWorkRequest.fetchSenderList(context);
@@ -168,8 +166,9 @@ public class MainFragment extends Fragment {
         });
 
         scanParcelsImageView.setOnClickListener(v -> {
-            final Intent scanQrIntent = new Intent(context, ScanQrActivity.class);
-            startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_MENU);
+            ScanQrDialog dialogFragment = ScanQrDialog.newInstance(0, IntentConstants.REQUEST_SCAN_QR_MENU);
+            dialogFragment.setTargetFragment(MainFragment.this, IntentConstants.REQUEST_SCAN_QR_MENU);
+            dialogFragment.show(getParentFragmentManager().beginTransaction(), TAG);
         });
 
         currentTransportationListImageView.setOnClickListener(v -> {
@@ -241,16 +240,16 @@ public class MainFragment extends Fragment {
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
 
-                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, 0L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, 0L);
+                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, 0L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, 0L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, 0L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
@@ -291,6 +290,8 @@ public class MainFragment extends Fragment {
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
 
                 final String qr = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
+
+                Log.i(TAG, "onActivityResult(): qr=" + qr);
 
                 WorkManager.getInstance(context).getWorkInfoByIdLiveData(SyncWorkRequest.searchTransportation(context, qr)).observe(getViewLifecycleOwner(), workInfo -> {
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {

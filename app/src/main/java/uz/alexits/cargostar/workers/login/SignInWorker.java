@@ -14,6 +14,7 @@ import androidx.work.WorkerParameters;
 
 import java.io.IOException;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,41 +46,45 @@ public class SignInWorker extends Worker {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
             final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext()).signIn(token);
 
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    final Courier courier = response.body();
+            if (response.code() == 200 && response.isSuccessful()) {
+                final Courier courier = response.body();
 
-                    if (courier == null) {
-                        Log.e(TAG, "signIn(): courier is NULL");
-                        return Result.failure();
-                    }
-                    courier.setPassword(password);
-
-                    Log.i(TAG, "signIn(): " + courier);
-
-                    final long rowInserted = LocalCache.getInstance(getApplicationContext()).actorDao().createCourier(courier);
-
-                    if (rowInserted == -1) {
-                        Log.e(TAG, "signIn(): couldn't insert courier " + courier);
-                        return Result.failure();
-                    }
-
-                    final Data outputData = new Data.Builder()
-                            .putLong(SharedPrefs.ID, courier.getId())
-                            .putLong(SharedPrefs.BRANCH_ID, courier.getBrancheId())
-                            .putInt(Constants.KEY_PROGRESS, 100)
-                            .build();
-
-                    return ListenableWorker.Result.success(outputData);
+                if (courier == null) {
+                    Log.e(TAG, "signIn(): courier is NULL");
+                    return Result.failure();
                 }
+                courier.setPassword(password);
+
+                Log.i(TAG, "signIn(): " + courier);
+
+                final long rowInserted = LocalCache.getInstance(getApplicationContext()).actorDao().createCourier(courier);
+
+                if (rowInserted == -1) {
+                    Log.e(TAG, "signIn(): couldn't insert courier " + courier);
+                    return Result.failure();
+                }
+
+                final Data outputData = new Data.Builder()
+                        .putLong(SharedPrefs.ID, courier.getId())
+                        .putLong(SharedPrefs.BRANCH_ID, courier.getBrancheId())
+                        .putInt(Constants.KEY_PROGRESS, 100)
+                        .build();
+
+                return ListenableWorker.Result.success(outputData);
             }
+            final ResponseBody error = response.errorBody();
+
+            if (error != null) {
+                Log.e(TAG, "signIn(): " + error.string());
+                return Result.failure();
+            }
+            Log.e(TAG, "signIn(): unknown error");
+            return Result.failure();
         }
         catch (IOException e) {
             Log.e(TAG, "signIn(): ", e);
             return Result.failure();
         }
-        Log.e(TAG, "signIn(): unknown error");
-        return Result.failure();
     }
 
     private static final String TAG = SignInWorker.class.toString();

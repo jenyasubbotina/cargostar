@@ -54,21 +54,21 @@ public class FetchInvoiceWorker extends Worker {
     public FetchInvoiceWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
 
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
-        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, -1L);
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
+        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, 0L);
         this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
         this.paymentStatus = getInputData().getString(Constants.KEY_PAYMENT_STATUS);
         this.comment = getInputData().getString(Constants.KEY_COMMENT);
-        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1);
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
+        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, 0);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0L);
         this.consignmentQuantity = getInputData().getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0);
 
-        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
+        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
         this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
         this.recipientCity = getInputData().getString(Constants.KEY_RECIPIENT_CITY);
 
-        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1L);
-        this.senderUserId = getInputData().getLong(Constants.KEY_SENDER_USER_ID, -1L);
+        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, 0L);
+        this.senderUserId = getInputData().getLong(Constants.KEY_SENDER_USER_ID, 0L);
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
         this.senderSignature = getInputData().getString(Constants.KEY_SENDER_SIGNATURE);
         this.senderFirstName = getInputData().getString(Constants.KEY_SENDER_FIRST_NAME);
@@ -76,8 +76,8 @@ public class FetchInvoiceWorker extends Worker {
         this.senderMiddleName = getInputData().getString(Constants.KEY_SENDER_MIDDLE_NAME);
         this.senderPhone = getInputData().getString(Constants.KEY_SENDER_PHONE);
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
-        this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-        this.senderCityId = getInputData().getLong(Constants.KEY_SENDER_CITY_ID, -1L);
+        this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+        this.senderCityId = getInputData().getLong(Constants.KEY_SENDER_CITY_ID, 0L);
         this.senderCityName = getInputData().getString(Constants.KEY_SENDER_CITY_NAME);
         this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
         this.senderCargo = getInputData().getString(Constants.KEY_SENDER_CARGOSTAR);
@@ -94,11 +94,10 @@ public class FetchInvoiceWorker extends Worker {
     @NonNull
     @Override
     public ListenableWorker.Result doWork() {
-        if (invoiceId < 0) {
-            Log.e(TAG, "fetchInvoice(): invoiceId < 0");
+        if (invoiceId <= 0) {
+            Log.e(TAG, "fetchInvoice(): invoiceId <= 0");
             return Result.failure();
         }
-
         try {
             RetrofitClient.getInstance(getApplicationContext())
                     .setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
@@ -145,22 +144,23 @@ public class FetchInvoiceWorker extends Worker {
                             .putString(Constants.KEY_NUMBER, invoice.getNumber())
                             .putLong(Constants.KEY_PROVIDER_ID, providerId)
                             .putLong(Constants.KEY_COURIER_ID, courierId)
-                            .putLong(Constants.KEY_TARIFF_ID, invoice.getTariffId() != null ? invoice.getTariffId() : -1L)
+                            .putLong(Constants.KEY_TARIFF_ID, invoice.getTariffId() != null ? invoice.getTariffId() : 0L)
                             .putDouble(Constants.KEY_PRICE, invoice.getPrice())
+                            .putInt(Constants.KEY_PAYMENT_METHOD, invoice.getPaymentMethod())
                             .putInt(Constants.KEY_DELIVERY_TYPE, deliveryType)
                             .putString(Constants.KEY_PAYMENT_STATUS, paymentStatus)
                             .putString(Constants.KEY_COMMENT, comment)
 
                             .putLong(Constants.KEY_STATUS, invoice.getStatus())
-                            .putLong(Constants.KEY_CREATED_AT, invoice.getCreatedAt() != null ? invoice.getCreatedAt().getTime() : -1L)
-                            .putLong(Constants.KEY_UPDATED_AT, invoice.getUpdatedAt() != null ? invoice.getUpdatedAt().getTime() : -1L)
+                            .putLong(Constants.KEY_CREATED_AT, invoice.getCreatedAt() != null ? invoice.getCreatedAt().getTime() : 0L)
+                            .putLong(Constants.KEY_UPDATED_AT, invoice.getUpdatedAt() != null ? invoice.getUpdatedAt().getTime() : 0L)
 
-                            .putLong(Constants.KEY_RECIPIENT_ID, invoice.getRecipientId() != null ? invoice.getRecipientId() : -1L)
+                            .putLong(Constants.KEY_RECIPIENT_ID, invoice.getRecipientId() != null ? invoice.getRecipientId() : 0L)
                             .putString(Constants.KEY_RECIPIENT_SIGNATURE, invoice.getRecipientSignatureUrl())
                             .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId)
                             .putString(Constants.KEY_RECIPIENT_CITY_NAME, recipientCityName)
                             .putString(Constants.KEY_RECIPIENT_CITY, recipientCity)
-                            .putLong(Constants.KEY_PAYER_ID, invoice.getPayerId() != null ? invoice.getPayerId() : -1L)
+                            .putLong(Constants.KEY_PAYER_ID, invoice.getPayerId() != null ? invoice.getPayerId() : 0L)
 
                             .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, consignmentQuantity)
                             .build();

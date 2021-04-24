@@ -78,20 +78,20 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
     private static volatile TransportationStatus deliveredTransportationStatus = null;
     private static volatile TransportationStatus leftCountryTransportationStatus = null;
 
-    private static volatile long transportationId = -1;
-    private static volatile long currentPointId = -1;
-    private static volatile long currentStatusId = -1;
+    private static volatile long transportationId = 0;
+    private static volatile long currentPointId = 0;
+    private static volatile long currentStatusId = 0;
     private static volatile String currentStatusName = null;
-    private static volatile long partialId = -1;
+    private static volatile long partialId = 0;
     private static volatile String cityFrom = null;
     private static volatile String cityTo = null;
 
-    private static volatile long requestId = -1;
-    private static volatile long invoiceId = -1;
-    private static volatile long brancheId = -1;
-    private static volatile long courierId = -1;
-    private static volatile long providerId = -1;
-    private static volatile long paymentStatusId = -1;
+    private static volatile long requestId = 0;
+    private static volatile long invoiceId = 0;
+    private static volatile long brancheId = 0;
+    private static volatile long courierId = 0;
+    private static volatile long providerId = 0;
+    private static volatile long paymentStatusId = 0;
     private static volatile String trackingCode = null;
     private static volatile String qrCode = null;
     private static volatile String partyQRCode = null;
@@ -99,17 +99,17 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
     private static volatile String arrivalDate = null;
     private static volatile String direction = null;
 
-    private static volatile long senderId = -1;
-    private static volatile long senderCountryId = -1;
-    private static volatile long senderRegionId = -1;
-    private static volatile long senderCityId = -1;
-    private static volatile long recipientCountryId = -1;
-    private static volatile long recipientCityId = -1;
-    private static volatile int deliveryType = -1;
-    private static volatile int consignmentQuantity = -1;
+    private static volatile long senderId = 0;
+    private static volatile long senderCountryId = 0;
+    private static volatile long senderRegionId = 0;
+    private static volatile long senderCityId = 0;
+    private static volatile long recipientCountryId = 0;
+    private static volatile long recipientCityId = 0;
+    private static volatile int deliveryType = 0;
+    private static volatile int consignmentQuantity = 0;
     private static volatile String comment = null;
 
-    private static volatile long nextPoint = -1;
+    private static volatile long nextPoint = 0;
     private static volatile TransportationStatus nextStatus = null;
     private static volatile Country destinationCountry = null;
 
@@ -128,20 +128,20 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
         context = getContext();
         activity = getActivity();
 
-        transportationId = -1;
-        currentPointId = -1;
-        currentStatusId = -1;
+        transportationId = 0;
+        currentPointId = 0;
+        currentStatusId = 0;
         currentStatusName = null;
-        partialId = -1;
+        partialId = 0;
         cityFrom = null;
         cityTo = null;
 
-        requestId = -1;
-        invoiceId = -1;
-        brancheId = -1;
-        courierId = -1;
-        providerId = -1;
-        paymentStatusId = -1;
+        requestId = 0;
+        invoiceId = 0;
+        brancheId = 0;
+        courierId = 0;
+        providerId = 0;
+        paymentStatusId = 0;
         trackingCode = null;
         qrCode = null;
         partyQRCode = null;
@@ -149,17 +149,17 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
         arrivalDate = null;
         direction = null;
 
-        senderId = -1;
-        senderCountryId = -1;
-        senderRegionId = -1;
-        senderCityId = -1;
-        recipientCountryId = -1;
-        recipientCityId = -1;
-        deliveryType = -1;
-        consignmentQuantity = -1;
+        senderId = 0;
+        senderCountryId = 0;
+        senderRegionId = 0;
+        senderCityId = 0;
+        recipientCountryId = 0;
+        recipientCityId = 0;
+        deliveryType = 0;
+        consignmentQuantity = 0;
         comment = null;
 
-        nextPoint = -1;
+        nextPoint = 0;
         nextStatus = null;
         destinationCountry = null;
         pointsQuantity = 0;
@@ -262,7 +262,7 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
                 startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_RECIPIENT_SIGNATURE);
                 return;
             }
-            updateTransportationStatus(context, -1L,null, transportationId, nextStatus.getId(), nextPoint, partialId);
+            updateTransportationStatus(context, 0L,null, transportationId, nextStatus.getId(), nextPoint, partialId);
         });
     }
 
@@ -587,15 +587,13 @@ public class TransportationStatusFragment extends Fragment implements PartialCal
 
         action.setIsPublic(false);
         action.setIsRequest(false);
-        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : -1L);
-        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
-        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
-        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
+        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : 0L);
+        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : 0L);
+        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : 0L);
+        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : 0L);
         action.setClientId(senderId);
         action.setSenderCountryId(senderCountryId);
         action.setRecipientCountryId(recipientCountryId);
-//        action.setSenderCityName(senderCityId);
-//        action.setRecipientCityName(recipientCityId);
 
         action.setDeliveryType(deliveryType);
         action.setComment(comment);

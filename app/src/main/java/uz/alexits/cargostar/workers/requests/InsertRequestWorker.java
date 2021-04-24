@@ -43,31 +43,31 @@ public class InsertRequestWorker extends Worker {
 
     public InsertRequestWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
-        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
-        this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-        this.senderRegionId = getInputData().getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-        this.senderCityId = getInputData().getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-        this.userId = getInputData().getLong(Constants.KEY_USER_ID, -1L);
-        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1L);
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
-        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, -1L);
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
+        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, 0L);
+        this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+        this.senderRegionId = getInputData().getLong(Constants.KEY_SENDER_REGION_ID, 0L);
+        this.senderCityId = getInputData().getLong(Constants.KEY_SENDER_CITY_ID, 0L);
+        this.userId = getInputData().getLong(Constants.KEY_USER_ID, 0L);
+        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, 0L);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0L);
+        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, 0L);
         this.senderFirstName = getInputData().getString(Constants.KEY_SENDER_FIRST_NAME);
         this.senderMiddleName = getInputData().getString(Constants.KEY_SENDER_MIDDLE_NAME);
         this.senderLastName = getInputData().getString(Constants.KEY_SENDER_LAST_NAME);
         this.senderEmail = getInputData().getString(Constants.KEY_EMAIL);
         this.senderPhone = getInputData().getString(Constants.KEY_SENDER_PHONE);
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
-        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-        this.recipientCityId = getInputData().getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
+        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
+        this.recipientCityId = getInputData().getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
         this.cityFrom = getInputData().getString(Constants.KEY_CITY_FROM);
         this.cityTo = getInputData().getString(Constants.KEY_CITY_TO);
         this.consigmentQuantity = getInputData().getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0);
         this.paymentStatus = getInputData().getString(Constants.KEY_PAYMENT_STATUS);
         this.comment = getInputData().getString(Constants.KEY_COMMENT);
-        this.status = getInputData().getInt(Constants.KEY_STATUS, -1);
-        this.createdAt = getInputData().getLong(Constants.KEY_CREATED_AT, -1L);
-        this.updatedAt = getInputData().getLong(Constants.KEY_UPDATED_AT, -1L);
+        this.status = getInputData().getInt(Constants.KEY_STATUS, 0);
+        this.createdAt = getInputData().getLong(Constants.KEY_CREATED_AT, 0L);
+        this.updatedAt = getInputData().getLong(Constants.KEY_UPDATED_AT, 0L);
         this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
 
         this.senderCityName = getInputData().getString(Constants.KEY_SENDER_CITY_NAME);
@@ -77,7 +77,7 @@ public class InsertRequestWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        if (requestId == -1L) {
+        if (requestId > 0L) {
             Log.e(TAG, "requestId is NULL");
             return Result.failure();
         }
@@ -91,16 +91,16 @@ public class InsertRequestWorker extends Worker {
                     senderEmail,
                     senderPhone,
                     senderAddress,
-                    senderCountryId != -1L ? senderCountryId : null,
+                    senderCountryId > 0L ? senderCountryId : null,
                     senderCityName,
-                    recipientCountryId != -1L ? recipientCountryId : null,
+                    recipientCountryId > 0L ? recipientCountryId : null,
                     recipientCityName,
                     comment,
-                    userId != -1L ? userId : null,
-                    senderId != -1L ? senderId : null,
-                    courierId != -1L ? courierId : null,
-                    providerId != -1L ? providerId : null,
-                    invoiceId != -1L ? invoiceId : null,
+                    userId > 0L ? userId : null,
+                    senderId > 0L ? senderId : null,
+                    courierId > 0L ? courierId : null,
+                    providerId > 0L ? providerId : null,
+                    invoiceId > 0L ? invoiceId : null,
                     status,
                     new Date(createdAt),
                     new Date(updatedAt),

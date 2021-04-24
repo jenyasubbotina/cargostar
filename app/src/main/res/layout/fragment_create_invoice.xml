@@ -1911,6 +1911,20 @@
             android:gravity="center">
 
             <RadioButton
+                android:id="@+id/online_radio_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:enabled="true"
+                android:text="@string/online"
+                android:textColor="@color/colorBlack"
+                android:fontFamily="@font/geometria_actual"
+                android:textSize="16sp"
+                android:layout_weight="0.5"
+                android:buttonTint="@color/colorBlue"
+                android:gravity="center"
+                android:visibility="gone"/>
+
+            <RadioButton
                 android:id="@+id/cash_radio_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

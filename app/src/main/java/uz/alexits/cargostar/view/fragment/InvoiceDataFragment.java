@@ -376,16 +376,16 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
-                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, outputData.getLong(Constants.KEY_REQUEST_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, outputData.getLong(Constants.KEY_INVOICE_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, outputData.getLong(Constants.KEY_CLIENT_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, outputData.getLong(Constants.KEY_COURIER_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L));
-                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, outputData.getLong(Constants.KEY_PROVIDER_ID, -1L));
+                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, outputData.getLong(Constants.KEY_REQUEST_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, outputData.getLong(Constants.KEY_INVOICE_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, outputData.getLong(Constants.KEY_CLIENT_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_COURIER_ID, outputData.getLong(Constants.KEY_COURIER_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L));
+                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, outputData.getLong(Constants.KEY_PROVIDER_ID, 0L));
                         startActivity(mainIntent);
 
                         requestSearchEditText.setEnabled(true);
@@ -686,20 +686,20 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                     if (request == null) {
                         request = new Request();
                     }
-                    request.setId(outputData.getLong(Constants.KEY_REQUEST_ID, -1L));
-                    request.setSenderCountryId(outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L));
-                    request.setUserId(outputData.getLong(Constants.KEY_SENDER_USER_ID, -1L));
-                    request.setClientId(outputData.getLong(Constants.KEY_SENDER_ID, -1L));
-                    request.setCourierId(outputData.getLong(Constants.KEY_COURIER_ID, -1L));
-                    request.setProviderId(outputData.getLong(Constants.KEY_PROVIDER_ID, -1L));
-                    request.setInvoiceId(outputData.getLong(Constants.KEY_INVOICE_ID, -1L));
+                    request.setId(outputData.getLong(Constants.KEY_REQUEST_ID, 0L));
+                    request.setSenderCountryId(outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L));
+                    request.setUserId(outputData.getLong(Constants.KEY_SENDER_USER_ID, 0L));
+                    request.setClientId(outputData.getLong(Constants.KEY_SENDER_ID, 0L));
+                    request.setCourierId(outputData.getLong(Constants.KEY_COURIER_ID, 0L));
+                    request.setProviderId(outputData.getLong(Constants.KEY_PROVIDER_ID, 0L));
+                    request.setInvoiceId(outputData.getLong(Constants.KEY_INVOICE_ID, 0L));
                     request.setSenderFirstName(outputData.getString(Constants.KEY_SENDER_FIRST_NAME));
                     request.setSenderMiddleName(outputData.getString(Constants.KEY_SENDER_MIDDLE_NAME));
                     request.setSenderLastName(outputData.getString(Constants.KEY_SENDER_LAST_NAME));
                     request.setSenderEmail(outputData.getString(Constants.KEY_SENDER_EMAIL));
                     request.setSenderPhone(outputData.getString(Constants.KEY_SENDER_PHONE));
                     request.setSenderAddress(outputData.getString(Constants.KEY_SENDER_ADDRESS));
-                    request.setRecipientCountryId(outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
+                    request.setRecipientCountryId(outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L));
                     request.setDeliveryType(outputData.getInt(Constants.KEY_DELIVERY_TYPE, 0));
                     request.setComment(outputData.getString(Constants.KEY_COMMENT));
                     request.setConsignmentQuantity(outputData.getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0));
@@ -712,22 +712,23 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                         request.setRecipientCityName(outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME));
                     }
                     invoice = new Invoice(
-                            outputData.getLong(Constants.KEY_INVOICE_ID, -1L),
+                            outputData.getLong(Constants.KEY_INVOICE_ID, 0L),
                             outputData.getString(Constants.KEY_NUMBER),
-                            outputData.getLong(Constants.KEY_SENDER_ID, -1L),
-                            outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L),
+                            outputData.getLong(Constants.KEY_SENDER_ID, 0L),
+                            outputData.getLong(Constants.KEY_RECIPIENT_ID, 0L),
                             outputData.getString(Constants.KEY_RECIPIENT_SIGNATURE),
-                            outputData.getLong(Constants.KEY_PAYER_ID, -1L),
-                            outputData.getLong(Constants.KEY_PROVIDER_ID, -1L),
-                            outputData.getLong(Constants.KEY_REQUEST_ID, -1L),
-                            outputData.getLong(Constants.KEY_TARIFF_ID, -1L),
-                            outputData.getDouble(Constants.KEY_PRICE, -1),
+                            outputData.getLong(Constants.KEY_PAYER_ID, 0L),
+                            outputData.getLong(Constants.KEY_PROVIDER_ID, 0L),
+                            outputData.getLong(Constants.KEY_REQUEST_ID, 0L),
+                            outputData.getLong(Constants.KEY_TARIFF_ID, 0L),
+                            outputData.getDouble(Constants.KEY_PRICE, 0),
+                            outputData.getInt(Constants.KEY_PAYMENT_METHOD, 0),
                             1, new Date(), new Date());
 
                     sender = new Customer(
-                            outputData.getLong(Constants.KEY_SENDER_ID, -1L),
-                            outputData.getLong(Constants.KEY_SENDER_USER_ID, -1L),
-                            outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L),
+                            outputData.getLong(Constants.KEY_SENDER_ID, 0L),
+                            outputData.getLong(Constants.KEY_SENDER_USER_ID, 0L),
+                            outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L),
                             outputData.getString(Constants.KEY_SENDER_CITY_NAME),
                             outputData.getString(Constants.KEY_SENDER_FIRST_NAME),
                             outputData.getString(Constants.KEY_SENDER_MIDDLE_NAME),
@@ -750,9 +751,9 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                             outputData.getString(Constants.KEY_SENDER_COMPANY_NAME));
 
                     recipient = new AddressBook(
-                            outputData.getLong(Constants.KEY_RECIPIENT_ID, -1L),
-                            outputData.getLong(Constants.KEY_RECIPIENT_USER_ID, -1L),
-                            outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L),
+                            outputData.getLong(Constants.KEY_RECIPIENT_ID, 0L),
+                            outputData.getLong(Constants.KEY_RECIPIENT_USER_ID, 0L),
+                            outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L),
                             outputData.getString(Constants.KEY_RECIPIENT_CITY_NAME),
                             outputData.getString(Constants.KEY_RECIPIENT_ADDRESS),
                             outputData.getString(Constants.KEY_RECIPIENT_ZIP),
@@ -772,9 +773,9 @@ public class InvoiceDataFragment extends Fragment implements InvoiceDataCallback
                             1, new Date(), new Date());
 
                     payer = new AddressBook(
-                            outputData.getLong(Constants.KEY_PAYER_ID, -1L),
-                            outputData.getLong(Constants.KEY_PAYER_USER_ID, -1L),
-                            outputData.getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L),
+                            outputData.getLong(Constants.KEY_PAYER_ID, 0L),
+                            outputData.getLong(Constants.KEY_PAYER_USER_ID, 0L),
+                            outputData.getLong(Constants.KEY_PAYER_COUNTRY_ID, 0L),
                             outputData.getString(Constants.KEY_PAYER_CITY_NAME),
                             outputData.getString(Constants.KEY_PAYER_ADDRESS),
                             outputData.getString(Constants.KEY_PAYER_ZIP),

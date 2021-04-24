@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/input_manually_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/qr_code_edit_text"
+        android:layout_marginTop="24dp"
+        android:textSize="16sp"
+        android:textColor="#A5ABC0"
+        android:fontFamily="@font/geometria_actual"
+        android:text="@string/qr_code"/>
+
+    <EditText
+        android:id="@+id/qr_code_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/input_manually_text_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginHorizontal="16dp"
+        android:inputType="numberDecimal"
+        android:background="@drawable/edit_text_locked"
+        android:textSize="16sp"
+        android:fontFamily="@font/geometria_actual"
+        android:padding="17dp"
+        android:textColor="@color/colorBlack"
+        android:autofillHints="@string/qr_code"
+        android:hint="@string/input_qr_code"/>
+
+    <Button
+        android:id="@+id/submit_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/qr_code_edit_text"
+        app:layout_constraintStart_toStartOf="@id/qr_code_edit_text"
+        app:layout_constraintEnd_toStartOf="@id/scan_qr_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="32dp"
+        android:text="@string/submit"
+        android:fontFamily="@font/geometria_medium"
+        android:textSize="16sp"
+        android:textColor="#FFF"
+        android:textAllCaps="false"
+        android:background="@drawable/btn_gradient_orange"
+        android:paddingHorizontal="33dp"
+        android:paddingVertical="14dp"/>
+
+    <Button
+        android:id="@+id/scan_qr_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/submit_btn"
+        app:layout_constraintBottom_toBottomOf="@id/submit_btn"
+        app:layout_constraintStart_toEndOf="@id/submit_btn"
+        app:layout_constraintEnd_toEndOf="@id/qr_code_edit_text"
+        android:layout_marginStart="8dp"
+        android:text="@string/scan_qr"
+        android:fontFamily="@font/geometria_medium"
+        android:textSize="16sp"
+        android:textColor="#FFF"
+        android:textAllCaps="false"
+        android:background="@drawable/btn_gradient_orange"
+        android:paddingHorizontal="33dp"
+        android:paddingVertical="14dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

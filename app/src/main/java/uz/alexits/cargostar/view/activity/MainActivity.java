@@ -54,15 +54,15 @@ public class MainActivity extends AppCompatActivity {
             if (getIntent().getIntExtra(IntentConstants.INTENT_REQUEST_KEY, -1) == IntentConstants.REQUEST_FIND_REQUEST) {
                 final MainFragmentDirections.ActionMainFragmentToInvoiceDataFragment action =
                         MainFragmentDirections.actionMainFragmentToInvoiceDataFragment();
-                action.setRequestId(getIntent().getLongExtra(Constants.KEY_REQUEST_ID, -1L));
-                action.setInvoiceId(getIntent().getLongExtra(Constants.KEY_INVOICE_ID, -1L));
-                action.setCourierId(getIntent().getLongExtra(Constants.KEY_COURIER_ID, -1L));
-                action.setClientId(getIntent().getLongExtra(Constants.KEY_CLIENT_ID, -1L));
-                action.setSenderCountryId(getIntent().getLongExtra(Constants.KEY_SENDER_COUNTRY_ID, -1L));
+                action.setRequestId(getIntent().getLongExtra(Constants.KEY_REQUEST_ID, 0L));
+                action.setInvoiceId(getIntent().getLongExtra(Constants.KEY_INVOICE_ID, 0L));
+                action.setCourierId(getIntent().getLongExtra(Constants.KEY_COURIER_ID, 0L));
+                action.setClientId(getIntent().getLongExtra(Constants.KEY_CLIENT_ID, 0L));
+                action.setSenderCountryId(getIntent().getLongExtra(Constants.KEY_SENDER_COUNTRY_ID, 0L));
                 action.setSenderCityName(getIntent().getStringExtra(Constants.KEY_SENDER_CITY_NAME));
-                action.setRecipientCountryId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L));
+                action.setRecipientCountryId(getIntent().getLongExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L));
                 action.setRecipientCityName(getIntent().getStringExtra(Constants.KEY_RECIPIENT_CITY_NAME));
-                action.setProviderId(getIntent().getLongExtra(Constants.KEY_PROVIDER_ID, -1L));
+                action.setProviderId(getIntent().getLongExtra(Constants.KEY_PROVIDER_ID, 0L));
                 Navigation.findNavController(this, R.id.main_fragment_container).navigate(action);
             }
         }

@@ -97,9 +97,9 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
     private TransportationViewModel transportationViewModel;
 
     private static final List<Long> selectedStatusArray = new ArrayList<>();
-    private static volatile long selectedTransitPointId = -1;
-    private static volatile long courierBrancheId = -1;
-    private static volatile int statusFlag = -1;
+    private static volatile long selectedTransitPointId = 0;
+    private static volatile long courierBrancheId = 0;
+    private static volatile int statusFlag = 0;
 
     private static volatile boolean isFirstCheckBoxPick = true;
     private static volatile boolean isFirstSpinnerPick = true;
@@ -298,16 +298,16 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
 
-                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, 0L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, 0L);
+                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, 0L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, 0L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, 0L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
@@ -504,21 +504,21 @@ public class CurrentTransportationsFragment extends Fragment implements Transpor
                 currentItem.getDirection(),
                 currentItem.getArrivalDate());
 
-        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : -1L);
+        action.setRequestId(currentItem.getRequestId() != null ? currentItem.getRequestId() : 0L);
         action.setTransportationId(currentItem.getId());
-        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
-        action.setTransportationStatusId(currentItem.getTransportationStatusId() != null ? currentItem.getTransportationStatusId() : -1L);
+        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : 0L);
+        action.setTransportationStatusId(currentItem.getTransportationStatusId() != null ? currentItem.getTransportationStatusId() : 0L);
         action.setTransportationStatusName(currentItem.getTransportationStatusName());
-        action.setPaymentStatusId(currentItem.getPaymentStatusId() != null ? currentItem.getPaymentStatusId() : -1L);
-        action.setPartialId(currentItem.getPartialId() != null ? currentItem.getPartialId() : -1L);
+        action.setPaymentStatusId(currentItem.getPaymentStatusId() != null ? currentItem.getPaymentStatusId() : 0L);
+        action.setPartialId(currentItem.getPartialId() != null ? currentItem.getPartialId() : 0L);
         action.setTrackingCode(currentItem.getTrackingCode());
         action.setQrCode(currentItem.getQrCode());
         action.setPartyQrCode(currentItem.getPartyQrCode());
-        action.setCurrentTransitPointId(currentItem.getCurrentTransitionPointId() != null ? currentItem.getCurrentTransitionPointId() : -1L);
+        action.setCurrentTransitPointId(currentItem.getCurrentTransitionPointId() != null ? currentItem.getCurrentTransitionPointId() : 0L);
         action.setCityFrom(currentItem.getCityFrom());
         action.setCityTo(currentItem.getCityTo());
-        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
-        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
+        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : 0L);
+        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : 0L);
         action.setInstructions(currentItem.getInstructions());
         action.setArrivalDate(currentItem.getArrivalDate());
         action.setDirection(currentItem.getDirection());

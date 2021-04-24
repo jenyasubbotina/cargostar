@@ -7,7 +7,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--    server configuration-->
-    <string name="default_server_url">https://cargo.alex-its.uz/api/</string>
+    <string name="default_server_url">https://cargostar.uz/api/</string>
     <string name="dev_server_url">https://cargo-dev.alex-its.uz/api/</string>
     <string name="default_api_login">admin</string>
     <string name="default_api_password">5N8zWV2BbQ</string>
@@ -224,4 +224,8 @@
     <string name="samarkand">samarkand</string>
     <string name="tashkent">tashkent</string>
     <string name="contract_number">Номер контракта</string>
+    <string name="scan_qr">Отсканировать</string>
+    <string name="submit">Подтвердить</string>
+    <string name="input_qr_code">Введите QR-code вручную</string>
+    <string name="online">Онлайн</string>
 </resources>

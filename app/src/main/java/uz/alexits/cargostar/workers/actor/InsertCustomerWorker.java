@@ -57,8 +57,8 @@ public class InsertCustomerWorker extends Worker {
         this.address = getInputData().getString(Constants.KEY_ADDRESS);
         this.geolocation = getInputData().getString(Constants.KEY_GEOLOCATION);
         this.zip = getInputData().getString(Constants.KEY_ZIP);
-        this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, -1);
-        this.userType = getInputData().getInt(Constants.KEY_USER_TYPE, -1);
+        this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, 0);
+        this.userType = getInputData().getInt(Constants.KEY_USER_TYPE, 0);
         this.passportSerial = getInputData().getString(Constants.KEY_PASSPORT_SERIAL);
         this.inn = getInputData().getString(Constants.KEY_INN);
         this.company = getInputData().getString(Constants.KEY_COMPANY);

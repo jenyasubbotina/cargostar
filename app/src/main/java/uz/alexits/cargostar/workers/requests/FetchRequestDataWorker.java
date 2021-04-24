@@ -23,7 +23,7 @@ public class FetchRequestDataWorker extends Worker {
 
     public FetchRequestDataWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1);
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0);
     }
 
     @NonNull
@@ -59,14 +59,14 @@ public class FetchRequestDataWorker extends Worker {
 
                     final Data outputData = new Data.Builder()
                             .putLong(Constants.KEY_REQUEST_ID, request.getId())
-                            .putLong(Constants.KEY_SENDER_ID, request.getClientId() != null ? request.getClientId() : -1L)
-                            .putLong(Constants.KEY_COURIER_ID, request.getCourierId() != null ? request.getCourierId() : -1L)
-                            .putLong(Constants.KEY_PROVIDER_ID, request.getProviderId() != null ? request.getProviderId() : -1L)
-                            .putLong(Constants.KEY_INVOICE_ID, request.getInvoiceId() != null ? request.getInvoiceId() : -1L)
-                            .putLong(Constants.KEY_SENDER_USER_ID, request.getUserId() != null ? request.getUserId() : -1L)
-                            .putLong(Constants.KEY_SENDER_COUNTRY_ID, request.getSenderCountryId() != null ? request.getSenderCountryId() : -1L)
+                            .putLong(Constants.KEY_SENDER_ID, request.getClientId() != null ? request.getClientId() : 0L)
+                            .putLong(Constants.KEY_COURIER_ID, request.getCourierId() != null ? request.getCourierId() : 0L)
+                            .putLong(Constants.KEY_PROVIDER_ID, request.getProviderId() != null ? request.getProviderId() : 0L)
+                            .putLong(Constants.KEY_INVOICE_ID, request.getInvoiceId() != null ? request.getInvoiceId() : 0L)
+                            .putLong(Constants.KEY_SENDER_USER_ID, request.getUserId() != null ? request.getUserId() : 0L)
+                            .putLong(Constants.KEY_SENDER_COUNTRY_ID, request.getSenderCountryId() != null ? request.getSenderCountryId() : 0L)
                             .putString(Constants.KEY_SENDER_CITY_NAME, request.getSenderCityName())
-                            .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, request.getRecipientCountryId() != null ? request.getRecipientCountryId() : -1L)
+                            .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, request.getRecipientCountryId() != null ? request.getRecipientCountryId() : 0L)
                             .putString(Constants.KEY_RECIPIENT_CITY_NAME, request.getRecipientCityName())
                             .putString(Constants.KEY_SENDER_EMAIL, request.getSenderEmail())
                             .putString(Constants.KEY_SENDER_FIRST_NAME, request.getSenderFirstName())

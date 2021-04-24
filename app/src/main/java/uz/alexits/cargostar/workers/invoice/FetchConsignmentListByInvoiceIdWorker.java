@@ -29,6 +29,7 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
     private final double price;
     private final int deliveryType;
     private final String paymentStatus;
+    private final int paymentMethod;
     private final String comment;
 
     private final int status;
@@ -102,30 +103,31 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
     public FetchConsignmentListByInvoiceIdWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
 
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
-        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
+        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, 0L);
         this.number = getInputData().getString(Constants.KEY_NUMBER);
-        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, -1L);
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
-        this.tariffId = getInputData().getLong(Constants.KEY_TARIFF_ID, -1L);
-        this.price = getInputData().getDouble(Constants.KEY_PRICE, -1);
-        this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, -1);
+        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, 0L);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0L);
+        this.tariffId = getInputData().getLong(Constants.KEY_TARIFF_ID, 0L);
+        this.price = getInputData().getDouble(Constants.KEY_PRICE, 0);
+        this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
         this.paymentStatus = getInputData().getString(Constants.KEY_PAYMENT_STATUS);
+        this.paymentMethod = getInputData().getInt(Constants.KEY_PAYMENT_METHOD, 0);
         this.comment = getInputData().getString(Constants.KEY_COMMENT);
 
-        this.status = getInputData().getInt(Constants.KEY_STATUS, -1);
-        this.createdAtTime = getInputData().getLong(Constants.KEY_CREATED_AT, -1L);
-        this.updatedAtTime = getInputData().getLong(Constants.KEY_UPDATED_AT, -1L);
+        this.status = getInputData().getInt(Constants.KEY_STATUS, 0);
+        this.createdAtTime = getInputData().getLong(Constants.KEY_CREATED_AT, 0L);
+        this.updatedAtTime = getInputData().getLong(Constants.KEY_UPDATED_AT, 0L);
 
-        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1L);
-        this.senderUserId = getInputData().getLong(Constants.KEY_SENDER_USER_ID, -1L);
+        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, 0L);
+        this.senderUserId = getInputData().getLong(Constants.KEY_SENDER_USER_ID, 0L);
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
         this.senderFirstName = getInputData().getString(Constants.KEY_SENDER_FIRST_NAME);
         this.senderLastName = getInputData().getString(Constants.KEY_SENDER_LAST_NAME);
         this.senderMiddleName = getInputData().getString(Constants.KEY_SENDER_MIDDLE_NAME);
         this.senderPhone = getInputData().getString(Constants.KEY_SENDER_PHONE);
         this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
-        this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
+        this.senderCountryId = getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
         this.senderCityName = getInputData().getString(Constants.KEY_SENDER_CITY_NAME);
         this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
         this.senderCargo = getInputData().getString(Constants.KEY_SENDER_CARGOSTAR);
@@ -139,8 +141,8 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
         this.senderPhoto = getInputData().getString(Constants.KEY_SENDER_PHOTO);
         this.senderType = getInputData().getInt(Constants.KEY_SENDER_TYPE, 0);
 
-        this.recipientId = getInputData().getLong(Constants.KEY_RECIPIENT_ID, -1L);
-        this.recipientUserId = getInputData().getLong(Constants.KEY_RECIPIENT_USER_ID, -1L);
+        this.recipientId = getInputData().getLong(Constants.KEY_RECIPIENT_ID, 0L);
+        this.recipientUserId = getInputData().getLong(Constants.KEY_RECIPIENT_USER_ID, 0L);
         this.recipientEmail = getInputData().getString(Constants.KEY_RECIPIENT_EMAIL);
         this.recipientFirstName = getInputData().getString(Constants.KEY_RECIPIENT_FIRST_NAME);
         this.recipientLastName = getInputData().getString(Constants.KEY_RECIPIENT_LAST_NAME);
@@ -148,7 +150,7 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
         this.recipientPhone = getInputData().getString(Constants.KEY_RECIPIENT_PHONE);
         this.recipientAddress = getInputData().getString(Constants.KEY_RECIPIENT_ADDRESS);
         this.recipientZip = getInputData().getString(Constants.KEY_RECIPIENT_ZIP);
-        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
+        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
         this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
         this.recipientCargo = getInputData().getString(Constants.KEY_RECIPIENT_CARGOSTAR);
         this.recipientTnt = getInputData().getString(Constants.KEY_RECIPIENT_TNT);
@@ -159,15 +161,15 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
         this.recipientCompany = getInputData().getString(Constants.KEY_RECIPIENT_COMPANY_NAME);
         this.recipientType = getInputData().getInt(Constants.KEY_RECIPIENT_TYPE, 0);
 
-        this.payerId = getInputData().getLong(Constants.KEY_PAYER_ID, -1L);
-        this.payerUserId = getInputData().getLong(Constants.KEY_PAYER_USER_ID, -1L);
+        this.payerId = getInputData().getLong(Constants.KEY_PAYER_ID, 0L);
+        this.payerUserId = getInputData().getLong(Constants.KEY_PAYER_USER_ID, 0L);
         this.payerEmail = getInputData().getString(Constants.KEY_PAYER_EMAIL);
         this.payerFirstName = getInputData().getString(Constants.KEY_PAYER_FIRST_NAME);
         this.payerLastName = getInputData().getString(Constants.KEY_PAYER_LAST_NAME);
         this.payerMiddleName = getInputData().getString(Constants.KEY_PAYER_MIDDLE_NAME);
         this.payerPhone = getInputData().getString(Constants.KEY_PAYER_PHONE);
         this.payerAddress = getInputData().getString(Constants.KEY_PAYER_ADDRESS);
-        this.payerCountryId = getInputData().getLong(Constants.KEY_PAYER_COUNTRY_ID, -1L);
+        this.payerCountryId = getInputData().getLong(Constants.KEY_PAYER_COUNTRY_ID, 0L);
         this.payerCityName = getInputData().getString(Constants.KEY_PAYER_CITY_NAME);
         this.payerZip = getInputData().getString(Constants.KEY_PAYER_ZIP);
         this.payerCargo = getInputData().getString(Constants.KEY_PAYER_CARGOSTAR);
@@ -200,6 +202,7 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
                 .putDouble(Constants.KEY_PRICE, price)
                 .putInt(Constants.KEY_DELIVERY_TYPE, deliveryType)
                 .putString(Constants.KEY_PAYMENT_STATUS, paymentStatus)
+                .putInt(Constants.KEY_PAYMENT_METHOD, paymentMethod)
                 .putString(Constants.KEY_COMMENT, comment)
 
                 .putLong(Constants.KEY_STATUS, status)

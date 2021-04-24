@@ -57,22 +57,22 @@ public class Consignment {
 
     @Expose
     @SerializedName("length")
-    @ColumnInfo(name = "length", defaultValue = "-1")
+    @ColumnInfo(name = "length", defaultValue = "0")
     private final double length;
 
     @Expose
     @SerializedName("width")
-    @ColumnInfo(name = "width", defaultValue = "-1")
+    @ColumnInfo(name = "width", defaultValue = "0")
     private final double width;
 
     @Expose
     @SerializedName("height")
-    @ColumnInfo(name = "height", defaultValue = "-1")
+    @ColumnInfo(name = "height", defaultValue = "0")
     private final double height;
 
     @Expose
     @SerializedName("weight")
-    @ColumnInfo(name = "weight", defaultValue = "-1")
+    @ColumnInfo(name = "weight", defaultValue = "0")
     private final double weight;
 
     @SerializedName("qr")

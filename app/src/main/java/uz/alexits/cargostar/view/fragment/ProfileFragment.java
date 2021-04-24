@@ -246,8 +246,8 @@ public class ProfileFragment extends Fragment {
             final String login = SharedPrefs.getInstance(activity).getString(Constants.KEY_LOGIN);
             final String password = SharedPrefs.getInstance(activity).getString(Constants.KEY_PASSWORD);
 
-            SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, -1L);
-            SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, -1L);
+            SharedPrefs.getInstance(activity).putLong(SharedPrefs.ID, 0L);
+            SharedPrefs.getInstance(activity).putLong(SharedPrefs.BRANCH_ID, 0L);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_LOGIN, null);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_PASSWORD, null);
             SharedPrefs.getInstance(activity).putString(Constants.KEY_TOKEN, null);
@@ -423,15 +423,15 @@ public class ProfileFragment extends Fragment {
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
 
-                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, 0L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, 0L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, 0L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, 0L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);

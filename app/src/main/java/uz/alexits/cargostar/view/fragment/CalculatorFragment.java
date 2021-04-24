@@ -632,16 +632,16 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
 
-                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, 0L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, 0L);
+                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, 0L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, 0L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, 0L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
@@ -859,8 +859,8 @@ public class CalculatorFragment extends Fragment implements CreateInvoiceCallbac
             }
         }
         consignmentList.add(new Consignment(
-                -1,
-                -1L,
+                0,
+                0L,
                 packagingType.getId(),
                 packagingType.getName(),
                 null,

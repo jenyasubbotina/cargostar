@@ -73,6 +73,7 @@ import uz.alexits.cargostar.view.adapter.CustomArrayAdapter;
 import uz.alexits.cargostar.view.adapter.TariffPriceRadioAdapter;
 import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
 import uz.alexits.cargostar.view.callback.TariffCallback;
+import uz.alexits.cargostar.view.dialog.ScanQrDialog;
 import uz.alexits.cargostar.viewmodel.CalculatorViewModel;
 import uz.alexits.cargostar.viewmodel.CourierViewModel;
 import uz.alexits.cargostar.viewmodel.CreateInvoiceViewModel;
@@ -137,6 +138,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private Button calculateBtn;
 
     private RadioGroup paymentMethodRadioGroup;
+    private RadioButton onlineRadioBtn;
     private RadioButton cashRadioBtn;
     private RadioButton terminalRadioBtn;
     private RadioButton transferRadioBtn;
@@ -243,13 +245,14 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     private static volatile boolean payerCountryIsSet;
 
     /* if invoice was created before */
-    private static volatile int requestKey = -1;
-    private static volatile long requestId = -1L;
-    private static volatile long invoiceId = -1L;
-    private static volatile long providerId = -1L;
-    private static volatile long courierId = -1L;
-    private static volatile long tariffId = -1L;
+    private static volatile int requestKey = 0;
+    private static volatile long requestId = 0L;
+    private static volatile long invoiceId = 0L;
+    private static volatile long providerId = 0L;
+    private static volatile long courierId = 0L;
+    private static volatile long tariffId = 0L;
     private static volatile int deliveryType = 0;
+    private static volatile int paymentMethod = 0;
 
     private Customer sender;
     private AddressBook recipient;
@@ -276,12 +279,12 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestKey = -1;
-        requestId = -1;
-        invoiceId = -1;
-        tariffId = -1;
-        courierId = -1;
-        providerId = -1;
+        requestKey = 0;
+        requestId = 0;
+        invoiceId = 0;
+        tariffId = 0;
+        courierId = 0;
+        providerId = 0;
 
         price = 0;
         deliveryType = 0;
@@ -305,6 +308,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             tariffId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getTariffId();
             courierId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getCourierId();
             providerId = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getProviderId();
+            paymentMethod = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPaymentMethod();
             price = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPrice();
 
             deliveryType = CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDeliveryType();
@@ -474,6 +478,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         createInvoiceViewModel.getSender().observe(getViewLifecycleOwner(), sender -> {
             if (sender != null) {
                 createInvoiceViewModel.setSenderUserId(sender.getUserId());
+                this.sender = sender;
                 updateSenderData(sender);
             }
         });
@@ -579,16 +584,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
 
-                        requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                        invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        requestId = outputData.getLong(Constants.KEY_REQUEST_ID, 0L);
+                        invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, 0L);
+                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, 0L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, 0L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, 0L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
@@ -877,6 +882,23 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerCountry = (Country) country;
                 createInvoiceViewModel.setPayerCountryId(payerCountry.getId());
 
+                for (int i = 0; i < countryList.size(); i++) {
+                    if (!payerCountry.getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
+                        onlineRadioBtn.setVisibility(View.GONE);
+                        cashRadioBtn.setVisibility(View.GONE);
+                        terminalRadioBtn.setVisibility(View.GONE);
+                        transferRadioBtn.setVisibility(View.GONE);
+                        corporateRadioBtn.setVisibility(View.GONE);
+                        return;
+                    }
+                    onlineRadioBtn.setVisibility(View.VISIBLE);
+                    cashRadioBtn.setVisibility(View.VISIBLE);
+                    terminalRadioBtn.setVisibility(View.VISIBLE);
+                    transferRadioBtn.setVisibility(View.VISIBLE);
+                    corporateRadioBtn.setVisibility(View.VISIBLE);
+                }
+
+
                 final TextView itemTextView = (TextView) view;
                 if (itemTextView != null) {
                     if (position < parent.getCount()) {
@@ -902,6 +924,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 }
 
                 final AddressBook entry = (AddressBook) parent.getSelectedItem();
+                recipient = entry;
                 updateRecipientData(entry);
 
                 final TextView itemTextView = (TextView) view;
@@ -1094,8 +1117,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerTntEditText.setText(senderTntEditText.getText().toString().trim());
                 payerFedexEditText.setText(senderFedexEditText.getText().toString().trim());
 
-                payerInnEditText.setText(sender.getInn());
                 payerCompanyEditText.setText(senderCompanyEditText.getText().toString().trim());
+
+                payerInnEditText.setText(sender.getInn());
 
                 return;
             }
@@ -1115,8 +1139,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerTntEditText.setText(recipientTntEditText.getText().toString().trim());
                 payerFedexEditText.setText(recipientFedexEditText.getText().toString().trim());
 
-                payerInnEditText.setText(recipient.getInn());
                 payerCompanyEditText.setText(recipientCompanyEditText.getText().toString().trim());
+
+                payerInnEditText.setText(recipient.getInn());
+                payerCompanyEditText.setText(recipient.getContractNumber());
             }
         });
     }
@@ -1328,6 +1354,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
         //calculations
         paymentMethodRadioGroup = root.findViewById(R.id.payment_method_radio_group);
+        onlineRadioBtn = root.findViewById(R.id.online_radio_btn);
         cashRadioBtn = root.findViewById(R.id.cash_radio_btn);
         terminalRadioBtn = root.findViewById(R.id.terminal_radio_btn);
         transferRadioBtn = root.findViewById(R.id.transfer_radio_btn);
@@ -1615,6 +1642,51 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             boxTypeRadioBtn.setChecked(true);
         }
 
+        if (paymentMethod == 1) {
+            cashRadioBtn.setVisibility(View.GONE);
+            terminalRadioBtn.setVisibility(View.GONE);
+            transferRadioBtn.setVisibility(View.GONE);
+            corporateRadioBtn.setVisibility(View.GONE);
+            onlineRadioBtn.setVisibility(View.VISIBLE);
+            onlineRadioBtn.setChecked(true);
+            return;
+        }
+        if (paymentMethod == 2) {
+            onlineRadioBtn.setVisibility(View.GONE);
+            terminalRadioBtn.setVisibility(View.GONE);
+            transferRadioBtn.setVisibility(View.GONE);
+            corporateRadioBtn.setVisibility(View.GONE);
+            cashRadioBtn.setVisibility(View.VISIBLE);
+            cashRadioBtn.setChecked(true);
+            return;
+        }
+        if (paymentMethod == 3) {
+            onlineRadioBtn.setVisibility(View.GONE);
+            cashRadioBtn.setVisibility(View.GONE);
+            transferRadioBtn.setVisibility(View.GONE);
+            corporateRadioBtn.setVisibility(View.GONE);
+            terminalRadioBtn.setVisibility(View.VISIBLE);
+            terminalRadioBtn.setChecked(true);
+            return;
+        }
+        if (paymentMethod == 4) {
+            onlineRadioBtn.setVisibility(View.GONE);
+            cashRadioBtn.setVisibility(View.GONE);
+            terminalRadioBtn.setVisibility(View.GONE);
+            corporateRadioBtn.setVisibility(View.GONE);
+            transferRadioBtn.setVisibility(View.VISIBLE);
+            transferRadioBtn.setChecked(true);
+            return;
+        }
+        if (paymentMethod == 5) {
+            onlineRadioBtn.setVisibility(View.GONE);
+            cashRadioBtn.setVisibility(View.GONE);
+            terminalRadioBtn.setVisibility(View.GONE);
+            transferRadioBtn.setVisibility(View.GONE);
+            corporateRadioBtn.setVisibility(View.VISIBLE);
+            corporateRadioBtn.setChecked(true);
+            return;
+        }
         if (!TextUtils.isEmpty(payer.getCompany())) {
             cashRadioBtn.setVisibility(View.GONE);
             terminalRadioBtn.setVisibility(View.GONE);
@@ -1696,7 +1768,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             }
         }
         consignmentList.add(new Consignment(
-                -1,
+                0,
                 requestId,
                 packagingType.getId(),
                 String.valueOf(packagingType.getId()),
@@ -1972,16 +2044,6 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             Toast.makeText(context, "Для создания заявки укажите почтовый индекс плательщика", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (TextUtils.isEmpty(payerInn)) {
-            Log.e(TAG, "sendInvoice(): payerInn is empty");
-            Toast.makeText(context, "Для создания заявки укажите ИНН плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(contractNumber)) {
-            Log.e(TAG, "sendInvoice(): contractNumber is empty");
-            Toast.makeText(context, "Для создания заявки укажите номер контракта плательщика", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         if (!TextUtils.isEmpty(senderCompanyName)) {
             senderType = 2;
@@ -1997,6 +2059,16 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
         if (!TextUtils.isEmpty(payerCompany)) {
             payerType = 2;
+            if (TextUtils.isEmpty(payerInn)) {
+                Log.e(TAG, "sendInvoice(): payerInn is empty");
+                Toast.makeText(context, "Для создания заявки укажите ИНН плательщика", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(contractNumber)) {
+                Log.e(TAG, "sendInvoice(): contractNumber is empty");
+                Toast.makeText(context, "Для создания заявки укажите номер контракта плательщика", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         else {
             payerType = 1;
@@ -2032,14 +2104,10 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 return;
             }
         }
-        if (paymentMethodRadioGroup.getCheckedRadioButtonId() != cashRadioBtn.getId()
-                && paymentMethodRadioGroup.getCheckedRadioButtonId() != terminalRadioBtn.getId()
-                && paymentMethodRadioGroup.getCheckedRadioButtonId() != transferRadioBtn.getId()
-                && paymentMethodRadioGroup.getCheckedRadioButtonId() != corporateRadioBtn.getId()) {
-            Toast.makeText(context, "Для создания заявки выберите способ оплаты", Toast.LENGTH_SHORT).show();
-            return;
+        if (paymentMethodRadioGroup.getCheckedRadioButtonId() == onlineRadioBtn.getId()) {
+            paymentMethod = 1;
         }
-        if (paymentMethodRadioGroup.getCheckedRadioButtonId() == cashRadioBtn.getId()) {
+        else if (paymentMethodRadioGroup.getCheckedRadioButtonId() == cashRadioBtn.getId()) {
             paymentMethod = 2;
         }
         else if (paymentMethodRadioGroup.getCheckedRadioButtonId() == terminalRadioBtn.getId()) {
@@ -2065,8 +2133,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
         }
         catch (Exception e) {
             Log.e(TAG, "createInvoice(): ", e);
-            totalWeight = -1;
-            totalVolume = -1;
+            totalWeight = 0;
+            totalVolume = 0;
         }
 
         if (totalWeight <= 0) {
@@ -2074,7 +2142,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 totalWeight += consignment.getWeight();
             }
         }
-        if (totalVolume < 0) {
+        if (totalVolume <= 0) {
             for (final Consignment consignment : consignmentList) {
                 totalVolume += consignment.getLength() * consignment.getHeight() * consignment.getWidth();
             }
@@ -2131,7 +2199,7 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
                 payerFedexTax,
                 payerCompany,
                 payerType,
-                !TextUtils.isEmpty(discount) ? Double.parseDouble(discount) : -1,
+                !TextUtils.isEmpty(discount) ? Double.parseDouble(discount) : 0,
                 payerInn,
                 contractNumber,
                 instructions,
@@ -2193,9 +2261,9 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
 
     @Override
     public void onScanItemClicked(int position) {
-        final Intent scanQrIntent = new Intent(context, ScanQrActivity.class);
-        scanQrIntent.putExtra(Constants.KEY_QR_POSITION, position);
-        startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_CARGO);
+        ScanQrDialog dialogFragment = ScanQrDialog.newInstance(position, IntentConstants.REQUEST_SCAN_QR_CARGO);
+        dialogFragment.setTargetFragment(CreateInvoiceFragment.this, IntentConstants.REQUEST_SCAN_QR_CARGO);
+        dialogFragment.show(getParentFragmentManager().beginTransaction(), TAG);
     }
 
     @Override
@@ -2206,6 +2274,8 @@ public class CreateInvoiceFragment extends Fragment implements CreateInvoiceCall
             if (resultCode == Activity.RESULT_OK && data != null) {
                 final String qr = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
                 final int position = data.getIntExtra(Constants.KEY_QR_POSITION, -1);
+
+                Log.i(TAG, "onActivityResult(): qr=" + qr);
 
                 if (position >= 0) {
                     consignmentList.get(position).setQr(qr);

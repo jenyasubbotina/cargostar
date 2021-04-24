@@ -29,26 +29,26 @@ public class UpdateTransportationStatusWorker extends Worker {
 
     public UpdateTransportationStatusWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.transportationId = getInputData().getLong(Constants.KEY_TRANSPORTATION_ID, -1L);
-        this.transportationStatusId = getInputData().getLong(Constants.KEY_TRANSPORTATION_STATUS_ID, -1L);
-        this.transitPointId = getInputData().getLong(Constants.KEY_TRANSIT_POINT_ID, -1L);
-        this.partialId = getInputData().getLong(Constants.KEY_PARTIAL_ID, -1L);
+        this.transportationId = getInputData().getLong(Constants.KEY_TRANSPORTATION_ID, 0L);
+        this.transportationStatusId = getInputData().getLong(Constants.KEY_TRANSPORTATION_STATUS_ID, 0L);
+        this.transitPointId = getInputData().getLong(Constants.KEY_TRANSIT_POINT_ID, 0L);
+        this.partialId = getInputData().getLong(Constants.KEY_PARTIAL_ID, 0L);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        if (transportationId == -1L) {
+        if (transportationId <= 0L) {
             Log.e(TAG, "updateTransportationStatus(): empty transportation id");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();
         }
-        if (transportationStatusId == -1L) {
+        if (transportationStatusId <= 0L) {
             Log.e(TAG, "updateTransportationStatus(): empty status id");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();
         }
-        if (transitPointId == -1L) {
+        if (transitPointId <= 0L) {
             Log.e(TAG, "updateTransportationStatus(): empty transit point id");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();

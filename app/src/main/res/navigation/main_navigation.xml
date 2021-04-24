@@ -53,7 +53,7 @@
         <argument
             android:name="user_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <action
             android:id="@+id/action_mainFragment_to_invoiceDataFragment"
             app:destination="@id/invoiceDataFragment"
@@ -90,15 +90,15 @@
         <argument
             android:name="request_key"
             app:argType="integer"
-            android:defaultValue="-1"/>
+            android:defaultValue="0"/>
         <argument
             android:name="request_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="invoice_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="invoice_number"
             app:argType="string"
@@ -107,15 +107,15 @@
         <argument
             android:name="provider_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="tariff_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="courier_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="consignment_quantity"
             app:argType="integer"
@@ -133,15 +133,19 @@
             android:name="price"
             app:argType="float"
             android:defaultValue="0.0"/>
-
+        <argument
+            android:name="payment_method"
+            app:argType="integer"
+            app:nullable="false"
+            android:defaultValue="0"/>
         <argument
             android:name="sender_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="sender_user_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="sender_email"
             app:argType="string"
@@ -185,7 +189,7 @@
         <argument
             android:name="sender_country_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="sender_city_name"
             app:argType="string"
@@ -238,11 +242,11 @@
         <argument
             android:name="recipient_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="recipient_user_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="recipient_email"
             app:argType="string"
@@ -281,7 +285,7 @@
         <argument
             android:name="recipient_country_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="recipient_city_name"
             app:argType="string"
@@ -330,11 +334,11 @@
         <argument
             android:name="payer_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="payer_user_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="payer_email"
             app:argType="string"
@@ -373,7 +377,7 @@
         <argument
             android:name="payer_country_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="payer_city_name"
             app:argType="string"
@@ -474,7 +478,7 @@
         <argument
             android:name="courier_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <action
             android:id="@+id/action_publicBidsFragment_to_createUserFragment"
             app:destination="@id/createUserFragment" />
@@ -509,7 +513,7 @@
         <argument
             android:name="courier_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <action
             android:id="@+id/action_myRequestsFragment_to_createUserFragment"
             app:destination="@id/createUserFragment" />
@@ -550,12 +554,12 @@
             app:popExitAnim="@anim/fragment_open_exit"/>
         <argument
             android:name="status_flag"
-            android:defaultValue="-1"
+            android:defaultValue="0"
             app:argType="integer" />
         <argument
             android:name="courier_branch_id"
             app:argType="long"
-            android:defaultValue="-1L" />
+            android:defaultValue="0L" />
         <action
             android:id="@+id/action_currentTransportationsFragment_to_createUserFragment"
             app:destination="@id/createUserFragment" />
@@ -594,23 +598,23 @@
         <argument
             android:name="request_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="invoice_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="provider_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="courier_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="client_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="is_public"
             app:argType="boolean"
@@ -640,7 +644,7 @@
         <argument
             android:name="sender_user_id"
             app:argType="long"
-            android:defaultValue="-1L" />
+            android:defaultValue="0L" />
         <argument
             android:name="sender_first_name"
             app:argType="string"
@@ -674,7 +678,7 @@
         <argument
             android:name="sender_country_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="sender_city_name"
             app:argType="string"
@@ -683,7 +687,7 @@
         <argument
             android:name="recipient_country_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="recipient_city_name"
             app:argType="string"
@@ -722,15 +726,15 @@
         <argument
             android:name="transportation_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="invoice_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="current_transit_point_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="qr_code"
             app:argType="string"
@@ -746,7 +750,7 @@
         <argument
             android:name="transportation_status_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="city_from"
             app:argType="string"
@@ -758,11 +762,11 @@
         <argument
             android:name="courier_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="payment_status_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="party_qr_code"
             app:argType="string"
@@ -782,19 +786,19 @@
         <argument
             android:name="provider_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="request_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="partial_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="branche_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <action
             android:id="@+id/action_transportationStatusFragment_to_createUserFragment"
             app:destination="@id/createUserFragment" />
@@ -814,19 +818,19 @@
         <argument
             android:name="courier_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="country_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="region_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <argument
             android:name="city_id"
             app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="0L"/>
         <action
             android:id="@+id/action_profileFragment_to_createUserFragment"
             app:destination="@id/createUserFragment" />

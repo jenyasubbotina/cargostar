@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 93,
-    "identityHash": "8a0411ec27bf980bf84fd6b32b610352",
+    "identityHash": "bff602cef73dc556e4ee45eefc52f5a2",
     "entities": [
       {
         "tableName": "user",
@@ -1185,7 +1185,7 @@
       },
       {
         "tableName": "invoice",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `number` TEXT, `sender_id` INTEGER, `recipient_id` INTEGER, `payer_id` INTEGER, `provider_id` INTEGER, `request_id` INTEGER, `sender_signature` TEXT, `recipient_signature` TEXT, `tariff_id` INTEGER, `price` REAL NOT NULL, `status` INTEGER NOT NULL, `created_at` INTEGER, `updated_at` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`sender_id`) REFERENCES `customer`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`recipient_id`) REFERENCES `address_book`(`id`) ON UPDATE CASCADE ON DELETE SET NULL , FOREIGN KEY(`payer_id`) REFERENCES `address_book`(`id`) ON UPDATE CASCADE ON DELETE SET NULL , FOREIGN KEY(`provider_id`) REFERENCES `provider`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`request_id`) REFERENCES `request`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `number` TEXT, `sender_id` INTEGER, `recipient_id` INTEGER, `payer_id` INTEGER, `provider_id` INTEGER, `request_id` INTEGER, `sender_signature` TEXT, `recipient_signature` TEXT, `tariff_id` INTEGER, `price` REAL NOT NULL, `payment_method` INTEGER NOT NULL, `status` INTEGER NOT NULL, `created_at` INTEGER, `updated_at` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`sender_id`) REFERENCES `customer`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`recipient_id`) REFERENCES `address_book`(`id`) ON UPDATE CASCADE ON DELETE SET NULL , FOREIGN KEY(`payer_id`) REFERENCES `address_book`(`id`) ON UPDATE CASCADE ON DELETE SET NULL , FOREIGN KEY(`provider_id`) REFERENCES `provider`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`request_id`) REFERENCES `request`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1251,6 +1251,12 @@
             "fieldPath": "price",
             "columnName": "price",
             "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paymentMethod",
+            "columnName": "payment_method",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -1380,7 +1386,7 @@
       },
       {
         "tableName": "consignment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `request_id` INTEGER, `packaging_id` INTEGER, `dimensions` TEXT, `packaging_type` TEXT, `name` TEXT, `description` TEXT, `cost` TEXT, `length` REAL NOT NULL DEFAULT -1, `width` REAL NOT NULL DEFAULT -1, `height` REAL NOT NULL DEFAULT -1, `weight` REAL NOT NULL DEFAULT -1, `qr` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`request_id`) REFERENCES `request`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `request_id` INTEGER, `packaging_id` INTEGER, `dimensions` TEXT, `packaging_type` TEXT, `name` TEXT, `description` TEXT, `cost` TEXT, `length` REAL NOT NULL DEFAULT 0, `width` REAL NOT NULL DEFAULT 0, `height` REAL NOT NULL DEFAULT 0, `weight` REAL NOT NULL DEFAULT 0, `qr` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`request_id`) REFERENCES `request`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1435,28 +1441,28 @@
             "columnName": "length",
             "affinity": "REAL",
             "notNull": true,
-            "defaultValue": "-1"
+            "defaultValue": "0"
           },
           {
             "fieldPath": "width",
             "columnName": "width",
             "affinity": "REAL",
             "notNull": true,
-            "defaultValue": "-1"
+            "defaultValue": "0"
           },
           {
             "fieldPath": "height",
             "columnName": "height",
             "affinity": "REAL",
             "notNull": true,
-            "defaultValue": "-1"
+            "defaultValue": "0"
           },
           {
             "fieldPath": "weight",
             "columnName": "weight",
             "affinity": "REAL",
             "notNull": true,
-            "defaultValue": "-1"
+            "defaultValue": "0"
           },
           {
             "fieldPath": "qr",
@@ -2863,7 +2869,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8a0411ec27bf980bf84fd6b32b610352')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bff602cef73dc556e4ee45eefc52f5a2')"
     ]
   }
 }

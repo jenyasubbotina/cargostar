@@ -24,16 +24,16 @@ public class FetchTransportationRouteWorker extends Worker {
 
     public FetchTransportationRouteWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.transportationId = getInputData().getLong(Constants.KEY_TRANSPORTATION_ID, -1L);
-        this.currentStatusId = getInputData().getLong(Constants.KEY_CURRENT_STATUS_ID, -1L);
-        this.currentPointId = getInputData().getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, -1L);
+        this.transportationId = getInputData().getLong(Constants.KEY_TRANSPORTATION_ID, 0L);
+        this.currentStatusId = getInputData().getLong(Constants.KEY_CURRENT_STATUS_ID, 0L);
+        this.currentPointId = getInputData().getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, 0L);
         this.currentStatusName = getInputData().getString(Constants.KEY_CURRENT_STATUS_NAME);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        if (transportationId == -1L) {
+        if (transportationId <= 0L) {
             Log.e(TAG, "fetchTransportationRoute(): empty transportation id");
             return Result.failure();
         }

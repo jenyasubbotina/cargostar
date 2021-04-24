@@ -62,7 +62,7 @@ public class CalculatorViewModel extends AndroidViewModel {
     /* setters */
     public void setSrcCountryId(final Long srcCountryId) {
         if (srcCountryId == null) {
-            this.srcCountryId.setValue(-1L);
+            this.srcCountryId.setValue(0L);
             return;
         }
         this.srcCountryId.setValue(srcCountryId);
@@ -70,7 +70,7 @@ public class CalculatorViewModel extends AndroidViewModel {
 
     public void setDestCountryId(final Long destCountryId) {
         if (destCountryId == null) {
-            this.destCountryId.setValue(-1L);
+            this.destCountryId.setValue(0L);
             return;
         }
         this.destCountryId.setValue(destCountryId);
@@ -78,7 +78,7 @@ public class CalculatorViewModel extends AndroidViewModel {
 
     public void setProviderId(final Long providerId) {
         if (providerId == null) {
-            this.setProviderId(-1L);
+            this.setProviderId(0L);
             return;
         }
         this.providerId.setValue(providerId);
@@ -86,7 +86,7 @@ public class CalculatorViewModel extends AndroidViewModel {
 
     public void setType(final Integer type) {
         if (type == null) {
-            this.type.setValue(-1);
+            this.type.setValue(0);
             return;
         }
         this.type.setValue(type);
@@ -139,10 +139,6 @@ public class CalculatorViewModel extends AndroidViewModel {
                 repository.selectZoneListByCountryIdAndProviderId(input.getCountryId(), input.getProviderId()));
     }
 
-//    public void setZoneSettingsIds(final List<Long> zoneSettingsIds) {
-//        this.zoneSettingsIds.setValue(zoneSettingsIds);
-//    }
-//
     public LiveData<List<Packaging>> getTariffList() {
         return Transformations.switchMap(providerId, repository::selectPackagingsByProviderId);
     }

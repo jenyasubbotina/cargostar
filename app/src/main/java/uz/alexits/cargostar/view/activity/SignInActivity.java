@@ -82,10 +82,10 @@ public class SignInActivity extends AppCompatActivity {
                     signInBtn.setEnabled(true);
 
                     final Data outputData = workInfo.getOutputData();
-                    final long courierId = outputData.getLong(SharedPrefs.ID, -1);
-                    final long brancheId = outputData.getLong(SharedPrefs.BRANCH_ID, -1);
+                    final long courierId = outputData.getLong(SharedPrefs.ID, 0);
+                    final long brancheId = outputData.getLong(SharedPrefs.BRANCH_ID, 0);
 
-                    if (courierId == -1) {
+                    if (courierId <= 0) {
                         Log.e(TAG, "Ошибка: ID курьера пустой");
                         Toast.makeText(this, "Ошибка: ID курьера пустой", Toast.LENGTH_SHORT).show();
                         return;
@@ -102,7 +102,7 @@ public class SignInActivity extends AppCompatActivity {
                     return;
                 }
                 if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                    Log.e(TAG, "insertLocationData(): failed to insert location data");
+                    Log.e(TAG, "synchronizeFirstTime(): chain work failed");
                     Toast.makeText(this, "Ошибка инициализации", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.INVISIBLE);
                     signInBtn.setEnabled(true);

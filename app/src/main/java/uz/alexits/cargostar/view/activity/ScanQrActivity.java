@@ -26,7 +26,6 @@ public class ScanQrActivity extends AppCompatActivity {
         if (getIntent() != null) {
             this.position = getIntent().getIntExtra(Constants.KEY_QR_POSITION, -1);
         }
-
         final IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setPrompt("Отсканируйте QR-код");
         integrator.setBeepEnabled(false);

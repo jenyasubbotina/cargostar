@@ -63,7 +63,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
     private RecyclerView myRequestsRecyclerView;
     private MyRequestAdapter adapter;
 
-    private static long courierId = -1;
+    private static long courierId = 0;
 
     public MyRequestsFragment() {
         // Required empty public constructor
@@ -185,16 +185,16 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         final Data outputData = workInfo.getOutputData();
 
-                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, -1L);
-                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, -1L);
-                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, -1L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, -1L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, -1L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, -1L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, -1L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, -1L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, -1L);
+                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, 0L);
+                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, 0L);
+                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, 0L);
+                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, 0L);
+                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
+                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L);
+                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L);
+                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
+                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
+                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, 0L);
 
                         final Intent mainIntent = new Intent(context, MainActivity.class);
                         mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
@@ -236,20 +236,20 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         action.setRequestId(currentItem.getId());
         action.setIsPublic(false);
         action.setIsRequest(true);
-        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : -1L);
-        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : -1L);
-        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : -1L);
+        action.setInvoiceId(currentItem.getInvoiceId() != null ? currentItem.getInvoiceId() : 0L);
+        action.setCourierId(currentItem.getCourierId() != null ? currentItem.getCourierId() : 0L);
+        action.setProviderId(currentItem.getProviderId() != null ? currentItem.getProviderId() : 0L);
 
-        action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : -1L);
+        action.setClientId(currentItem.getClientId() != null ? currentItem.getClientId() : 0L);
         action.setSenderFirstName(currentItem.getSenderFirstName());
         action.setSenderLastName(currentItem.getSenderLastName());
         action.setSenderMiddleName(currentItem.getSenderMiddleName());
         action.setSenderEmail(currentItem.getSenderEmail());
         action.setSenderPhone(currentItem.getSenderPhone());
         action.setSenderAddress(currentItem.getSenderAddress());
-        action.setSenderCountryId(currentItem.getSenderCountryId() != null ? currentItem.getSenderCountryId() : -1L);
+        action.setSenderCountryId(currentItem.getSenderCountryId() != null ? currentItem.getSenderCountryId() : 0L);
         action.setSenderCityName(currentItem.getSenderCity());
-        action.setRecipientCountryId(currentItem.getRecipientCountryId() != null ? currentItem.getRecipientCountryId() : -1L);
+        action.setRecipientCountryId(currentItem.getRecipientCountryId() != null ? currentItem.getRecipientCountryId() : 0L);
         action.setRecipientCityName(currentItem.getRecipientCity());
 
         action.setDeliveryType(currentItem.getDeliveryType());

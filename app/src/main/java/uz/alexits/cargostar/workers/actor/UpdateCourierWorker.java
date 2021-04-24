@@ -31,7 +31,7 @@ public class UpdateCourierWorker extends Worker {
 
     public UpdateCourierWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0);
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.email = getInputData().getString(Constants.KEY_EMAIL);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);

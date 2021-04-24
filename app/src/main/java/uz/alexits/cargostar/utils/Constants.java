@@ -180,4 +180,5 @@ public class Constants {
     public static final String LAST_TRANSPORTATION_ID = "last_transportation_id";
     public static final String KEY_QR_POSITION = "qr_position";
     public static final String KEY_PAYER_CITY_NAME = "payer_city_name";
+    public static final String REQUEST_CODE = "request_code";
 }

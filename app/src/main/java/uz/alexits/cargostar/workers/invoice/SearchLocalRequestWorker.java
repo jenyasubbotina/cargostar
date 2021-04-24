@@ -17,13 +17,13 @@ public class SearchLocalRequestWorker extends Worker {
 
     public SearchLocalRequestWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        if (requestId == -1L) {
+        if (requestId <= 0L) {
             Log.e(TAG, "searchRequestById(): requestId is empty");
             return Result.failure();
         }

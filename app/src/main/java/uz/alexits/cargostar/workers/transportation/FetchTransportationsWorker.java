@@ -30,7 +30,7 @@ public class FetchTransportationsWorker extends Worker {
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
-        this.lastId = getInputData().getLong(Constants.LAST_TRANSPORTATION_ID, -1L);
+        this.lastId = getInputData().getLong(Constants.LAST_TRANSPORTATION_ID, 0L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);

@@ -73,7 +73,7 @@ public class SharedPrefs {
 
     public int getInt(final String key) {
         final ExecutorService executorService = Executors.newSingleThreadExecutor();
-        final Callable<Integer> callable = () -> this.prefs.getInt(key, -1);
+        final Callable<Integer> callable = () -> this.prefs.getInt(key, 0);
         final Future<Integer> value = executorService.submit(callable);
         executorService.shutdown();
         try {
@@ -81,7 +81,7 @@ public class SharedPrefs {
         }
         catch (ExecutionException | InterruptedException e) {
             Log.e(TAG, "getInt(): ", e);
-            return -1;
+            return 0;
         }
     }
 
@@ -101,7 +101,7 @@ public class SharedPrefs {
 
     public long getLong(final String key) {
         final ExecutorService executorService = Executors.newSingleThreadExecutor();
-        final Callable<Long> callable = () -> this.prefs.getLong(key, -1L);
+        final Callable<Long> callable = () -> this.prefs.getLong(key, 0L);
         final Future<Long> value = executorService.submit(callable);
         executorService.shutdown();
         try {
@@ -109,7 +109,7 @@ public class SharedPrefs {
         }
         catch (ExecutionException | InterruptedException e) {
             Log.e(TAG, "getLong(): ", e);
-            return -1L;
+            return 0L;
         }
     }
 

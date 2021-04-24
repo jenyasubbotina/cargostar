@@ -20,14 +20,14 @@ public class SendRecipientSignatureWorker extends Worker {
 
     public SendRecipientSignatureWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
+        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, 0L);
         this.recipientSignatureFilePath = getInputData().getString(Constants.KEY_RECIPIENT_SIGNATURE);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        if (invoiceId == -1L) {
+        if (invoiceId <= 0L) {
             Log.e(TAG, "sendRecipientSignature(): empty invoiceId");
             Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             return Result.failure();

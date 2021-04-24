@@ -23,8 +23,8 @@ public class BindRequestWorker extends Worker {
 
     public BindRequestWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0L);
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
     }
 
     @NonNull

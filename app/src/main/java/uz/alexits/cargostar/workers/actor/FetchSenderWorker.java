@@ -33,12 +33,12 @@ public class FetchSenderWorker extends Worker {
 
     public FetchSenderWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, -1);
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
-        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID,-1L);
-        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
-        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, -1L);
+        this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, 0);
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0L);
+        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID,0L);
+        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, 0L);
+        this.recipientCountryId = getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
         this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
         this.recipientCity = getInputData().getString(Constants.KEY_RECIPIENT_CITY);
         this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
@@ -99,7 +99,7 @@ public class FetchSenderWorker extends Worker {
                             .putString(Constants.KEY_SENDER_MIDDLE_NAME, sender.getMiddleName())
                             .putString(Constants.KEY_SENDER_PHONE, sender.getPhone())
                             .putString(Constants.KEY_SENDER_ADDRESS, sender.getAddress())
-                            .putLong(Constants.KEY_SENDER_COUNTRY_ID, sender.getCountryId() != null ? sender.getCountryId() : -1L)
+                            .putLong(Constants.KEY_SENDER_COUNTRY_ID, sender.getCountryId() != null ? sender.getCountryId() : 0L)
                             .putString(Constants.KEY_SENDER_CITY_NAME, sender.getCityName())
                             .putString(Constants.KEY_SENDER_ZIP, sender.getZip())
                             .putString(Constants.KEY_SENDER_CARGOSTAR, sender.getCargostarAccountNumber())

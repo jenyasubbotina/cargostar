@@ -103,10 +103,10 @@ public class SendInvoiceWorker extends Worker {
     public SendInvoiceWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
 
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, -1L);
-        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, -1L);
+        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
+        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, 0L);
 
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, -1L);
+        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0L);
 
         this.senderSignature = getInputData().getString(Constants.KEY_SENDER_SIGNATURE);
         this.isSenderSignatureLocal = getInputData().getBoolean(Constants.KEY_IS_SENDER_SIGNATURE_LOCAL, true);
@@ -156,20 +156,20 @@ public class SendInvoiceWorker extends Worker {
         this.payerFedexTaxId = getInputData().getString(Constants.KEY_PAYER_FEDEX_TAX_ID);
         this.payerType = getInputData().getInt(Constants.KEY_PAYER_TYPE, 0);
 
-        this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, -1);
+        this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, 0);
         this.payerInn = getInputData().getString(Constants.KEY_PAYER_INN);
         this.payerCompanyName = getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME);
         this.contractNumber = getInputData().getString(Constants.KEY_PAYER_CONTRACT_NUMBER);
 
         this.instructions = getInputData().getString(Constants.KEY_INSTRUCTIONS);
 
-        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, -1L);
-        this.packagingId = getInputData().getLong(Constants.KEY_PACKAGING_ID, -1L);
-        this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, -1);
-        this.paymentMethod = getInputData().getInt(Constants.KEY_PAYMENT_METHOD, -1);
+        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, 0L);
+        this.packagingId = getInputData().getLong(Constants.KEY_PACKAGING_ID, 0L);
+        this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
+        this.paymentMethod = getInputData().getInt(Constants.KEY_PAYMENT_METHOD, 0);
 
-        this.totalWeight = getInputData().getDouble(Constants.KEY_TOTAL_WEIGHT, -1);
-        this.totalVolume = getInputData().getDouble(Constants.KEY_TOTAL_VOLUME, -1);
+        this.totalWeight = getInputData().getDouble(Constants.KEY_TOTAL_WEIGHT, 0);
+        this.totalVolume = getInputData().getDouble(Constants.KEY_TOTAL_VOLUME, 0);
         this.totalPrice = getInputData().getString(Constants.KEY_TOTAL_PRICE);
 
         this.serializedConsignmentList = getInputData().getString(Constants.KEY_SERIALIZED_CONSIGNMENT_LIST);
@@ -182,10 +182,10 @@ public class SendInvoiceWorker extends Worker {
     public Result doWork() {
         final CreateInvoiceParams createInvoiceParams = new CreateInvoiceParams();
 
-        if (requestId != -1L) {
+        if (requestId > 0L) {
             createInvoiceParams.setRequestId(requestId);
         }
-        if (invoiceId != -1L) {
+        if (invoiceId > 0L) {
             createInvoiceParams.setInvoiceId(invoiceId);
         }
 

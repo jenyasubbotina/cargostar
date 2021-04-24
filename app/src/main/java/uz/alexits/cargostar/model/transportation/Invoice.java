@@ -86,6 +86,11 @@ public class Invoice {
     private final double price;
 
     @Expose
+    @SerializedName("payment")
+    @ColumnInfo(name = "payment_method")
+    private final int paymentMethod;
+
+    @Expose
     @SerializedName("status")
     @ColumnInfo(name = "status")
     private final int status;
@@ -110,6 +115,7 @@ public class Invoice {
                    final Long requestId,
                    final Long tariffId,
                    final double price,
+                   final int paymentMethod,
                    final int status,
                    final Date createdAt,
                    final Date updatedAt) {
@@ -123,6 +129,7 @@ public class Invoice {
         this.requestId = requestId;
         this.tariffId = tariffId;
         this.price = price;
+        this.paymentMethod = paymentMethod;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -172,12 +179,16 @@ public class Invoice {
         return recipientSignatureUrl;
     }
 
-    public void setRecipientSignatureUrl(String recipientSignatureUrl) {
+    public void setRecipientSignatureUrl(final String recipientSignatureUrl) {
         this.recipientSignatureUrl = recipientSignatureUrl;
     }
 
-    public void setSenderSignatureUrl(String senderSignatureUrl) {
+    public void setSenderSignatureUrl(final String senderSignatureUrl) {
         this.senderSignatureUrl = senderSignatureUrl;
+    }
+
+    public int getPaymentMethod() {
+        return paymentMethod;
     }
 
     public int getStatus() {

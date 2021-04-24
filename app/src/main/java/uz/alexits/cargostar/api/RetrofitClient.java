@@ -69,7 +69,7 @@ public class RetrofitClient {
                 .retryOnConnectionFailure(true)
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
         retrofitBuilder = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.dev_server_url))
+                .baseUrl(context.getString(R.string.default_server_url))
                 .addConverterFactory(GsonConverterFactory.create(
                         new GsonBuilder()
                                 .setLenient()

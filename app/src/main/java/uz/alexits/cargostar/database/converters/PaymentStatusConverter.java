@@ -21,7 +21,7 @@ public class PaymentStatusConverter {
         if (status == PaymentStatus.PAID_MORE) {
             return 4;
         }
-        return -1;
+        return 0;
     }
 
     @TypeConverter
