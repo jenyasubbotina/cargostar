@@ -29,9 +29,6 @@ import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class SignInActivity extends AppCompatActivity {
-    private static final String TAG = SignInActivity.class.toString();
-    private static boolean showPassword = false;
-
     private EditText loginEditText;
     private EditText passwordEditText;
     private Button signInBtn;
@@ -40,17 +37,26 @@ public class SignInActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
 
+    private static volatile boolean showPassword;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        initUI();
+        loginEditText = findViewById(R.id.login_edit_text);
+        passwordEditText = findViewById(R.id.password_edit_text);
+        signInBtn = findViewById(R.id.sign_in_btn);
+        keepLoggingCheckBox = findViewById(R.id.keep_logging_check_box);
+        passwordEyeImageView = findViewById(R.id.password_eye_image_view);
+        progressBar = findViewById(R.id.progress_bar);
 
         if (getIntent() != null) {
             loginEditText.setText(getIntent().getStringExtra(Constants.KEY_LOGIN));
             passwordEditText.setText(getIntent().getStringExtra(Constants.KEY_PASSWORD));
         }
+
+        showPassword = false;
 
         signInBtn.setOnClickListener(v -> {
             progressBar.setVisibility(View.VISIBLE);
@@ -139,12 +145,5 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-    private void initUI() {
-        loginEditText = findViewById(R.id.login_edit_text);
-        passwordEditText = findViewById(R.id.password_edit_text);
-        signInBtn = findViewById(R.id.sign_in_btn);
-        keepLoggingCheckBox = findViewById(R.id.keep_logging_check_box);
-        passwordEyeImageView = findViewById(R.id.password_eye_image_view);
-        progressBar = findViewById(R.id.progress_bar);
-    }
+    private static final String TAG = SignInActivity.class.toString();
 }

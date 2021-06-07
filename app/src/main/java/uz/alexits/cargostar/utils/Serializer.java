@@ -22,7 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.entities.transportation.Consignment;
 
 public class Serializer {
     public static String bitmapToBase64(@NonNull final Context context, @NonNull final String filePath) {
@@ -86,7 +86,10 @@ public class Serializer {
         }
     }
 
-    public static String fileToBase64(@NonNull final String filePath) {
+    public static String fileToBase64(final String filePath) {
+        if (filePath == null) {
+            return null;
+        }
         try {
             final byte[] signatureBytes = Files.readAllBytes(Paths.get(filePath));
             return Base64.encodeToString(signatureBytes, Base64.DEFAULT);

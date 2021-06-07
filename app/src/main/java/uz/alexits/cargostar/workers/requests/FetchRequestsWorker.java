@@ -11,7 +11,7 @@ import androidx.work.WorkerParameters;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.transportation.Request;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +20,6 @@ import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchRequestsWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
@@ -28,7 +27,6 @@ public class FetchRequestsWorker extends Worker {
 
     public FetchRequestsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -48,10 +46,10 @@ public class FetchRequestsWorker extends Worker {
             Response<List<Request>> response = null;
 
             if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(perPage, lastId);
+                response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
             }
             else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(perPage);
+                response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(SyncWorkRequest.DEFAULT_PER_PAGE);
             }
 
             if (response.code() == 200) {

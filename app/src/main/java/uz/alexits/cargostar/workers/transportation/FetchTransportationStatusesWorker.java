@@ -2,10 +2,8 @@ package uz.alexits.cargostar.workers.transportation;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
@@ -18,20 +16,18 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.model.transportation.TransportationStatus;
+import uz.alexits.cargostar.entities.transportation.TransportationStatus;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchTransportationStatusesWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
 
     public FetchTransportationStatusesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
+
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -47,13 +43,13 @@ public class FetchTransportationStatusesWorker extends Worker {
     public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<TransportationStatus>> response = RetrofitClient.getInstance(getApplicationContext()).getTransportationStatusList(perPage);
+            final Response<List<TransportationStatus>> response = RetrofitClient.getInstance(getApplicationContext()).getTransportationStatusList(SyncWorkRequest.DEFAULT_PER_PAGE);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final List<TransportationStatus> transportationStatusList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationStatusList(transportationStatusList);
+                    LocalCache.getInstance(getApplicationContext()).transportationStatusDao().insertTransportationStatusList(transportationStatusList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
@@ -61,7 +57,6 @@ public class FetchTransportationStatusesWorker extends Worker {
                             .putString(Constants.KEY_TOKEN, token)
                             .putInt(Constants.KEY_PROGRESS, 90)
                             .build();
-
                     return ListenableWorker.Result.success(outputData);
                 }
             }

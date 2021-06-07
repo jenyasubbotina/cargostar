@@ -181,4 +181,15 @@ public class Constants {
     public static final String KEY_QR_POSITION = "qr_position";
     public static final String KEY_PAYER_CITY_NAME = "payer_city_name";
     public static final String REQUEST_CODE = "request_code";
+    public static final String KEY_FULL_NAME = "full_name";
+    public static final String ADDRESSEE_FULL_NAME = "addressee_full_name";
+    public static final String ADDRESSEE_PHONE = "addressee_phone";
+    public static final String ADDRESSEE_ADDRESS = "addressee_address";
+    public static final String ADDRESSEE_ORGANIZATION = "addressee_organization";
+    public static final String ADDRESSEE_COMMENT = "addressee_comment";
+    public static final String ADDRESSEE_SIGNATURE = "addressee_signature";
+    public static final String ADDRESSEE_SIGNATURE_DATE = "addressee_signature_date";
+    public static final String ADDRESSEE_IS_ACCEPTED = "addressee_is_accepted";
+    public static final String LAST_INVOICE_ID = "last_invoice_id";
+    public static final String SCAN_TYPE = "scan_type";
 }

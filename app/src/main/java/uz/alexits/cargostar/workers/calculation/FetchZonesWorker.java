@@ -16,7 +16,7 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.calculation.Zone;
+import uz.alexits.cargostar.entities.calculation.Zone;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -51,7 +51,7 @@ public class FetchZonesWorker extends Worker {
                     Log.i(TAG, "fetchAllZones(): response=" + response.body());
                     final List<Zone> zoneList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZonesTransaction(zoneList);
+                    LocalCache.getInstance(getApplicationContext()).zoneDao().insertZonesTransaction(zoneList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

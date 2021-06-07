@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
-    private List<T> objectList;
+    private final List<T> objectList;
 
     public CustomArrayAdapter(@NonNull Context context, int resource, @NonNull List<T> objects) {
         super(context, resource, objects);
@@ -30,6 +30,10 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
     @Override
     public int getCount() {
         return super.getCount();
+    }
+
+    public List<T> getItemList() {
+        return objectList;
     }
 
     @Override

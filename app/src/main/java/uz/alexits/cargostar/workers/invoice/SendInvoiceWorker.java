@@ -9,263 +9,100 @@ import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.util.List;
 
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
-import uz.alexits.cargostar.api.params.CreateInvoiceParams;
-import uz.alexits.cargostar.api.params.CreateInvoiceResponse;
+import uz.alexits.cargostar.entities.params.CreateInvoiceParams;
+import uz.alexits.cargostar.entities.params.CreateInvoiceResponse;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.entities.transportation.Consignment;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.Serializer;
 
 public class SendInvoiceWorker extends Worker {
-    private final Gson gson;
-
-    /* sender data */
-    private final String senderEmail;
-    private final String senderSignature;
-    private final boolean isSenderSignatureLocal;
-    private final String senderFirstName;
-    private final String senderMiddleName;
-    private final String senderLastName;
-    private final String senderPhone;
-    private final String senderCountryId;
-    private final String senderCity;
-    private final String senderAddress;
-    private final String senderZip;
-    private final String senderTnt;
-    private final String senderFedex;
-    private final String senderCompanyName;
-    private final int senderType;
-
-    /* recipient data */
-    private final String recipientEmail;
-    private final String recipientFirstName;
-    private final String recipientMiddleName;
-    private final String recipientLastName;
-    private final String recipientPhone;
-    private final String recipientAddress;
-    private final String recipientCountryId;
-    private final String recipientCity;
-    private final String recipientZip;
-    private final String recipientCargo;
-    private final String recipientTnt;
-    private final String recipientFedex;
-    private final String recipientCompanyName;
-    private final int recipientType;
-
-    /* payer data */
-    private final String payerEmail;
-    private final String payerFirstName;
-    private final String payerMiddleName;
-    private final String payerLastName;
-    private final String payerPhone;
-    private final String payerAddress;
-    private final String payerCountryId;
-    private final String payerCity;
-    private final String payerZip;
-    private final String payerCargostar;
-    private final String payerTnt;
-    private final String payerFedex;
-    private final String payerTntTaxId;
-    private final String payerFedexTaxId;
-    private final int payerType;
-
-    /* account numbers */
-    private final double discount;
-    private final String payerInn;
-    private final String payerCompanyName;
-    private final String contractNumber;
-
-    /* invoice data */
-    private final long requestId;
-    private final long invoiceId;
-
-    private final long courierId;
-    private final String instructions;
-
-    private final long providerId;
-    private final long packagingId;
-    private final int deliveryType;
-    private final int paymentMethod;
-
-    private final double totalWeight;
-    private final double totalVolume;
-    private final String totalPrice;
-
-    private final String serializedConsignmentList;
+    private final CreateInvoiceParams createInvoiceParams;
 
     public SendInvoiceWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
 
-        this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
-        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, 0L);
+        this.createInvoiceParams = new CreateInvoiceParams();
+        this.createInvoiceParams.setRequestId(getInputData().getLong(Constants.KEY_REQUEST_ID, 0L));
+        this.createInvoiceParams.setInvoiceId(getInputData().getLong(Constants.KEY_INVOICE_ID, 0L));
+        this.createInvoiceParams.setCourierId(SharedPrefs.getInstance(context).getLong(SharedPrefs.ID));
+        this.createInvoiceParams.setProviderId(getInputData().getLong(Constants.KEY_PROVIDER_ID, 0L));
+        this.createInvoiceParams.setPackagingId(getInputData().getLong(Constants.KEY_PACKAGING_ID, 0L));
+        this.createInvoiceParams.setDeliveryType(getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0));
+        this.createInvoiceParams.setPaymentMethod(getInputData().getInt(Constants.KEY_PAYMENT_METHOD, 0));
 
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0L);
+        this.createInvoiceParams.setSenderEmail(getInputData().getString(Constants.KEY_SENDER_EMAIL));
+        this.createInvoiceParams.setSenderTntAccountNumber(getInputData().getString(Constants.KEY_SENDER_TNT));
+        this.createInvoiceParams.setSenderFedexAccountNumber(getInputData().getString(Constants.KEY_SENDER_FEDEX));
+        this.createInvoiceParams.setSenderAddress(getInputData().getString(Constants.KEY_SENDER_ADDRESS));
+        this.createInvoiceParams.setSenderCountryId(getInputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L));
+        this.createInvoiceParams.setSenderCityName(getInputData().getString(Constants.KEY_SENDER_CITY_NAME));
+        this.createInvoiceParams.setSenderZip(getInputData().getString(Constants.KEY_SENDER_ZIP));
+        this.createInvoiceParams.setSenderFirstName(getInputData().getString(Constants.KEY_SENDER_FIRST_NAME));
+        this.createInvoiceParams.setSenderMiddleName(getInputData().getString(Constants.KEY_SENDER_MIDDLE_NAME));
+        this.createInvoiceParams.setSenderLastName(getInputData().getString(Constants.KEY_SENDER_LAST_NAME));
+        this.createInvoiceParams.setSenderPhone(getInputData().getString(Constants.KEY_SENDER_PHONE));
+        this.createInvoiceParams.setSenderCompanyName(getInputData().getString(Constants.KEY_SENDER_COMPANY_NAME));
 
-        this.senderSignature = getInputData().getString(Constants.KEY_SENDER_SIGNATURE);
-        this.isSenderSignatureLocal = getInputData().getBoolean(Constants.KEY_IS_SENDER_SIGNATURE_LOCAL, true);
-        this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
-        this.senderTnt = getInputData().getString(Constants.KEY_SENDER_TNT);
-        this.senderFedex = getInputData().getString(Constants.KEY_SENDER_FEDEX);
-        this.senderCountryId = getInputData().getString(Constants.KEY_SENDER_COUNTRY_ID);
-        this.senderCity = getInputData().getString(Constants.KEY_SENDER_CITY_ID);
-        this.senderAddress = getInputData().getString(Constants.KEY_SENDER_ADDRESS);
-        this.senderZip = getInputData().getString(Constants.KEY_SENDER_ZIP);
-        this.senderFirstName = getInputData().getString(Constants.KEY_SENDER_FIRST_NAME);
-        this.senderMiddleName = getInputData().getString(Constants.KEY_SENDER_MIDDLE_NAME);
-        this.senderLastName = getInputData().getString(Constants.KEY_SENDER_LAST_NAME);
-        this.senderPhone = getInputData().getString(Constants.KEY_SENDER_PHONE);
-        this.senderCompanyName = getInputData().getString(Constants.KEY_SENDER_COMPANY_NAME);
-        this.senderType = getInputData().getInt(Constants.KEY_SENDER_TYPE, 0);
+        this.createInvoiceParams.setRecipientEmail(getInputData().getString(Constants.KEY_RECIPIENT_EMAIL));
+        this.createInvoiceParams.setRecipientCargostarAccountNumber(getInputData().getString(Constants.KEY_RECIPIENT_CARGOSTAR));
+        this.createInvoiceParams.setRecipientTntAccountNumber(getInputData().getString(Constants.KEY_RECIPIENT_TNT));
+        this.createInvoiceParams.setRecipientFedexAccountNumber(getInputData().getString(Constants.KEY_RECIPIENT_FEDEX));
+        this.createInvoiceParams.setRecipientAddress(getInputData().getString(Constants.KEY_RECIPIENT_ADDRESS));
+        this.createInvoiceParams.setRecipientCountryId(getInputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L));
+        this.createInvoiceParams.setRecipientCityName(getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME));
+        this.createInvoiceParams.setRecipientZip(getInputData().getString(Constants.KEY_RECIPIENT_ZIP));
+        this.createInvoiceParams.setRecipientFirstName(getInputData().getString(Constants.KEY_RECIPIENT_FIRST_NAME));
+        this.createInvoiceParams.setRecipientMiddleName(getInputData().getString(Constants.KEY_RECIPIENT_MIDDLE_NAME));
+        this.createInvoiceParams.setRecipientLastName(getInputData().getString(Constants.KEY_RECIPIENT_LAST_NAME));
+        this.createInvoiceParams.setRecipientPhone(getInputData().getString(Constants.KEY_RECIPIENT_PHONE));
+        this.createInvoiceParams.setRecipientCompanyName(getInputData().getString(Constants.KEY_RECIPIENT_COMPANY_NAME));
 
-        this.recipientEmail = getInputData().getString(Constants.KEY_RECIPIENT_EMAIL);
-        this.recipientCargo = getInputData().getString(Constants.KEY_RECIPIENT_CARGOSTAR);
-        this.recipientTnt = getInputData().getString(Constants.KEY_RECIPIENT_TNT);
-        this.recipientFedex = getInputData().getString(Constants.KEY_RECIPIENT_FEDEX);
-        this.recipientCountryId = getInputData().getString(Constants.KEY_RECIPIENT_COUNTRY_ID);
-        this.recipientCity = getInputData().getString(Constants.KEY_RECIPIENT_CITY_ID);
-        this.recipientAddress = getInputData().getString(Constants.KEY_RECIPIENT_ADDRESS);
-        this.recipientZip = getInputData().getString(Constants.KEY_RECIPIENT_ZIP);
-        this.recipientFirstName = getInputData().getString(Constants.KEY_RECIPIENT_FIRST_NAME);
-        this.recipientMiddleName = getInputData().getString(Constants.KEY_RECIPIENT_MIDDLE_NAME);
-        this.recipientLastName = getInputData().getString(Constants.KEY_RECIPIENT_LAST_NAME);
-        this.recipientPhone = getInputData().getString(Constants.KEY_RECIPIENT_PHONE);
-        this.recipientCompanyName = getInputData().getString(Constants.KEY_RECIPIENT_COMPANY_NAME);
-        this.recipientType = getInputData().getInt(Constants.KEY_RECIPIENT_TYPE, 0);
+        this.createInvoiceParams.setPayerEmail(getInputData().getString(Constants.KEY_PAYER_EMAIL));
+        this.createInvoiceParams.setPayerCountryId(getInputData().getLong(Constants.KEY_PAYER_COUNTRY_ID, 0L));
+        this.createInvoiceParams.setPayerCityName(getInputData().getString(Constants.KEY_PAYER_CITY_NAME));
+        this.createInvoiceParams.setPayerAddress(getInputData().getString(Constants.KEY_PAYER_ADDRESS));
+        this.createInvoiceParams.setPayerZip(getInputData().getString(Constants.KEY_PAYER_ZIP));
+        this.createInvoiceParams.setPayerFirstName(getInputData().getString(Constants.KEY_PAYER_FIRST_NAME));
+        this.createInvoiceParams.setPayerMiddleName(getInputData().getString(Constants.KEY_PAYER_MIDDLE_NAME));
+        this.createInvoiceParams.setPayerLastName(getInputData().getString(Constants.KEY_PAYER_LAST_NAME));
+        this.createInvoiceParams.setPayerPhone(getInputData().getString(Constants.KEY_PAYER_PHONE));
+        this.createInvoiceParams.setDiscount(getInputData().getDouble(Constants.KEY_DISCOUNT, 0));
+        this.createInvoiceParams.setPayerCargostarAccountNumber(getInputData().getString(Constants.KEY_PAYER_CARGOSTAR));
+        this.createInvoiceParams.setPayerTntAccountNumber(getInputData().getString(Constants.KEY_PAYER_TNT));
+        this.createInvoiceParams.setPayerFedexAccountNumber(getInputData().getString(Constants.KEY_PAYER_FEDEX));
+        this.createInvoiceParams.setPayerTntTaxId(getInputData().getString(Constants.KEY_PAYER_TNT_TAX_ID));
+        this.createInvoiceParams.setPayerFedexTaxId(getInputData().getString(Constants.KEY_PAYER_FEDEX_TAX_ID));
+        this.createInvoiceParams.setPayerInn(getInputData().getString(Constants.KEY_PAYER_INN));
+        this.createInvoiceParams.setPayerCompanyName(getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME));
+        this.createInvoiceParams.setContractNumber(getInputData().getString(Constants.KEY_PAYER_CONTRACT_NUMBER));
 
-        this.payerEmail = getInputData().getString(Constants.KEY_PAYER_EMAIL);
-        this.payerCountryId = getInputData().getString(Constants.KEY_PAYER_COUNTRY_ID);
-        this.payerCity = getInputData().getString(Constants.KEY_PAYER_CITY_ID);
-        this.payerAddress = getInputData().getString(Constants.KEY_PAYER_ADDRESS);
-        this.payerZip = getInputData().getString(Constants.KEY_PAYER_ZIP);
-        this.payerFirstName = getInputData().getString(Constants.KEY_PAYER_FIRST_NAME);
-        this.payerMiddleName = getInputData().getString(Constants.KEY_PAYER_MIDDLE_NAME);
-        this.payerLastName = getInputData().getString(Constants.KEY_PAYER_LAST_NAME);
-        this.payerPhone = getInputData().getString(Constants.KEY_PAYER_PHONE);
-        this.payerCargostar = getInputData().getString(Constants.KEY_PAYER_CARGOSTAR);
-        this.payerTnt = getInputData().getString(Constants.KEY_PAYER_TNT);
-        this.payerFedex = getInputData().getString(Constants.KEY_PAYER_FEDEX);
+        this.createInvoiceParams.setTotalWeight(getInputData().getDouble(Constants.KEY_TOTAL_WEIGHT, 0));
+        this.createInvoiceParams.setTotalVolume(getInputData().getDouble(Constants.KEY_TOTAL_VOLUME, 0));
+        this.createInvoiceParams.setTotalPrice(getInputData().getString(Constants.KEY_TOTAL_PRICE));
+        this.createInvoiceParams.setInstructions(getInputData().getString(Constants.KEY_INSTRUCTIONS));
 
-        this.payerTntTaxId = getInputData().getString(Constants.KEY_PAYER_TNT_TAX_ID);
-        this.payerFedexTaxId = getInputData().getString(Constants.KEY_PAYER_FEDEX_TAX_ID);
-        this.payerType = getInputData().getInt(Constants.KEY_PAYER_TYPE, 0);
+        createInvoiceParams.setSenderSignature(Serializer.fileToBase64(getInputData().getString(Constants.KEY_SENDER_SIGNATURE)) == null
+                ? getInputData().getString(Constants.KEY_SENDER_SIGNATURE)
+                : Serializer.fileToBase64(getInputData().getString(Constants.KEY_SENDER_SIGNATURE)));
 
-        this.discount = getInputData().getDouble(Constants.KEY_DISCOUNT, 0);
-        this.payerInn = getInputData().getString(Constants.KEY_PAYER_INN);
-        this.payerCompanyName = getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME);
-        this.contractNumber = getInputData().getString(Constants.KEY_PAYER_CONTRACT_NUMBER);
+        this.createInvoiceParams.setSenderType(!TextUtils.isEmpty(getInputData().getString(Constants.KEY_SENDER_COMPANY_NAME)) ? 2 : 1);
+        this.createInvoiceParams.setRecipientType(!TextUtils.isEmpty(getInputData().getString(Constants.KEY_RECIPIENT_COMPANY_NAME)) ? 2 : 1);
+        this.createInvoiceParams.setPayerType(!TextUtils.isEmpty(getInputData().getString(Constants.KEY_PAYER_COMPANY_NAME)) ? 2 : 1);
 
-        this.instructions = getInputData().getString(Constants.KEY_INSTRUCTIONS);
-
-        this.providerId = getInputData().getLong(Constants.KEY_PROVIDER_ID, 0L);
-        this.packagingId = getInputData().getLong(Constants.KEY_PACKAGING_ID, 0L);
-        this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
-        this.paymentMethod = getInputData().getInt(Constants.KEY_PAYMENT_METHOD, 0);
-
-        this.totalWeight = getInputData().getDouble(Constants.KEY_TOTAL_WEIGHT, 0);
-        this.totalVolume = getInputData().getDouble(Constants.KEY_TOTAL_VOLUME, 0);
-        this.totalPrice = getInputData().getString(Constants.KEY_TOTAL_PRICE);
-
-        this.serializedConsignmentList = getInputData().getString(Constants.KEY_SERIALIZED_CONSIGNMENT_LIST);
-
-        this.gson = new Gson();
+        final List<Consignment> consignmentList = Serializer.deserializeConsignmentList(getInputData().getString(Constants.KEY_SERIALIZED_CONSIGNMENT_LIST));
+        this.createInvoiceParams.setConsignmentList(consignmentList);
+        this.createInvoiceParams.setConsignmentQuantity(consignmentList != null ? consignmentList.size() : 0);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        final CreateInvoiceParams createInvoiceParams = new CreateInvoiceParams();
-
-        if (requestId > 0L) {
-            createInvoiceParams.setRequestId(requestId);
-        }
-        if (invoiceId > 0L) {
-            createInvoiceParams.setInvoiceId(invoiceId);
-        }
-
-        createInvoiceParams.setCourierId(courierId);
-
-        /* sender data */
-        if (senderSignature != null && !TextUtils.isEmpty(senderSignature)) {
-            final String signature = isSenderSignatureLocal ? senderSignature : Serializer.fileToBase64(senderSignature);
-            createInvoiceParams.setSenderSignature(signature != null ? signature : senderSignature);
-        }
-        createInvoiceParams.setSenderEmail(senderEmail);
-        createInvoiceParams.setSenderTntAccountNumber(senderTnt);
-        createInvoiceParams.setSenderFedexAccountNumber(senderFedex);
-        createInvoiceParams.setSenderAddress(senderAddress);
-        createInvoiceParams.setSenderCountryId(senderCountryId);
-        createInvoiceParams.setSenderCityName(senderCity);
-        createInvoiceParams.setSenderZip(senderZip);
-        createInvoiceParams.setSenderFirstName(senderFirstName);
-        createInvoiceParams.setSenderMiddleName(senderMiddleName);
-        createInvoiceParams.setSenderLastName(senderLastName);
-        createInvoiceParams.setSenderPhone(senderPhone);
-        createInvoiceParams.setSenderCompanyName(senderCompanyName);
-        createInvoiceParams.setSenderType(senderType);
-
-        /* recipient data */
-        createInvoiceParams.setRecipientEmail(recipientEmail);
-        createInvoiceParams.setRecipientCargostarAccountNumber(recipientCargo);
-        createInvoiceParams.setRecipientTntAccountNumber(recipientTnt);
-        createInvoiceParams.setRecipientFedexAccountNumber(recipientFedex);
-        createInvoiceParams.setRecipientAddress(recipientAddress);
-        createInvoiceParams.setRecipientCountryId(recipientCountryId);
-        createInvoiceParams.setRecipientCityName(recipientCity);
-        createInvoiceParams.setRecipientZip(recipientZip);
-        createInvoiceParams.setRecipientFirstName(recipientFirstName);
-        createInvoiceParams.setRecipientMiddleName(recipientMiddleName);
-        createInvoiceParams.setRecipientLastName(recipientLastName);
-        createInvoiceParams.setRecipientPhone(recipientPhone);
-        createInvoiceParams.setRecipientCompanyName(recipientCompanyName);
-        createInvoiceParams.setRecipientType(recipientType);
-
-        /* payer data */
-        createInvoiceParams.setPayerEmail(payerEmail);
-        createInvoiceParams.setPayerCountryId(payerCountryId);
-        createInvoiceParams.setPayerCityName(payerCity);
-        createInvoiceParams.setPayerAddress(payerAddress);
-        createInvoiceParams.setPayerZip(payerZip);
-        createInvoiceParams.setPayerFirstName(payerFirstName);
-        createInvoiceParams.setPayerMiddleName(payerMiddleName);
-        createInvoiceParams.setPayerLastName(payerLastName);
-        createInvoiceParams.setPayerPhone(payerPhone);
-        createInvoiceParams.setDiscount(discount);
-        createInvoiceParams.setPayerCargostarAccountNumber(payerCargostar);
-        createInvoiceParams.setPayerTntAccountNumber(payerTnt);
-        createInvoiceParams.setPayerFedexAccountNumber(payerFedex);
-        createInvoiceParams.setPayerTntTaxId(payerTntTaxId);
-        createInvoiceParams.setPayerFedexTaxId(payerFedexTaxId);
-        createInvoiceParams.setPayerType(payerType);
-        createInvoiceParams.setPayerInn(payerInn);
-        createInvoiceParams.setPayerCompanyName(payerCompanyName);
-
-        /* account data */
-        createInvoiceParams.setContractNumber(contractNumber);
-
-        createInvoiceParams.setInstructions(instructions);
-
-        createInvoiceParams.setProviderId(providerId);
-
-        final List<Consignment> consignmentList = Serializer.deserializeConsignmentList(serializedConsignmentList);
-
-        createInvoiceParams.setConsignmentList(consignmentList);
-
-        /* calculation data */
-        createInvoiceParams.setConsignmentQuantity(consignmentList != null ? consignmentList.size() : 0);
-        createInvoiceParams.setTotalWeight(totalWeight);
-        createInvoiceParams.setTotalVolume(totalVolume);
-        createInvoiceParams.setTotalPrice(totalPrice);
-        createInvoiceParams.setPackagingId(packagingId);
-        createInvoiceParams.setDeliveryType(deliveryType);
-        createInvoiceParams.setPaymentMethod(paymentMethod);
-
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));

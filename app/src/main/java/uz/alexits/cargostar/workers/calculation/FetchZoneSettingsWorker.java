@@ -16,19 +16,17 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.calculation.ZoneSettings;
+import uz.alexits.cargostar.entities.calculation.ZoneSettings;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchZoneSettingsWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
 
     public FetchZoneSettingsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -44,14 +42,19 @@ public class FetchZoneSettingsWorker extends Worker {
     public ListenableWorker.Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<ZoneSettings>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneSettings(perPage);
+            final Response<List<ZoneSettings>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneSettings(SyncWorkRequest.DEFAULT_PER_PAGE);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllZoneSettings(): response=" + response.body());
                     final List<ZoneSettings> zoneSettingsList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZoneSettingsList(zoneSettingsList);
+                    //foreign might be null (:facepalm)
+//                    for (final ZoneSettings zoneSettings : zoneSettingsList) {
+//                        Log.i(TAG, "zoneSetting: " + zoneSettings);
+//                        LocalCache.getInstance(getApplicationContext()).zoneDao().insertZoneSettings(zoneSettings);
+//                    }
+
+                    LocalCache.getInstance(getApplicationContext()).zoneDao().insertZoneSettingsList(zoneSettingsList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

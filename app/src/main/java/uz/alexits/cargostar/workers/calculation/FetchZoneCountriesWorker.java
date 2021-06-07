@@ -16,20 +16,17 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.calculation.Zone;
-import uz.alexits.cargostar.model.calculation.ZoneCountry;
+import uz.alexits.cargostar.entities.calculation.ZoneCountry;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchZoneCountriesWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
 
     public FetchZoneCountriesWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -45,14 +42,14 @@ public class FetchZoneCountriesWorker extends Worker {
     public ListenableWorker.Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<ZoneCountry>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneCountries(perPage);
+            final Response<List<ZoneCountry>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneCountries(SyncWorkRequest.DEFAULT_PER_PAGE);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchZoneCountries(): response=" + response.body());
                     final List<ZoneCountry> zoneCountryList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertZoneCountriesTransaction(zoneCountryList);
+                    LocalCache.getInstance(getApplicationContext()).zoneDao().insertZoneCountriesTransaction(zoneCountryList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

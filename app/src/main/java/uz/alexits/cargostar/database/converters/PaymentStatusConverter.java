@@ -1,7 +1,7 @@
 package uz.alexits.cargostar.database.converters;
 
 import androidx.room.TypeConverter;
-import uz.alexits.cargostar.model.PaymentStatus;
+import uz.alexits.cargostar.entities.PaymentStatus;
 
 public class PaymentStatusConverter {
     @TypeConverter

@@ -14,22 +14,23 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Invoice;
+import uz.alexits.cargostar.entities.transportation.Invoice;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchInvoiceListWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
+    private final long lastId;
 
     public FetchInvoiceListWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
+
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
+        this.lastId = getInputData().getLong(Constants.LAST_INVOICE_ID, 0L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
@@ -42,8 +43,14 @@ public class FetchInvoiceListWorker extends Worker {
     public ListenableWorker.Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<Invoice>> response = RetrofitClient.getInstance(getApplicationContext()).getInvoiceList(perPage);
+            Response<List<Invoice>> response = null;
 
+            if (lastId > 0) {
+                response = RetrofitClient.getInstance(getApplicationContext()).getInvoiceList(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
+            }
+            else {
+                response = RetrofitClient.getInstance(getApplicationContext()).getInvoiceList(SyncWorkRequest.DEFAULT_PER_PAGE);
+            }
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllInvoices(): response=" + response.body());

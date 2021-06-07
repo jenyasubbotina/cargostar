@@ -5,9 +5,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-import java.util.Date;
+
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 
 public class InsertRequestWorker extends Worker {
@@ -33,9 +33,6 @@ public class InsertRequestWorker extends Worker {
     private final int consigmentQuantity;
     private final String paymentStatus;
     private final String comment;
-    private final int status;
-    private final long createdAt;
-    private final long updatedAt;
     private final int deliveryType;
 
     private final String senderCityName;
@@ -65,10 +62,7 @@ public class InsertRequestWorker extends Worker {
         this.consigmentQuantity = getInputData().getInt(Constants.KEY_CONSIGNMENT_QUANTITY, 0);
         this.paymentStatus = getInputData().getString(Constants.KEY_PAYMENT_STATUS);
         this.comment = getInputData().getString(Constants.KEY_COMMENT);
-        this.status = getInputData().getInt(Constants.KEY_STATUS, 0);
-        this.createdAt = getInputData().getLong(Constants.KEY_CREATED_AT, 0L);
-        this.updatedAt = getInputData().getLong(Constants.KEY_UPDATED_AT, 0L);
-        this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
+         this.deliveryType = getInputData().getInt(Constants.KEY_DELIVERY_TYPE, 0);
 
         this.senderCityName = getInputData().getString(Constants.KEY_SENDER_CITY_NAME);
         this.recipientCityName = getInputData().getString(Constants.KEY_RECIPIENT_CITY_NAME);
@@ -101,9 +95,6 @@ public class InsertRequestWorker extends Worker {
                     courierId > 0L ? courierId : null,
                     providerId > 0L ? providerId : null,
                     invoiceId > 0L ? invoiceId : null,
-                    status,
-                    new Date(createdAt),
-                    new Date(updatedAt),
                     cityFrom,
                     cityTo,
                     consigmentQuantity,

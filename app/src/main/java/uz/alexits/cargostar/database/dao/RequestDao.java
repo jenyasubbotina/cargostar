@@ -2,14 +2,13 @@ package uz.alexits.cargostar.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.transportation.Request;
 
 import java.util.List;
 
@@ -30,13 +29,13 @@ public abstract class RequestDao {
         return insertRequests(newRequestList);
     }
 
-    @Query("SELECT * FROM request WHERE id NOT IN (SELECT request_id FROM transportation WHERE request_id IS NOT NULL ORDER BY request_id DESC) AND courier_id IS NULL ORDER BY id DESC")
+    @Query("SELECT * FROM request WHERE id NOT IN (SELECT request_id FROM transportation ORDER BY request_id DESC) AND courier_id <= 0 ORDER BY id DESC")
     public abstract LiveData<List<Request>> selectPublicRequests();
 
     @Query("SELECT * FROM request ORDER BY id ASC")
     public abstract LiveData<List<Request>> selectAllRequests();
 
-    @Query("SELECT * FROM request WHERE id NOT IN (SELECT request_id FROM transportation WHERE request_id IS NOT NULL ORDER BY request_id DESC) AND courier_id == :courierId ORDER BY id DESC")
+    @Query("SELECT * FROM request WHERE id NOT IN (SELECT request_id FROM transportation WHERE request_id ORDER BY request_id DESC) AND courier_id == :courierId ORDER BY id DESC")
     public abstract LiveData<List<Request>> selectRequestsByCourierId(final long courierId);
 
     @Query("SELECT * FROM request WHERE id == :requestId")
@@ -56,4 +55,7 @@ public abstract class RequestDao {
 
     @Query("DELETE from request WHERE id == :requestId")
     public abstract void deleteRequest(final long requestId);
+
+    @Query("SELECT * FROM request WHERE id == :requestId LIMIT 1")
+    public abstract Request getRequest(final long requestId);
 }

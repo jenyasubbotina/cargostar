@@ -44,17 +44,22 @@ public class ScanQrActivity extends AppCompatActivity {
             else {
                 if (data != null) {
                     String scannedData = data.getStringExtra("SCAN_RESULT");
+                    int scanType = 0;
 
                     if (scannedData != null) {
-                        Log.i(TAG, "scanResult=" + scannedData + " position=" + position);
-
-                        if (scannedData.length() - 12 >= 0) {
-                            scannedData = scannedData.substring(scannedData.length() - 12);
-                        }
                         final Intent resultIntent = new Intent();
 
+                        //fedex or tnt tracking code -> do request on server
+                        if (scannedData.length() - 12 >= 0) {
+                            scannedData = scannedData.substring(scannedData.length() - 12);
+                            scanType = 2;
+                        }
+                        else {
+                            scanType = 1;
+                        }
                         resultIntent.putExtra(IntentConstants.INTENT_RESULT_VALUE, scannedData);
                         resultIntent.putExtra(Constants.KEY_QR_POSITION, position);
+                        resultIntent.putExtra(Constants.SCAN_TYPE, scanType);
                         setResult(RESULT_OK, resultIntent);
                         finish();
                     }

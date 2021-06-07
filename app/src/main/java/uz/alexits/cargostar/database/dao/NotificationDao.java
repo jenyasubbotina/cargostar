@@ -25,9 +25,9 @@ public interface NotificationDao {
 
     @Query("UPDATE notification SET is_read = :isRead WHERE id == :notificationId")
     void readNotification(final long notificationId, final boolean isRead);
-//
-//    @Query("SELECT * FROM notification WHERE receipt_id == :receiptId")
-//    LiveData<Notification> selectNotification(final long receiptId);
+
+    @Query("SELECT * FROM notification WHERE id == :id")
+    LiveData<Notification> selectNotification(final long id);
 
     @Query("SELECT * FROM notification ORDER BY receive_date DESC")
     LiveData<List<Notification>> selectAllNotifications();

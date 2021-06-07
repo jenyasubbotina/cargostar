@@ -1,10 +1,7 @@
 package uz.alexits.cargostar.workers.login;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -15,28 +12,24 @@ import androidx.work.WorkerParameters;
 import java.io.IOException;
 
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
-import uz.alexits.cargostar.api.params.SignInParams;
+import uz.alexits.cargostar.entities.params.SignInParams;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.actor.Courier;
+import uz.alexits.cargostar.entities.actor.Courier;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.activity.SignInActivity;
 
 public class SignInWorker extends Worker {
     private final String login;
     private final String password;
-    private final String token;
+    private final SignInParams params;
 
     public SignInWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
-        this.token = getInputData().getString(Constants.KEY_TOKEN);
+        this.params = new SignInParams(getInputData().getString(Constants.KEY_TOKEN));
     }
 
     @NonNull
@@ -44,7 +37,7 @@ public class SignInWorker extends Worker {
     public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext()).signIn(token);
+            final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext()).signIn(params);
 
             if (response.code() == 200 && response.isSuccessful()) {
                 final Courier courier = response.body();
@@ -57,7 +50,7 @@ public class SignInWorker extends Worker {
 
                 Log.i(TAG, "signIn(): " + courier);
 
-                final long rowInserted = LocalCache.getInstance(getApplicationContext()).actorDao().createCourier(courier);
+                final long rowInserted = LocalCache.getInstance(getApplicationContext()).courierDao().createCourier(courier);
 
                 if (rowInserted == -1) {
                     Log.e(TAG, "signIn(): couldn't insert courier " + courier);
@@ -67,7 +60,6 @@ public class SignInWorker extends Worker {
                 final Data outputData = new Data.Builder()
                         .putLong(SharedPrefs.ID, courier.getId())
                         .putLong(SharedPrefs.BRANCH_ID, courier.getBrancheId())
-                        .putInt(Constants.KEY_PROGRESS, 100)
                         .build();
 
                 return ListenableWorker.Result.success(outputData);

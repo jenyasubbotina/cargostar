@@ -1,6 +1,5 @@
 package uz.alexits.cargostar.view.fragment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -25,37 +24,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.work.Data;
 import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.location.City;
-import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.location.Region;
+import uz.alexits.cargostar.entities.location.Country;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.utils.Regex;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.view.activity.MainActivity;
 import uz.alexits.cargostar.view.activity.SignatureActivity;
-import uz.alexits.cargostar.viewmodel.CourierViewModel;
-import uz.alexits.cargostar.viewmodel.CustomerViewModel;
-import uz.alexits.cargostar.viewmodel.LocationDataViewModel;
-import uz.alexits.cargostar.viewmodel.RequestsViewModel;
-import uz.alexits.cargostar.workers.SyncWorkRequest;
+import uz.alexits.cargostar.viewmodel.CreateUserViewModel;
+import uz.alexits.cargostar.viewmodel.factory.CreateUserViewModelFactory;
 
 public class CreateUserFragment extends Fragment {
-    private FragmentActivity activity;
-    private Context context;
-    //header views
+    /* header views */
     private TextView fullNameTextView;
     private TextView branchTextView;
     private TextView courierIdTextView;
@@ -68,11 +54,9 @@ public class CreateUserFragment extends Fragment {
     private ImageView notificationsImageView;
     private TextView badgeCounterTextView;
 
-    //user data
+    /* content views */
     private EditText passwordEditText;
     private EditText emailEditText;
-    
-    //client data
     private EditText tntAccountNumberEditText;
     private EditText fedexAccountNumberEditText;
     private EditText firstNameEditText;
@@ -82,15 +66,11 @@ public class CreateUserFragment extends Fragment {
     private EditText addressEditText;
     private EditText cityEditText;
     private EditText geolocationEditText;
-
-    //country spinner item
     private ArrayAdapter<Country> countryArrayAdapter;
     private Spinner countrySpinner;
     private RelativeLayout countryField;
-
     private EditText zipEditText;
     private EditText signatureEditText;
-    //payment data
     private TextView passportSerialTextView;
     private EditText passportSerialEditText;
     private TextView innTextView;
@@ -100,26 +80,18 @@ public class CreateUserFragment extends Fragment {
     private TextView contractNumberTextView;
     private EditText contractNumberEditText;
     private Button createBtn;
-
     private ImageView signatureImageView;
     private ImageView signatureResultImageView;
-
     private ProgressBar progressBar;
 
-    private static volatile boolean countryIsSet;
-
-    //ViewModel
-    private CourierViewModel courierViewModel;
-    private LocationDataViewModel locationDataViewModel;
+    private CreateUserViewModel createUserViewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.context = getContext();
-        this.activity = getActivity();
-
-        countryIsSet = false;
+        final CreateUserViewModelFactory createUserFactory = new CreateUserViewModelFactory(requireContext());
+        createUserViewModel = new ViewModelProvider(getViewModelStore(), createUserFactory).get(CreateUserViewModel.class);
     }
 
     @Nullable
@@ -127,22 +99,22 @@ public class CreateUserFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_create_user, container, false);
 
-        //search data
-        fullNameTextView = activity.findViewById(R.id.full_name_text_view);
-        branchTextView = activity.findViewById(R.id.branch_text_view);
-        courierIdTextView = activity.findViewById(R.id.courier_id_text_view);
-        requestSearchEditText = activity.findViewById(R.id.search_edit_text);
-        requestSearchImageView = activity.findViewById(R.id.search_btn);
-        editImageView = activity.findViewById(R.id.edit_image_view);
-        profileImageView = activity.findViewById(R.id.profile_image_view);
-        notificationsImageView = activity.findViewById(R.id.notifications_image_view);
-        calculatorImageView = activity.findViewById(R.id.calculator_image_view);
-        createUserImageView = activity.findViewById(R.id.create_user_image_view);
-        badgeCounterTextView = activity.findViewById(R.id.badge_counter_text_view);
-        //user data
+        /* header views */
+        fullNameTextView = requireActivity().findViewById(R.id.full_name_text_view);
+        branchTextView = requireActivity().findViewById(R.id.branch_text_view);
+        courierIdTextView = requireActivity().findViewById(R.id.courier_id_text_view);
+        requestSearchEditText = requireActivity().findViewById(R.id.search_edit_text);
+        requestSearchImageView = requireActivity().findViewById(R.id.search_btn);
+        editImageView = requireActivity().findViewById(R.id.edit_image_view);
+        profileImageView = requireActivity().findViewById(R.id.profile_image_view);
+        notificationsImageView = requireActivity().findViewById(R.id.notifications_image_view);
+        calculatorImageView = requireActivity().findViewById(R.id.calculator_image_view);
+        createUserImageView = requireActivity().findViewById(R.id.create_user_image_view);
+        badgeCounterTextView = requireActivity().findViewById(R.id.badge_counter_text_view);
+
+        /* content views */
         passwordEditText = root.findViewById(R.id.password_edit_text);
         emailEditText = root.findViewById(R.id.email_edit_text);
-        //client data
         tntAccountNumberEditText = root.findViewById(R.id.tnt_account_number_edit_text);
         fedexAccountNumberEditText = root.findViewById(R.id.fedex_account_number_edit_text);
         firstNameEditText = root.findViewById(R.id.first_name_edit_text);
@@ -151,18 +123,12 @@ public class CreateUserFragment extends Fragment {
         phoneEditText = root.findViewById(R.id.phone_number_edit_text);
         addressEditText = root.findViewById(R.id.address_edit_text);
         geolocationEditText = root.findViewById(R.id.geolocation_edit_text);
-
-        //country, region, city
         countryField = root.findViewById(R.id.country_field);
         cityEditText = root.findViewById(R.id.city_edit_text);
-
         countrySpinner = root.findViewById(R.id.country_spinner);
-
         progressBar = root.findViewById(R.id.progress_bar);
-
         zipEditText = root.findViewById(R.id.zip_edit_text);
         signatureEditText = root.findViewById(R.id.signature_edit_text);
-        //payment data
         passportSerialTextView = root.findViewById(R.id.passport_serial_text_view);
         passportSerialEditText = root.findViewById(R.id.passport_serial_edit_text);
         innTextView = root.findViewById(R.id.inn_text_view);
@@ -176,7 +142,7 @@ public class CreateUserFragment extends Fragment {
         signatureImageView = root.findViewById(R.id.signature_image_view);
         signatureResultImageView = root.findViewById(R.id.success_signature_image_view);
 
-        countryArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, new ArrayList<>());
+        countryArrayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, new ArrayList<>());
         countryArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         countrySpinner.setAdapter(countryArrayAdapter);
 
@@ -338,19 +304,19 @@ public class CreateUserFragment extends Fragment {
         });
 
         editImageView.setOnClickListener(v -> {
-            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.profileFragment);
+            UiUtils.getNavController(requireActivity(), R.id.main_fragment_container).navigate(R.id.profileFragment);
         });
 
         notificationsImageView.setOnClickListener(v -> {
-            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.notificationsFragment);
+            UiUtils.getNavController(requireActivity(), R.id.main_fragment_container).navigate(R.id.notificationsFragment);
         });
 
         profileImageView.setOnClickListener(v -> {
-            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.mainFragment);
+            UiUtils.getNavController(requireActivity(), R.id.main_fragment_container).navigate(R.id.mainFragment);
         });
 
         calculatorImageView.setOnClickListener(v -> {
-            UiUtils.getNavController(activity, R.id.main_fragment_container).navigate(R.id.calculatorFragment);
+            UiUtils.getNavController(requireActivity(), R.id.main_fragment_container).navigate(R.id.calculatorFragment);
         });
 
         createUserImageView.setOnClickListener(null);
@@ -359,13 +325,13 @@ public class CreateUserFragment extends Fragment {
         countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                createUserViewModel.setCountryId(((Country) parent.getSelectedItem()).getId());
+
                 final TextView itemTextView = (TextView) view;
-                final Country selectedCountry = (Country) parent.getSelectedItem();
-                locationDataViewModel.setCountryId(selectedCountry.getId());
 
                 if (itemTextView != null) {
                     if (position < parent.getCount()) {
-                        itemTextView.setTextColor(context.getColor(R.color.colorBlack));
+                        itemTextView.setTextColor(requireContext().getColor(R.color.colorBlack));
                         countryField.setBackgroundResource(R.drawable.edit_text_active);
                     }
                 }
@@ -378,69 +344,21 @@ public class CreateUserFragment extends Fragment {
         });
 
         requestSearchImageView.setOnClickListener(v -> {
-            final String invoiceIdStr = requestSearchEditText.getText().toString();
+            final String requestId = requestSearchEditText.getText().toString().trim();
 
-            if (TextUtils.isEmpty(invoiceIdStr)) {
-                Toast.makeText(context, "Введите ID заявки", Toast.LENGTH_SHORT).show();
+            if (TextUtils.isEmpty(requestId)) {
+                Toast.makeText(requireContext(), "Введите ID заявки", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (!TextUtils.isDigitsOnly(invoiceIdStr)) {
-                Toast.makeText(context, "Неверный формат", Toast.LENGTH_SHORT).show();
+            if (!TextUtils.isDigitsOnly(requestId)) {
+                Toast.makeText(requireContext(), "Неверный формат", Toast.LENGTH_SHORT).show();
                 return;
             }
-            try {
-                final UUID searchInvoiceUUID = SyncWorkRequest.searchRequest(context, Long.parseLong(invoiceIdStr));
-
-                WorkManager.getInstance(context).getWorkInfoByIdLiveData(searchInvoiceUUID).observe(getViewLifecycleOwner(), workInfo -> {
-                    if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                        Toast.makeText(context, "Заявки не существует", Toast.LENGTH_SHORT).show();
-                        requestSearchEditText.setEnabled(true);
-                        return;
-                    }
-                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        final Data outputData = workInfo.getOutputData();
-
-                        final long requestId = outputData.getLong(Constants.KEY_REQUEST_ID, 0L);
-                        final long invoiceId = outputData.getLong(Constants.KEY_INVOICE_ID, 0L);
-                        final long courierId = outputData.getLong(Constants.KEY_COURIER_ID, 0L);
-                        final long clientId = outputData.getLong(Constants.KEY_CLIENT_ID, 0L);
-                        final long senderCountryId = outputData.getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L);
-                        final long senderRegionId = outputData.getLong(Constants.KEY_SENDER_REGION_ID, 0L);
-                        final long senderCityId = outputData.getLong(Constants.KEY_SENDER_CITY_ID, 0L);
-                        final long recipientCountryId = outputData.getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L);
-                        final long recipientCityId = outputData.getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L);
-                        final long providerId = outputData.getLong(Constants.KEY_PROVIDER_ID, 0L);
-
-                        final Intent mainIntent = new Intent(context, MainActivity.class);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST);
-                        mainIntent.putExtra(IntentConstants.INTENT_REQUEST_VALUE, requestId);
-                        mainIntent.putExtra(Constants.KEY_REQUEST_ID, requestId);
-                        mainIntent.putExtra(Constants.KEY_INVOICE_ID, invoiceId);
-                        mainIntent.putExtra(Constants.KEY_CLIENT_ID, clientId);
-                        mainIntent.putExtra(Constants.KEY_COURIER_ID, courierId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_COUNTRY_ID, senderCountryId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_REGION_ID, senderRegionId);
-                        mainIntent.putExtra(Constants.KEY_SENDER_CITY_ID, senderCityId);
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, recipientCountryId);
-                        mainIntent.putExtra(Constants.KEY_RECIPIENT_CITY_ID, recipientCityId);
-                        mainIntent.putExtra(Constants.KEY_PROVIDER_ID, providerId);
-                        startActivity(mainIntent);
-
-                        requestSearchEditText.setEnabled(true);
-
-                        return;
-                    }
-                    requestSearchEditText.setEnabled(false);
-                });
-            }
-            catch (Exception e) {
-                Log.e(TAG, "getInvoiceById(): ", e);
-                Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-            }
+            createUserViewModel.searchRequest(Long.parseLong(requestId));
         });
 
         signatureImageView.setOnClickListener(v -> {
-            startActivityForResult(new Intent(context, SignatureActivity.class), IntentConstants.REQUEST_SENDER_SIGNATURE);
+            startActivityForResult(new Intent(requireContext(), SignatureActivity.class), IntentConstants.REQUEST_SENDER_SIGNATURE);
         });
 
         createBtn.setOnClickListener(v -> {
@@ -473,78 +391,78 @@ public class CreateUserFragment extends Fragment {
 
             /* check for empty fields */
             if (password.length() < 6) {
-                Toast.makeText(context, "Пароль должен сожержать минимум 6 символов", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Пароль должен сожержать минимум 6 символов", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName)) {
-                Toast.makeText(context, "Имя не указано или указано не полностью", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Имя не указано или указано не полностью", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(phone)) {
-                Toast.makeText(context, "Номер телефона не указан", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Номер телефона не указан", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (country == null) {
-                Toast.makeText(context, "Страна не указана", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Страна не указана", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(address)) {
-                Toast.makeText(context, "Адрес не указан", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Адрес не указан", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(passportSerial) && TextUtils.isEmpty(inn) && TextUtils.isEmpty(company)) {
-                Toast.makeText(context, "Заполните физ. или юр. данные", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Заполните физ. или юр. данные", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             /* check for regular expressions */
             if (!Regex.isEmail(email)) {
-                Toast.makeText(context, "Email указан неверно", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Email указан неверно", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!Regex.isName(firstName)) {
-                Toast.makeText(context, "Имя указано неверно", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Имя указано неверно", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!Regex.isName(lastName)) {
-                Toast.makeText(context, "Фамилия указана неверно", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Фамилия указана неверно", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!Regex.isPhoneNumber(phone)) {
-                Toast.makeText(context, "Номер телефона указан неверно", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Номер телефона указан неверно", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!TextUtils.isEmpty(tntAccountNumber)) {
                 if (!Regex.isAccountNumber(tntAccountNumber)) {
-                    Toast.makeText(context, "Номер аккаунта TNT указан неверно", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Номер аккаунта TNT указан неверно", Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
             if (!TextUtils.isEmpty(fedexAccountNumber)) {
                 if (!Regex.isAccountNumber(fedexAccountNumber)) {
-                    Toast.makeText(context, "Номер аккаунта Fedex указан неверно", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Номер аккаунта Fedex указан неверно", Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
             if (!TextUtils.isEmpty(zip)) {
                 if (!Regex.isZip(zip)) {
-                    Toast.makeText(context, "Почтовый индекс должен содержать только цифры", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Почтовый индекс должен содержать только цифры", Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
             if (TextUtils.isEmpty(passportSerial) && (TextUtils.isEmpty(inn) || TextUtils.isEmpty(company))) {
-                Toast.makeText(context, "Для юр. лица укажите ИНН и название компании", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Для юр. лица укажите ИНН и название компании", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!TextUtils.isEmpty(inn)) {
                 if (!Regex.isAccountNumber(inn)) {
-                    Toast.makeText(context, "ИНН указан неверно", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "ИНН указан неверно", Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
             if (!TextUtils.isEmpty(geolocation)) {
                 if (!Regex.isGeolocation(geolocation)) {
-                    Toast.makeText(context, "Геолокация должна быть указана в формате ХХ.ХХ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Геолокация должна быть указана в формате ХХ.ХХ", Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -556,9 +474,7 @@ public class CreateUserFragment extends Fragment {
             else {
                 userType = 2;
             }
-
-            final UUID createUserWorkerId = SyncWorkRequest.createUser(
-                    context,
+            createUserViewModel.createUser(
                     email,
                     password,
                     null,
@@ -580,25 +496,6 @@ public class CreateUserFragment extends Fragment {
                     company,
                     contractNumber,
                     !TextUtils.isEmpty(signature) ? signature : null);
-            WorkManager.getInstance(context).getWorkInfoByIdLiveData(createUserWorkerId).observe(getViewLifecycleOwner(), workInfo -> {
-                if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    createBtn.setEnabled(true);
-                    Toast.makeText(context, "Пользователь " + email + " был успешно создан!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(context, MainActivity.class));
-                    activity.finish();
-                    return;
-                }
-                if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    createBtn.setEnabled(true);
-                    Log.e(TAG, "createUser(): failed to create user");
-                    Toast.makeText(context, "Ошибка создания пользователя", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                progressBar.setVisibility(View.VISIBLE);
-                createBtn.setEnabled(false);
-            });
         });
     }
 
@@ -606,46 +503,84 @@ public class CreateUserFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //header view model
-        courierViewModel = new ViewModelProvider(this).get(CourierViewModel.class);
-        locationDataViewModel = new ViewModelProvider(this).get(LocationDataViewModel.class);
-
-        courierViewModel.selectCourierByLogin(SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN)).observe(getViewLifecycleOwner(), courier -> {
+        /* header */
+        createUserViewModel.getCourierData(requireContext()).observe(getViewLifecycleOwner(), courier -> {
             if (courier != null) {
                 fullNameTextView.setText(getString(R.string.header_courier_full_name, courier.getFirstName(), courier.getLastName()));
                 courierIdTextView.setText(getString(R.string.courier_id_placeholder, courier.getId()));
             }
         });
 
-        courierViewModel.selectBrancheById(SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID)).observe(getViewLifecycleOwner(), branch -> {
+        createUserViewModel.getBrancheData(requireContext()).observe(getViewLifecycleOwner(), branch -> {
             if (branch != null) {
                 branchTextView.setText(getString(R.string.header_branch_name, branch.getName()));
             }
         });
 
-        courierViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
+        createUserViewModel.selectNewNotificationsCount().observe(getViewLifecycleOwner(), newNotificationsCount -> {
             if (newNotificationsCount != null) {
                 badgeCounterTextView.setText(String.valueOf(newNotificationsCount));
             }
         });
 
-        //location data view model
-        locationDataViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
+        createUserViewModel.getSearchRequestResult(requireContext()).observe(getViewLifecycleOwner(), workInfo -> {
+            if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                Toast.makeText(requireContext(), "Заявки не существует", Toast.LENGTH_SHORT).show();
+                requestSearchEditText.setEnabled(true);
+                return;
+            }
+            if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                requestSearchEditText.setEnabled(true);
+                startActivity(new Intent(requireContext(), MainActivity.class)
+                        .putExtra(IntentConstants.INTENT_REQUEST_KEY, IntentConstants.REQUEST_FIND_REQUEST)
+                        .putExtra(Constants.KEY_REQUEST_ID, workInfo.getOutputData().getLong(Constants.KEY_REQUEST_ID, 0L))
+                        .putExtra(Constants.KEY_INVOICE_ID, workInfo.getOutputData().getLong(Constants.KEY_INVOICE_ID, 0L))
+                        .putExtra(Constants.KEY_CLIENT_ID, workInfo.getOutputData().getLong(Constants.KEY_CLIENT_ID, 0L))
+                        .putExtra(Constants.KEY_COURIER_ID, workInfo.getOutputData().getLong(Constants.KEY_COURIER_ID, 0L))
+                        .putExtra(Constants.KEY_SENDER_COUNTRY_ID, workInfo.getOutputData().getLong(Constants.KEY_SENDER_COUNTRY_ID, 0L))
+                        .putExtra(Constants.KEY_SENDER_REGION_ID, workInfo.getOutputData().getLong(Constants.KEY_SENDER_REGION_ID, 0L))
+                        .putExtra(Constants.KEY_SENDER_CITY_ID, workInfo.getOutputData().getLong(Constants.KEY_SENDER_CITY_ID, 0L))
+                        .putExtra(Constants.KEY_RECIPIENT_COUNTRY_ID, workInfo.getOutputData().getLong(Constants.KEY_RECIPIENT_COUNTRY_ID, 0L))
+                        .putExtra(Constants.KEY_RECIPIENT_CITY_ID, workInfo.getOutputData().getLong(Constants.KEY_RECIPIENT_CITY_ID, 0L))
+                        .putExtra(Constants.KEY_PROVIDER_ID, workInfo.getOutputData().getLong(Constants.KEY_PROVIDER_ID, 0L)));
+                return;
+            }
+            requestSearchEditText.setEnabled(false);
+        });
+
+        createUserViewModel.getCountryList().observe(getViewLifecycleOwner(), countryList -> {
             if (countryList != null) {
                 countryArrayAdapter.clear();
+                countryArrayAdapter.addAll(countryList);
 
-                for (final Country country : countryList) {
-                    countryArrayAdapter.add(country);
-                }
                 for (int i = 0; i < countryList.size(); i++) {
                     if (countryList.get(i).getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
                         int finalI = i;
                         countrySpinner.post(() -> countrySpinner.setSelection(finalI, false));
-                        countryIsSet = true;
                         return;
                     }
                 }
             }
+        });
+
+        createUserViewModel.getCreateClientResult(requireContext()).observe(getViewLifecycleOwner(), workInfo -> {
+            if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                progressBar.setVisibility(View.INVISIBLE);
+                createBtn.setEnabled(true);
+                Toast.makeText(requireContext(), "Пользователь " + " был успешно создан!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(requireContext(), MainActivity.class));
+                requireActivity().finish();
+                return;
+            }
+            if (workInfo.getState() == WorkInfo.State.FAILED || workInfo.getState() == WorkInfo.State.CANCELLED) {
+                progressBar.setVisibility(View.INVISIBLE);
+                createBtn.setEnabled(true);
+                Log.e(TAG, "createUser(): failed to create user");
+                Toast.makeText(requireContext(), "Ошибка создания пользователя", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            progressBar.setVisibility(View.VISIBLE);
+            createBtn.setEnabled(false);
         });
     }
 

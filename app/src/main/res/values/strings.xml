@@ -13,9 +13,10 @@
     <string name="default_api_password">5N8zWV2BbQ</string>
 
     <!-- sign in -->
-    <string name="cargostar">CargoStar</string>
+    <string name="cargostar">Cargo Star</string>
     <string name="tnt">TNT</string>
-    <string name="fedex">Fedex</string>
+    <string name="fedex">FedEx</string>
+    <string name="provider">%s</string>
     <string name="authorization">Авторизация</string>
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
@@ -24,12 +25,12 @@
     <string name="forgot_password">Забыли пароль?</string>
     <!-- main -->
     <string name="search">Поиск</string>
-<!--    <string name="full_name_example">Андроид Ким</string>-->
-<!--    <string name="branch">филиал</string>-->
+    <!--    <string name="full_name_example">Андроид Ким</string>-->
+    <!--    <string name="branch">филиал</string>-->
     <string name="bids">Заявки</string>
     <string name="parcels">Перевозки</string>
-    <string name="public_bids">Общие"\n"заявки</string>
-    <string name="my_bids">Мои"\n"заявки</string>
+    <string name="public_requests">Общие"\n"заявки</string>
+    <string name="my_requests">Мои"\n"заявки</string>
     <string name="create_receipt">Создать"\n"накладную</string>
     <string name="current_parcels">Текущие"\n"перевозки</string>
     <string name="scan_parcels">Сканировать"\n"перевозки</string>
@@ -55,7 +56,6 @@
     <string name="fedex_account_number">Номер аккаунта Fedex</string>
     <string name="account_numbers">Номера аккаунтов</string>
     <string name="take_address">Адрес забора</string>
-    <string name="delivery_address">Адрес доставки</string>
     <string name="payer_address">Адрес плательщика</string>
     <string name="country">Страна</string>
     <string name="city">Город</string>
@@ -202,7 +202,7 @@
 
     <string name="undefined">Неизвестно</string>
     <string name="empty">Пусто</string>
-    
+
     <string name="public_requests_body">Новая заявка в \"Общие Заявки\"</string>
     <string name="my_requests_body">Новая заявка в \"Мои Заявки\"</string>
     <string name="request_has_changed">Заявка была изменена</string>
@@ -228,4 +228,30 @@
     <string name="submit">Подтвердить</string>
     <string name="input_qr_code">Введите QR-code вручную</string>
     <string name="online">Онлайн</string>
+    <string name="comment">Комментарий</string>
+    <string name="full_name">Полное имя</string>
+    <string name="error_sync_failed">Ошибка синхронизации</string>
+    <string name="error_internet">Ошибка: проверьте Интернет</string>
+    <string name="leaving_uzbekistan">Покидает Узбекистан</string>
+    <string name="consignment_index">%d.</string>
+
+    <string name="delivery_invoice_id">ID накладной: %1$d</string>
+    <string name="delivery_recipient_full_name">Ф.И.О.: %1$s</string>
+    <string name="delivery_recipient_phone">Номер телефона: %1$s</string>
+    <string name="delivery_address">Адрес доставки</string>
+    <string name="addressee_address">Адрес доставки: %1$s</string>
+    <string name="delivery_organization">Организация: %1$s</string>
+    <string name="delivery_comment">Комментарий: %1$s</string>
+    <string name="accepted">Получено</string>
+    <string name="refused">Отказано</string>
+    <string name="delivery_scan_date">Дата сканирования: %1$s</string>
+    <string name="delivery_signature_date">Дата подписи: %1$s</string>
+
+    <string name="office">OFFICE</string>
+    <string name="van">VAN</string>
+    <string name="pod">POD</string>
+    <string name="nr">NR</string>
+    <string name="ok">OK</string>
+    <string name="delivery_list">Доставочный Лист</string>
+
 </resources>

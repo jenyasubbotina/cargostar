@@ -1,172 +1,163 @@
 package uz.alexits.cargostar.viewmodel;
 
-import android.app.Application;
+import android.content.Context;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-
-import uz.alexits.cargostar.model.actor.AddressBook;
-import uz.alexits.cargostar.database.cache.Repository;
-import uz.alexits.cargostar.model.actor.Customer;
-import uz.alexits.cargostar.model.calculation.Provider;
-import uz.alexits.cargostar.model.location.City;
-import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.transportation.Invoice;
-import uz.alexits.cargostar.model.transportation.Transportation;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import java.util.List;
+import java.util.UUID;
 
-public class CreateInvoiceViewModel extends AndroidViewModel {
-    private final Repository repository;
-//    private final LiveData<List<Country>> countryList;
+import uz.alexits.cargostar.entities.actor.AddressBook;
+import uz.alexits.cargostar.entities.actor.Client;
+import uz.alexits.cargostar.entities.location.Country;
+import uz.alexits.cargostar.entities.transportation.Consignment;
 
-    /* sender data */
-    private final MutableLiveData<Long> senderCountryId;
+public class CreateInvoiceViewModel extends InvoiceViewModel {
+    private int action;
 
-    /* recipient data */
-    private final MutableLiveData<Long> recipientCountryId;
-
-    /* payer data */
+    private final MutableLiveData<AddressBook> recipientAddressBookData;
+    private final MutableLiveData<AddressBook> payerAddressBookData;
     private final MutableLiveData<Long> payerCountryId;
+    private final MutableLiveData<Country> payerCountry;
 
-    /* address book */
-    private final MutableLiveData<String> senderEmail;
-    private final MutableLiveData<Long> senderUserId;
+    private final MutableLiveData<String> clientEmail;
+    private final MutableLiveData<UUID> createInvoiceUUID;
 
-    private final MutableLiveData<Long> senderId;
-    private final MutableLiveData<Long> recipientId;
-    private final MutableLiveData<Long> payerId;
+    public CreateInvoiceViewModel(final Context context) {
+        super(context);
 
-    private final MutableLiveData<Long> courierId;
-    private final MutableLiveData<Long> requestId;
-    private final MutableLiveData<Long> invoiceId;
-
-    private final MutableLiveData<Long> providerId;
-    private final MutableLiveData<Long> tariffId;
-
-    public CreateInvoiceViewModel(@NonNull Application application) {
-        super(application);
-        this.repository = Repository.getInstance(application);
-
-        this.senderCountryId = new MutableLiveData<>();
-        this.recipientCountryId = new MutableLiveData<>();
+        this.action = 0;
+        this.recipientAddressBookData = new MutableLiveData<>();
+        this.payerAddressBookData = new MutableLiveData<>();
         this.payerCountryId = new MutableLiveData<>();
-
-        this.senderEmail = new MutableLiveData<>();
-        this.senderUserId = new MutableLiveData<>();
-
-        this.senderId = new MutableLiveData<>();
-        this.recipientId = new MutableLiveData<>();
-        this.payerId = new MutableLiveData<>();
-
-        this.courierId = new MutableLiveData<>();
-        this.requestId = new MutableLiveData<>();
-        this.invoiceId = new MutableLiveData<>();
-
-        this.providerId = new MutableLiveData<>();
-        this.tariffId = new MutableLiveData<>();
+        this.payerCountry = new MutableLiveData<>();
+        this.clientEmail = new MutableLiveData<>();
+        this.createInvoiceUUID = new MutableLiveData<>();
     }
 
-    /* location data */
-    public LiveData<List<Country>> getCountryList() {
-        return repository.selectAllCountries();
+    public void setPayerCountry(final Country country) {
+        this.payerCountry.setValue(country);
+        this.payerCountryId.setValue(country.getId());
     }
 
-    public void setSenderCountryId(final long senderCountryId) {
-        this.senderCountryId.setValue(senderCountryId);
+    public void updateRecipientData(final AddressBook addressBook) {
+        this.recipientAddressBookData.setValue(addressBook);
     }
 
-    public void setRecipientCountryId(final long recipientCountryId) {
-        this.recipientCountryId.setValue(recipientCountryId);
+    public void updatePayerData(final AddressBook addressBook) {
+        this.payerAddressBookData.setValue(addressBook);
     }
 
-    public void setPayerCountryId(final long payerCountryId) {
-        this.payerCountryId.setValue(payerCountryId);
-    }
-
-    /* address book data*/
-    public LiveData<List<AddressBook>> getSenderAddressBook() {
-        return Transformations.switchMap(senderUserId, repository::selectAddressBookBySenderId);
-    }
-
-    public void setSenderEmail(final String email) {
-        this.senderEmail.setValue(email);
-    }
-
-    public LiveData<Customer> getSender() {
-        return Transformations.switchMap(senderEmail, repository::selectSenderByEmail);
-    }
-
-    public void setSenderUserId(final long senderUserId) {
-        this.senderUserId.setValue(senderUserId);
-    }
-
-    public LiveData<Invoice> getInvoice() {
-        return Transformations.switchMap(invoiceId, repository::selectInvoiceById);
-    }
-
-    public LiveData<Provider> getProvider() {
-        return Transformations.switchMap(providerId, repository::selectProviderById);
-    }
-
-    public LiveData<Transportation> getTransportation() {
-        return Transformations.switchMap(invoiceId, repository::selectTransportationByInvoiceId);
-    }
-
-    public void setTariffId(final Long tariffId) {
-        if (tariffId == null) {
+    public void createInvoice(final String senderFirstName,
+                              final String senderMiddleName,
+                              final String senderLastName,
+                              final String senderEmail,
+                              final String senderPhone,
+                              final long senderCountryId,
+                              final String senderCityName,
+                              final String senderAddress,
+                              final String senderZip,
+                              final String senderTnt,
+                              final String senderFedex,
+                              final String senderCompanyName,
+                              final String senderSignature,
+                              final String recipientFirstName,
+                              final String recipientMiddleName,
+                              final String recipientLastName,
+                              final String recipientEmail,
+                              final String recipientPhone,
+                              final long recipientCountryId,
+                              final String recipientCityName,
+                              final String recipientAddress,
+                              final String recipientZip,
+                              final String recipientCargo,
+                              final String recipientTnt,
+                              final String recipientFedex,
+                              final String recipientCompanyName,
+                              final String payerFirstName,
+                              final String payerMiddleName,
+                              final String payerLastName,
+                              final String payerEmail,
+                              final String payerPhone,
+                              final long payerCountryId,
+                              final String payerCityName,
+                              final String payerAddress,
+                              final String payerZip,
+                              final String payerCargostar,
+                              final String payerTnt,
+                              final String payerFedex,
+                              final String payerTntTaxId,
+                              final String payerFedexTaxId,
+                              final String payerCompanyName,
+                              final double discount,
+                              final String payerInn,
+                              final String contractNumber,
+                              final String instructions) {
+        if (consignmentList == null || consignmentList.isEmpty()) {
+            Log.e(TAG, "createInvoice(): consignmentList empty");
             return;
         }
-        this.tariffId .setValue(tariffId);
+        createInvoiceUUID.setValue(invoiceRepository.createInvoice(
+                getRequestId(), getInvoiceId(), getProviderId(), getPackagingId(), getType(), getPaymentMethod(), getTotalWeight(), getTotalVolume(), getTotalPrice(),
+                senderFirstName, senderMiddleName, senderLastName, senderEmail, senderPhone, senderCountryId, senderCityName, senderAddress, senderZip,
+                senderTnt, senderFedex, senderCompanyName, senderSignature,
+                recipientFirstName, recipientMiddleName, recipientLastName, recipientEmail, recipientPhone, recipientCountryId, recipientCityName, recipientAddress, recipientZip,
+                recipientCargo, recipientTnt, recipientFedex, recipientCompanyName,
+                payerFirstName, payerMiddleName, payerLastName, payerEmail, payerPhone, payerCountryId, payerCityName, payerAddress, payerZip, payerCargostar, payerTnt, payerFedex,
+                payerTntTaxId, payerFedexTaxId, payerCompanyName,  discount, payerInn, contractNumber,
+                instructions, consignmentList));
     }
 
-    public void setRecipientId(final Long recipientId) {
-        if (recipientId == null) {
-            return;
-        }
-        this.recipientId.setValue(recipientId);
+    public LiveData<WorkInfo> getCreateInvoiceResult(final Context context) {
+        return Transformations.switchMap(createInvoiceUUID, input -> WorkManager.getInstance(context).getWorkInfoByIdLiveData(input));
     }
 
-    public void setPayerId(final Long payerId) {
-        if (payerId == null) {
-            return;
-        }
-        this.payerId.setValue(payerId);
+    public void setSenderEmail(final String senderEmail) {
+        this.clientEmail.setValue(senderEmail);
     }
 
-    public void setRequestId(final Long requestId) {
-        this.requestId.setValue(requestId);
+    public void setCurrentConsignmentList(final List<Consignment> deserializeConsignmentList) {
+        this.consignmentList = deserializeConsignmentList;
+        this.observableConsignmentList.setValue(deserializeConsignmentList);
     }
 
-    public void setInvoiceId(final Long invoiceId) {
-        if (invoiceId == null) {
-            return;
-        }
-        this.invoiceId.setValue(invoiceId);
+    public LiveData<List<AddressBook>> getAddressBook() {
+        return Transformations.switchMap(clientEmail, addressBookRepository::selectAddressBookBySenderEmail);
     }
 
-    public void setProviderId(final Long providerId) {
-        if (providerId == null) {
-            return;
-        }
-        this.providerId.setValue(providerId);
-    }
-    public void setCourierId(final Long courierId) {
-        if (courierId == null) {
-            return;
-        }
-        this.courierId.setValue(courierId);
+    public LiveData<Client> getClientDataFromAddressBook() {
+        return Transformations.switchMap(clientEmail, clientRepository::selectClientByEmail);
     }
 
-    public void setSenderId(final Long senderId) {
-        if (senderId == null) {
-            return;
-        }
-        this.senderId.setValue(senderId);
+    public LiveData<AddressBook> getRecipientAddressBook() {
+        return recipientAddressBookData;
     }
 
+    public LiveData<AddressBook> getPayerAddressBook() {
+        return payerAddressBookData;
+    }
+
+    public void setAction(final int action) {
+        this.action = action;
+    }
+
+    public int getAction() {
+        return action;
+    }
+
+    public long getRecipientCountryId() {
+        return recipientCountryIdPlain;
+    }
+
+    //CreateInvoiceFragment navigation types
+    //0 -> DEFAULT (from mainFragment to CreateInvoiceFragment)
+    //1 -> EDIT_INVOICE (from invoiceFragment to CreateInvoiceFragment)
+    public static final int CREATE_INVOICE_ACTION_DEFAULT = 0;
+    public static final int CREATE_INVOICE_ACTION_EDIT = 1;
     private static final String TAG = CreateInvoiceViewModel.class.toString();
 }

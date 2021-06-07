@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.diffutil.RequestDiffUtil;
+import uz.alexits.cargostar.entities.transportation.Request;
 import uz.alexits.cargostar.view.callback.RequestCallback;
 import uz.alexits.cargostar.view.viewholder.MyRequestViewHolder;
 
@@ -20,7 +22,7 @@ import java.util.List;
 public class MyRequestAdapter extends RecyclerView.Adapter<MyRequestViewHolder> {
     private final Context context;
     private List<Request> myRequestList;
-    private RequestCallback callback;
+    private final RequestCallback callback;
 
     public MyRequestAdapter(final Context context, final RequestCallback callback) {
         this.context = context;
@@ -28,7 +30,10 @@ public class MyRequestAdapter extends RecyclerView.Adapter<MyRequestViewHolder> 
     }
 
     public void setMyRequestList(final List<Request> myRequestList) {
+        final RequestDiffUtil diffUtil = new RequestDiffUtil(this.myRequestList, myRequestList);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
         this.myRequestList = myRequestList;
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull
@@ -68,7 +73,7 @@ public class MyRequestAdapter extends RecyclerView.Adapter<MyRequestViewHolder> 
                 holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_red);
             }
         }
-        holder.bind(currentRequest, callback);
+        holder.bind(position, currentRequest, callback);
     }
 
     @Override

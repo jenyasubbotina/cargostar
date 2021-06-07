@@ -2,8 +2,6 @@ package uz.alexits.cargostar.view.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -13,20 +11,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.UUID;
-
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.database.cache.Repository;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class InitializationActivity extends AppCompatActivity {
 
@@ -39,10 +29,9 @@ public class InitializationActivity extends AppCompatActivity {
 
         obtainFcmToken(this);
 
-        if (SharedPrefs.getInstance(this).getBoolean(SharedPrefs.KEEP_LOGGED) &&
-                SharedPrefs.getInstance(this).getString(Constants.KEY_LOGIN) != null &&
-                SharedPrefs.getInstance(this).getString(Constants.KEY_PASSWORD) != null &&
-                SharedPrefs.getInstance(this).getString(Constants.KEY_TOKEN) != null) {
+        final boolean isLoggedIn = SharedPrefs.getInstance(this).isLoggedIn(this);
+
+        if (isLoggedIn) {
             startActivity(new Intent(this, MainActivity.class));
         }
         else {

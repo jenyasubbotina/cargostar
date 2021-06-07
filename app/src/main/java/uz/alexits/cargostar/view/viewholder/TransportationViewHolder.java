@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.entities.transportation.Transportation;
 import uz.alexits.cargostar.view.callback.TransportationCallback;
 
 public class TransportationViewHolder extends RecyclerView.ViewHolder {

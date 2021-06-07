@@ -16,7 +16,7 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Consignment;
+import uz.alexits.cargostar.entities.transportation.Consignment;
 import uz.alexits.cargostar.utils.Constants;
 
 public class FetchConsignmentListByInvoiceIdWorker extends Worker {
@@ -31,11 +31,6 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
     private final String paymentStatus;
     private final int paymentMethod;
     private final String comment;
-
-    private final int status;
-    private final long createdAtTime;
-    private final long updatedAtTime;
-
     private final long senderId;
     private final long senderUserId;
     private final String senderEmail;
@@ -114,11 +109,6 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
         this.paymentStatus = getInputData().getString(Constants.KEY_PAYMENT_STATUS);
         this.paymentMethod = getInputData().getInt(Constants.KEY_PAYMENT_METHOD, 0);
         this.comment = getInputData().getString(Constants.KEY_COMMENT);
-
-        this.status = getInputData().getInt(Constants.KEY_STATUS, 0);
-        this.createdAtTime = getInputData().getLong(Constants.KEY_CREATED_AT, 0L);
-        this.updatedAtTime = getInputData().getLong(Constants.KEY_UPDATED_AT, 0L);
-
         this.senderId = getInputData().getLong(Constants.KEY_SENDER_ID, 0L);
         this.senderUserId = getInputData().getLong(Constants.KEY_SENDER_USER_ID, 0L);
         this.senderEmail = getInputData().getString(Constants.KEY_SENDER_EMAIL);
@@ -204,11 +194,6 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
                 .putString(Constants.KEY_PAYMENT_STATUS, paymentStatus)
                 .putInt(Constants.KEY_PAYMENT_METHOD, paymentMethod)
                 .putString(Constants.KEY_COMMENT, comment)
-
-                .putLong(Constants.KEY_STATUS, status)
-                .putLong(Constants.KEY_CREATED_AT, createdAtTime)
-                .putLong(Constants.KEY_UPDATED_AT, updatedAtTime)
-
                 .putLong(Constants.KEY_SENDER_ID, senderId)
                 .putLong(Constants.KEY_SENDER_USER_ID, senderUserId)
                 .putString(Constants.KEY_SENDER_EMAIL, senderEmail)
@@ -277,7 +262,8 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
             return Result.success(outputDataBuilder.build());
         }
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
             final Response<List<Consignment>> response = RetrofitClient.getInstance(getApplicationContext()).getCargoListByInvoiceId(invoiceId);
 
@@ -287,7 +273,7 @@ public class FetchConsignmentListByInvoiceIdWorker extends Worker {
 
                     final List<Consignment> consignmentList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).invoiceDao().insertCargoList(consignmentList);
+                    LocalCache.getInstance(getApplicationContext()).consignmentDao().insertConsignmentList(consignmentList);
 
                     final String serializedConsignmentList = new Gson().toJson(consignmentList);
                     outputDataBuilder.putString(Constants.KEY_SERIALIZED_CONSIGNMENT_LIST, serializedConsignmentList);

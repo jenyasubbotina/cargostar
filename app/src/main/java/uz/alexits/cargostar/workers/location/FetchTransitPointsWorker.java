@@ -2,10 +2,8 @@ package uz.alexits.cargostar.workers.location;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
@@ -14,7 +12,7 @@ import androidx.work.WorkerParameters;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.location.TransitPoint;
+import uz.alexits.cargostar.entities.location.TransitPoint;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -24,14 +22,13 @@ import java.util.List;
 import retrofit2.Response;
 
 public class FetchTransitPointsWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
 
     public FetchTransitPointsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
+
         this.login = SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -48,7 +45,7 @@ public class FetchTransitPointsWorker extends Worker {
         Log.i(TAG, "login: " + login + " password: " + password);
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<TransitPoint>> response = RetrofitClient.getInstance(getApplicationContext()).getTransitPoints(perPage);
+            final Response<List<TransitPoint>> response = RetrofitClient.getInstance(getApplicationContext()).getTransitPoints(SyncWorkRequest.DEFAULT_PER_PAGE);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

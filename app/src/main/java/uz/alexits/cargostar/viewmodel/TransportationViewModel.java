@@ -1,72 +1,108 @@
 package uz.alexits.cargostar.viewmodel;
 
-import android.app.Application;
+import android.content.Context;
+import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
-import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.database.cache.Repository;
-import uz.alexits.cargostar.database.dao.TransportationDao;
-import uz.alexits.cargostar.model.calculation.TypePackageIdList;
-import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.transportation.StatusArrayTransitPoint;
-import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.model.transportation.TransportationStatus;
+import uz.alexits.cargostar.entities.location.TransitPoint;
+import uz.alexits.cargostar.entities.transportation.Transportation;
+import uz.alexits.cargostar.entities.transportation.TransportationStatus;
+import uz.alexits.cargostar.repository.TransportationRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public class TransportationViewModel extends AndroidViewModel {
-    private final Repository repository;
+public class TransportationViewModel extends HeaderViewModel {
+    private final TransportationRepository transportationRepository;
 
-    private final MutableLiveData<Long> currentTransitPointId;
-    private final MutableLiveData<StatusArrayTransitPoint> statusArrayTransitPoint;
+    private final MutableLiveData<Long> selectedTransitPointId;
+    private final MutableLiveData<Long> selectedTransportationStatusId;
+    private final MutableLiveData<Pair<Long, Long>> selectedTransitPointIdAndStatusId;
 
-    public TransportationViewModel(@NonNull Application application) {
-        super(application);
-        this.repository = Repository.getInstance(application);
+    private final MutableLiveData<UUID> searchTransportationByQrUUID;
+    private final MutableLiveData<UUID> fetchTransportationsUUID;
+    private final MutableLiveData<UUID> fetchTransitPointsUUID;
+    private final MutableLiveData<UUID> fetchTransportationStatusesUUID;
 
-        this.currentTransitPointId = new MutableLiveData<>();
-        this.statusArrayTransitPoint = new MutableLiveData<>();
+    public TransportationViewModel(final Context context) {
+        super(context);
+
+        this.transportationRepository = new TransportationRepository(context);
+
+        this.selectedTransitPointId = new MutableLiveData<>();
+        this.selectedTransportationStatusId = new MutableLiveData<>();
+        this.selectedTransitPointIdAndStatusId = new MutableLiveData<>();
+
+        this.searchTransportationByQrUUID = new MutableLiveData<>();
+        this.fetchTransportationsUUID = new MutableLiveData<>();
+        this.fetchTransitPointsUUID = new MutableLiveData<>();
+        this.fetchTransportationStatusesUUID = new MutableLiveData<>();
     }
 
     /* Transportation */
-    public void setCurrentTransitPointId(final Long currentTransitPointId) {
-        this.currentTransitPointId.setValue(currentTransitPointId);
+
+    public LiveData<List<Transportation>> getTransportationList() {
+        return Transformations.switchMap(selectedTransitPointIdAndStatusId, input -> {
+            return transportationRepository.selectTransportationListByTransitPointAndStatusId(input.first, input.second);
+        });
     }
 
-    public void setStatusArrayTransitPoint(final List<Long> statusArray, final Long transitPoint) {
-        if (transitPoint == null) {
-            return;
-        }
-        this.statusArrayTransitPoint.setValue(new StatusArrayTransitPoint(statusArray, transitPoint));
+    public LiveData<List<TransitPoint>> getTransitPoints() {
+        return transportationRepository.selectTransitPoints();
     }
 
-    public LiveData<List<Transportation>> getCurrentTransportationList() {
-        return Transformations.switchMap(statusArrayTransitPoint, input -> repository.selectCurrentTransportations(input.getStatusArray(), input.getTransitPoint()));
+    public LiveData<List<TransportationStatus>> getTransportationStatuses() {
+        return transportationRepository.selectTransportationStatuses();
     }
 
-    /*Transit points*/
-    public LiveData<List<TransitPoint>> selectAllTransitPoints() {
-        return repository.selectAllTransitPoints();
+    public void searchTransportationByQr(final String qr) {
+        this.searchTransportationByQrUUID.setValue(transportationRepository.searchTransportationByQr(qr));
     }
 
-    public LiveData<TransitPoint> selectTransitPointByBranch(final long branchId) {
-        return repository.selectTransitPointByBranch(branchId);
+    public void fetchTransportationStatuses() {
+        fetchTransportationsUUID.setValue(transportationRepository.fetchTransportationList());
     }
 
-    public LiveData<List<TransitPoint>> selectTransitPointsByCity(final long cityId) {
-        return repository.selectAllTransitPointsByCity(cityId);
+    public void fetchTransitPoints() {
+        fetchTransitPointsUUID.setValue(transportationRepository.fetchTransitPoints());
     }
 
-    public LiveData<List<TransitPoint>> selectTransitPointsByCountry(final long countryId) {
-        return repository.selectAllTransitPointsByCountry(countryId);
+    public void fetchTransportationList() {
+        fetchTransportationStatusesUUID.setValue(transportationRepository.fetchTransportationStatuses());
     }
 
-    public LiveData<List<Transportation>> getAllTransportation() {
-        return repository.selectAllTransportation();
+    public LiveData<WorkInfo> getSearchTransportationByQrResult(final Context context) {
+        return Transformations.switchMap(searchTransportationByQrUUID, input -> WorkManager.getInstance(context).getWorkInfoByIdLiveData(input));
     }
+
+    public LiveData<WorkInfo> getFetchTransportationsResult(final Context context) {
+        return Transformations.switchMap(fetchTransportationsUUID, input -> WorkManager.getInstance(context).getWorkInfoByIdLiveData(input));
+    }
+
+    public LiveData<WorkInfo> getFetchTransitPointsResult(final Context context) {
+        return Transformations.switchMap(fetchTransitPointsUUID, input -> WorkManager.getInstance(context).getWorkInfoByIdLiveData(input));
+    }
+
+    public LiveData<WorkInfo> getFetchTransportationStatusesResult(final Context context) {
+        return Transformations.switchMap(fetchTransportationStatusesUUID, input -> WorkManager.getInstance(context).getWorkInfoByIdLiveData(input));
+    }
+
+    public void setSelectedTransitPoint(final TransitPoint transitPoint) {
+        this.selectedTransitPointId.setValue(transitPoint.getId());
+        this.selectedTransitPointIdAndStatusId.setValue(new Pair<>(transitPoint.getId(),
+                selectedTransportationStatusId.getValue() != null ? selectedTransportationStatusId.getValue() : 0));
+    }
+
+    public void setSelectedTransportationStatus(final TransportationStatus transportationStatus) {
+        this.selectedTransportationStatusId.setValue(transportationStatus.getId());
+        this.selectedTransitPointIdAndStatusId.setValue(new Pair<>(
+                selectedTransitPointId.getValue() != null ? selectedTransitPointId.getValue() : 0, transportationStatus.getId()));
+    }
+
+    private static final String TAG = TransportationViewModel.class.toString();
 }

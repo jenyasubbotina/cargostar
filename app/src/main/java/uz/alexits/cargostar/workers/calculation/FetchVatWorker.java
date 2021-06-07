@@ -10,16 +10,13 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import java.io.IOException;
-import java.util.List;
 
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.calculation.Vat;
-import uz.alexits.cargostar.model.calculation.ZoneSettings;
+import uz.alexits.cargostar.entities.calculation.Vat;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchVatWorker extends Worker {
     private String login;
@@ -50,7 +47,7 @@ public class FetchVatWorker extends Worker {
                     Log.i(TAG, "fetchVat(): response=" + response.body());
                     final Vat vat = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertVat(vat);
+                    LocalCache.getInstance(getApplicationContext()).vatDao().insertVat(vat);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

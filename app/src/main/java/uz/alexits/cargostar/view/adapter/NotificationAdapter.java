@@ -6,10 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
 
+import uz.alexits.cargostar.entities.diffutil.NotificationDiffUtil;
 import uz.alexits.cargostar.push.Notification;
 import uz.alexits.cargostar.utils.DateUtils;
 import uz.alexits.cargostar.view.callback.NotificationCallback;
@@ -22,14 +24,16 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationViewHo
     private final NotificationCallback callback;
     private List<Notification> notificationList;
 
-    public NotificationAdapter(final Context context, final List<Notification> notificationList, final NotificationCallback callback) {
+    public NotificationAdapter(final Context context, final NotificationCallback callback) {
         this.context = context;
-        this.notificationList = notificationList;
         this.callback = callback;
     }
 
     public void setNotificationList(final List<Notification> notificationList) {
+        final NotificationDiffUtil diffUtil = new NotificationDiffUtil(this.notificationList, notificationList);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
         this.notificationList = notificationList;
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull

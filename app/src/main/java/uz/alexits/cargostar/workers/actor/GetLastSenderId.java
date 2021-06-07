@@ -27,7 +27,7 @@ public class GetLastSenderId extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        final long lastId = LocalCache.getInstance(getApplicationContext()).actorDao().getLastSenderId();
+        final long lastId = LocalCache.getInstance(getApplicationContext()).clientDao().getLastClientId();
         return Result.success(
                 new Data.Builder()
                         .putLong(SyncWorkRequest.KEY_PER_PAGE, perPage)

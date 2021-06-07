@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.entities.transportation.Transportation;
 import uz.alexits.cargostar.view.callback.PartialCallback;
 
 public class PartialViewHolder extends RecyclerView.ViewHolder {

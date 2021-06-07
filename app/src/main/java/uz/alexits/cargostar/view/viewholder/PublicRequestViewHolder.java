@@ -7,8 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.transportation.Request;
-import uz.alexits.cargostar.view.callback.RequestCallback;
+import uz.alexits.cargostar.entities.transportation.Request;
+import uz.alexits.cargostar.view.callback.PublicRequestCallback;
 
 public class PublicRequestViewHolder extends RecyclerView.ViewHolder {
     //static views
@@ -34,9 +34,9 @@ public class PublicRequestViewHolder extends RecyclerView.ViewHolder {
         isPaidIndicatorImageView = itemView.findViewById(R.id.is_paid_image_view);
     }
 
-    public void bind(final Request currentItem, final RequestCallback callback) {
+    public void bind(final int position, final Request currentItem, final PublicRequestCallback callback) {
         itemView.setOnClickListener(v -> {
-            callback.onRequestSelected(currentItem, this);
+            callback.onRequestSelected(position, currentItem);
         });
         plusImageView.setOnClickListener(v -> {
             callback.onPlusClicked(currentItem);

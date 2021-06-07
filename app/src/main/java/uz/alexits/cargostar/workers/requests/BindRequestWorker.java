@@ -12,34 +12,31 @@ import java.io.IOException;
 
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
+import uz.alexits.cargostar.entities.params.BindRequestParams;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 
 public class BindRequestWorker extends Worker {
-    private final long courierId;
     private final long requestId;
+    private final BindRequestParams params;
 
     public BindRequestWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0L);
         this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0L);
+        this.params = new BindRequestParams(getInputData().getLong(Constants.KEY_REQUEST_ID, 0L));
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        if (courierId <= 0 || requestId <= 0) {
-            Log.e(TAG, "bindRequest(): empty fields");
-            return Result.failure();
-        }
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
 
-            final Response<Request> response = RetrofitClient.getInstance(getApplicationContext()).bindRequest(requestId, courierId);
+            final Response<Request> response = RetrofitClient.getInstance(getApplicationContext()).bindRequest(requestId, params);
 
             if (response.code() == 200) {
                 if (response.isSuccessful()) {

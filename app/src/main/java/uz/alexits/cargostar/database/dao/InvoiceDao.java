@@ -8,14 +8,13 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import java.util.List;
-import uz.alexits.cargostar.model.actor.AddressBook;
-import uz.alexits.cargostar.model.transportation.Consignment;
-import uz.alexits.cargostar.model.transportation.Invoice;
-import uz.alexits.cargostar.model.transportation.Request;
+
+import uz.alexits.cargostar.entities.transportation.Addressee;
+import uz.alexits.cargostar.entities.transportation.Invoice;
+import uz.alexits.cargostar.entities.transportation.Request;
 
 @Dao
 public interface InvoiceDao {
-    /* invoice */
     @Query("SELECT * FROM request WHERE invoice_id == :invoiceId LIMIT 1")
     Request selectRequestByInvoiceId(final long invoiceId);
 
@@ -34,35 +33,31 @@ public interface InvoiceDao {
     @Query("SELECT * FROM invoice WHERE id == :invoiceId LIMIT 1")
     Invoice selectInvoiceByIdSync(final long invoiceId);
 
+    @Query("SELECT id FROM invoice ORDER BY id DESC LIMIT 1")
+    long getLastInvoiceId();
+
     @Update
     int updateInvoice(final Invoice invoice);
 
-    /* address book */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertAddressBookEntry(final AddressBook addressBookEntry);
+    @Query("UPDATE invoice SET " +
+            "addressee_full_name = :addresseeFullName, " +
+            "addressee_phone = :addresseePhone, " +
+            "addressee_address = :addresseeAddress, " +
+            "addressee_company = :addresseeCompany, " +
+            "addressee_comment = :addresseeComment, " +
+            "recipient_signature = :addresseeSignature, " +
+            "addressee_signature_date = :addresseeSignatureDate, " +
+            "addressee_result = :accepted WHERE id == :invoiceId")
+    int insertAddressee(final long invoiceId,
+                        final String addresseeFullName,
+                        final String addresseePhone,
+                        final String addresseeAddress,
+                        final String addresseeCompany,
+                        final String addresseeComment,
+                        final String addresseeSignature,
+                        final String addresseeSignatureDate,
+                        final int accepted);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long[] insertAddressBookEntries(final List<AddressBook> addressBookList);
-
-    @Query("SELECT * FROM address_book ORDER BY id ASC")
-    LiveData<List<AddressBook>> selectAllAddressBookEntries();
-
-    @Query("SELECT * FROM address_book WHERE id == :addressBookId")
-    LiveData<AddressBook> selectAddressBookEntryById(final long addressBookId);
-
-    @Query("SELECT * FROM address_book WHERE user_id == :senderUserId")
-    LiveData<List<AddressBook>> selectAddressBookBySenderId(final long senderUserId);
-
-    @Update
-    int updateAddressBookEntry(final AddressBook addressBook);
-
-    @Query("SELECT id FROM address_book ORDER BY id DESC LIMIT 1")
-    long getLastAddressBookId();
-
-    /* cargo */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    long[] insertCargoList(final List<Consignment> consignmentList);
-
-    @Query("SELECT * FROM consignment WHERE request_id == :requestId ORDER BY id DESC")
-    LiveData<List<Consignment>> selectConsignmentListByRequestId(final Long requestId);
+    @Query("SELECT addressee_full_name, addressee_phone, addressee_address, addressee_company, addressee_comment, recipient_signature, addressee_signature_date, addressee_result FROM invoice WHERE id == :invoiceId")
+    LiveData<Addressee> selectAddresseeByInvoiceId(final long invoiceId);
 }

@@ -11,7 +11,7 @@ import androidx.work.WorkerParameters;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.calculation.Packaging;
+import uz.alexits.cargostar.entities.calculation.Packaging;
 
 import java.io.IOException;
 import java.util.List;

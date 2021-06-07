@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import uz.alexits.cargostar.utils.Constants;
+
 /**
  * Класс для работы с sharedPreferences
  * Хранит clientId, deviceId, token пользователя
@@ -111,6 +113,16 @@ public class SharedPrefs {
             Log.e(TAG, "getLong(): ", e);
             return 0L;
         }
+    }
+
+    public boolean isLoggedIn(final Context context) {
+        return SharedPrefs.getInstance(context).getBoolean(SharedPrefs.KEEP_LOGGED)
+                && SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN) != null
+                && SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD) != null
+                && SharedPrefs.getInstance(context).getString(Constants.KEY_TOKEN) != null
+                && SharedPrefs.getInstance(context).getLong(SharedPrefs.ID) > 0
+                && SharedPrefs.getInstance(context).getLong(SharedPrefs.BRANCH_ID) > 0
+                && SharedPrefs.getInstance(context).getBoolean(SharedPrefs.IS_LOGGED);
     }
 
     public static final String ID = "id";

@@ -2,9 +2,8 @@ package uz.alexits.cargostar.workers.transportation;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import java.io.IOException;
@@ -13,21 +12,16 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Route;
+import uz.alexits.cargostar.entities.transportation.Route;
 import uz.alexits.cargostar.utils.Constants;
 
 public class FetchTransportationRouteWorker extends Worker {
     private final Long transportationId;
-    private final Long currentStatusId;
-    private final Long currentPointId;
-    private final String currentStatusName;
 
     public FetchTransportationRouteWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+
         this.transportationId = getInputData().getLong(Constants.KEY_TRANSPORTATION_ID, 0L);
-        this.currentStatusId = getInputData().getLong(Constants.KEY_CURRENT_STATUS_ID, 0L);
-        this.currentPointId = getInputData().getLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, 0L);
-        this.currentStatusName = getInputData().getString(Constants.KEY_CURRENT_STATUS_NAME);
     }
 
     @NonNull
@@ -37,9 +31,9 @@ public class FetchTransportationRouteWorker extends Worker {
             Log.e(TAG, "fetchTransportationRoute(): empty transportation id");
             return Result.failure();
         }
-
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
             final Response<List<Route>> response = RetrofitClient.getInstance(getApplicationContext()).getTransportationRoute(transportationId);
 
@@ -48,13 +42,7 @@ public class FetchTransportationRouteWorker extends Worker {
                     Log.i(TAG, "fetchTransportationRoute(): response=" + response.body());
                     final List<Route> transportationRoute = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportationRoute(transportationRoute);
-
-                    final Data outputData = new Data.Builder()
-                            .putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, currentPointId)
-                            .putLong(Constants.KEY_CURRENT_STATUS_ID, currentStatusId)
-                            .putString(Constants.KEY_CURRENT_STATUS_NAME, currentStatusName)
-                            .build();
+                    LocalCache.getInstance(getApplicationContext()).transportationStatusDao().insertTransportationRoute(transportationRoute);
                     return Result.success();
                 }
             }

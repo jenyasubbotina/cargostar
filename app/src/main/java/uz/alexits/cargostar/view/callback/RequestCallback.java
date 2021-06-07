@@ -1,10 +1,7 @@
 package uz.alexits.cargostar.view.callback;
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.transportation.Request;
 
 public interface RequestCallback {
-    void onRequestSelected(final Request currentItem, final RecyclerView.ViewHolder holder);
-    void onPlusClicked(final Request currentItem);
+    void onRequestSelected(final int position, final Request currentItem);
 }

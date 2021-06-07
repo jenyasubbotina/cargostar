@@ -12,9 +12,10 @@ import java.io.IOException;
 
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
+import uz.alexits.cargostar.entities.params.UpdateCourierParams;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.actor.Courier;
+import uz.alexits.cargostar.entities.actor.Courier;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.utils.Serializer;
 
@@ -22,24 +23,19 @@ public class UpdateCourierWorker extends Worker {
     private final long courierId;
     private final String login;
     private final String email;
-    private final String password;
-    private final String firstName;
-    private final String middleName;
-    private final String lastName;
-    private final String phone;
-    private final String photoUrl;
+    private final UpdateCourierParams params;
 
     public UpdateCourierWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.courierId = getInputData().getLong(Constants.KEY_COURIER_ID, 0);
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.email = getInputData().getString(Constants.KEY_EMAIL);
-        this.password = getInputData().getString(Constants.KEY_PASSWORD);
-        this.firstName = getInputData().getString(Constants.KEY_FIRST_NAME);
-        this.middleName = getInputData().getString(Constants.KEY_MIDDLE_NAME);
-        this.lastName = getInputData().getString(Constants.KEY_LAST_NAME);
-        this.phone = getInputData().getString(Constants.KEY_PHONE);
-        this.photoUrl = getInputData().getString(Constants.KEY_PHOTO);
+        this.params = new UpdateCourierParams(getInputData().getString(Constants.KEY_PASSWORD),
+                getInputData().getString(Constants.KEY_FIRST_NAME),
+                getInputData().getString(Constants.KEY_MIDDLE_NAME),
+                getInputData().getString(Constants.KEY_LAST_NAME),
+                getInputData().getString(Constants.KEY_PHONE),
+                getInputData().getString(Constants.KEY_PHOTO));
     }
 
     @NonNull
@@ -53,14 +49,16 @@ public class UpdateCourierWorker extends Worker {
         String serializedPhoto = null;
 
         try {
-            if (!TextUtils.isEmpty(photoUrl)) {
-                serializedPhoto = Serializer.bitmapToBase64(getApplicationContext(), photoUrl);
+            if (!TextUtils.isEmpty(params.getPhoto())) {
+                serializedPhoto = Serializer.bitmapToBase64(getApplicationContext(), params.getPhoto());
+                params.setPhoto(serializedPhoto);
             }
 
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
             final Response<Courier> response = RetrofitClient.getInstance(getApplicationContext())
-                    .updateCourierData(courierId, password, firstName, middleName, lastName, phone, serializedPhoto);
+                    .updateCourierData(courierId, params);
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     final Courier updatedCourier = response.body();
@@ -69,14 +67,10 @@ public class UpdateCourierWorker extends Worker {
                         Log.e(TAG, "updateCourierData(): customer is NULL");
                         return Result.failure();
                     }
-
                     updatedCourier.setLogin(login);
                     updatedCourier.setEmail(email);
-                    updatedCourier.setPhotoUrl(photoUrl);
-
-                    Log.i(TAG, "updateCourierData(): " + updatedCourier);
-
-                    LocalCache.getInstance(getApplicationContext()).actorDao()
+                    updatedCourier.setPhotoUrl(params.getPhoto());
+                    LocalCache.getInstance(getApplicationContext()).courierDao()
                             .updateCourier(updatedCourier.getId(),
                                     updatedCourier.getPassword(),
                                     updatedCourier.getFirstName(),

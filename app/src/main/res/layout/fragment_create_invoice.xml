@@ -1394,81 +1394,119 @@
             android:padding="17dp"
             android:textColor="@color/colorBlack"/>
         <!--from here-->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/first_card"
+
+        <View
+            android:id="@+id/cargostar_card_view"
             android:layout_width="0dp"
             android:layout_height="66dp"
             app:layout_constraintTop_toBottomOf="@id/instructions_edit_text"
             app:layout_constraintStart_toStartOf="@id/instructions_edit_text"
-            app:layout_constraintEnd_toStartOf="@id/second_card"
+            app:layout_constraintEnd_toStartOf="@id/tnt_card_view"
             android:layout_marginTop="35dp"
-            android:layout_marginEnd="16dp"
-            android:elevation="8dp">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            android:layout_marginEnd="8dp"
+            android:elevation="8dp" />
 
-                <RadioButton
-                    android:id="@+id/first_card_radio_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:buttonTint="@color/colorBlue"/>
+        <RadioButton
+            android:id="@+id/cargostar_radio_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/cargostar_card_view"
+            app:layout_constraintStart_toStartOf="@id/cargostar_card_view"
+            android:elevation="8dp"
+            android:buttonTint="@color/colorBlue"/>
 
-                <ImageView
-                    android:id="@+id/first_card_logo"
-                    android:layout_width="76dp"
-                    android:layout_height="28dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/first_card_radio_btn"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:src="@drawable/logo_cargo_calc"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+        <ImageView
+            android:id="@+id/cargostar_image_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="@id/cargostar_card_view"
+            app:layout_constraintBottom_toBottomOf="@id/cargostar_card_view"
+            app:layout_constraintStart_toStartOf="@id/cargostar_card_view"
+            app:layout_constraintEnd_toEndOf="@id/cargostar_card_view"
+            android:scaleType="fitCenter"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:src="@drawable/logo_cargo_calc"
+            android:contentDescription="@string/cargostar"
+            android:elevation="8dp" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/second_card"
+        <View
+            android:id="@+id/tnt_card_view"
             android:layout_width="0dp"
             android:layout_height="66dp"
-            app:layout_constraintTop_toTopOf="@id/first_card"
-            app:layout_constraintStart_toEndOf="@id/first_card"
+            app:layout_constraintTop_toBottomOf="@id/instructions_edit_text"
+            app:layout_constraintStart_toEndOf="@id/cargostar_card_view"
+            app:layout_constraintEnd_toStartOf="@id/fedex_card_view"
+            android:layout_marginTop="35dp"
+            android:elevation="8dp"/>
+
+        <RadioButton
+            android:id="@+id/tnt_radio_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/tnt_card_view"
+            app:layout_constraintStart_toStartOf="@id/tnt_card_view"
+            android:buttonTint="@color/colorBlue"
+            android:elevation="8dp" />
+
+        <ImageView
+            android:id="@+id/tnt_image_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="@id/tnt_card_view"
+            app:layout_constraintBottom_toBottomOf="@id/tnt_card_view"
+            app:layout_constraintStart_toStartOf="@id/tnt_card_view"
+            app:layout_constraintEnd_toEndOf="@id/tnt_card_view"
+            android:scaleType="fitCenter"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:src="@drawable/logo_tnt_cacl"
+            android:contentDescription="@string/tnt"
+            android:elevation="8dp" />
+
+        <View
+            android:id="@+id/fedex_card_view"
+            android:layout_width="0dp"
+            android:layout_height="66dp"
+            app:layout_constraintTop_toBottomOf="@id/instructions_edit_text"
+            app:layout_constraintStart_toEndOf="@id/tnt_card_view"
             app:layout_constraintEnd_toEndOf="@id/instructions_edit_text"
-            android:layout_marginStart="16dp"
-            android:elevation="8dp">
+            android:layout_marginTop="35dp"
+            android:layout_marginStart="8dp"
+            android:elevation="8dp"/>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <RadioButton
-                    android:id="@+id/second_card_radio_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:buttonTint="@color/colorBlue"/>
+        <RadioButton
+            android:id="@+id/fedex_radio_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/fedex_card_view"
+            app:layout_constraintStart_toStartOf="@id/fedex_card_view"
+            android:buttonTint="@color/colorBlue"
+            android:elevation="8dp"/>
 
-                <ImageView
-                    android:id="@+id/second_card_logo"
-                    android:layout_width="76dp"
-                    android:layout_height="28dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/second_card_radio_btn"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:src="@drawable/logo_tnt_cacl"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+        <ImageView
+            android:id="@+id/fedex_image_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="@id/fedex_card_view"
+            app:layout_constraintBottom_toBottomOf="@id/fedex_card_view"
+            app:layout_constraintStart_toStartOf="@id/fedex_card_view"
+            app:layout_constraintEnd_toEndOf="@id/fedex_card_view"
+            android:scaleType="fitCenter"
+            android:scaleX="0.4"
+            android:scaleY="0.4"
+            android:src="@drawable/logo_fedex_calc"
+            android:contentDescription="@string/tnt"
+            android:elevation="8dp"/>
 
         <RadioGroup
             android:id="@+id/package_type_radio_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/first_card"
-            app:layout_constraintStart_toStartOf="@id/first_card"
-            app:layout_constraintEnd_toEndOf="@id/second_card"
-            android:layout_marginTop="37dp"
+            app:layout_constraintTop_toBottomOf="@id/instructions_edit_text"
+            app:layout_constraintStart_toStartOf="@id/instructions_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/tnt_card_view"
+            android:layout_marginTop="144dp"
             android:orientation="horizontal"
             android:gravity="start">
 
@@ -1902,81 +1940,77 @@
             android:id="@+id/payment_method_radio_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/payment_text_view"
             app:layout_constraintStart_toStartOf="@id/payment_text_view"
             app:layout_constraintEnd_toEndOf="@id/calculate_btn"
-            android:layout_marginTop="37dp"
-            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/payment_text_view"
+            android:layout_marginTop="20dp"
             android:checkedButton="@id/cash_radio_btn"
-            android:gravity="center">
+            android:gravity="start"
+            android:orientation="vertical"
+            app:layout_constraintHorizontal_bias="0.0">
 
             <RadioButton
                 android:id="@+id/online_radio_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:enabled="true"
-                android:text="@string/online"
-                android:textColor="@color/colorBlack"
-                android:fontFamily="@font/geometria_actual"
-                android:textSize="16sp"
                 android:layout_weight="0.5"
                 android:buttonTint="@color/colorBlue"
+                android:enabled="true"
+                android:fontFamily="@font/geometria_actual"
                 android:gravity="center"
-                android:visibility="gone"/>
+                android:text="@string/online"
+                android:textColor="@color/colorBlack"
+                android:textSize="16sp" />
 
             <RadioButton
                 android:id="@+id/cash_radio_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:enabled="true"
-                android:text="@string/cash"
-                android:textColor="@color/colorBlack"
-                android:fontFamily="@font/geometria_actual"
-                android:textSize="16sp"
                 android:layout_weight="0.5"
                 android:buttonTint="@color/colorBlue"
+                android:enabled="true"
+                android:fontFamily="@font/geometria_actual"
                 android:gravity="center"
-                android:visibility="gone"/>
+                android:text="@string/cash"
+                android:textColor="@color/colorBlack"
+                android:textSize="16sp"/>
 
             <RadioButton
                 android:id="@+id/terminal_radio_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="@string/terminal"
-                android:textColor="@color/colorBlack"
-                android:fontFamily="@font/geometria_actual"
-                android:textSize="16sp"
                 android:layout_weight="0.5"
                 android:buttonTint="@color/colorBlue"
+                android:fontFamily="@font/geometria_actual"
                 android:gravity="center"
-                android:visibility="gone"/>
+                android:text="@string/terminal"
+                android:textColor="@color/colorBlack"
+                android:textSize="16sp"/>
 
             <RadioButton
                 android:id="@+id/transfer_radio_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:enabled="true"
-                android:text="@string/transfer"
-                android:textColor="@color/colorBlack"
-                android:fontFamily="@font/geometria_actual"
-                android:textSize="16sp"
                 android:layout_weight="0.5"
                 android:buttonTint="@color/colorBlue"
-                android:visibility="gone"
-                android:gravity="center"/>
+                android:enabled="true"
+                android:fontFamily="@font/geometria_actual"
+                android:gravity="center"
+                android:text="@string/transfer"
+                android:textColor="@color/colorBlack"
+                android:textSize="16sp" />
 
             <RadioButton
                 android:id="@+id/corporate_radio_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="@string/corporate"
-                android:textColor="@color/colorBlack"
-                android:fontFamily="@font/geometria_actual"
-                android:textSize="16sp"
                 android:layout_weight="0.5"
                 android:buttonTint="@color/colorBlue"
-                android:visibility="gone"
-                android:gravity="center"/>
+                android:fontFamily="@font/geometria_actual"
+                android:gravity="center"
+                android:text="@string/corporate"
+                android:textColor="@color/colorBlack"
+                android:textSize="16sp"/>
         </RadioGroup>
 
         <Button

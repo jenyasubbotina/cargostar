@@ -1,37 +1,36 @@
 package uz.alexits.cargostar.view.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.model.transportation.Consignment;
-import uz.alexits.cargostar.utils.IntentConstants;
-import uz.alexits.cargostar.view.callback.CreateInvoiceCallback;
+import uz.alexits.cargostar.entities.transportation.Consignment;
+import uz.alexits.cargostar.view.callback.ConsignmentCallback;
 import uz.alexits.cargostar.view.viewholder.ConsignmentViewHolder;
 
 import java.util.List;
 
 public class ConsignmentAdapter extends RecyclerView.Adapter<ConsignmentViewHolder> {
     private final Context context;
+    private final ConsignmentCallback callback;
     private List<Consignment> itemList;
-    private final CreateInvoiceCallback callback;
-
-    public ConsignmentAdapter(final Context context, final List<Consignment> itemList, final CreateInvoiceCallback callback) {
+    private final int viewHolderType;
+    public ConsignmentAdapter(final Context context, final ConsignmentCallback callback, final int viewHolderType) {
         this.context = context;
-        this.itemList = itemList;
         this.callback = callback;
+        this.viewHolderType = viewHolderType;
     }
 
-    public void setItemList(final List<Consignment> itemList) {
-        this.itemList = itemList;
-        notifyDataSetChanged();
+    public void setItemList(final List<Consignment> newItemList) {
+//        final ConsignmentDiffUtil diffUtil = new ConsignmentDiffUtil(itemList, newItemList);
+//        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
+        this.itemList = newItemList;
+//        diffResult.dispatchUpdatesTo(this);
     }
 
     public List<Consignment> getItemList() {
@@ -49,22 +48,30 @@ public class ConsignmentAdapter extends RecyclerView.Adapter<ConsignmentViewHold
     public void onBindViewHolder(@NonNull ConsignmentViewHolder holder, int position) {
         final Consignment currentItem = itemList.get(position);
 
-        if (currentItem != null) {
-            final String index = (position + 1) + ".";
-            holder.indexTextView.setText(index);
-            holder.packageTypeTextView.setText(currentItem.getPackagingId() != null ? String.valueOf(currentItem.getPackagingId()) : "");
-            holder.weightTextView.setText(String.valueOf(currentItem.getWeight()));
-            holder.dimensionsTextView.setText(currentItem.getDimensions());
+        holder.indexTextView.setText(context.getString(R.string.consignment_index, position + 1));
+        holder.packageTypeTextView.setText(currentItem.getPackagingId() != null ? String.valueOf(currentItem.getPackagingId()) : "");
+        holder.weightTextView.setText(String.valueOf(currentItem.getWeight()));
+        holder.dimensionsTextView.setText(currentItem.getDimensions());
 
-            if (!TextUtils.isEmpty(currentItem.getQr())) {
-                holder.qrTextView.setText(currentItem.getQr());
-                holder.qrTextView.setTextColor(Color.GREEN);
+        holder.bind(position, callback);
+
+        /*calculator item*/
+        if (viewHolderType == 1) {
+            return;
+        }
+        if (viewHolderType == 2) {
+            holder.qrTextView.setVisibility(View.VISIBLE);
+            holder.qrValueTextView.setVisibility(View.VISIBLE);
+            holder.scanConsignmentImageView.setVisibility(View.VISIBLE);
+
+            if (TextUtils.isEmpty(currentItem.getQr())) {
+                holder.qrValueTextView.setText(R.string.absent);
+                holder.qrValueTextView.setTextColor(ResourcesCompat.getColor(context.getResources(), R.color.colorRed, null));
             }
             else {
-                holder.qrTextView.setText(R.string.absent);
-                holder.qrTextView.setTextColor(Color.RED);
+                holder.qrValueTextView.setText(currentItem.getQr());
+                holder.qrValueTextView.setTextColor(ResourcesCompat.getColor(context.getResources(), R.color.colorGreen, null));
             }
-            holder.bind(position, callback);
         }
     }
 

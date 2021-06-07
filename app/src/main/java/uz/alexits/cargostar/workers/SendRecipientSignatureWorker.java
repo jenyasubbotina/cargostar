@@ -9,46 +9,61 @@ import androidx.work.WorkerParameters;
 import java.io.IOException;
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
-import uz.alexits.cargostar.api.params.RecipientSignatureParams;
+import uz.alexits.cargostar.database.cache.LocalCache;
+import uz.alexits.cargostar.entities.params.AddresseeParams;
+import uz.alexits.cargostar.entities.transportation.Addressee;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.entities.transportation.Invoice;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.utils.Serializer;
 
 public class SendRecipientSignatureWorker extends Worker {
-    private final long invoiceId;
-    private final String recipientSignatureFilePath;
+    private final AddresseeParams params;
 
     public SendRecipientSignatureWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.invoiceId = getInputData().getLong(Constants.KEY_INVOICE_ID, 0L);
-        this.recipientSignatureFilePath = getInputData().getString(Constants.KEY_RECIPIENT_SIGNATURE);
+        this.params = new AddresseeParams(
+                getInputData().getLong(Constants.KEY_INVOICE_ID, 0),
+                getInputData().getString(Constants.ADDRESSEE_FULL_NAME),
+                getInputData().getString(Constants.ADDRESSEE_PHONE),
+                getInputData().getString(Constants.ADDRESSEE_ADDRESS),
+                getInputData().getString(Constants.ADDRESSEE_ORGANIZATION),
+                getInputData().getString(Constants.ADDRESSEE_COMMENT),
+                getInputData().getString(Constants.ADDRESSEE_SIGNATURE),
+                getInputData().getString(Constants.ADDRESSEE_SIGNATURE_DATE),
+                getInputData().getBoolean(Constants.ADDRESSEE_IS_ACCEPTED, false));
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        if (invoiceId <= 0L) {
-            Log.e(TAG, "sendRecipientSignature(): empty invoiceId");
-            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+        if (params == null) {
+            Log.e(TAG, "sendRecipientSignature(): params are NULL");
             return Result.failure();
         }
-        if (recipientSignatureFilePath == null) {
-            Log.e(TAG, "sendRecipientSignature(): empty recipientSignature");
-            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
-            return Result.failure();
-        }
-
         try {
-            RetrofitClient.getInstance(getApplicationContext()).setServerData(SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
+            RetrofitClient.getInstance(getApplicationContext()).setServerData(
+                    SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
-            final Response<RecipientSignatureParams> response = RetrofitClient.getInstance(getApplicationContext())
-                    .sendRecipientSignature(invoiceId, Serializer.fileToBase64(recipientSignatureFilePath));
+            final Response<Invoice> response = RetrofitClient.getInstance(getApplicationContext()).sendRecipientSignature(params);
 
             if (response.code() == 200 || response.code() == 201) {
                 if (response.isSuccessful()) {
-                    final RecipientSignatureParams recipientSignatureParams = response.body();
+                    final Invoice invoice = response.body();
 
-                    Log.i(TAG, "sendRecipientSignature(): response=" + recipientSignatureParams);
+                    if (invoice == null) {
+                        return Result.failure();
+                    }
+
+                    LocalCache.getInstance(getApplicationContext()).invoiceDao().insertAddressee(
+                            params.getInvoiceId(),
+                            invoice.getFullName(),
+                            invoice.getPhone(),
+                            invoice.getAddress(),
+                            invoice.getOrganization(),
+                            invoice.getComment(),
+                            invoice.getRecipientSignature(),
+                            invoice.getRecipientSignatureDate(),
+                            invoice.getAccepted());
 
                     return Result.success();
                 }

@@ -15,7 +15,7 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 
 public class FetchRequestDataWorker extends Worker {
@@ -23,6 +23,7 @@ public class FetchRequestDataWorker extends Worker {
 
     public FetchRequestDataWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+
         this.requestId = getInputData().getLong(Constants.KEY_REQUEST_ID, 0);
     }
 
@@ -51,37 +52,16 @@ public class FetchRequestDataWorker extends Worker {
                     request.setNew(false);
                     final long rowInserted = LocalCache.getInstance(getApplicationContext()).requestDao().insertRequest(request);
 
-                    if (rowInserted == -1) {
-                        Log.e(TAG, "fetchRequestData(): couldn't insert entry " + request);
-                        return Result.failure();
-                    }
-                    Log.i(TAG, "fetchRequestData(): successfully inserted entry " + request);
+                    if (rowInserted > 0) {
+                        return Result.success(new Data.Builder()
+                                .putLong(Constants.KEY_REQUEST_ID, request.getId())
+                                .putLong(Constants.KEY_SENDER_ID, request.getClientId())
+                                .putLong(Constants.KEY_INVOICE_ID, request.getInvoiceId())
+                                .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, request.getConsignmentQuantity())
+                                .build());
 
-                    final Data outputData = new Data.Builder()
-                            .putLong(Constants.KEY_REQUEST_ID, request.getId())
-                            .putLong(Constants.KEY_SENDER_ID, request.getClientId() != null ? request.getClientId() : 0L)
-                            .putLong(Constants.KEY_COURIER_ID, request.getCourierId() != null ? request.getCourierId() : 0L)
-                            .putLong(Constants.KEY_PROVIDER_ID, request.getProviderId() != null ? request.getProviderId() : 0L)
-                            .putLong(Constants.KEY_INVOICE_ID, request.getInvoiceId() != null ? request.getInvoiceId() : 0L)
-                            .putLong(Constants.KEY_SENDER_USER_ID, request.getUserId() != null ? request.getUserId() : 0L)
-                            .putLong(Constants.KEY_SENDER_COUNTRY_ID, request.getSenderCountryId() != null ? request.getSenderCountryId() : 0L)
-                            .putString(Constants.KEY_SENDER_CITY_NAME, request.getSenderCityName())
-                            .putLong(Constants.KEY_RECIPIENT_COUNTRY_ID, request.getRecipientCountryId() != null ? request.getRecipientCountryId() : 0L)
-                            .putString(Constants.KEY_RECIPIENT_CITY_NAME, request.getRecipientCityName())
-                            .putString(Constants.KEY_SENDER_EMAIL, request.getSenderEmail())
-                            .putString(Constants.KEY_SENDER_FIRST_NAME, request.getSenderFirstName())
-                            .putString(Constants.KEY_SENDER_LAST_NAME, request.getSenderLastName())
-                            .putString(Constants.KEY_SENDER_MIDDLE_NAME, request.getSenderMiddleName())
-                            .putString(Constants.KEY_SENDER_PHONE, request.getSenderPhone())
-                            .putString(Constants.KEY_SENDER_CITY, request.getSenderCity())
-                            .putString(Constants.KEY_SENDER_ADDRESS, request.getSenderAddress())
-                            .putString(Constants.KEY_RECIPIENT_CITY, request.getRecipientCity())
-                            .putInt(Constants.KEY_DELIVERY_TYPE, request.getDeliveryType())
-                            .putString(Constants.KEY_PAYMENT_STATUS, request.getPaymentStatus())
-                            .putInt(Constants.KEY_CONSIGNMENT_QUANTITY, request.getConsignmentQuantity())
-                            .putString(Constants.KEY_COMMENT, request.getComment())
-                            .build();
-                    return Result.success(outputData);
+                    }
+                    return Result.failure();
                 }
             }
             else {

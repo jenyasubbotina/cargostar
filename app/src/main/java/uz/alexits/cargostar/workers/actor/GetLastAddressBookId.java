@@ -27,7 +27,7 @@ public class GetLastAddressBookId extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        final long lastId = LocalCache.getInstance(getApplicationContext()).invoiceDao().getLastAddressBookId();
+        final long lastId = LocalCache.getInstance(getApplicationContext()).addressBookDao().getLastAddressBookId();
         return Result.success(
                 new Data.Builder()
                         .putLong(SyncWorkRequest.KEY_PER_PAGE, perPage)

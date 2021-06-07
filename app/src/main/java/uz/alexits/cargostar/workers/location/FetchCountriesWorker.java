@@ -17,15 +17,11 @@ import java.util.List;
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.location.Branche;
-import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.location.Country;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchCountriesWorker extends Worker {
-    private final int perPage;
     @Nullable private final String login;
     @Nullable private final String password;
     private final String token;
@@ -33,7 +29,6 @@ public class FetchCountriesWorker extends Worker {
 
     public FetchCountriesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -54,10 +49,10 @@ public class FetchCountriesWorker extends Worker {
             Response<List<Country>> response = null;
 
             if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getCountries(perPage, lastId);
+                response = RetrofitClient.getInstance(getApplicationContext()).getCountries(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
             }
             else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getCountries(perPage);
+                response = RetrofitClient.getInstance(getApplicationContext()).getCountries(SyncWorkRequest.DEFAULT_PER_PAGE);
             }
 
             if (response.code() == 200) {

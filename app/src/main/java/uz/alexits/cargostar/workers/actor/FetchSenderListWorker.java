@@ -13,13 +13,11 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.actor.Customer;
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.actor.Client;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchSenderListWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
@@ -27,7 +25,6 @@ public class FetchSenderListWorker extends Worker {
 
     public FetchSenderListWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -44,25 +41,25 @@ public class FetchSenderListWorker extends Worker {
     public ListenableWorker.Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            Response<List<Customer>> response = null;
+            Response<List<Client>> response = null;
 
             if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getClients(perPage, lastId);
+                response = RetrofitClient.getInstance(getApplicationContext()).getClients(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
             }
             else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getClients(perPage);
+                response = RetrofitClient.getInstance(getApplicationContext()).getClients(SyncWorkRequest.DEFAULT_PER_PAGE);
             }
             if (response.code() == 200) {
                 if (response.isSuccessful()) {
                     Log.i(TAG, "fetchAllCustomers(): response=" + response.body());
-                    final List<Customer> senderList = response.body();
+                    final List<Client> senderList = response.body();
 
                     if (senderList == null) {
                         Log.e(TAG, "fetchAllCustomers(): sender is NULL");
                         return Result.failure();
                     }
 
-                    LocalCache.getInstance(getApplicationContext()).actorDao().insertSenderList(senderList);
+                    LocalCache.getInstance(getApplicationContext()).clientDao().insertClientList(senderList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

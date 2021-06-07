@@ -1,7 +1,6 @@
 package uz.alexits.cargostar.workers.location;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,12 +12,10 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.location.Branche;
+import uz.alexits.cargostar.entities.location.Branche;
 import uz.alexits.cargostar.api.RetrofitClient;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import retrofit2.Response;
 import uz.alexits.cargostar.utils.Constants;

@@ -13,13 +13,11 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.actor.AddressBook;
-import uz.alexits.cargostar.model.actor.Customer;
+import uz.alexits.cargostar.entities.actor.AddressBook;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchAddressBookWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
@@ -27,7 +25,6 @@ public class FetchAddressBookWorker extends Worker {
 
     public FetchAddressBookWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -48,10 +45,10 @@ public class FetchAddressBookWorker extends Worker {
             Response<List<AddressBook>> response = null;
 
             if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(perPage, lastId);
+                response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
             }
             else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(perPage);
+                response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(SyncWorkRequest.DEFAULT_PER_PAGE);
             }
 
             if (response.code() == 200) {
@@ -64,7 +61,7 @@ public class FetchAddressBookWorker extends Worker {
                         return Result.failure();
                     }
 
-                    LocalCache.getInstance(getApplicationContext()).invoiceDao().insertAddressBookEntries(addressBook);
+                    LocalCache.getInstance(getApplicationContext()).addressBookDao().insertAddressBookEntries(addressBook);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)

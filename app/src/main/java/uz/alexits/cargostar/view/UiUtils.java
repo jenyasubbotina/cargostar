@@ -2,6 +2,8 @@ package uz.alexits.cargostar.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -27,6 +29,29 @@ public class UiUtils {
             return;
         }
         v.setBackgroundResource(R.drawable.edit_text_locked);
+    }
+
+    public static TextWatcher getOnTextChanged(final View editText) {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0) {
+                    editText.setBackgroundResource(R.drawable.edit_text_active);
+                    return;
+                }
+                editText.setBackgroundResource(R.drawable.edit_text_locked);
+            }
+        };
     }
 
     public static void hideSoftKeyboard (final Activity activity, View view) {

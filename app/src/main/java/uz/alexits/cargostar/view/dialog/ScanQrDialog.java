@@ -75,11 +75,23 @@ public class ScanQrDialog extends DialogFragment {
                 Toast.makeText(requireContext(), "Произошла внутренняя ошибка", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            String scannedData = qrCode;
+            int scanType = 0;
+
+            if (qrCode.length() - 12 >= 0) {
+                scannedData = qrCode.substring(qrCode.length() - 12);
+                scanType = 1;
+            }
+            else {
+                scanType = 2;
+            }
             getTargetFragment().onActivityResult(
                     getTargetRequestCode(),
                     Activity.RESULT_OK,
                     new Intent()
-                            .putExtra(IntentConstants.INTENT_RESULT_VALUE, qrCode)
+                            .putExtra(Constants.SCAN_TYPE, scanType)
+                            .putExtra(IntentConstants.INTENT_RESULT_VALUE, scannedData)
                             .putExtra(Constants.KEY_QR_POSITION, position));
             dismiss();
         });
@@ -118,12 +130,12 @@ public class ScanQrDialog extends DialogFragment {
             return;
         }
         if (resultCode == RESULT_OK) {
-            final String qrCode = data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE);
             getTargetFragment().onActivityResult(
                     getTargetRequestCode(),
                     Activity.RESULT_OK,
                     new Intent()
-                            .putExtra(IntentConstants.INTENT_RESULT_VALUE, qrCode)
+                            .putExtra(IntentConstants.INTENT_RESULT_VALUE, data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE))
+                            .putExtra(Constants. SCAN_TYPE, data.getIntExtra(Constants.SCAN_TYPE, 0))
                             .putExtra(Constants.KEY_QR_POSITION, position));
             dismiss();
         }

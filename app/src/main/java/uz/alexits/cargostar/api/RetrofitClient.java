@@ -1,42 +1,37 @@
 package uz.alexits.cargostar.api;
 
 import android.content.Context;
-import android.util.Log;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Headers;
-import retrofit2.http.PUT;
-import retrofit2.http.Query;
+import androidx.annotation.NonNull;
+
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.api.params.BindRequestParams;
-import uz.alexits.cargostar.api.params.CreateClientParams;
-import uz.alexits.cargostar.api.params.CreateInvoiceParams;
-import uz.alexits.cargostar.api.params.CreateInvoiceResponse;
-import uz.alexits.cargostar.api.params.RecipientSignatureParams;
-import uz.alexits.cargostar.api.params.SignInParams;
-import uz.alexits.cargostar.api.params.TransportationStatusParams;
-import uz.alexits.cargostar.api.params.UpdateCourierParams;
-import uz.alexits.cargostar.model.actor.AddressBook;
-import uz.alexits.cargostar.model.actor.Courier;
-import uz.alexits.cargostar.model.actor.Customer;
-import uz.alexits.cargostar.model.calculation.Vat;
-import uz.alexits.cargostar.model.calculation.ZoneCountry;
-import uz.alexits.cargostar.model.location.Branche;
-import uz.alexits.cargostar.model.location.City;
-import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.calculation.Zone;
-import uz.alexits.cargostar.model.calculation.ZoneSettings;
-import uz.alexits.cargostar.model.calculation.Packaging;
-import uz.alexits.cargostar.model.calculation.PackagingType;
-import uz.alexits.cargostar.model.transportation.Consignment;
-import uz.alexits.cargostar.model.transportation.Invoice;
-import uz.alexits.cargostar.model.transportation.Request;
-import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.entities.params.AddresseeParams;
+import uz.alexits.cargostar.entities.params.BindRequestParams;
+import uz.alexits.cargostar.entities.params.CreateClientParams;
+import uz.alexits.cargostar.entities.params.CreateInvoiceParams;
+import uz.alexits.cargostar.entities.params.CreateInvoiceResponse;
+import uz.alexits.cargostar.entities.transportation.Addressee;
+import uz.alexits.cargostar.entities.params.SignInParams;
+import uz.alexits.cargostar.entities.params.TransportationStatusParams;
+import uz.alexits.cargostar.entities.params.UpdateCourierParams;
+import uz.alexits.cargostar.entities.actor.AddressBook;
+import uz.alexits.cargostar.entities.actor.Client;
+import uz.alexits.cargostar.entities.actor.Courier;
+import uz.alexits.cargostar.entities.calculation.Vat;
+import uz.alexits.cargostar.entities.calculation.ZoneCountry;
+import uz.alexits.cargostar.entities.location.Branche;
+import uz.alexits.cargostar.entities.location.City;
+import uz.alexits.cargostar.entities.location.Country;
+import uz.alexits.cargostar.entities.location.Region;
+import uz.alexits.cargostar.entities.location.TransitPoint;
+import uz.alexits.cargostar.entities.calculation.Zone;
+import uz.alexits.cargostar.entities.calculation.ZoneSettings;
+import uz.alexits.cargostar.entities.calculation.Packaging;
+import uz.alexits.cargostar.entities.calculation.PackagingType;
+import uz.alexits.cargostar.entities.transportation.Consignment;
+import uz.alexits.cargostar.entities.transportation.Invoice;
+import uz.alexits.cargostar.entities.transportation.Request;
+import uz.alexits.cargostar.entities.calculation.Provider;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 
@@ -49,10 +44,10 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import uz.alexits.cargostar.model.transportation.Route;
-import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.model.transportation.TransportationData;
-import uz.alexits.cargostar.model.transportation.TransportationStatus;
+import uz.alexits.cargostar.entities.transportation.Route;
+import uz.alexits.cargostar.entities.transportation.Transportation;
+import uz.alexits.cargostar.entities.transportation.TransportationData;
+import uz.alexits.cargostar.entities.transportation.TransportationStatus;
 
 public class RetrofitClient {
     private static Retrofit.Builder retrofitBuilder;
@@ -177,85 +172,33 @@ public class RetrofitClient {
     }
 
     /* Client */
-    public Response<Customer> createClient(final String login,
-                                           final String password,
-                                           final String email,
-                                           final String cargostarAccountNumber,
-                                           final String tntAccountNumber,
-                                           final String fedexAccountNumber,
-                                           final String firstName,
-                                           final String middleName,
-                                           final String lastName,
-                                           final String phone,
-                                           final String country,
-                                           final String city,
-                                           final String address,
-                                           final String geolocation,
-                                           final String zip,
-                                           final double discount,
-                                           final int userType,
-                                           final String passportSerial,
-                                           final String inn,
-                                           final String company,
-                                           final String contractNumber,
-                                           final String signatureUrl) throws IOException {
-        final CreateClientParams clientParams = new CreateClientParams(
-                login,
-                password,
-                email,
-                cargostarAccountNumber,
-                tntAccountNumber,
-                fedexAccountNumber,
-                firstName,
-                middleName,
-                lastName,
-                phone,
-                country,
-                city,
-                address,
-                geolocation,
-                zip,
-                discount,
-                userType,
-                passportSerial,
-                inn,
-                company,
-                contractNumber,
-                signatureUrl);
-        return apiService.createClient(clientParams).execute();
+    public Response<Client> createClient(final CreateClientParams params) throws IOException {
+        return apiService.createClient(params).execute();
     }
 
-    public Response<Customer> getClient(final long clientId) throws IOException {
+    public Response<Client> getClient(final long clientId) throws IOException {
         return apiService.getClient(clientId).execute();
     }
 
-    public Response<List<Customer>> getClients(final int perPage) throws IOException {
+    public Response<List<Client>> getClients(final int perPage) throws IOException {
         return apiService.getClients(perPage).execute();
     }
 
-    public Response<List<Customer>> getClients(final int perPage, final long lastId) throws IOException {
+    public Response<List<Client>> getClients(final int perPage, final long lastId) throws IOException {
         return apiService.getClients(perPage, lastId).execute();
     }
 
     /* Courier */
-    public Response<Courier> signIn(@NonNull final String fcmToken) throws IOException {
-        return apiService.signIn(new SignInParams(fcmToken)).execute();
+    public Response<Courier> signIn(final SignInParams params) throws IOException {
+        return apiService.signIn(params).execute();
     }
 
-    public Response<Request> bindRequest(final long requestId, final long courierId) throws IOException {
-        return apiService.bindRequest(requestId, new BindRequestParams(courierId)).execute();
+    public Response<Request> bindRequest(final long requestId, final BindRequestParams params) throws IOException {
+        return apiService.bindRequest(requestId, params).execute();
     }
 
-    public Response<Courier> updateCourierData(final long courierId,
-                                               @NonNull final String password,
-                                               @Nullable final String firstName,
-                                               @Nullable final String middleName,
-                                               @Nullable final String lastName,
-                                               @Nullable final String phone,
-                                               @Nullable final String photo) throws IOException {
-        final UpdateCourierParams updateCourierParams = new UpdateCourierParams(
-                password, firstName, middleName, lastName, phone, photo);
-        return apiService.updateCourierData(courierId, updateCourierParams).execute();
+    public Response<Courier> updateCourierData(final long courierId, final UpdateCourierParams params) throws IOException {
+        return apiService.updateCourierData(courierId, params).execute();
     }
 
     /* Address Book */
@@ -266,8 +209,6 @@ public class RetrofitClient {
     /* Invoice */
     public Response<CreateInvoiceResponse> createInvoice(@NonNull final CreateInvoiceParams createInvoiceParams) throws IOException {
         return apiService.createInvoice(createInvoiceParams).execute();
-//        Log.i(TAG, "createInvoice(): " + createInvoiceParams);
-//        return null;
     }
 
     public Response<Invoice> getInvoice(final long invoiceId) throws IOException {
@@ -282,13 +223,17 @@ public class RetrofitClient {
         return apiService.getInvoiceList(perPage, lastId).execute();
     }
 
-    public Response<RecipientSignatureParams> sendRecipientSignature(final long invoiceId, final String recipientSignature) throws IOException {
-        return apiService.sendRecipientSignature(new RecipientSignatureParams(invoiceId, recipientSignature)).execute();
+    public Response<Invoice> sendRecipientSignature(final AddresseeParams params) throws IOException {
+        return apiService.sendRecipientSignature(params).execute();
     }
 
     /* Transportation */
     public Response<Transportation> getTransportation(final long transportationId) throws IOException {
         return apiService.getTransportation(transportationId).execute();
+    }
+
+    public Response<Transportation> getTransportation(final String trackingCode) throws IOException {
+        return apiService.getTransportation(trackingCode).execute();
     }
 
     public Response<List<Transportation>> getCurrentTransportations(final int perPage) throws IOException {
@@ -303,38 +248,34 @@ public class RetrofitClient {
         return apiService.getTransportationStatusList(perPage).execute();
     }
 
-    public Response<List<TransportationData>> getTransportationData(final Long transportationId) throws IOException {
+    public Response<List<TransportationData>> getTransportationData(final long transportationId) throws IOException {
         return apiService.getTransportationData(transportationId).execute();
     }
 
-    public Response<List<Route>> getTransportationRoute(final Long transportationId) throws IOException {
+    public Response<List<Route>> getTransportationRoute(final long transportationId) throws IOException {
         return apiService.getTransportationRoute(transportationId).execute();
     }
 
-    public Response<Transportation> updateTransportationStatus(final Long transportationId,
-                                                                           final Long transitPointId,
-                                                                           final Long transportationStatusId) throws IOException {
-        return apiService.updateTransportationStatus(new TransportationStatusParams(transportationId, transitPointId, transportationStatusId)).execute();
+    public Response<Transportation> updateTransportationStatus(final TransportationStatusParams params) throws IOException {
+        return apiService.updateTransportationStatus(params).execute();
     }
 
-    public Response<Transportation> updatePartialStatus(final Long transportationId,
-                                                               final Long transitPointId,
-                                                               final Long transportationStatusId) throws IOException {
-        return apiService.updatePartialStatus(new TransportationStatusParams(transportationId, transitPointId, transportationStatusId)).execute();
+    public Response<Transportation> updatePartialStatus(final TransportationStatusParams params) throws IOException {
+        return apiService.updatePartialStatus(params).execute();
     }
 
     /* Cargo */
-    public Response<List<Consignment>> getCargoListByInvoiceId(@Query("id") final Long invoiceId) throws IOException {
+    public Response<List<Consignment>> getCargoListByInvoiceId(final long invoiceId) throws IOException {
         return apiService.getCargoListByInvoiceId(invoiceId).execute();
     }
 
-    public Response<List<Consignment>> getCargoListByRequestId(@Query("id") final Long requestId) throws IOException {
+    public Response<List<Consignment>> getCargoListByRequestId(final long requestId) throws IOException {
         return apiService.getCargoListByRequestId(requestId).execute();
     }
 
-    private static final String TAG = RetrofitClient.class.toString();
-
-    public Response<List<Customer>> getAllCustomers(final int perPage) throws IOException {
+    public Response<List<Client>> getAllCustomers(final int perPage) throws IOException {
         return apiService.getAllCustomers(perPage).execute();
     }
+
+    private static final String TAG = RetrofitClient.class.toString();
 }

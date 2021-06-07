@@ -27,7 +27,7 @@
         app:layout_constraintStart_toEndOf="@id/index_text_view"
         app:layout_constraintEnd_toStartOf="@id/parcel_id_text_view"
         android:layout_marginHorizontal="14dp"
-        android:contentDescription="@string/public_bids"
+        android:contentDescription="@string/public_requests"
         android:scaleType="fitXY"
         android:src="@drawable/ic_down_arrow"/>
 

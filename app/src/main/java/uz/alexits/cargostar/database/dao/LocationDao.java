@@ -7,12 +7,11 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import uz.alexits.cargostar.model.location.Branche;
-import uz.alexits.cargostar.model.location.City;
-import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.transportation.Request;
+import uz.alexits.cargostar.entities.location.Branche;
+import uz.alexits.cargostar.entities.location.City;
+import uz.alexits.cargostar.entities.location.Country;
+import uz.alexits.cargostar.entities.location.Region;
+import uz.alexits.cargostar.entities.location.TransitPoint;
 
 import java.util.List;
 
@@ -43,8 +42,8 @@ public abstract class LocationDao {
     @Query("SELECT * FROM country WHERE id == :countryId")
     public abstract LiveData<Country> selectCountryById(final long countryId);
 
-    @Query("SELECT * FROM country WHERE id == (SELECT recipient_country_id FROM request WHERE id == :requestId LIMIT 1)")
-    public abstract LiveData<Country> selectDestinationCountryByRequestId(final long requestId);
+    @Query("SELECT id FROM country WHERE id == (SELECT recipient_country_id FROM request WHERE id == :requestId LIMIT 1)")
+    public abstract LiveData<Long> selectDestinationCountryIdByRequestId(final long requestId);
 
     /* regions */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -161,4 +160,7 @@ public abstract class LocationDao {
 
     @Query("SELECT id FROM city ORDER BY id DESC LIMIT 1")
     public abstract long getLastCityId();
+
+    @Query("SELECT * FROM city WHERE id == (SELECT city_id FROM transitPoint WHERE id == :transitPointId) LIMIT 1")
+    public abstract LiveData<City> selectCityByTransitPointId(final long transitPointId);
 }

@@ -1,0 +1,2512 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 98,
+    "identityHash": "14c5e94e3394b179e37cce1466fc41ab",
+    "entities": [
+      {
+        "tableName": "user",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `country_id` INTEGER, `city_name` TEXT, `first_name` TEXT NOT NULL, `middle_name` TEXT, `last_name` TEXT NOT NULL, `phone` TEXT NOT NULL, `email` TEXT NOT NULL, `address` TEXT, `geo` TEXT, `zip` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cityName",
+            "columnName": "city_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "firstName",
+            "columnName": "first_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "middleName",
+            "columnName": "middle_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastName",
+            "columnName": "last_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "geo",
+            "columnName": "geo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "zip",
+            "columnName": "zip",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_user_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          },
+          {
+            "name": "index_user_email",
+            "unique": false,
+            "columnNames": [
+              "email"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_email` ON `${TABLE_NAME}` (`email`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "courier",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `country_id` INTEGER, `city_name` TEXT, `first_name` TEXT NOT NULL, `middle_name` TEXT, `last_name` TEXT NOT NULL, `phone` TEXT NOT NULL, `email` TEXT NOT NULL, `address` TEXT, `geo` TEXT, `zip` TEXT, `login` TEXT NOT NULL, `password` TEXT, `branche_id` INTEGER, `position` TEXT NOT NULL, `photo_url` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`branche_id`) REFERENCES `branche`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cityName",
+            "columnName": "city_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "firstName",
+            "columnName": "first_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "middleName",
+            "columnName": "middle_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastName",
+            "columnName": "last_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "geo",
+            "columnName": "geo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "zip",
+            "columnName": "zip",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "login",
+            "columnName": "login",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "brancheId",
+            "columnName": "branche_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "photoUrl",
+            "columnName": "photo_url",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_courier_branche_id",
+            "unique": false,
+            "columnNames": [
+              "branche_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_courier_branche_id` ON `${TABLE_NAME}` (`branche_id`)"
+          },
+          {
+            "name": "index_courier_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_courier_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          },
+          {
+            "name": "index_courier_email",
+            "unique": false,
+            "columnNames": [
+              "email"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_courier_email` ON `${TABLE_NAME}` (`email`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "branche",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "branche_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "client",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `country_id` INTEGER, `city_name` TEXT, `first_name` TEXT NOT NULL, `middle_name` TEXT, `last_name` TEXT NOT NULL, `phone` TEXT NOT NULL, `email` TEXT NOT NULL, `address` TEXT, `geo` TEXT, `zip` TEXT, `cargostar_account_number` TEXT, `tnt_account_number` TEXT, `fedex_account_number` TEXT, `discount` INTEGER NOT NULL, `photo_url` TEXT, `signature_url` TEXT, `user_type` INTEGER NOT NULL, `passport_serial` TEXT, `inn` TEXT, `company` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cityName",
+            "columnName": "city_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "firstName",
+            "columnName": "first_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "middleName",
+            "columnName": "middle_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastName",
+            "columnName": "last_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "geo",
+            "columnName": "geo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "zip",
+            "columnName": "zip",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cargostarAccountNumber",
+            "columnName": "cargostar_account_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tntAccountNumber",
+            "columnName": "tnt_account_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fedexAccountNumber",
+            "columnName": "fedex_account_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "discount",
+            "columnName": "discount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "photoUrl",
+            "columnName": "photo_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "signatureUrl",
+            "columnName": "signature_url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userType",
+            "columnName": "user_type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "passportSerial",
+            "columnName": "passport_serial",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "inn",
+            "columnName": "inn",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "company",
+            "columnName": "company",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_client_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_client_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          },
+          {
+            "name": "index_client_email",
+            "unique": false,
+            "columnNames": [
+              "email"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_client_email` ON `${TABLE_NAME}` (`email`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "address_book",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `country_id` INTEGER, `city_name` TEXT, `address` TEXT, `zip` TEXT, `first_name` TEXT, `middle_name` TEXT, `last_name` TEXT, `email` TEXT, `phone` TEXT, `cargostar_account_number` TEXT, `fedex_account_number` TEXT, `tnt_account_number` TEXT, `company` TEXT, `inn` TEXT, `contract_number` TEXT, `passport_serial` TEXT, `type` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cityName",
+            "columnName": "city_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "zip",
+            "columnName": "zip",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "firstName",
+            "columnName": "first_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "middleName",
+            "columnName": "middle_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastName",
+            "columnName": "last_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cargostarAccountNumber",
+            "columnName": "cargostar_account_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tntAccountNumber",
+            "columnName": "fedex_account_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fedexAccountNumber",
+            "columnName": "tnt_account_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "company",
+            "columnName": "company",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "inn",
+            "columnName": "inn",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "contractNumber",
+            "columnName": "contract_number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "passportSerial",
+            "columnName": "passport_serial",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_address_book_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_address_book_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          },
+          {
+            "name": "index_address_book_user_id",
+            "unique": false,
+            "columnNames": [
+              "user_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_address_book_user_id` ON `${TABLE_NAME}` (`user_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "country",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `code` TEXT, `code2` TEXT, `name_en` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "code",
+            "columnName": "code",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "code2",
+            "columnName": "code2",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nameEn",
+            "columnName": "name_en",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "region",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `country_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `status` INTEGER NOT NULL, `name_en` TEXT, `created_at` INTEGER, `updated_at` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameEn",
+            "columnName": "name_en",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "created_at",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updated_at",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_region_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_region_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "city",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `region_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `name_en` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`region_id`) REFERENCES `region`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "regionId",
+            "columnName": "region_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameEn",
+            "columnName": "name_en",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_city_region_id",
+            "unique": false,
+            "columnNames": [
+              "region_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_city_region_id` ON `${TABLE_NAME}` (`region_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "region",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "region_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "branche",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `country_id` INTEGER, `region_id` INTEGER, `city_id` INTEGER, `name` TEXT NOT NULL, `address` TEXT, `zip` TEXT, `geolocation` TEXT, `telephone` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`region_id`) REFERENCES `region`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`city_id`) REFERENCES `city`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "regionId",
+            "columnName": "region_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cityId",
+            "columnName": "city_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "zip",
+            "columnName": "zip",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "geolocation",
+            "columnName": "geolocation",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "telephone",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_branche_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_branche_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          },
+          {
+            "name": "index_branche_region_id",
+            "unique": false,
+            "columnNames": [
+              "region_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_branche_region_id` ON `${TABLE_NAME}` (`region_id`)"
+          },
+          {
+            "name": "index_branche_city_id",
+            "unique": false,
+            "columnNames": [
+              "city_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_branche_city_id` ON `${TABLE_NAME}` (`city_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "region",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "region_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "city",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "city_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "transitPoint",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `country_id` INTEGER NOT NULL, `region_id` INTEGER NOT NULL, `city_id` INTEGER NOT NULL, `branche_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `address` TEXT NOT NULL, `geolocation` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`branche_id`) REFERENCES `branche`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`region_id`) REFERENCES `region`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`city_id`) REFERENCES `city`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "regionId",
+            "columnName": "region_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cityId",
+            "columnName": "city_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brancheId",
+            "columnName": "branche_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "geolocation",
+            "columnName": "geolocation",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_transitPoint_branche_id",
+            "unique": false,
+            "columnNames": [
+              "branche_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transitPoint_branche_id` ON `${TABLE_NAME}` (`branche_id`)"
+          },
+          {
+            "name": "index_transitPoint_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transitPoint_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          },
+          {
+            "name": "index_transitPoint_region_id",
+            "unique": false,
+            "columnNames": [
+              "region_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transitPoint_region_id` ON `${TABLE_NAME}` (`region_id`)"
+          },
+          {
+            "name": "index_transitPoint_city_id",
+            "unique": false,
+            "columnNames": [
+              "city_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transitPoint_city_id` ON `${TABLE_NAME}` (`city_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "branche",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "branche_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "region",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "region_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "city",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "city_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "invoice",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `number` TEXT, `sender_id` INTEGER, `recipient_id` INTEGER, `payer_id` INTEGER, `provider_id` INTEGER, `request_id` INTEGER, `sender_signature` TEXT, `recipient_signature` TEXT, `tariff_id` INTEGER, `price` REAL NOT NULL, `payment_method` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`sender_id`) REFERENCES `client`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`recipient_id`) REFERENCES `address_book`(`id`) ON UPDATE CASCADE ON DELETE SET NULL , FOREIGN KEY(`payer_id`) REFERENCES `address_book`(`id`) ON UPDATE CASCADE ON DELETE SET NULL , FOREIGN KEY(`provider_id`) REFERENCES `provider`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`request_id`) REFERENCES `request`(`id`) ON UPDATE CASCADE ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "number",
+            "columnName": "number",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderId",
+            "columnName": "sender_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "recipientId",
+            "columnName": "recipient_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "payerId",
+            "columnName": "payer_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "providerId",
+            "columnName": "provider_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "requestId",
+            "columnName": "request_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderSignatureUrl",
+            "columnName": "sender_signature",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "recipientSignatureUrl",
+            "columnName": "recipient_signature",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tariffId",
+            "columnName": "tariff_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paymentMethod",
+            "columnName": "payment_method",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_invoice_sender_id",
+            "unique": false,
+            "columnNames": [
+              "sender_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_invoice_sender_id` ON `${TABLE_NAME}` (`sender_id`)"
+          },
+          {
+            "name": "index_invoice_recipient_id",
+            "unique": false,
+            "columnNames": [
+              "recipient_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_invoice_recipient_id` ON `${TABLE_NAME}` (`recipient_id`)"
+          },
+          {
+            "name": "index_invoice_payer_id",
+            "unique": false,
+            "columnNames": [
+              "payer_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_invoice_payer_id` ON `${TABLE_NAME}` (`payer_id`)"
+          },
+          {
+            "name": "index_invoice_provider_id",
+            "unique": false,
+            "columnNames": [
+              "provider_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_invoice_provider_id` ON `${TABLE_NAME}` (`provider_id`)"
+          },
+          {
+            "name": "index_invoice_request_id",
+            "unique": false,
+            "columnNames": [
+              "request_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_invoice_request_id` ON `${TABLE_NAME}` (`request_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "client",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "sender_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "address_book",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "recipient_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "address_book",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "payer_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "provider",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "provider_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "request",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "request_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "consignment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `request_id` INTEGER, `packaging_id` INTEGER, `dimensions` TEXT, `packaging_type` TEXT, `name` TEXT, `description` TEXT, `cost` TEXT, `length` REAL NOT NULL DEFAULT 0, `width` REAL NOT NULL DEFAULT 0, `height` REAL NOT NULL DEFAULT 0, `weight` REAL NOT NULL DEFAULT 0, `qr` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`request_id`) REFERENCES `request`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "requestId",
+            "columnName": "request_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "packagingId",
+            "columnName": "packaging_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "dimensions",
+            "columnName": "dimensions",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "packagingType",
+            "columnName": "packaging_type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "length",
+            "columnName": "length",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "width",
+            "columnName": "width",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "height",
+            "columnName": "height",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "weight",
+            "columnName": "weight",
+            "affinity": "REAL",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "qr",
+            "columnName": "qr",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_consignment_request_id",
+            "unique": false,
+            "columnNames": [
+              "request_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_consignment_request_id` ON `${TABLE_NAME}` (`request_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "request",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "request_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "notification",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT, `body` TEXT, `is_read` INTEGER NOT NULL DEFAULT false, `activity` TEXT, `link` TEXT, `receive_date` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "body",
+            "columnName": "body",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isRead",
+            "columnName": "is_read",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
+          },
+          {
+            "fieldPath": "activity",
+            "columnName": "activity",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "link",
+            "columnName": "link",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "receiveDate",
+            "columnName": "receive_date",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "request",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `sender_country_id` INTEGER NOT NULL, `sender_city_name` TEXT, `user_id` INTEGER NOT NULL, `client_id` INTEGER NOT NULL, `first_name` TEXT, `middle_name` TEXT, `last_name` TEXT, `email` TEXT, `phone` TEXT, `address` TEXT, `recipient_country_id` INTEGER NOT NULL, `recipient_city_name` TEXT, `courier_id` INTEGER NOT NULL, `provider_id` INTEGER NOT NULL, `invoice_id` INTEGER NOT NULL, `delivery_type` INTEGER NOT NULL, `comment` TEXT, `is_new` INTEGER NOT NULL, `sender_city` TEXT, `recipient_city` TEXT, `consignment_quantity` INTEGER NOT NULL, `payment_status` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`sender_country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`recipient_country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "senderCountryId",
+            "columnName": "sender_country_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "senderCityName",
+            "columnName": "sender_city_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientId",
+            "columnName": "client_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "senderFirstName",
+            "columnName": "first_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderMiddleName",
+            "columnName": "middle_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderLastName",
+            "columnName": "last_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderEmail",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderPhone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "senderAddress",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "recipientCountryId",
+            "columnName": "recipient_country_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recipientCityName",
+            "columnName": "recipient_city_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "courierId",
+            "columnName": "courier_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "providerId",
+            "columnName": "provider_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "invoiceId",
+            "columnName": "invoice_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deliveryType",
+            "columnName": "delivery_type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comment",
+            "columnName": "comment",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isNew",
+            "columnName": "is_new",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "senderCity",
+            "columnName": "sender_city",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "recipientCity",
+            "columnName": "recipient_city",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "consignmentQuantity",
+            "columnName": "consignment_quantity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paymentStatus",
+            "columnName": "payment_status",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_request_sender_country_id",
+            "unique": false,
+            "columnNames": [
+              "sender_country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_request_sender_country_id` ON `${TABLE_NAME}` (`sender_country_id`)"
+          },
+          {
+            "name": "index_request_recipient_country_id",
+            "unique": false,
+            "columnNames": [
+              "recipient_country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_request_recipient_country_id` ON `${TABLE_NAME}` (`recipient_country_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "sender_country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "recipient_country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "provider",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `name_uz` TEXT, `name_en` TEXT, `exportable` INTEGER NOT NULL, `importable` INTEGER NOT NULL, `description` TEXT, `description_en` TEXT, `description_uz` TEXT, `fuel` REAL NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameUz",
+            "columnName": "name_uz",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nameEn",
+            "columnName": "name_en",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "exportable",
+            "columnName": "exportable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "importable",
+            "columnName": "importable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "descriptionEn",
+            "columnName": "description_en",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "descriptionUz",
+            "columnName": "description_uz",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fuel",
+            "columnName": "fuel",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "packaging",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `provider_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `parcel_fee` INTEGER NOT NULL, `volumex` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`provider_id`) REFERENCES `provider`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "providerId",
+            "columnName": "provider_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parcelFee",
+            "columnName": "parcel_fee",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "volumex",
+            "columnName": "volumex",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_packaging_provider_id",
+            "unique": false,
+            "columnNames": [
+              "provider_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_packaging_provider_id` ON `${TABLE_NAME}` (`provider_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "provider",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "provider_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "packagingType",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `packaging_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `name_en` TEXT, `name_uz` TEXT, `description` TEXT, `type` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`packaging_id`) REFERENCES `packaging`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packagingId",
+            "columnName": "packaging_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameEn",
+            "columnName": "name_en",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nameUz",
+            "columnName": "name_uz",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_packagingType_packaging_id",
+            "unique": false,
+            "columnNames": [
+              "packaging_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_packagingType_packaging_id` ON `${TABLE_NAME}` (`packaging_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "packaging",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "packaging_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "zone",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `country_id` INTEGER, `provider_id` INTEGER, `name` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`provider_id`) REFERENCES `provider`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "providerId",
+            "columnName": "provider_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_zone_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zone_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          },
+          {
+            "name": "index_zone_provider_id",
+            "unique": false,
+            "columnNames": [
+              "provider_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zone_provider_id` ON `${TABLE_NAME}` (`provider_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "provider",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "provider_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "zone_settings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `zone_id` INTEGER, `packaging_id` INTEGER, `packaging_type_id` INTEGER, `provider_id` INTEGER, `weight_from` REAL NOT NULL, `weight_to` REAL NOT NULL, `weight_step` REAL NOT NULL, `price_from` INTEGER NOT NULL, `price_step` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `fuel` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`zone_id`) REFERENCES `zone`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`packaging_type_id`) REFERENCES `packagingType`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`packaging_id`) REFERENCES `packaging`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`provider_id`) REFERENCES `provider`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "zoneId",
+            "columnName": "zone_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "packagingId",
+            "columnName": "packaging_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "packagingTypeId",
+            "columnName": "packaging_type_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "providerId",
+            "columnName": "provider_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "weightFrom",
+            "columnName": "weight_from",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weightTo",
+            "columnName": "weight_to",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weightStep",
+            "columnName": "weight_step",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceFrom",
+            "columnName": "price_from",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceStep",
+            "columnName": "price_step",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fuel",
+            "columnName": "fuel",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_zone_settings_zone_id",
+            "unique": false,
+            "columnNames": [
+              "zone_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zone_settings_zone_id` ON `${TABLE_NAME}` (`zone_id`)"
+          },
+          {
+            "name": "index_zone_settings_packaging_type_id",
+            "unique": false,
+            "columnNames": [
+              "packaging_type_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zone_settings_packaging_type_id` ON `${TABLE_NAME}` (`packaging_type_id`)"
+          },
+          {
+            "name": "index_zone_settings_packaging_id",
+            "unique": false,
+            "columnNames": [
+              "packaging_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zone_settings_packaging_id` ON `${TABLE_NAME}` (`packaging_id`)"
+          },
+          {
+            "name": "index_zone_settings_provider_id",
+            "unique": false,
+            "columnNames": [
+              "provider_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zone_settings_provider_id` ON `${TABLE_NAME}` (`provider_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "zone",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "zone_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "packagingType",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "packaging_type_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "packaging",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "packaging_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "provider",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "provider_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "zoneCountry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `country_id` INTEGER, `zone_id` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`country_id`) REFERENCES `country`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`zone_id`) REFERENCES `zone`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "countryId",
+            "columnName": "country_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "zoneId",
+            "columnName": "zone_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_zoneCountry_country_id",
+            "unique": false,
+            "columnNames": [
+              "country_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zoneCountry_country_id` ON `${TABLE_NAME}` (`country_id`)"
+          },
+          {
+            "name": "index_zoneCountry_zone_id",
+            "unique": false,
+            "columnNames": [
+              "zone_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zoneCountry_zone_id` ON `${TABLE_NAME}` (`zone_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "country",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "country_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "zone",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "zone_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "transportation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `provider_id` INTEGER NOT NULL, `courier_id` INTEGER NOT NULL, `invoice_id` INTEGER NOT NULL, `request_id` INTEGER NOT NULL, `branche_id` INTEGER NOT NULL, `transportation_status_id` INTEGER NOT NULL, `payment_status_id` INTEGER NOT NULL, `current_transition_point_id` INTEGER NOT NULL, `partial_id` INTEGER NOT NULL, `arrival_date` TEXT, `tracking_code` TEXT, `qr_code` TEXT, `party_qr_code` TEXT, `instructions` TEXT, `direction` TEXT, `city_from` TEXT, `city_to` TEXT, `transportation_status_name` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`transportation_status_id`) REFERENCES `transportationStatus`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "providerId",
+            "columnName": "provider_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "courierId",
+            "columnName": "courier_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "invoiceId",
+            "columnName": "invoice_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "requestId",
+            "columnName": "request_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brancheId",
+            "columnName": "branche_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transportationStatusId",
+            "columnName": "transportation_status_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "paymentStatusId",
+            "columnName": "payment_status_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "currentTransitionPointId",
+            "columnName": "current_transition_point_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "partialId",
+            "columnName": "partial_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "arrivalDate",
+            "columnName": "arrival_date",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "trackingCode",
+            "columnName": "tracking_code",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "qrCode",
+            "columnName": "qr_code",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "partyQrCode",
+            "columnName": "party_qr_code",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "instructions",
+            "columnName": "instructions",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "direction",
+            "columnName": "direction",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cityFrom",
+            "columnName": "city_from",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "cityTo",
+            "columnName": "city_to",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "transportationStatusName",
+            "columnName": "transportation_status_name",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_transportation_transportation_status_id",
+            "unique": false,
+            "columnNames": [
+              "transportation_status_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transportation_transportation_status_id` ON `${TABLE_NAME}` (`transportation_status_id`)"
+          },
+          {
+            "name": "index_transportation_invoice_id",
+            "unique": true,
+            "columnNames": [
+              "invoice_id"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_transportation_invoice_id` ON `${TABLE_NAME}` (`invoice_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "transportationStatus",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "transportation_status_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "transportationStatus",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT, `description` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "transportationData",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `transportation_id` INTEGER, `transportation_status_id` INTEGER, `transit_point_id` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`transit_point_id`) REFERENCES `transitPoint`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`transportation_status_id`) REFERENCES `transportationStatus`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`transportation_id`) REFERENCES `transportation`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transportationId",
+            "columnName": "transportation_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "transportationStatusId",
+            "columnName": "transportation_status_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "transitPointId",
+            "columnName": "transit_point_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_transportationData_transit_point_id",
+            "unique": false,
+            "columnNames": [
+              "transit_point_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transportationData_transit_point_id` ON `${TABLE_NAME}` (`transit_point_id`)"
+          },
+          {
+            "name": "index_transportationData_transportation_status_id",
+            "unique": false,
+            "columnNames": [
+              "transportation_status_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transportationData_transportation_status_id` ON `${TABLE_NAME}` (`transportation_status_id`)"
+          },
+          {
+            "name": "index_transportationData_transportation_id",
+            "unique": false,
+            "columnNames": [
+              "transportation_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transportationData_transportation_id` ON `${TABLE_NAME}` (`transportation_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "transitPoint",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "transit_point_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "transportationStatus",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "transportation_status_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "transportation",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "transportation_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "route",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `transportation_id` INTEGER, `transit_point_id` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`transportation_id`) REFERENCES `transportation`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`transit_point_id`) REFERENCES `transitPoint`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transportationId",
+            "columnName": "transportation_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "transitPointId",
+            "columnName": "transit_point_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_route_transportation_id",
+            "unique": false,
+            "columnNames": [
+              "transportation_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_route_transportation_id` ON `${TABLE_NAME}` (`transportation_id`)"
+          },
+          {
+            "name": "index_route_transit_point_id",
+            "unique": false,
+            "columnNames": [
+              "transit_point_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_route_transit_point_id` ON `${TABLE_NAME}` (`transit_point_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "transportation",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "transportation_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "transitPoint",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "transit_point_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "vat",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`vat` REAL NOT NULL, PRIMARY KEY(`vat`))",
+        "fields": [
+          {
+            "fieldPath": "vat",
+            "columnName": "vat",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "vat"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '14c5e94e3394b179e37cce1466fc41ab')"
+    ]
+  }
+}

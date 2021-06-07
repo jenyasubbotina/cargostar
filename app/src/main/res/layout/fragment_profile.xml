@@ -366,7 +366,7 @@
             android:enabled="false"/>
 
         <TextView
-            android:id="@+id/main_location_text_view"
+            android:id="@+id/geolocation_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/phone_number_edit_text"
@@ -381,7 +381,7 @@
             android:id="@+id/geolocation_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/main_location_text_view"
+            app:layout_constraintTop_toBottomOf="@id/geolocation_text_view"
             app:layout_constraintStart_toStartOf="@id/user_id_edit_text"
             app:layout_constraintEnd_toEndOf="@+id/user_id_edit_text"
             android:layout_marginTop="4dp"
@@ -397,7 +397,7 @@
             android:id="@+id/country_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/main_location_text_view"
+            app:layout_constraintTop_toTopOf="@id/geolocation_text_view"
             app:layout_constraintStart_toStartOf="@id/login_text_view"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
@@ -420,39 +420,12 @@
             android:enabled="false"/>
 
         <TextView
-            android:id="@+id/region_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/geolocation_edit_text"
-            app:layout_constraintStart_toStartOf="@id/user_id_text_view"
-            android:layout_marginTop="21dp"
-            android:textSize="16sp"
-            android:textColor="#A5ABC0"
-            android:fontFamily="@font/geometria_actual"
-            android:text="@string/region"/>
-
-        <EditText
-            android:id="@+id/region_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/region_text_view"
-            app:layout_constraintStart_toStartOf="@id/user_id_edit_text"
-            app:layout_constraintEnd_toEndOf="@+id/user_id_edit_text"
-            android:layout_marginTop="4dp"
-            android:inputType="textCapWords"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:fontFamily="@font/geometria_actual"
-            android:textColor="#A5ABC0"
-            android:padding="17dp"
-            android:enabled="false"/>
-
-        <TextView
             android:id="@+id/city_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/region_text_view"
-            app:layout_constraintStart_toStartOf="@id/login_text_view"
+            app:layout_constraintTop_toBottomOf="@id/geolocation_edit_text"
+            app:layout_constraintStart_toStartOf="@id/geolocation_text_view"
+            android:layout_marginTop="21dp"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
@@ -462,9 +435,10 @@
             android:id="@+id/city_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/region_edit_text"
-            app:layout_constraintStart_toStartOf="@id/login_edit_text"
-            app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/city_text_view"
+            app:layout_constraintStart_toStartOf="@id/geolocation_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/geolocation_edit_text"
+            android:layout_marginTop="4dp"
             android:inputType="textCapWords"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
@@ -477,9 +451,8 @@
             android:id="@+id/zip_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/region_edit_text"
-            app:layout_constraintStart_toStartOf="@id/user_id_text_view"
-            android:layout_marginTop="21dp"
+            app:layout_constraintTop_toTopOf="@id/city_text_view"
+            app:layout_constraintStart_toStartOf="@id/country_text_view"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
@@ -489,9 +462,9 @@
             android:id="@+id/zip_edit_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/zip_text_view"
-            app:layout_constraintStart_toStartOf="@id/user_id_edit_text"
-            app:layout_constraintEnd_toEndOf="@+id/user_id_edit_text"
+            app:layout_constraintTop_toTopOf="@id/city_edit_text"
+            app:layout_constraintStart_toStartOf="@+id/country_edit_text"
+            app:layout_constraintEnd_toEndOf="@+id/country_edit_text"
             android:layout_marginTop="4dp"
             android:inputType="numberDecimal"
             android:background="@drawable/edit_text_locked"
@@ -505,25 +478,22 @@
             android:id="@+id/photo_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/zip_text_view"
-            app:layout_constraintStart_toStartOf="@id/login_text_view"
+            app:layout_constraintTop_toBottomOf="@id/city_edit_text"
+            app:layout_constraintStart_toStartOf="@id/city_text_view"
+            android:layout_marginTop="21dp"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
             android:text="@string/photo"/>
 
-        <RelativeLayout
-            android:id="@+id/photo_field"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/zip_edit_text"
-            app:layout_constraintStart_toStartOf="@+id/login_edit_text"
-            app:layout_constraintEnd_toEndOf="@+id/login_edit_text" >
-
             <EditText
                 android:id="@+id/photo_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/photo_text_view"
+                app:layout_constraintStart_toStartOf="@+id/city_edit_text"
+                app:layout_constraintEnd_toEndOf="@+id/city_edit_text"
+                android:layout_marginTop="4dp"
                 android:inputType="text"
                 android:background="@drawable/edit_text_locked"
                 android:textSize="16sp"
@@ -538,8 +508,9 @@
                 android:id="@+id/photo_result_image_view"
                 android:layout_width="19dp"
                 android:layout_height="22dp"
-                android:layout_alignStart="@id/photo_edit_text"
-                android:layout_centerVertical="true"
+                app:layout_constraintStart_toStartOf="@id/photo_edit_text"
+                app:layout_constraintTop_toTopOf="@id/photo_edit_text"
+                app:layout_constraintBottom_toBottomOf="@id/photo_edit_text"
                 android:src="@drawable/ic_image_green"
                 android:layout_marginStart="12dp"
                 android:contentDescription="@string/signature"
@@ -549,18 +520,18 @@
                 android:id="@+id/photo_image_view"
                 android:layout_width="25dp"
                 android:layout_height="22dp"
-                android:layout_alignEnd="@id/photo_edit_text"
-                android:layout_centerVertical="true"
+                app:layout_constraintEnd_toEndOf="@id/photo_edit_text"
+                app:layout_constraintTop_toTopOf="@id/photo_edit_text"
+                app:layout_constraintBottom_toBottomOf="@id/photo_edit_text"
                 android:src="@drawable/ic_download"
                 android:layout_marginEnd="8dp"
                 android:contentDescription="@string/signature"/>
-        </RelativeLayout>
 
         <Button
             android:id="@+id/save_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/zip_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/photo_edit_text"
             app:layout_constraintStart_toStartOf="@id/personal_data_text_view"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginVertical="44dp"
@@ -575,12 +546,12 @@
 
         <ProgressBar
             android:id="@+id/progress_bar"
-            app:layout_constraintTop_toTopOf="@+id/save_btn"
-            app:layout_constraintBottom_toBottomOf="@+id/save_btn"
-            app:layout_constraintStart_toStartOf="@+id/photo_field"
-            app:layout_constraintEnd_toEndOf="@+id/photo_field"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

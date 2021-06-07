@@ -1,36 +1,37 @@
 package uz.alexits.cargostar.api;
 
 import retrofit2.http.Body;
-import uz.alexits.cargostar.api.params.BindRequestParams;
-import uz.alexits.cargostar.api.params.CreateClientParams;
-import uz.alexits.cargostar.api.params.CreateInvoiceParams;
-import uz.alexits.cargostar.api.params.CreateInvoiceResponse;
-import uz.alexits.cargostar.api.params.RecipientSignatureParams;
-import uz.alexits.cargostar.api.params.SignInParams;
-import uz.alexits.cargostar.api.params.TransportationStatusParams;
-import uz.alexits.cargostar.api.params.UpdateCourierParams;
-import uz.alexits.cargostar.model.actor.AddressBook;
-import uz.alexits.cargostar.model.actor.Courier;
-import uz.alexits.cargostar.model.actor.Customer;
-import uz.alexits.cargostar.model.calculation.Vat;
-import uz.alexits.cargostar.model.calculation.ZoneCountry;
-import uz.alexits.cargostar.model.location.Branche;
-import uz.alexits.cargostar.model.location.City;
-import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.location.Region;
-import uz.alexits.cargostar.model.location.TransitPoint;
-import uz.alexits.cargostar.model.calculation.Zone;
-import uz.alexits.cargostar.model.calculation.ZoneSettings;
-import uz.alexits.cargostar.model.calculation.Packaging;
-import uz.alexits.cargostar.model.calculation.PackagingType;
-import uz.alexits.cargostar.model.transportation.Consignment;
-import uz.alexits.cargostar.model.transportation.Invoice;
-import uz.alexits.cargostar.model.transportation.Partial;
-import uz.alexits.cargostar.model.transportation.Request;
-import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.entities.params.AddresseeParams;
+import uz.alexits.cargostar.entities.params.BindRequestParams;
+import uz.alexits.cargostar.entities.params.CreateClientParams;
+import uz.alexits.cargostar.entities.params.CreateInvoiceParams;
+import uz.alexits.cargostar.entities.params.CreateInvoiceResponse;
+import uz.alexits.cargostar.entities.params.SignInParams;
+import uz.alexits.cargostar.entities.params.TransportationStatusParams;
+import uz.alexits.cargostar.entities.params.UpdateCourierParams;
+import uz.alexits.cargostar.entities.actor.AddressBook;
+import uz.alexits.cargostar.entities.actor.Client;
+import uz.alexits.cargostar.entities.actor.Courier;
+import uz.alexits.cargostar.entities.calculation.Vat;
+import uz.alexits.cargostar.entities.calculation.ZoneCountry;
+import uz.alexits.cargostar.entities.location.Branche;
+import uz.alexits.cargostar.entities.location.City;
+import uz.alexits.cargostar.entities.location.Country;
+import uz.alexits.cargostar.entities.location.Region;
+import uz.alexits.cargostar.entities.location.TransitPoint;
+import uz.alexits.cargostar.entities.calculation.Zone;
+import uz.alexits.cargostar.entities.calculation.ZoneSettings;
+import uz.alexits.cargostar.entities.calculation.Packaging;
+import uz.alexits.cargostar.entities.calculation.PackagingType;
+import uz.alexits.cargostar.entities.transportation.Addressee;
+import uz.alexits.cargostar.entities.transportation.Consignment;
+import uz.alexits.cargostar.entities.transportation.Import;
+import uz.alexits.cargostar.entities.transportation.Invoice;
+import uz.alexits.cargostar.entities.transportation.Partial;
+import uz.alexits.cargostar.entities.transportation.Request;
+import uz.alexits.cargostar.entities.calculation.Provider;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -38,10 +39,10 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
-import uz.alexits.cargostar.model.transportation.Route;
-import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.model.transportation.TransportationData;
-import uz.alexits.cargostar.model.transportation.TransportationStatus;
+import uz.alexits.cargostar.entities.transportation.Route;
+import uz.alexits.cargostar.entities.transportation.Transportation;
+import uz.alexits.cargostar.entities.transportation.TransportationData;
+import uz.alexits.cargostar.entities.transportation.TransportationStatus;
 
 public interface ApiService {
     /* Location data */
@@ -116,19 +117,19 @@ public interface ApiService {
     /* Client */
     @Headers("Content-type: application/json; charset=utf-8;")
     @POST("client/create-client")
-    Call<Customer> createClient(@Body CreateClientParams createClientParams);
+    Call<Client> createClient(@Body CreateClientParams createClientParams);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("client/view")
-    Call<Customer> getClient(@Query("id") final long clientId);
+    Call<Client> getClient(@Query("id") final long clientId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("client/new")
-    Call<List<Customer>> getClients(@Query("per-page") final int perPage, @Query("id") final long lastId);
+    Call<List<Client>> getClients(@Query("per-page") final int perPage, @Query("id") final long lastId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("client")
-    Call<List<Customer>> getClients(@Query("per-page") final int perPage);
+    Call<List<Client>> getClients(@Query("per-page") final int perPage);
 
     /* Address Book */
     @Headers("Content-Type: application/json; charset=utf-8;")
@@ -187,6 +188,10 @@ public interface ApiService {
     Call<Transportation> getTransportation(@Query("id") final long transportationId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
+    @GET("transportation/view")
+    Call<Transportation> getTransportation(@Query("trackingCode") final String trackingCode);
+
+    @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation")
     Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage);
 
@@ -205,11 +210,11 @@ public interface ApiService {
     /* Transportation History */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation-status/transportation")
-    Call<List<TransportationData>> getTransportationData(@Query("id") final Long transportationId);
+    Call<List<TransportationData>> getTransportationData(@Query("id") final long transportationId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation/points")
-    Call<List<Route>> getTransportationRoute(@Query("id") final Long transportationId);
+    Call<List<Route>> getTransportationRoute(@Query("id") final long transportationId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @POST("transportation-status/create")
@@ -221,18 +226,18 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @POST("invoice/recipient")
-    Call<RecipientSignatureParams> sendRecipientSignature(@Body RecipientSignatureParams recipientSignatureParams);
+    Call<Invoice> sendRecipientSignature(@Body AddresseeParams params);
 
     /* Cargo */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("consignment/invoice")
-    Call<List<Consignment>> getCargoListByInvoiceId(@Query("id") final Long invoiceId);
+    Call<List<Consignment>> getCargoListByInvoiceId(@Query("id") final long invoiceId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request/partial")
-    Call<List<Consignment>> getCargoListByRequestId(@Query("id") final Long requestId);
+    Call<List<Consignment>> getCargoListByRequestId(@Query("id") final long requestId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("client")
-    Call<List<Customer>> getAllCustomers(@Query("per-page") final int perPage);
+    Call<List<Client>> getAllCustomers(@Query("per-page") final int perPage);
 }

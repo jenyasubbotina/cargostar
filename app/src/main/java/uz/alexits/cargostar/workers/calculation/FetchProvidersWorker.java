@@ -11,7 +11,7 @@ import androidx.work.WorkerParameters;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.calculation.Provider;
+import uz.alexits.cargostar.entities.calculation.Provider;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,7 +19,6 @@ import retrofit2.Response;
 import uz.alexits.cargostar.utils.Constants;
 
 public class FetchProvidersWorker extends Worker {
-    private static final String TAG = FetchProvidersWorker.class.toString();
     private String login;
     private String password;
     private final String token;
@@ -48,7 +47,7 @@ public class FetchProvidersWorker extends Worker {
                     Log.i(TAG, "fetchAllProviders(): response=" + response.body());
                     final List<Provider> providerList = response.body();
 
-                    LocalCache.getInstance(getApplicationContext()).packagingDao().insertProvidersTransaction(providerList);
+                    LocalCache.getInstance(getApplicationContext()).providerDao().insertProvidersTransaction(providerList);
 
                     final Data outputData = new Data.Builder()
                             .putString(Constants.KEY_LOGIN, login)
@@ -68,4 +67,6 @@ public class FetchProvidersWorker extends Worker {
             return ListenableWorker.Result.failure();
         }
     }
+
+    private static final String TAG = FetchProvidersWorker.class.toString();
 }

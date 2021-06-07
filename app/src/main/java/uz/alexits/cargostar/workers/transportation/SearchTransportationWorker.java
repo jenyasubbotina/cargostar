@@ -9,7 +9,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.entities.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
 
 public class SearchTransportationWorker extends Worker {
@@ -29,33 +29,32 @@ public class SearchTransportationWorker extends Worker {
         }
         final Transportation transportation = LocalCache.getInstance(getApplicationContext()).transportationDao().selectTransportationByQr(transportationQr);
 
-        final Data.Builder outputDataBuilder = new Data.Builder()
-                .putString(Constants.KEY_TRANSPORTATION_QR, transportationQr);
+        final Data.Builder outputDataBuilder = new Data.Builder();
 
         if (transportation == null) {
             Log.e(TAG, "searchTransportation(): transportationQr is NULL " + transportationQr);
-            return Result.failure(outputDataBuilder.build());
+            return Result.failure(outputDataBuilder
+                    .putString(Constants.KEY_TRANSPORTATION_QR, transportationQr)
+                    .build());
         }
-
-        outputDataBuilder.putLong(Constants.KEY_TRANSPORTATION_ID, transportation.getId());
-        outputDataBuilder.putLong(Constants.KEY_INVOICE_ID, transportation.getInvoiceId() != null ? transportation.getInvoiceId() : 0);
-        outputDataBuilder.putLong(Constants.KEY_REQUEST_ID, transportation.getRequestId() != null ? transportation.getRequestId() : 0);
-        outputDataBuilder.putLong(Constants.KEY_COURIER_ID, transportation.getCourierId() != null ? transportation.getCourierId() : 0);
-        outputDataBuilder.putLong(Constants.KEY_PROVIDER_ID, transportation.getProviderId() != null ? transportation.getProviderId() : 0);
-        outputDataBuilder.putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportation.getTransportationStatusId() != null ? transportation.getTransportationStatusId() : 0);
-        outputDataBuilder.putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId() != null ? transportation.getCurrentTransitionPointId() : 0);
-        outputDataBuilder.putLong(Constants.KEY_PAYMENT_STATUS_ID, transportation.getPaymentStatusId() != null ? transportation.getPaymentStatusId() : 0);
-
-        outputDataBuilder.putString(Constants.KEY_TRACKING_CODE, transportation.getTrackingCode());
-        outputDataBuilder.putString(Constants.KEY_CITY_FROM, transportation.getCityFrom());
-        outputDataBuilder.putString(Constants.KEY_CITY_TO, transportation.getCityTo());
-        outputDataBuilder.putString(Constants.KEY_PARTY_QR_CODE, transportation.getPartyQrCode());
-        outputDataBuilder.putString(Constants.KEY_INSTRUCTIONS, transportation.getInstructions());
-        outputDataBuilder.putString(Constants.KEY_DIRECTION, transportation.getDirection());
-        outputDataBuilder.putString(Constants.KEY_ARRIVAL_DATE, transportation.getArrivalDate());
-        outputDataBuilder.putString(Constants.KEY_TRANSPORTATION_STATUS, transportation.getTransportationStatusName());
-
-        return Result.success(outputDataBuilder.build());
+        return Result.success(outputDataBuilder
+                .putLong(Constants.KEY_TRANSPORTATION_ID, transportation.getId())
+                .putLong(Constants.KEY_INVOICE_ID, transportation.getInvoiceId())
+                .putLong(Constants.KEY_REQUEST_ID, transportation.getRequestId())
+                .putLong(Constants.KEY_COURIER_ID, transportation.getCourierId())
+                .putLong(Constants.KEY_PROVIDER_ID, transportation.getProviderId())
+                .putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportation.getTransportationStatusId())
+                .putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId())
+                .putLong(Constants.KEY_PAYMENT_STATUS_ID, transportation.getPaymentStatusId())
+                .putString(Constants.KEY_TRACKING_CODE, transportation.getTrackingCode())
+                .putString(Constants.KEY_CITY_FROM, transportation.getCityFrom())
+                .putString(Constants.KEY_CITY_TO, transportation.getCityTo())
+                .putString(Constants.KEY_PARTY_QR_CODE, transportation.getPartyQrCode())
+                .putString(Constants.KEY_INSTRUCTIONS, transportation.getInstructions())
+                .putString(Constants.KEY_DIRECTION, transportation.getDirection())
+                .putString(Constants.KEY_ARRIVAL_DATE, transportation.getArrivalDate())
+                .putString(Constants.KEY_TRANSPORTATION_STATUS, transportation.getTransportationStatusName())
+                .build());
     }
 
     private static final String TAG = SearchTransportationWorker.class.toString();

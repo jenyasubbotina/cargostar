@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.entities.diffutil.TransportationDiffUtil;
+import uz.alexits.cargostar.entities.transportation.Transportation;
 import uz.alexits.cargostar.view.callback.TransportationCallback;
 import uz.alexits.cargostar.view.viewholder.TransportationViewHolder;
 
@@ -24,8 +26,11 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
         this.callback = callback;
     }
 
-    public void setTransportationList(List<Transportation> transportationList) {
+    public void setTransportationList(final List<Transportation> transportationList) {
+        final TransportationDiffUtil diffUtil = new TransportationDiffUtil(this.transportationList, transportationList);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
         this.transportationList = transportationList;
+        diffResult.dispatchUpdatesTo(this);
     }
 
     public List<Transportation> getTransportationList() {
@@ -53,7 +58,7 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
             holder.fromTextView.setText(currentTransportation.getCityFrom());
             holder.toTextView.setText(currentTransportation.getCityTo());
 
-            if (currentTransportation.getPartialId() == null || currentTransportation.getPartialId() <= 0) {
+            if (currentTransportation.getPartialId() <= 0) {
                 holder.transportationTypeTextView.setText(R.string.transportation);
             }
             else {
@@ -61,21 +66,22 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
             }
 
             if (!TextUtils.isEmpty(currentTransportation.getTransportationStatusName())) {
+                holder.statusTextView.setText(currentTransportation.getTransportationStatusName());
+
                 if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.in_transit))) {
-                    holder.statusTextView.setText(context.getString(R.string.in_transit));
                     holder.statusTextView.setBackgroundResource(R.drawable.bg_purple);
                 }
                 else if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.on_the_way))) {
-                    holder.statusTextView.setText(context.getString(R.string.on_the_way));
                     holder.statusTextView.setBackgroundResource(R.drawable.bg_blue);
                 }
                 else if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.delivered))) {
-                    holder.statusTextView.setText(context.getString(R.string.delivered));
                     holder.statusTextView.setBackgroundResource(R.drawable.bg_green);
                 }
                 else if (currentTransportation.getTransportationStatusName().equalsIgnoreCase(context.getString(R.string.lost))) {
-                    holder.statusTextView.setText(context.getString(R.string.lost));
                     holder.statusTextView.setBackgroundResource(R.drawable.bg_red);
+                }
+                else {
+                    holder.statusTextView.setBackgroundResource(R.drawable.bg_grey);
                 }
             }
             holder.transportationIdTextView.setText(String.valueOf(transportId));

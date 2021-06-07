@@ -8,24 +8,20 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
-import uz.alexits.cargostar.model.transportation.Invoice;
-import uz.alexits.cargostar.model.transportation.Route;
-import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.model.transportation.TransportationData;
-import uz.alexits.cargostar.model.transportation.TransportationStatus;
+import uz.alexits.cargostar.entities.transportation.Transportation;
+import uz.alexits.cargostar.entities.transportation.TransportationData;
 
 import java.util.List;
 
 @Dao
 public abstract class TransportationDao {
-    /* Transportation */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertTransportation(final Transportation transportation);
 
     @Query("DELETE FROM transportation")
     abstract void dropTransportationList();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     public abstract long[] insertTransportationList(final List<Transportation> transportationList);
 
     @Transaction
@@ -37,25 +33,39 @@ public abstract class TransportationDao {
     @Update
     public abstract int updateTransportation(final Transportation transportation);
 
-    @Query("SELECT * FROM transportation WHERE qr_code == :qrCode LIMIT 1")
+    @Query("SELECT * FROM transportation WHERE transportation_type != 2 AND qr_code == :qrCode LIMIT 1")
     public abstract Transportation selectTransportationByQr(final String qrCode);
 
-    @Query("SELECT * FROM transportation ORDER BY id")
+    @Query("SELECT * FROM transportation WHERE transportation_type != 2 ORDER BY id")
     public abstract LiveData<List<Transportation>> selectAllTransportation();
 
     @Query("SELECT * FROM transportation WHERE " +
             "current_transition_point_id == :transitPointId AND " +
-            "transportation_status_id IN (:statusArray) AND " +
+            "transportation_status_id == :statusId AND " +
+            "transportation_type != 2 AND " +
             "invoice_id NOT IN (SELECT id FROM invoice WHERE recipient_signature IS NOT NULL) ORDER BY id DESC")
-    public abstract LiveData<List<Transportation>> selectCurrentTransportations(final List<Long> statusArray, final Long transitPointId);
+    public abstract LiveData<List<Transportation>> selectTransportationListByTransitPointAndStatusId(final long transitPointId, final long statusId);
 
-    @Query("SELECT id FROM transportation WHERE invoice_id IN (SELECT id FROM invoice WHERE recipient_signature IS NULL ORDER BY id DESC)")
+    @Query("SELECT id FROM transportation WHERE " +
+            "transportation_type != 2 AND " +
+            "invoice_id IN (SELECT id FROM invoice WHERE recipient_signature IS NULL ORDER BY id DESC)")
     public abstract LiveData<List<Long>> getEmptySignature();
 
-    @Query("DELETE FROM transportation WHERE id == :transportationId")
+    @Query("DELETE FROM transportation WHERE id == :transportationId AND transportation_type != 2")
     public abstract void deleteTransportation(final long transportationId);
 
-    /* Transportation Data */
+    @Query("SELECT * FROM transportation WHERE id == :transportationId AND transportation_type != 2")
+    public abstract LiveData<Transportation> selectTransportationById(final long transportationId);
+
+    @Query("SELECT * FROM transportation WHERE invoice_id == :invoiceId AND transportation_type != 2 LIMIT 1")
+    public abstract LiveData<Transportation> selectTransportationByInvoiceId(final long invoiceId);
+
+    @Query("SELECT * FROM transportation WHERE partial_id == :partialId AND transportation_type != 2 ORDER BY id")
+    public abstract LiveData<List<Transportation>> selectTransportationsByPartialId(final long partialId);
+
+    @Query("SELECT id FROM transportation WHERE transportation_type != 2 ORDER BY id DESC LIMIT 1")
+    public abstract long getLastTransportationId();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long[] insertTransportationData(final List<TransportationData> transportationDataList);
 
@@ -65,32 +75,4 @@ public abstract class TransportationDao {
     @Update
     public abstract int updateTransportationData(final TransportationData transportationData);
 
-    /* Transportation Route */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract long[] insertTransportationRoute(final List<Route> transportationRouteList);
-
-    /* Transportation Statuses */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract long insertTransportationStatus(final Transportation transportation);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract long[] insertTransportationStatusList(final List<TransportationStatus> transportationList);
-
-    @Query("SELECT * FROM route WHERE transportation_id == :transportationId ORDER BY id ASC")
-    public abstract LiveData<List<Route>> selectRouteByTransportationId(final long transportationId);
-
-    @Query("SELECT * FROM transportationStatus WHERE id == :statusId LIMIT 1")
-    public abstract LiveData<TransportationStatus> selectTransportationStatusById(final long statusId);
-
-    @Query("SELECT * FROM transportation WHERE id == :transportationId")
-    public abstract LiveData<Transportation> selectTransportationById(final long transportationId);
-
-    @Query("SELECT * FROM transportation WHERE invoice_id == :invoiceId LIMIT 1")
-    public abstract LiveData<Transportation> selectTransportationByInvoiceId(final long invoiceId);
-
-    @Query("SELECT * FROM transportation WHERE partial_id == :partialId ORDER BY id")
-    public abstract LiveData<List<Transportation>> selectTransportationsByPartialId(final long partialId);
-
-    @Query("SELECT id FROM transportation ORDER BY id DESC LIMIT 1")
-    public abstract long getLastTransportationId();
 }

@@ -2,16 +2,17 @@ package uz.alexits.cargostar.view.adapter;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import uz.alexits.cargostar.R;
 
-import uz.alexits.cargostar.model.transportation.Request;
-import uz.alexits.cargostar.view.callback.RequestCallback;
+import uz.alexits.cargostar.entities.diffutil.RequestDiffUtil;
+import uz.alexits.cargostar.entities.transportation.Request;
+import uz.alexits.cargostar.view.callback.PublicRequestCallback;
 import uz.alexits.cargostar.view.viewholder.PublicRequestViewHolder;
 
 import java.util.List;
@@ -19,20 +20,18 @@ import java.util.List;
 public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestViewHolder> {
     private final Context context;
     private List<Request> requestList;
-    private final RequestCallback callback;
+    private final PublicRequestCallback callback;
 
-    public PublicRequestAdapter(@NonNull final Context context, @NonNull final List<Request> requestList, @NonNull final RequestCallback callback) {
+    public PublicRequestAdapter(final Context context, final PublicRequestCallback callback) {
         this.context = context;
         this.callback = callback;
-        this.requestList = requestList;
-    }
-
-    public PublicRequestAdapter(final Context context, final RequestCallback callback) {
-        this(context, null, callback);
     }
 
     public void setRequestList(@NonNull final List<Request> requestList) {
+        final RequestDiffUtil diffUtil = new RequestDiffUtil(this.requestList, requestList);
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
         this.requestList = requestList;
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull
@@ -73,7 +72,7 @@ public class PublicRequestAdapter extends RecyclerView.Adapter<PublicRequestView
                 holder.isPaidIndicatorImageView.setImageResource(R.drawable.ic_dollar_red);
             }
         }
-        holder.bind(currentRequest, callback);
+        holder.bind(position, currentRequest, callback);
     }
 
     @Override

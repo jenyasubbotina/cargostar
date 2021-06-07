@@ -2,23 +2,22 @@ package uz.alexits.cargostar.workers.transportation;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import java.io.IOException;
-import java.util.List;
+
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
-import uz.alexits.cargostar.model.transportation.Transportation;
-import uz.alexits.cargostar.model.transportation.TransportationData;
+import uz.alexits.cargostar.entities.transportation.Transportation;
 import uz.alexits.cargostar.utils.Constants;
 
 public class FetchTransportationDataWorker extends Worker {
-    private final Long transportationId;
+    private final long transportationId;
 
     public FetchTransportationDataWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -47,22 +46,21 @@ public class FetchTransportationDataWorker extends Worker {
                     if (transportation == null) {
                         return Result.failure();
                     }
-
                     final long rowId = LocalCache.getInstance(getApplicationContext()).transportationDao().insertTransportation(transportation);
 
                     if (rowId > 0) {
                         final Data outputData = new Data.Builder()
                                 .putLong(Constants.KEY_TRANSPORTATION_ID, transportationId)
-                                .putLong(Constants.KEY_PROVIDER_ID, transportation.getProviderId() != null ? transportation.getProviderId() : 0L)
-                                .putLong(Constants.KEY_COURIER_ID, transportation.getCourierId() != null ? transportation.getCourierId() : 0L)
-                                .putLong(Constants.KEY_REQUEST_ID, transportation.getRequestId() != null ? transportation.getRequestId() : 0L)
-                                .putLong(Constants.KEY_INVOICE_ID, transportation.getInvoiceId() != null ? transportation.getInvoiceId() : 0L)
-                                .putLong(Constants.KEY_BRANCHE_ID, transportation.getBrancheId() != null ? transportation.getBrancheId() : 0L)
-                                .putLong(Constants.KEY_PARTIAL_ID, transportation.getPartialId() != null ? transportation.getPartialId() : 0L)
-                                .putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId() != null ? transportation.getCurrentTransitionPointId() : 0L)
-                                .putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportation.getTransportationStatusId() != null ? transportation.getTransportationStatusId() : 0L)
+                                .putLong(Constants.KEY_PROVIDER_ID, transportation.getProviderId())
+                                .putLong(Constants.KEY_COURIER_ID, transportation.getCourierId())
+                                .putLong(Constants.KEY_REQUEST_ID, transportation.getRequestId())
+                                .putLong(Constants.KEY_INVOICE_ID, transportation.getInvoiceId())
+                                .putLong(Constants.KEY_BRANCHE_ID, transportation.getBrancheId())
+                                .putLong(Constants.KEY_PARTIAL_ID, transportation.getPartialId())
+                                .putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId())
+                                .putLong(Constants.KEY_TRANSPORTATION_STATUS_ID, transportation.getTransportationStatusId())
                                 .putString(Constants.KEY_CURRENT_STATUS_NAME, transportation.getTransportationStatusName())
-                                .putLong(Constants.KEY_PAYMENT_STATUS_ID, transportation.getPaymentStatusId() != null ? transportation.getPaymentStatusId() : 0L)
+                                .putLong(Constants.KEY_PAYMENT_STATUS_ID, transportation.getPaymentStatusId())
                                 .putString(Constants.KEY_CITY_FROM, transportation.getCityFrom())
                                 .putString(Constants.KEY_CITY_TO, transportation.getCityTo())
                                 .putString(Constants.KEY_ARRIVAL_DATE, transportation.getArrivalDate())

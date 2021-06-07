@@ -1,7 +1,6 @@
 package uz.alexits.cargostar.view.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import uz.alexits.cargostar.R;
-import uz.alexits.cargostar.model.transportation.Transportation;
+import uz.alexits.cargostar.entities.transportation.Transportation;
 import uz.alexits.cargostar.view.callback.PartialCallback;
 import uz.alexits.cargostar.view.viewholder.PartialViewHolder;
 
@@ -52,9 +51,7 @@ public class PartialAdapter extends RecyclerView.Adapter<PartialViewHolder> {
             holder.fromTextView.setText(currentTransportation.getCityFrom());
             holder.toTextView.setText(currentTransportation.getCityTo());
 
-            if (invoiceId != null) {
-                holder.transportationIdTextView.setText(String.valueOf(invoiceId));
-            }
+            holder.transportationIdTextView.setText(String.valueOf(invoiceId));
             holder.bind(currentTransportation, callback);
         }
     }

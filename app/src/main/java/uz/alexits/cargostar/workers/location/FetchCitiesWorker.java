@@ -17,14 +17,11 @@ import java.util.List;
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
-import uz.alexits.cargostar.model.location.City;
-import uz.alexits.cargostar.model.location.Country;
-import uz.alexits.cargostar.model.location.Region;
+import uz.alexits.cargostar.entities.location.City;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchCitiesWorker extends Worker {
-    private final int perPage;
     @Nullable private final String login;
     @Nullable private final String password;
     private final String token;
@@ -32,7 +29,7 @@ public class FetchCitiesWorker extends Worker {
 
     public FetchCitiesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
+
         this.login = getInputData().getString(Constants.KEY_LOGIN);
         this.password = getInputData().getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -53,10 +50,10 @@ public class FetchCitiesWorker extends Worker {
             Response<List<City>> response = null;
 
             if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getCities(perPage, lastId);
+                response = RetrofitClient.getInstance(getApplicationContext()).getCities(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
             }
             else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getCities(perPage);
+                response = RetrofitClient.getInstance(getApplicationContext()).getCities(SyncWorkRequest.DEFAULT_PER_PAGE);
             }
 
             if (response.code() == 200) {
