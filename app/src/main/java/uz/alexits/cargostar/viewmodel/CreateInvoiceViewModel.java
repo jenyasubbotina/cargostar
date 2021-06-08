@@ -102,6 +102,15 @@ public class CreateInvoiceViewModel extends InvoiceViewModel {
             Log.e(TAG, "createInvoice(): consignmentList empty");
             return;
         }
+        if (getPackagingId() <= 0) {
+            Log.e(TAG, "createInvoice(): packaging <= 0");
+            return;
+        }
+        if (getTotalPrice() <= 0) {
+            Log.e(TAG, "createInvoice(): totalPrice <= 0");
+            return;
+        }
+
         createInvoiceUUID.setValue(invoiceRepository.createInvoice(
                 getRequestId(), getInvoiceId(), getProviderId(), getPackagingId(), getType(), getPaymentMethod(), getTotalWeight(), getTotalVolume(), getTotalPrice(),
                 senderFirstName, senderMiddleName, senderLastName, senderEmail, senderPhone, senderCountryId, senderCityName, senderAddress, senderZip,

@@ -39,11 +39,11 @@ public class PackagingAndPriceRadioAdapter extends RecyclerView.Adapter<TariffPr
     }
 
     public double getSelectedPrice() {
-        return resultList == null || resultList.isEmpty() || lastCheckedPosition <= 0 ? 0 : resultList.get(lastCheckedPosition).getPrice();
+        return resultList == null || resultList.isEmpty() || lastCheckedPosition < 0 ? 0 : resultList.get(lastCheckedPosition).getPrice();
     }
 
     public long getSelectedPackagingId() {
-        return resultList == null || resultList.isEmpty() || lastCheckedPosition <= 0 ? 0 : resultList.get(lastCheckedPosition).getPackaging().getId();
+        return resultList == null || resultList.isEmpty() || lastCheckedPosition < 0 ? 0 : resultList.get(lastCheckedPosition).getPackaging().getId();
     }
 
     public void setLastCheckedPosition(int lastCheckedPosition) {
@@ -68,11 +68,9 @@ public class PackagingAndPriceRadioAdapter extends RecyclerView.Adapter<TariffPr
         if (currentItem != null) {
             holder.tariffRadioBtn.setText(currentItem.getPackaging().getName());
             holder.priceTextView.setText(context.getString(R.string.rounded_total_price, String.valueOf(currentItem.getPrice())));
-            holder.bindPackagingList(position, currentItem, holder, callback);
+            holder.bindPackagingList(position, currentItem, callback);
 
-            if (lastCheckedPosition > -1) {
-                holder.tariffRadioBtn.setChecked(true);
-            }
+            holder.tariffRadioBtn.setChecked(lastCheckedPosition == position);
         }
     }
 

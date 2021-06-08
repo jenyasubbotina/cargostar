@@ -246,7 +246,7 @@ public class CreateInvoiceParams {
 
     @Expose
     @SerializedName("total_price")
-    private String totalPrice;
+    private double totalPrice;
 
     @Expose
     @SerializedName("provider_id")
@@ -651,11 +651,11 @@ public class CreateInvoiceParams {
         this.packagingId = packagingId;
     }
 
-    public String getTotalPrice() {
+    public double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(final String totalPrice) {
+    public void setTotalPrice(final double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

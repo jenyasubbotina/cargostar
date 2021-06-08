@@ -196,6 +196,7 @@ public class InvoiceViewModel extends CalculatorViewModel {
 
     public void setCurrentPackagingId(final long packagingId) {
         this.currentPackagingId.setValue(packagingId);
+        this.packagingId = packagingId;
     }
 
     public void setSenderCountryId(final long countryId) {

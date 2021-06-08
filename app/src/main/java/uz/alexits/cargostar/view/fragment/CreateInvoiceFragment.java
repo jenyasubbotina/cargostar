@@ -992,7 +992,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                     && paymentMethodRadioGroup.getCheckedRadioButtonId() != cashRadioBtn.getId()
                     && paymentMethodRadioGroup.getCheckedRadioButtonId() != terminalRadioBtn.getId()
                     && paymentMethodRadioGroup.getCheckedRadioButtonId() != transferRadioBtn.getId()
-                    && paymentMethodRadioGroup.getCheckedRadioButtonId() == corporateRadioBtn.getId()) {
+                    && paymentMethodRadioGroup.getCheckedRadioButtonId() != corporateRadioBtn.getId()) {
                 Toast.makeText(requireContext(), "Метод оплаты не выбран", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -1503,9 +1503,9 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
     }
 
     @Override
-    public void onTariffSelected(final int position, final PackagingAndPrice item, final TariffPriceRadioViewHolder holder) {
+    public void onTariffSelected(final int position, final PackagingAndPrice item) {
         createInvoiceViewModel.setCurrentPackagingId(item.getPackaging().getId());
-        //todo: check
+        createInvoiceViewModel.setTotalPrice(item.getPrice());
         packagingAndPriceAdapter.setLastCheckedPosition(position);
         packagingAndPriceAdapter.notifyDataSetChanged();
     }

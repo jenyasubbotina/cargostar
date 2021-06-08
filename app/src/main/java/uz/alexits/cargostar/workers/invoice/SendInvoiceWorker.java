@@ -84,7 +84,7 @@ public class SendInvoiceWorker extends Worker {
 
         this.createInvoiceParams.setTotalWeight(getInputData().getDouble(Constants.KEY_TOTAL_WEIGHT, 0));
         this.createInvoiceParams.setTotalVolume(getInputData().getDouble(Constants.KEY_TOTAL_VOLUME, 0));
-        this.createInvoiceParams.setTotalPrice(getInputData().getString(Constants.KEY_TOTAL_PRICE));
+        this.createInvoiceParams.setTotalPrice(getInputData().getDouble(Constants.KEY_TOTAL_PRICE, 0.0));
         this.createInvoiceParams.setInstructions(getInputData().getString(Constants.KEY_INSTRUCTIONS));
 
         createInvoiceParams.setSenderSignature(Serializer.fileToBase64(getInputData().getString(Constants.KEY_SENDER_SIGNATURE)) == null

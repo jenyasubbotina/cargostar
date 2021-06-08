@@ -21,10 +21,10 @@ public class TariffPriceRadioViewHolder extends RecyclerView.ViewHolder {
         this.priceTextView = itemView.findViewById(R.id.price_text_view);
     }
 
-    public void bindPackagingList(final int position, final PackagingAndPrice item, final TariffPriceRadioViewHolder holder, final TariffCallback callback) {
+    public void bindPackagingList(final int position, final PackagingAndPrice item, final TariffCallback callback) {
         tariffRadioBtn.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                callback.onTariffSelected(position, item, holder);
+                callback.onTariffSelected(position, item);
             }
         });
     }
