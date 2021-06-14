@@ -21,7 +21,7 @@ public interface InvoiceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertInvoice(final Invoice invoice);
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertInvoiceList(final List<Invoice> invoiceList);
 
     @Query("SELECT * FROM invoice ORDER BY id ASC")

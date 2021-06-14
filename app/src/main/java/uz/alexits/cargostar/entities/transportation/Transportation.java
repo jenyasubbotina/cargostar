@@ -3,17 +3,12 @@ package uz.alexits.cargostar.entities.transportation;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "transportation",
-        foreignKeys = {
-                @ForeignKey(entity = TransportationStatus.class, parentColumns = "id", childColumns = "transportation_status_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = { @Index(value = "transportation_status_id"), @Index(value = "invoice_id", unique = true)}
-        )
+@Entity(tableName = "transportation")
 public class Transportation {
     @Expose
     @SerializedName("id")
@@ -269,10 +264,10 @@ public class Transportation {
     public String toString() {
         return "Transportation{" +
                 "id=" + id +
-                ", requestId=" + requestId +
-                ", invoiceId=" + invoiceId +
                 ", providerId=" + providerId +
                 ", courierId=" + courierId +
+                ", invoiceId=" + invoiceId +
+                ", requestId=" + requestId +
                 ", brancheId=" + brancheId +
                 ", transportationStatusId=" + transportationStatusId +
                 ", paymentStatusId=" + paymentStatusId +
@@ -287,6 +282,8 @@ public class Transportation {
                 ", cityFrom='" + cityFrom + '\'' +
                 ", cityTo='" + cityTo + '\'' +
                 ", transportationStatusName='" + transportationStatusName + '\'' +
+                ", transportationType=" + transportationType +
+                ", importStatus='" + importStatus + '\'' +
                 '}';
     }
 }

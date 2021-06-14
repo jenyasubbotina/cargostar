@@ -18,7 +18,6 @@ import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.dao.ConsignmentDao;
 import uz.alexits.cargostar.entities.transportation.Consignment;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.workers.invoice.FetchConsignmentListByInvoiceIdWorker;
 import uz.alexits.cargostar.workers.invoice.FetchConsignmentListByRequestIdWorker;
 
 public class ConsignmentRepository {
@@ -45,26 +44,6 @@ public class ConsignmentRepository {
                 .putLong(Constants.KEY_REQUEST_ID, requestId)
                 .build();
         final OneTimeWorkRequest fetchCargoListRequest = new OneTimeWorkRequest.Builder(FetchConsignmentListByRequestIdWorker.class)
-                .setConstraints(constraints)
-                .setInputData(inputData)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 5*1000L, TimeUnit.MILLISECONDS)
-                .build();
-        WorkManager.getInstance(context).enqueue(fetchCargoListRequest);
-
-        return fetchCargoListRequest.getId();
-    }
-
-    public UUID fetchConsignmentListByInvoiceId(final long invoiceId) {
-        final Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresCharging(false)
-                .setRequiresStorageNotLow(false)
-                .setRequiresDeviceIdle(false)
-                .build();
-        final Data inputData = new Data.Builder()
-                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
-                .build();
-        final OneTimeWorkRequest fetchCargoListRequest = new OneTimeWorkRequest.Builder(FetchConsignmentListByInvoiceIdWorker.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 5*1000L, TimeUnit.MILLISECONDS)

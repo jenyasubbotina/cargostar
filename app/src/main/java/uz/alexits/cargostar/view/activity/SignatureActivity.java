@@ -63,6 +63,13 @@ public class SignatureActivity extends AppCompatActivity {
                 finish();
             }
         });
+        if (!getIntent().getBooleanExtra(Constants.ADDRESSEE_IS_ACCEPTED, false)) {
+            setResult(RESULT_OK, new Intent()
+                    .putExtra(Constants.KEY_INVOICE_ID, getIntent().getLongExtra(Constants.KEY_INVOICE_ID, 0))
+                    .putExtra(Constants.ADDRESSEE_COMMENT, getIntent().getStringExtra(Constants.ADDRESSEE_COMMENT))
+                    .putExtra(Constants.ADDRESSEE_IS_ACCEPTED, getIntent().getBooleanExtra(Constants.ADDRESSEE_IS_ACCEPTED, false)));
+            finish();
+        }
     }
 
     private Bitmap makeScreenshot(final View view) {

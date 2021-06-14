@@ -19,10 +19,13 @@ import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchInvoiceListWorker extends Worker {
+    /* for first time synchronization */
     private String login;
     private String password;
     private final String token;
-    private final long lastId;
+
+    private Integer pageCount;
+    private final Integer perPage;
 
     public FetchInvoiceListWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
@@ -30,12 +33,13 @@ public class FetchInvoiceListWorker extends Worker {
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
-        this.lastId = getInputData().getLong(Constants.LAST_INVOICE_ID, 0L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
             this.password = getInputData().getString(Constants.KEY_PASSWORD);
         }
+        this.perPage = 50;
+        this.pageCount = 1;
     }
 
     @NonNull
@@ -43,44 +47,41 @@ public class FetchInvoiceListWorker extends Worker {
     public ListenableWorker.Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            Response<List<Invoice>> response = null;
 
-            if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getInvoiceList(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
-            }
-            else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getInvoiceList(SyncWorkRequest.DEFAULT_PER_PAGE);
-            }
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllInvoices(): response=" + response.body());
-                    final List<Invoice> invoiceList = response.body();
+            for (int i = 1; i <= pageCount; i++) {
+                final Response<List<Invoice>> response = RetrofitClient.getInstance(getApplicationContext()).getInvoiceList(i, perPage);
 
-                    if (invoiceList == null) {
-                        Log.e(TAG, "fetchAllInvoices(): invoiceList is null");
-                        return Result.failure();
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
+
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
+
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<Invoice> invoiceList = response.body();
+
+                        if (invoiceList == null) {
+                            Log.e(TAG, "fetchAllInvoices(): invoiceList is null");
+                            return Result.failure();
+                        }
+                        LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoiceList(invoiceList);
                     }
-
-                    LocalCache.getInstance(getApplicationContext()).invoiceDao().insertInvoiceList(invoiceList);
-
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 85)
-                            .build();
-
-                    return ListenableWorker.Result.success(outputData);
+                }
+                else {
+                    Log.e(TAG, "doWork(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
             Log.e(TAG, "doWork(): ", e);
-            return ListenableWorker.Result.failure();
+            return Result.failure();
         }
     }
 

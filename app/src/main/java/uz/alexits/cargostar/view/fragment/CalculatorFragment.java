@@ -402,7 +402,6 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
             }
             calculatorViewModel.addConsignment(
                     packagingType.getId(),
-                    packagingType.getName(),
                     !TextUtils.isEmpty(length) ? Double.parseDouble(length) : 0,
                     !TextUtils.isEmpty(width) ? Double.parseDouble(width) : 0,
                     !TextUtils.isEmpty(height) ? Double.parseDouble(height) : 0,

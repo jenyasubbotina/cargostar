@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
@@ -15,14 +13,7 @@ import uz.alexits.cargostar.entities.actor.AddressBook;
 import uz.alexits.cargostar.entities.actor.Client;
 import uz.alexits.cargostar.entities.calculation.Provider;
 
-@Entity(tableName = "invoice",
-        foreignKeys = {
-        @ForeignKey(entity = Client.class, parentColumns = "id", childColumns = "sender_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Provider.class, parentColumns = "id", childColumns = "provider_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Request.class, parentColumns = "id", childColumns = "request_id", onDelete = ForeignKey.SET_NULL, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "sender_id"),
-                @Index(value = "provider_id"),
-                @Index(value = "request_id")})
+@Entity(tableName = "invoice")
 public class Invoice {
     @Expose
     @SerializedName("id")
@@ -120,6 +111,16 @@ public class Invoice {
     @ColumnInfo(name = "addressee_result")
     private final int accepted;
 
+    @Expose
+    @SerializedName("created_at")
+    @ColumnInfo(name = "created_at")
+    private final long createdAt;
+
+    @Expose
+    @SerializedName("updated_at")
+    @ColumnInfo(name = "updated_at")
+    private final long updatedAt;
+
     public Invoice(final long id,
                    final String number,
                    final long senderId,
@@ -137,7 +138,9 @@ public class Invoice {
                    final String comment,
                    final String recipientSignature,
                    final String recipientSignatureDate,
-                   final int accepted) {
+                   final int accepted,
+                   final long createdAt,
+                   final long updatedAt) {
         this.id = id;
         this.number = number;
         this.senderId = senderId;
@@ -156,6 +159,8 @@ public class Invoice {
         this.recipientSignature = recipientSignature;
         this.recipientSignatureDate = recipientSignatureDate;
         this.accepted = accepted;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public long getId() {
@@ -238,6 +243,14 @@ public class Invoice {
         return recipientSignatureDate;
     }
 
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public long getUpdatedAt() {
+        return updatedAt;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -246,12 +259,21 @@ public class Invoice {
                 ", number='" + number + '\'' +
                 ", senderId=" + senderId +
                 ", recipientId=" + recipientId +
-                ", recipientSignature=" + recipientSignature +
                 ", payerId=" + payerId +
                 ", providerId=" + providerId +
                 ", requestId=" + requestId +
+                ", senderSignatureUrl='" + senderSignatureUrl + '\'' +
+                ", recipientSignature='" + recipientSignature + '\'' +
                 ", tariffId=" + tariffId +
                 ", price=" + price +
+                ", paymentMethod=" + paymentMethod +
+                ", fullName='" + fullName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", organization='" + organization + '\'' +
+                ", comment='" + comment + '\'' +
+                ", recipientSignatureDate='" + recipientSignatureDate + '\'' +
+                ", accepted=" + accepted +
                 '}';
     }
 }

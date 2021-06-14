@@ -125,6 +125,16 @@ public class SharedPrefs {
                 && SharedPrefs.getInstance(context).getBoolean(SharedPrefs.IS_LOGGED);
     }
 
+    public void eraseLoginData(final Context context) {
+        SharedPrefs.getInstance(context).putBoolean(SharedPrefs.KEEP_LOGGED, false);
+        SharedPrefs.getInstance(context).putString(Constants.KEY_LOGIN, null);
+        SharedPrefs.getInstance(context).putString(Constants.KEY_PASSWORD, null);
+        SharedPrefs.getInstance(context).putString(Constants.KEY_TOKEN, null);
+        SharedPrefs.getInstance(context).putLong(SharedPrefs.ID, 0);
+        SharedPrefs.getInstance(context).putLong(SharedPrefs.BRANCH_ID, 0);
+        SharedPrefs.getInstance(context).putBoolean(SharedPrefs.IS_LOGGED, false);
+    }
+
     public static final String ID = "id";
     public static final String BRANCH_ID = "branch_id";
     public static final String KEEP_LOGGED = "keep_logged";

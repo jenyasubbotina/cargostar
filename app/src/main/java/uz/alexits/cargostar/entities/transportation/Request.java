@@ -3,23 +3,12 @@ package uz.alexits.cargostar.entities.transportation;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Ignore;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
-
-import uz.alexits.cargostar.entities.location.Country;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "request",
-        foreignKeys = {
-        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "sender_country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "recipient_country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {
-                @Index(value = "sender_country_id"),
-                @Index(value = "recipient_country_id")})
+@Entity(tableName = "request")
 public class Request {
     @Expose
     @SerializedName("id")

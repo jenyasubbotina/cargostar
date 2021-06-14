@@ -19,7 +19,7 @@ public class CreateInvoiceParams {
     private Long invoiceId;
 
     @Expose
-    @SerializedName("courier_id")
+    @SerializedName("employee_id")
     private long courierId;
 
     /* Sender */

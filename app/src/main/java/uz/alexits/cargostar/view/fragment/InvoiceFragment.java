@@ -394,6 +394,7 @@ public class InvoiceFragment extends Fragment implements InvoiceDataCallback {
                         .setRecipientId(invoiceViewModel.getRecipientId())
                         .setPayerId(invoiceViewModel.getPayerId())
                         .setPackagingId(invoiceViewModel.getPackagingId())
+                        .setTotalPrice((float) invoiceViewModel.getTotalPrice())
                         .setProviderId(invoiceViewModel.getCurrentRequest().getValue().getProviderId())
                         .setPaymentMethod(invoiceViewModel.getPaymentMethod())
                         .setDeliveryType(invoiceViewModel.getCurrentRequest().getValue().getDeliveryType())
@@ -670,7 +671,7 @@ public class InvoiceFragment extends Fragment implements InvoiceDataCallback {
                 invoiceViewModel.setCurrentPackagingId(invoice.getTariffId());
                 invoiceViewModel.setPackagingId(invoice.getTariffId());
                 invoiceViewModel.setPaymentMethod(invoice.getPaymentMethod());
-
+                invoiceViewModel.setTotalPrice(invoice.getPrice());
                 itemList.set(53, new InvoiceData(getString(R.string.cost), String.valueOf(invoice.getPrice()), InvoiceData.TYPE_ITEM));
                 adapter.notifyItemChanged(53);
 
@@ -704,7 +705,6 @@ public class InvoiceFragment extends Fragment implements InvoiceDataCallback {
                 int j = 65;
 
                 for (final Consignment consignment : consignmentList) {
-                    consignment.setPackagingType(consignment.getPackagingId() != null ? String.valueOf(consignment.getPackagingId()) : null);
                     itemList.set(j + i, new InvoiceData(getString(R.string.cargo_name), consignment.getName(), InvoiceData.TYPE_ITEM));
                     j++;
                     itemList.set(j + i, new InvoiceData(getString(R.string.cargo_description), consignment.getDescription(), InvoiceData.TYPE_ITEM));

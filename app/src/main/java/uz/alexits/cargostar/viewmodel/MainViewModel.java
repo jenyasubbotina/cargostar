@@ -19,7 +19,7 @@ public class MainViewModel extends HeaderViewModel {
     private final AddressBookRepository addressBookRepository;
     private final TransportationRepository transportationRepository;
 
-    private final MutableLiveData<UUID> scanQrUUID;
+    private MutableLiveData<UUID> scanQrUUID;
     private final MutableLiveData<UUID> fetchLocationDataUUID;
     private final MutableLiveData<UUID> fetchClientListUUID;
     private final MutableLiveData<UUID> fetchAddressBookUUID;
@@ -65,11 +65,11 @@ public class MainViewModel extends HeaderViewModel {
         return Transformations.switchMap(scanQrUUID, input -> WorkManager.getInstance(context).getWorkInfoByIdLiveData(input));
     }
 
-//    public void fetchTransportationByTrackingCode(final String trackingCode) {
-//        scanQrUUID.setValue(transportationRepository.fetchTransportationByTrackingCode(trackingCode));
-//    }
+    public void removeSearchTransportationByQrUUID() {
+        this.scanQrUUID = new MutableLiveData<>();
+    }
 
-    public void searchTransportationByQr(final String qr) {
-        scanQrUUID.setValue(transportationRepository.searchTransportationByQr(qr));
+    public void searchTransportationByQrAndBindRequest(final String qr) {
+        scanQrUUID.setValue(transportationRepository.searchTransportationByQrAndBindRequest(qr));
     }
 }

@@ -30,12 +30,14 @@ public class FetchTransportationStatusesWorker extends Worker {
 
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
+
         this.token = getInputData().getString(Constants.KEY_TOKEN);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
             this.password = getInputData().getString(Constants.KEY_PASSWORD);
         }
+        Log.i(TAG, "FetchTransportationStatusesWorker(): login=" + login + " password=" + password);
     }
 
     @NonNull

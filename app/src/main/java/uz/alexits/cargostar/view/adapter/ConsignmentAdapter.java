@@ -49,7 +49,7 @@ public class ConsignmentAdapter extends RecyclerView.Adapter<ConsignmentViewHold
         final Consignment currentItem = itemList.get(position);
 
         holder.indexTextView.setText(context.getString(R.string.consignment_index, position + 1));
-        holder.packageTypeTextView.setText(currentItem.getPackagingId() != null ? String.valueOf(currentItem.getPackagingId()) : "");
+        holder.packageTypeTextView.setText(String.valueOf(currentItem.getPackagingId()));
         holder.weightTextView.setText(String.valueOf(currentItem.getWeight()));
         holder.dimensionsTextView.setText(currentItem.getDimensions());
 

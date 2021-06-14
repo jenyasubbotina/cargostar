@@ -16,6 +16,7 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.entities.actor.Client;
 import uz.alexits.cargostar.entities.calculation.ZoneSettings;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
@@ -25,8 +26,12 @@ public class FetchZoneSettingsWorker extends Worker {
     private String password;
     private final String token;
 
+    private final Integer perPage;
+    private Integer pageCount;
+
     public FetchZoneSettingsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
+
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -35,43 +40,46 @@ public class FetchZoneSettingsWorker extends Worker {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
             this.password = getInputData().getString(Constants.KEY_PASSWORD);
         }
+        this.perPage = 50;
+        this.pageCount = 1;
     }
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
+    public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<ZoneSettings>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneSettings(SyncWorkRequest.DEFAULT_PER_PAGE);
 
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    final List<ZoneSettings> zoneSettingsList = response.body();
+            for (int i = 1; i <= pageCount; i++) {
+                Response<List<ZoneSettings>> response = RetrofitClient.getInstance(getApplicationContext()).getZoneSettings(i, perPage);
 
-                    //foreign might be null (:facepalm)
-//                    for (final ZoneSettings zoneSettings : zoneSettingsList) {
-//                        Log.i(TAG, "zoneSetting: " + zoneSettings);
-//                        LocalCache.getInstance(getApplicationContext()).zoneDao().insertZoneSettings(zoneSettings);
-//                    }
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
 
-                    LocalCache.getInstance(getApplicationContext()).zoneDao().insertZoneSettingsList(zoneSettingsList);
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
 
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 60).build();
-                    return ListenableWorker.Result.success(outputData);
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<ZoneSettings> zoneSettingsList = response.body();
+
+                        LocalCache.getInstance(getApplicationContext()).zoneDao().insertZoneSettingsList(zoneSettingsList);
+                    }
+                }
+                else {
+                    Log.e(TAG, "fetchZoneSettings(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "fetchAllZoneSettings(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
-            Log.e(TAG, "fetchAllZoneSettings(): ", e);
-            return ListenableWorker.Result.failure();
+            Log.e(TAG, "fetchZoneSettings(): ", e);
+            return Result.failure();
         }
     }
 

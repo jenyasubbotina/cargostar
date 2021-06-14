@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 108,
-    "identityHash": "6bc265c29ffaa937be84312793790494",
+    "version": 111,
+    "identityHash": "f33b47f451f6188f549aa3b3f88ae441",
     "entities": [
       {
         "tableName": "user",
@@ -2455,12 +2455,12 @@
     "views": [
       {
         "viewName": "Import",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT i.id AS invoice_id, i.addressee_full_name, i.addressee_phone, i.addressee_address, i.addressee_company, i.recipient_signature, i.addressee_signature_date, i.addressee_comment, i.addressee_result, t.import_status, t.transportation_type FROM invoice i INNER JOIN transportation t ON i.id = t.invoice_id WHERE t.transportation_type == 2 ORDER BY invoice_id DESC"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT i.id AS invoice_id, i.addressee_full_name, i.addressee_phone, i.addressee_address, i.addressee_company, i.recipient_signature, i.addressee_signature_date, i.addressee_comment, i.addressee_result, t.import_status, t.transportation_type, r.courier_id FROM invoice i INNER JOIN transportation t ON i.id = t.invoice_id INNER JOIN request r ON i.id = r.invoice_id WHERE t.transportation_type == 2 ORDER BY invoice_id DESC"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6bc265c29ffaa937be84312793790494')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f33b47f451f6188f549aa3b3f88ae441')"
     ]
   }
 }

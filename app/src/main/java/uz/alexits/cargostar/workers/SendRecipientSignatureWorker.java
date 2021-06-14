@@ -4,17 +4,20 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import java.io.IOException;
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
+import uz.alexits.cargostar.database.cache.FileManager;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.entities.params.AddresseeParams;
 import uz.alexits.cargostar.entities.transportation.Addressee;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.entities.transportation.Invoice;
 import uz.alexits.cargostar.utils.Constants;
+import uz.alexits.cargostar.utils.Serializer;
 
 public class SendRecipientSignatureWorker extends Worker {
     private final AddresseeParams params;
@@ -28,7 +31,7 @@ public class SendRecipientSignatureWorker extends Worker {
                 getInputData().getString(Constants.ADDRESSEE_ADDRESS),
                 getInputData().getString(Constants.ADDRESSEE_ORGANIZATION),
                 getInputData().getString(Constants.ADDRESSEE_COMMENT),
-                getInputData().getString(Constants.ADDRESSEE_SIGNATURE),
+                getInputData().getString(Constants.ADDRESSEE_SIGNATURE) != null ? Serializer.fileToBase64(getInputData().getString(Constants.ADDRESSEE_SIGNATURE)) : null,
                 getInputData().getString(Constants.ADDRESSEE_SIGNATURE_DATE),
                 getInputData().getBoolean(Constants.ADDRESSEE_IS_ACCEPTED, false));
     }
@@ -65,7 +68,7 @@ public class SendRecipientSignatureWorker extends Worker {
                             invoice.getRecipientSignatureDate(),
                             invoice.getAccepted());
 
-                    return Result.success();
+                    return Result.success(new Data.Builder().putBoolean(Constants.ADDRESSEE_IS_ACCEPTED, params.isAccepted()).build());
                 }
             }
             else {

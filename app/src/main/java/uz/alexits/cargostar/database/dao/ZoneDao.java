@@ -20,13 +20,7 @@ public abstract class ZoneDao {
     abstract void dropZones();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract long[] insertZones(final List<Zone> zoneList);
-
-    @Transaction
-    public long[] insertZonesTransaction(final List<Zone> zoneList) {
-        dropZones();
-        return insertZones(zoneList);
-    }
+    public abstract long[] insertZones(final List<Zone> zoneList);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertZone(final Zone zone);
@@ -43,12 +37,6 @@ public abstract class ZoneDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long[] insertZoneSettingsList(final List<ZoneSettings> zoneSettingsList);
-
-    @Transaction
-    public long[] insertZoneSettingsTransaction(final List<ZoneSettings> zoneSettingsList) {
-        dropZoneSettings();
-        return insertZoneSettingsList(zoneSettingsList);
-    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertZoneSettings(final ZoneSettings zoneSettings);
@@ -73,13 +61,7 @@ public abstract class ZoneDao {
     abstract void dropZoneCountries();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract long[] insertZoneCountries(final List<ZoneCountry> zoneCountries);
-
-    @Transaction
-    public long[] insertZoneCountriesTransaction(final List<ZoneCountry> zoneCountries) {
-        dropZoneCountries();
-        return insertZoneCountries(zoneCountries);
-    }
+    public abstract long[] insertZoneCountries(final List<ZoneCountry> zoneCountries);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long insertZoneCountry(final ZoneCountry zoneCountry);

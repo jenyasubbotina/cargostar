@@ -17,18 +17,21 @@ import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.entities.calculation.Zone;
+import uz.alexits.cargostar.entities.calculation.ZoneSettings;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchZonesWorker extends Worker {
-    private final int perPage;
     private String login;
     private String password;
     private final String token;
 
+    private final Integer perPage;
+    private Integer pageCount;
+
     public FetchZonesWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
+
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
@@ -37,38 +40,46 @@ public class FetchZonesWorker extends Worker {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
             this.password = getInputData().getString(Constants.KEY_PASSWORD);
         }
+        this.perPage = 50;
+        this.pageCount = 1;
     }
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
+    public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<Zone>> response = RetrofitClient.getInstance(getApplicationContext()).getZones(perPage);
 
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllZones(): response=" + response.body());
-                    final List<Zone> zoneList = response.body();
+            for (int i = 1; i <= pageCount; i++) {
+                Response<List<Zone>> response = RetrofitClient.getInstance(getApplicationContext()).getZones(i, perPage);
 
-                    LocalCache.getInstance(getApplicationContext()).zoneDao().insertZonesTransaction(zoneList);
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
 
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 50).build();
-                    return ListenableWorker.Result.success(outputData);
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
+
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<Zone> zoneList = response.body();
+
+                        LocalCache.getInstance(getApplicationContext()).zoneDao().insertZones(zoneList);
+                    }
+                }
+                else {
+                    Log.e(TAG, "fetchZones(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
-            Log.e(TAG, "doWork(): ", e);
-            return ListenableWorker.Result.failure();
+            Log.e(TAG, "fetchZones(): ", e);
+            return Result.failure();
         }
     }
 

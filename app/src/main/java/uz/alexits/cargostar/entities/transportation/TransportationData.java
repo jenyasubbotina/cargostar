@@ -3,8 +3,6 @@ package uz.alexits.cargostar.entities.transportation;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
@@ -12,12 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 import uz.alexits.cargostar.entities.location.TransitPoint;
 
-@Entity(tableName = "transportationData",
-        foreignKeys = {
-                @ForeignKey(entity = TransitPoint.class, parentColumns = "id", childColumns = "transit_point_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = TransportationStatus.class, parentColumns = "id", childColumns = "transportation_status_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE),
-                @ForeignKey(entity = Transportation.class, parentColumns = "id", childColumns = "transportation_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "transit_point_id"), @Index(value = "transportation_status_id"), @Index(value = "transportation_id")})
+@Entity(tableName = "transportationData")
 public class TransportationData {
         @Expose
         @SerializedName("id")

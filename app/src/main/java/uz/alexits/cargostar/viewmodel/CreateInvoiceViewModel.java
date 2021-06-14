@@ -110,7 +110,6 @@ public class CreateInvoiceViewModel extends InvoiceViewModel {
             Log.e(TAG, "createInvoice(): totalPrice <= 0");
             return;
         }
-
         createInvoiceUUID.setValue(invoiceRepository.createInvoice(
                 getRequestId(), getInvoiceId(), getProviderId(), getPackagingId(), getType(), getPaymentMethod(), getTotalWeight(), getTotalVolume(), getTotalPrice(),
                 senderFirstName, senderMiddleName, senderLastName, senderEmail, senderPhone, senderCountryId, senderCityName, senderAddress, senderZip,

@@ -34,36 +34,61 @@ public class ImportAdapter extends RecyclerView.Adapter<ImportAdapter.ImportView
         diffResult.dispatchUpdatesTo(this);
     }
 
-    public List<Import> getImportList() {
-        return importList;
-    }
-
     @NonNull
     @Override
     public ImportViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View root = LayoutInflater.from(context).inflate(R.layout.view_holder_delivery, parent, false);
+        final View root = LayoutInflater.from(context).inflate(R.layout.view_holder_import, parent, false);
         return new ImportViewHolder(root);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ImportViewHolder holder, int position) {
         holder.invoiceIdTextView.setText(context.getString(R.string.delivery_invoice_id, importList.get(position).getInvoiceId()));
-        holder.invoiceIdTextView.setText(context.getString(R.string.delivery_recipient_full_name, importList.get(position).getFullName()));
-        holder.phoneTextView.setText(context.getString(R.string.delivery_recipient_phone, importList.get(position).getPhone()));
-        holder.addressTextView.setText(context.getString(R.string.addressee_address, importList.get(position).getAddress()));
-        holder.organizationTextView.setText(context.getString(R.string.delivery_organization, importList.get(position).getOrganization()));
-        holder.signatureDateTextView.setText(context.getString(R.string.delivery_signature_date, importList.get(position).getRecipientSignatureDate()));
-        holder.commentTextView.setText(context.getString(R.string.delivery_comment, importList.get(position).getComment()));
-        holder.importStatusTextView.setText(importList.get(position).getImportStatus());
 
-        if (importList.get(position).isAccepted()) {
-            holder.acceptedTextView.setText(R.string.accepted);
-            holder.acceptedTextView.setBackgroundResource(R.drawable.bg_green);
+        if (importList.get(position).getTrackingCode() != null) {
+            holder.trackingCodeTextView.setText(context.getString(R.string.tracking_code, importList.get(position).getTrackingCode()));
         }
         else {
-            holder.acceptedTextView.setText(R.string.refused);
-            holder.acceptedTextView.setBackgroundResource(R.drawable.bg_red);
+            holder.trackingCodeTextView.setText(context.getString(R.string.delivery_recipient_full_name, context.getString(R.string.empty)));
         }
+        if (importList.get(position).getFullName() != null) {
+            holder.fullNameTextView.setText(context.getString(R.string.delivery_recipient_full_name, importList.get(position).getFullName()));
+        }
+        else {
+            holder.fullNameTextView.setText(context.getString(R.string.delivery_recipient_full_name, context.getString(R.string.empty)));
+        }
+        if (importList.get(position).getPhone() != null) {
+            holder.phoneTextView.setText(context.getString(R.string.delivery_recipient_phone, importList.get(position).getPhone()));
+        }
+        else {
+            holder.phoneTextView.setText(context.getString(R.string.delivery_recipient_phone, context.getString(R.string.empty)));
+        }
+        if (importList.get(position).getAddress() != null) {
+            holder.addressTextView.setText(context.getString(R.string.addressee_address, importList.get(position).getAddress()));
+        }
+        else {
+            holder.addressTextView.setText(context.getString(R.string.addressee_address, context.getString(R.string.empty)));
+        }
+        if (importList.get(position).getOrganization() != null) {
+            holder.organizationTextView.setText(context.getString(R.string.delivery_organization, importList.get(position).getOrganization()));
+        }
+        else {
+            holder.organizationTextView.setText(context.getString(R.string.delivery_organization, context.getString(R.string.empty)));
+        }
+        if (importList.get(position).getRecipientSignatureDate() != null) {
+            holder.signatureDateTextView.setText(context.getString(R.string.delivery_signature_date, importList.get(position).getRecipientSignatureDate()));
+        }
+        else {
+            holder.signatureDateTextView.setText(context.getString(R.string.delivery_signature_date, context.getString(R.string.empty)));
+        }
+        if (importList.get(position).getComment() == null) {
+            holder.commentTextView.setText(context.getString(R.string.delivery_comment, context.getString(R.string.empty)));
+        }
+        else {
+            holder.commentTextView.setText(context.getString(R.string.delivery_comment, importList.get(position).getComment()));
+        }
+
+        holder.importStatusTextView.setText(importList.get(position).getImportStatus());
         holder.bind(position, importList.get(position), callback);
 
         if (importList.get(position).getImportStatus().equalsIgnoreCase(context.getString(R.string.office))) {
@@ -75,7 +100,7 @@ public class ImportAdapter extends RecyclerView.Adapter<ImportAdapter.ImportView
             return;
         }
         if (importList.get(position).getImportStatus().equalsIgnoreCase(context.getString(R.string.pod))) {
-            holder.importStatusTextView.setBackgroundResource(R.drawable.bg_grey);
+            holder.importStatusTextView.setBackgroundResource(R.drawable.bg_green);
             return;
         }
         if (importList.get(position).getImportStatus().equalsIgnoreCase(context.getString(R.string.nr))) {
@@ -83,7 +108,7 @@ public class ImportAdapter extends RecyclerView.Adapter<ImportAdapter.ImportView
             return;
         }
         if (importList.get(position).getImportStatus().equalsIgnoreCase(context.getString(R.string.ok))) {
-            holder.importStatusTextView.setBackgroundResource(R.drawable.bg_green);
+            holder.importStatusTextView.setBackgroundResource(R.drawable.bg_grey);
         }
     }
 
@@ -94,6 +119,7 @@ public class ImportAdapter extends RecyclerView.Adapter<ImportAdapter.ImportView
 
     static class ImportViewHolder extends RecyclerView.ViewHolder {
         TextView invoiceIdTextView;
+        TextView trackingCodeTextView;
         TextView fullNameTextView;
         TextView phoneTextView;
         TextView addressTextView;
@@ -101,12 +127,12 @@ public class ImportAdapter extends RecyclerView.Adapter<ImportAdapter.ImportView
         TextView signatureDateTextView;
         TextView commentTextView;
         TextView importStatusTextView;
-        TextView acceptedTextView;
 
         public ImportViewHolder(@NonNull View itemView) {
             super(itemView);
 
             invoiceIdTextView = itemView.findViewById(R.id.invoice_id_text_view);
+            trackingCodeTextView = itemView.findViewById(R.id.tracking_code_text_view);
             fullNameTextView = itemView.findViewById(R.id.recipient_full_name_text_view);
             phoneTextView = itemView.findViewById(R.id.recipient_phone_text_view);
             addressTextView = itemView.findViewById(R.id.delivery_address_text_view);
@@ -114,7 +140,6 @@ public class ImportAdapter extends RecyclerView.Adapter<ImportAdapter.ImportView
             signatureDateTextView = itemView.findViewById(R.id.signature_date_text_view);
             commentTextView = itemView.findViewById(R.id.comment_text_view);
             importStatusTextView = itemView.findViewById(R.id.delivery_status_text_view);
-            acceptedTextView = itemView.findViewById(R.id.accepted_refused_text_view);
         }
 
         public void bind(final int position, final Import anImport, final ImportCallback callback) {

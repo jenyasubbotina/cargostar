@@ -25,9 +25,6 @@ import uz.alexits.cargostar.entities.location.TransitPoint;
 import uz.alexits.cargostar.workers.location.FetchCitiesWorker;
 import uz.alexits.cargostar.workers.location.FetchCountriesWorker;
 import uz.alexits.cargostar.workers.location.FetchRegionsWorker;
-import uz.alexits.cargostar.workers.location.GetLastCityId;
-import uz.alexits.cargostar.workers.location.GetLastCountryId;
-import uz.alexits.cargostar.workers.location.GetLastRegionId;
 
 public class LocationRepository {
     private final Context context;
@@ -124,15 +121,6 @@ public class LocationRepository {
                 .setRequiresStorageNotLow(false)
                 .setRequiresDeviceIdle(false)
                 .build();
-        final OneTimeWorkRequest getLastCountryIdRequest = new OneTimeWorkRequest.Builder(GetLastCountryId.class)
-                .setConstraints(dbConstraints)
-                .build();
-        final OneTimeWorkRequest getLastRegionIdRequest = new OneTimeWorkRequest.Builder(GetLastRegionId.class)
-                .setConstraints(dbConstraints)
-                .build();
-        final OneTimeWorkRequest getLastCityIdRequest = new OneTimeWorkRequest.Builder(GetLastCityId.class)
-                .setConstraints(dbConstraints)
-                .build();
         final OneTimeWorkRequest fetchCountryDataRequest = new OneTimeWorkRequest.Builder(FetchCountriesWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
@@ -148,14 +136,8 @@ public class LocationRepository {
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 5*1000L, TimeUnit.MILLISECONDS)
                 .build();
-        final List<OneTimeWorkRequest> chainList = new ArrayList<>();
-        chainList.add(getLastCountryIdRequest);
-        chainList.add(getLastRegionIdRequest);
-        chainList.add(getLastCityIdRequest);
-
         WorkManager.getInstance(context)
-                .beginWith(chainList)
-                .then(fetchCountryDataRequest)
+                .beginWith(fetchCountryDataRequest)
                 .then(fetchRegionDataRequest)
                 .then(fetchCityDataRequest)
                 .enqueue();

@@ -13,7 +13,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.work.WorkInfo;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -171,7 +170,6 @@ public class MainFragment extends Fragment {
         });
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            mainViewModel.fetchLocationData();
             mainViewModel.fetchClientList();
             mainViewModel.fetchAddressBook();
         });
@@ -180,6 +178,8 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mainViewModel.removeSearchTransportationByQrUUID();
 
         /* header */
         mainViewModel.getCourierData(requireContext()).observe(getViewLifecycleOwner(), courier -> {
@@ -226,7 +226,7 @@ public class MainFragment extends Fragment {
             requestSearchEditText.setEnabled(false);
         });
 
-        mainViewModel.getFetchLocationDataResult(requireContext()).observe(getViewLifecycleOwner(), workInfo -> {
+        mainViewModel.getFetchAddressBookResult(requireContext()).observe(getViewLifecycleOwner(), workInfo -> {
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                 swipeRefreshLayout.setRefreshing(false);
                 return;
@@ -244,7 +244,6 @@ public class MainFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(true);
         });
 
-        //todo: review
         mainViewModel.getScanQrResult(requireContext()).observe(getViewLifecycleOwner(), workInfo -> {
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -270,7 +269,7 @@ public class MainFragment extends Fragment {
                 return;
             }
             if (workInfo.getState() == WorkInfo.State.CANCELLED || workInfo.getState() == WorkInfo.State.FAILED) {
-                Toast.makeText(requireContext(), "QR код не найден", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Перевозка уже была привязана " + workInfo.getOutputData().getString(Constants.KEY_TRANSPORTATION_QR), Toast.LENGTH_SHORT).show();
                 swipeRefreshLayout.setRefreshing(false);
                 return;
             }
@@ -287,7 +286,7 @@ public class MainFragment extends Fragment {
         }
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
-                mainViewModel.searchTransportationByQr(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+                mainViewModel.searchTransportationByQrAndBindRequest(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
             }
         }
     }

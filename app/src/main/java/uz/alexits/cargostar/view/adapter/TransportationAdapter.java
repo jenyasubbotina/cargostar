@@ -27,10 +27,10 @@ public class TransportationAdapter extends RecyclerView.Adapter<TransportationVi
     }
 
     public void setTransportationList(final List<Transportation> transportationList) {
-        final TransportationDiffUtil diffUtil = new TransportationDiffUtil(this.transportationList, transportationList);
-        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
+//        final TransportationDiffUtil diffUtil = new TransportationDiffUtil(this.transportationList, transportationList);
+//        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
         this.transportationList = transportationList;
-        diffResult.dispatchUpdatesTo(this);
+//        diffResult.dispatchUpdatesTo(this);
     }
 
     public List<Transportation> getTransportationList() {

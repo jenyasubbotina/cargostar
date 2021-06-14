@@ -21,7 +21,7 @@ public abstract class TransportationDao {
     @Query("DELETE FROM transportation")
     abstract void dropTransportationList();
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract long[] insertTransportationList(final List<Transportation> transportationList);
 
     @Transaction
@@ -33,7 +33,7 @@ public abstract class TransportationDao {
     @Update
     public abstract int updateTransportation(final Transportation transportation);
 
-    @Query("SELECT * FROM transportation WHERE transportation_type != 2 AND qr_code == :qrCode LIMIT 1")
+    @Query("SELECT * FROM transportation WHERE qr_code == :qrCode LIMIT 1")
     public abstract Transportation selectTransportationByQr(final String qrCode);
 
     @Query("SELECT * FROM transportation WHERE transportation_type != 2 ORDER BY id")
@@ -75,4 +75,6 @@ public abstract class TransportationDao {
     @Update
     public abstract int updateTransportationData(final TransportationData transportationData);
 
+    @Query("SELECT * FROM transportation WHERE transportation_type == 2")
+    public abstract LiveData<List<Transportation>> selectTransportationsWithImportType();
 }

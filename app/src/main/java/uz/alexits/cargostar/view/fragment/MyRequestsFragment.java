@@ -14,6 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.work.WorkInfo;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,7 +188,14 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
             requestSearchEditText.setEnabled(false);
         });
 
-        requestsViewModel.getMyRequests().observe(getViewLifecycleOwner(), requestList -> adapter.setMyRequestList(requestList));
+        requestsViewModel.getMyRequests().observe(getViewLifecycleOwner(), requestList -> {
+            for (final Request request : requestList) {
+                Log.i(TAG, "->" + request);
+            }
+            adapter.setMyRequestList(requestList);
+        });
+
+
 
         requestsViewModel.getFetchRequestListResult(requireContext()).observe(getViewLifecycleOwner(), workInfo -> {
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
@@ -215,9 +223,9 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         adapter.notifyItemChanged(position);
         NavHostFragment.findNavController(this).navigate(
                 MyRequestsFragmentDirections.actionMyRequestsFragmentToInvoiceFragment()
-                        .setRequestId(currentItem.getId())
                         .setIsPublic(false)
                         .setIsRequest(true)
+                        .setRequestId(currentItem.getId())
                         .setInvoiceId(currentItem.getInvoiceId())
                         .setCourierId(currentItem.getCourierId())
                         .setProviderId(currentItem.getProviderId())

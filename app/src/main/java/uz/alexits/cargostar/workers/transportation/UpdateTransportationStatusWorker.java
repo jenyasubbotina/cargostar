@@ -21,6 +21,7 @@ import uz.alexits.cargostar.utils.Constants;
 
 public class UpdateTransportationStatusWorker extends Worker {
     private final TransportationStatusParams params;
+    private final boolean result;
 
     public UpdateTransportationStatusWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -29,6 +30,7 @@ public class UpdateTransportationStatusWorker extends Worker {
                 getInputData().getLong(Constants.KEY_TRANSPORTATION_ID, 0L),
                 getInputData().getLong(Constants.KEY_TRANSPORTATION_STATUS_ID, 0L),
                 getInputData().getLong(Constants.KEY_TRANSIT_POINT_ID, 0L));
+        this.result = getInputData().getBoolean(Constants.ADDRESSEE_IS_ACCEPTED, false);
     }
 
     @NonNull
@@ -50,6 +52,9 @@ public class UpdateTransportationStatusWorker extends Worker {
             return Result.failure();
         }
         try {
+            if (!result) {
+                return Result.success(new Data.Builder().putBoolean(Constants.ADDRESSEE_IS_ACCEPTED, false).build());
+            }
             RetrofitClient.getInstance(getApplicationContext()).setServerData(
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_LOGIN),
                     SharedPrefs.getInstance(getApplicationContext()).getString(Constants.KEY_PASSWORD));
@@ -71,14 +76,11 @@ public class UpdateTransportationStatusWorker extends Worker {
                         Log.e(TAG, "updateTransportationStatus(): couldn't insert " + transportation);
                         return Result.failure();
                     }
-                    final Data outputData = new Data.Builder()
-                            .putLong(Constants.KEY_TRANSPORTATION_ID, params.getTransportationId())
+                    return Result.success(new Data.Builder().putLong(Constants.KEY_TRANSPORTATION_ID, params.getTransportationId())
                             .putLong(Constants.KEY_CURRENT_TRANSIT_POINT_ID, transportation.getCurrentTransitionPointId())
                             .putLong(Constants.KEY_CURRENT_STATUS_ID, transportation.getTransportationStatusId())
                             .putString(Constants.KEY_CURRENT_STATUS_NAME, transportation.getTransportationStatusName())
-                            .build();
-
-                    return Result.success(outputData);
+                            .build());
                 }
             }
             else {

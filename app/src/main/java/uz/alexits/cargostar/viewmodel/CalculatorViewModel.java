@@ -336,7 +336,6 @@ public class CalculatorViewModel extends HeaderViewModel {
 
     /* adding consignments to list to calculate transportation price */
     public void addConsignment(final long packagingTypeId,
-                               final String packagingTypeName,
                                final double length,
                                final double width,
                                final double height,
@@ -346,7 +345,6 @@ public class CalculatorViewModel extends HeaderViewModel {
                 lastIndex,
                 0L,
                 packagingTypeId,
-                packagingTypeName,
                 null,
                 null,
                 null,
@@ -380,6 +378,10 @@ public class CalculatorViewModel extends HeaderViewModel {
         }
         if (selectedZoneSettingsList.getValue() == null) {
             Log.e(TAG, "calculateTotalPrice(): zoneSettingsList is undefined");
+            return;
+        }
+        if (selectedZoneSettingsList.getValue().isEmpty()) {
+            Log.e(TAG, "calculateTotalPrice(): zoneSettingsList is empty");
             return;
         }
         if (selectedPackagingList.getValue() == null) {
@@ -454,7 +456,7 @@ public class CalculatorViewModel extends HeaderViewModel {
                 }
                 totalPrice = totalPrice * (selectedProvider.getFuel() + 100) / 100;
                 totalPrice *= (selectedVat.getValue().getVat() + 100) / 100;
-                totalPrice = Math.ceil(totalPrice);
+                totalPrice = (double) Math.round(totalPrice*100) / 100;
             }
             if (correspondingTariff != null) {
                 resultList.add(new PackagingAndPrice(correspondingTariff, totalPrice));

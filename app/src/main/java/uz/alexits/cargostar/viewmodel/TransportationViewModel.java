@@ -24,7 +24,7 @@ public class TransportationViewModel extends HeaderViewModel {
     private final MutableLiveData<Long> selectedTransportationStatusId;
     private final MutableLiveData<Pair<Long, Long>> selectedTransitPointIdAndStatusId;
 
-    private final MutableLiveData<UUID> searchTransportationByQrUUID;
+    private MutableLiveData<UUID> searchTransportationByQrUUID;
     private final MutableLiveData<UUID> fetchTransportationsUUID;
     private final MutableLiveData<UUID> fetchTransitPointsUUID;
     private final MutableLiveData<UUID> fetchTransportationStatusesUUID;
@@ -47,9 +47,7 @@ public class TransportationViewModel extends HeaderViewModel {
     /* Transportation */
 
     public LiveData<List<Transportation>> getTransportationList() {
-        return Transformations.switchMap(selectedTransitPointIdAndStatusId, input -> {
-            return transportationRepository.selectTransportationListByTransitPointAndStatusId(input.first, input.second);
-        });
+        return Transformations.switchMap(selectedTransitPointIdAndStatusId, input -> transportationRepository.selectTransportationListByTransitPointAndStatusId(input.first, input.second));
     }
 
     public LiveData<List<TransitPoint>> getTransitPoints() {
@@ -60,11 +58,11 @@ public class TransportationViewModel extends HeaderViewModel {
         return transportationRepository.selectTransportationStatuses();
     }
 
-    public void searchTransportationByQr(final String qr) {
-        this.searchTransportationByQrUUID.setValue(transportationRepository.searchTransportationByQr(qr));
+    public void searchTransportationByQrAndBindRequest(final String qr) {
+        this.searchTransportationByQrUUID.setValue(transportationRepository.searchTransportationByQrAndBindRequest(qr));
     }
 
-    public void fetchTransportationStatuses() {
+    public void fetchTransportationList() {
         fetchTransportationsUUID.setValue(transportationRepository.fetchTransportationList());
     }
 
@@ -72,7 +70,7 @@ public class TransportationViewModel extends HeaderViewModel {
         fetchTransitPointsUUID.setValue(transportationRepository.fetchTransitPoints());
     }
 
-    public void fetchTransportationList() {
+    public void fetchTransportationStatuses() {
         fetchTransportationStatusesUUID.setValue(transportationRepository.fetchTransportationStatuses());
     }
 
@@ -102,6 +100,10 @@ public class TransportationViewModel extends HeaderViewModel {
         this.selectedTransportationStatusId.setValue(transportationStatus.getId());
         this.selectedTransitPointIdAndStatusId.setValue(new Pair<>(
                 selectedTransitPointId.getValue() != null ? selectedTransitPointId.getValue() : 0, transportationStatus.getId()));
+    }
+
+    public void removeSearchTransportationByQrUUID() {
+        this.searchTransportationByQrUUID = new MutableLiveData<>();
     }
 
     private static final String TAG = TransportationViewModel.class.toString();

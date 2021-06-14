@@ -102,6 +102,8 @@ public class SignInActivity extends AppCompatActivity {
                     SharedPrefs.getInstance(this).putString(Constants.KEY_PASSWORD, password);
                     SharedPrefs.getInstance(this).putString(Constants.KEY_TOKEN, token);
                     SharedPrefs.getInstance(this).putBoolean(SharedPrefs.KEEP_LOGGED, keepLoggingCheckBox.isChecked());
+                    SharedPrefs.getInstance(this).putBoolean(SharedPrefs.IS_LOGGED, true);
+
 
                     startActivity(new Intent(this, MainActivity.class));
                     finish();

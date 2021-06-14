@@ -84,6 +84,11 @@
             android:defaultValue="0L"
             app:nullable="false"/>
         <argument
+            android:name="total_price"
+            app:argType="float"
+            android:defaultValue="0.0"
+            app:nullable="false"/>
+        <argument
             android:name="courier_id"
             app:argType="long"
             android:defaultValue="0L"

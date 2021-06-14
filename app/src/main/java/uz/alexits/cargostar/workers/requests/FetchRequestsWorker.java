@@ -11,6 +11,7 @@ import androidx.work.WorkerParameters;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.entities.location.Branche;
 import uz.alexits.cargostar.entities.transportation.Request;
 
 import java.io.IOException;
@@ -23,60 +24,61 @@ public class FetchRequestsWorker extends Worker {
     private String login;
     private String password;
     private final String token;
-    private final long lastId;
+
+    private final Integer perPage;
+    private Integer pageCount;
 
     public FetchRequestsWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
+
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
-        this.lastId = getInputData().getLong(Constants.LAST_REQUEST_ID, 0L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
             this.password = getInputData().getString(Constants.KEY_PASSWORD);
         }
+        this.perPage = 50;
+        this.pageCount = 1;
     }
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
+    public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            Response<List<Request>> response = null;
 
-            if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
-            }
-            else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(SyncWorkRequest.DEFAULT_PER_PAGE);
-            }
+            for (int i = 1; i <= pageCount; i++) {
+                Response<List<Request>> response = RetrofitClient.getInstance(getApplicationContext()).getPublicRequests(i, perPage);
 
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllRequests(): response=" + response.body());
-                    final List<Request> publicRequestList = response.body();
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
 
-                    if (publicRequestList != null) {
-                        LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(publicRequestList);
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
+
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<Request> requestList = response.body();
+
+                        LocalCache.getInstance(getApplicationContext()).requestDao().insertRequests(requestList);
                     }
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 70)
-                            .build();
-                    return ListenableWorker.Result.success(outputData);
+                }
+                else {
+                    Log.e(TAG, "fetchRequestList(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "fetchRequests(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
-            Log.e(TAG, "fetchRequests(): ", e);
-            return ListenableWorker.Result.failure();
+            Log.e(TAG, "fetchRequestList(): ", e);
+            return Result.failure();
         }
     }
 

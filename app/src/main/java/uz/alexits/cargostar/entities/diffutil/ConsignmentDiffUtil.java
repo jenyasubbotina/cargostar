@@ -50,9 +50,6 @@ public class ConsignmentDiffUtil extends DiffUtil.Callback {
         if (oldList.get(oldItemPosition).getQr() == null || newList.get(newItemPosition).getQr() == null) {
             return false;
         }
-        if (oldList.get(oldItemPosition).getPackagingType() == null || newList.get(newItemPosition).getPackagingType() == null) {
-            return false;
-        }
         if (!oldList.get(oldItemPosition).getName().equals(newList.get(newItemPosition).getName())) {
             return false;
         }
@@ -77,15 +74,15 @@ public class ConsignmentDiffUtil extends DiffUtil.Callback {
         if (!oldList.get(oldItemPosition).getDescription().equals( newList.get(newItemPosition).getDescription())) {
             return false;
         }
-        if (!oldList.get(oldItemPosition).getPackagingType().equals( newList.get(newItemPosition).getPackagingType())) {
+        if (oldList.get(oldItemPosition).getPackagingId() == newList.get(newItemPosition).getPackagingId()) {
             return false;
         }
         if (!oldList.get(oldItemPosition).getQr().equals( newList.get(newItemPosition).getQr())) {
             return false;
         }
-        if (!oldList.get(oldItemPosition).getRequestId().equals(newList.get(newItemPosition).getRequestId())) {
+        if (oldList.get(oldItemPosition).getRequestId() == newList.get(newItemPosition).getRequestId()) {
             return false;
         }
-        return oldList.get(oldItemPosition).getPackagingId().equals(newList.get(newItemPosition).getPackagingId());
+        return oldList.get(oldItemPosition).getPackagingId() == newList.get(newItemPosition).getPackagingId();
     }
 }

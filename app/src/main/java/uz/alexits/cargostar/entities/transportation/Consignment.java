@@ -3,16 +3,12 @@ package uz.alexits.cargostar.entities.transportation;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "consignment", foreignKeys = {
-        @ForeignKey(entity = Request.class, parentColumns = "id", childColumns = "request_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "request_id")})
+@Entity(tableName = "consignment")
 public class Consignment {
     @Expose
     @SerializedName("id")
@@ -23,22 +19,17 @@ public class Consignment {
     @Expose
     @SerializedName("request_id")
     @ColumnInfo(name = "request_id")
-    private final Long requestId;
+    private final long requestId;
 
     @Expose
     @SerializedName("packaging_id")
     @ColumnInfo(name = "packaging_id")
-    private final Long packagingId;
+    private final long packagingId;
 
     @Expose
     @SerializedName("pack")
     @ColumnInfo(name = "dimensions")
     private final String dimensions;
-
-    @Expose
-    @SerializedName("packaging-type")
-    @ColumnInfo(name = "packaging_type")
-    private String packagingType;
 
     @Expose
     @SerializedName("name")
@@ -80,9 +71,8 @@ public class Consignment {
     private String qr;
 
     public Consignment(final long id,
-                       final Long requestId,
-                       final Long packagingId,
-                       final String packagingType,
+                       final long requestId,
+                       final long packagingId,
                        final String name,
                        final String description,
                        final String cost,
@@ -95,7 +85,6 @@ public class Consignment {
         this.id = id;
         this.requestId = requestId;
         this.packagingId = packagingId;
-        this.packagingType = packagingType;
         this.name = name;
         this.description = description;
         this.cost = cost;
@@ -111,12 +100,8 @@ public class Consignment {
         return id;
     }
 
-    public Long getRequestId() {
+    public long getRequestId() {
         return requestId;
-    }
-
-    public String getPackagingType() {
-        return packagingType;
     }
 
     public String getName() {
@@ -159,12 +144,8 @@ public class Consignment {
         this.qr = qr;
     }
 
-    public Long getPackagingId() {
+    public long getPackagingId() {
         return packagingId;
-    }
-
-    public void setPackagingType(String packagingType) {
-        this.packagingType = packagingType;
     }
 
     @NonNull
@@ -173,7 +154,6 @@ public class Consignment {
         return "Consignment{" +
                 "id=" + id +
                 ", requestId=" + requestId +
-                ", packagingType='" + packagingType + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", cost=" + cost +

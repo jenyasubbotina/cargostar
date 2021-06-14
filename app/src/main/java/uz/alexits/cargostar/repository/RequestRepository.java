@@ -21,11 +21,11 @@ import uz.alexits.cargostar.database.dao.RequestDao;
 import uz.alexits.cargostar.entities.transportation.Request;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.invoice.FetchConsignmentListByRequestIdWorker;
+import uz.alexits.cargostar.workers.invoice.GetInvoiceDataWorker;
 import uz.alexits.cargostar.workers.invoice.SearchRequestWorker;
 import uz.alexits.cargostar.workers.requests.BindRequestWorker;
 import uz.alexits.cargostar.workers.requests.FetchRequestDataWorker;
 import uz.alexits.cargostar.workers.requests.FetchRequestsWorker;
-import uz.alexits.cargostar.workers.requests.GetLastRequestId;
 import uz.alexits.cargostar.workers.requests.GetRequestDataWorker;
 import uz.alexits.cargostar.workers.requests.ReadRequestWorker;
 
@@ -148,17 +148,11 @@ public class RequestRepository {
                 .setRequiresStorageNotLow(false)
                 .setRequiresDeviceIdle(false)
                 .build();
-        final OneTimeWorkRequest getLastIdRequest = new OneTimeWorkRequest.Builder(GetLastRequestId.class)
-                .setConstraints(dbConstraints)
-                .build();
         final OneTimeWorkRequest fetchRequestsRequest = new OneTimeWorkRequest.Builder(FetchRequestsWorker.class)
                 .setConstraints(constraints)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 5*1000L, TimeUnit.MILLISECONDS)
                 .build();
-        WorkManager.getInstance(context)
-                .beginWith(getLastIdRequest)
-                .then(fetchRequestsRequest)
-                .enqueue();
+        WorkManager.getInstance(context).enqueue(fetchRequestsRequest);
         return fetchRequestsRequest.getId();
     }
 
@@ -173,6 +167,24 @@ public class RequestRepository {
                 .putLong(Constants.KEY_REQUEST_ID, requestId)
                 .build();
         final OneTimeWorkRequest getRequestRequest = new OneTimeWorkRequest.Builder(GetRequestDataWorker.class)
+                .setConstraints(constraints)
+                .setInputData(inputData)
+                .build();
+        WorkManager.getInstance(context).enqueue(getRequestRequest);
+        return getRequestRequest.getId();
+    }
+
+    public UUID selectRequestByInvoiceId(long invoiceId) {
+        final Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+        final Data inputData = new Data.Builder()
+                .putLong(Constants.KEY_INVOICE_ID, invoiceId)
+                .build();
+        final OneTimeWorkRequest getRequestRequest = new OneTimeWorkRequest.Builder(GetInvoiceDataWorker.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .build();

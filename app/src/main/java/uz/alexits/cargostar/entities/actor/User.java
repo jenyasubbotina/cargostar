@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
@@ -13,11 +11,7 @@ import com.google.gson.annotations.SerializedName;
 
 import uz.alexits.cargostar.entities.location.Country;
 
-@Entity(tableName = "user",
-        foreignKeys = {
-        @ForeignKey(entity = Country.class, parentColumns = "id", childColumns = "country_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {
-        @Index(value = {"country_id"}), @Index(value = "email")})
+@Entity(tableName = "user")
 public abstract class User {
     @Expose
     @SerializedName("id")

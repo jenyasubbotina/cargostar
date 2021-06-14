@@ -1,5 +1,6 @@
 package uz.alexits.cargostar.entities.transportation;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.DatabaseView;
 
@@ -16,12 +17,18 @@ import com.google.gson.annotations.SerializedName;
         "i.addressee_comment, " +
         "i.addressee_result, " +
         "t.import_status, " +
-        "t.transportation_type " +
-        "FROM invoice i INNER JOIN transportation t ON i.id = t.invoice_id " +
+        "t.transportation_type, " +
+        "t.tracking_code, " +
+        "r.courier_id, " +
+        "i.created_at " +
+        "FROM invoice i INNER JOIN transportation t ON i.id = t.invoice_id INNER JOIN request r ON i.id = r.invoice_id " +
         "WHERE t.transportation_type == 2 ORDER BY invoice_id DESC")
 public class Import {
     @ColumnInfo(name = "invoice_id")
     private final long invoiceId;
+
+    @ColumnInfo(name = "tracking_code")
+    private final String trackingCode;
 
     @ColumnInfo(name = "addressee_full_name")
     private final String fullName;
@@ -45,7 +52,7 @@ public class Import {
     private final String recipientSignatureDate;
 
     @ColumnInfo(name = "addressee_result")
-    private final boolean accepted;
+    private final int accepted;
 
     @ColumnInfo(name = "transportation_type")
     private final int transportationType;
@@ -53,7 +60,14 @@ public class Import {
     @ColumnInfo(name = "import_status")
     private final String importStatus;
 
+    @ColumnInfo(name = "courier_id")
+    private final long courierId;
+
+    @ColumnInfo(name = "created_at")
+    private final long createdAt;
+
     public Import(final long invoiceId,
+                  final String trackingCode,
                   final String fullName,
                   final String phone,
                   final String address,
@@ -61,10 +75,13 @@ public class Import {
                   final String comment,
                   final String recipientSignature,
                   final String recipientSignatureDate,
-                  final boolean accepted,
+                  final int accepted,
                   final int transportationType,
-                  final String importStatus) {
+                  final String importStatus,
+                  final long courierId,
+                  final long createdAt) {
         this.invoiceId = invoiceId;
+        this.trackingCode = trackingCode;
         this.fullName = fullName;
         this.phone = phone;
         this.address = address;
@@ -75,10 +92,16 @@ public class Import {
         this.accepted = accepted;
         this.transportationType = transportationType;
         this.importStatus = importStatus;
+        this.courierId = courierId;
+        this.createdAt = createdAt;
     }
 
     public long getInvoiceId() {
         return invoiceId;
+    }
+
+    public String getTrackingCode() {
+        return trackingCode;
     }
 
     public String getFullName() {
@@ -109,7 +132,7 @@ public class Import {
         return recipientSignatureDate;
     }
 
-    public boolean isAccepted() {
+    public int getAccepted() {
         return accepted;
     }
 
@@ -119,5 +142,34 @@ public class Import {
 
     public String getImportStatus() {
         return importStatus;
+    }
+
+    public long getCourierId() {
+        return courierId;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Import{" +
+                "invoiceId=" + invoiceId +
+                ", trackingCode=" + trackingCode + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", organization='" + organization + '\'' +
+                ", comment='" + comment + '\'' +
+                ", recipientSignature='" + recipientSignature + '\'' +
+                ", recipientSignatureDate='" + recipientSignatureDate + '\'' +
+                ", accepted=" + accepted +
+                ", transportationType=" + transportationType +
+                ", importStatus='" + importStatus + '\'' +
+                ", courierId=" + courierId +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

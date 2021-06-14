@@ -58,4 +58,7 @@ public abstract class RequestDao {
 
     @Query("SELECT * FROM request WHERE id == :requestId LIMIT 1")
     public abstract Request getRequest(final long requestId);
+
+    @Query("SELECT * FROM request WHERE invoice_id == :invoiceId LIMIT 1")
+    public abstract Request getRequestByInvoiceId(long invoiceId);
 }

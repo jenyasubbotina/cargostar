@@ -219,6 +219,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
             createInvoiceViewModel.setProviderId(CreateInvoiceFragmentArgs.fromBundle(getArguments()).getProviderId());
             createInvoiceViewModel.setSelectedType(CreateInvoiceFragmentArgs.fromBundle(getArguments()).getDeliveryType());
             createInvoiceViewModel.setPackagingId(CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPackagingId());
+            createInvoiceViewModel.setTotalPrice(CreateInvoiceFragmentArgs.fromBundle(getArguments()).getTotalPrice());
             createInvoiceViewModel.setPaymentMethod(CreateInvoiceFragmentArgs.fromBundle(getArguments()).getPaymentMethod());
         }
     }
@@ -368,6 +369,15 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
             createInvoiceBtn.setText(R.string.create_invoice);
         }
         if (createInvoiceViewModel.getProviderId() > 0) {
+            if (createInvoiceViewModel.getProviderId() == 4) {
+                fedexRadioBtn.setChecked(true);
+            }
+            else if (createInvoiceViewModel.getProviderId() == 5) {
+                tntRadioBtn.setChecked(true);
+            }
+            else if (createInvoiceViewModel.getProviderId() == 6) {
+                cargostarRadioBtn.setChecked(true);
+            }
             cargostarCardView.setEnabled(false);
             tntCardView.setEnabled(false);
             fedexCardView.setEnabled(false);
@@ -386,6 +396,23 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
             packagingTypeSpinner.setEnabled(false);
         }
         if (createInvoiceViewModel.getPaymentMethod() > 0) {
+            switch (createInvoiceViewModel.getPaymentMethod()) {
+                case 1:
+                    onlineRadioBtn.setChecked(true);
+                    break;
+                case 2:
+                    cashRadioBtn.setChecked(true);
+                    break;
+                case 3:
+                    terminalRadioBtn.setChecked(true);
+                    break;
+                case 4:
+                    transferRadioBtn.setChecked(true);
+                    break;
+                case 5:
+                    corporateRadioBtn.setChecked(true);
+                    break;
+            }
             cashRadioBtn.setEnabled(false);
             corporateRadioBtn.setEnabled(false);
             transferRadioBtn.setEnabled(false);
@@ -475,7 +502,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
         });
 
         senderSignatureImageView.setOnClickListener(v -> {
-            startActivityForResult(new Intent(requireContext(), SignatureActivity.class), IntentConstants.REQUEST_SENDER_SIGNATURE);
+            startActivityForResult(new Intent(requireContext(), SignatureActivity.class).putExtra(Constants.ADDRESSEE_IS_ACCEPTED, true), IntentConstants.REQUEST_SENDER_SIGNATURE);
         });
 
         cargostarCardView.setOnClickListener(v -> cargostarRadioBtn.setChecked(true));
@@ -611,6 +638,23 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                 }
                 final Country payerCountry = (Country) parent.getSelectedItem();
                 createInvoiceViewModel.setPayerCountry(payerCountry);
+
+                if (payerCountry.getId() != 191 && recipientIsPayerRadioBtn.isChecked()) {
+                    paymentMethodRadioGroup.setVisibility(View.GONE);
+                    onlineRadioBtn.setVisibility(View.GONE);
+                    cashRadioBtn.setVisibility(View.GONE);
+                    terminalRadioBtn.setVisibility(View.GONE);
+                    transferRadioBtn.setVisibility(View.GONE);
+                    corporateRadioBtn.setVisibility(View.GONE);
+                }
+                else {
+                    paymentMethodRadioGroup.setVisibility(View.VISIBLE);
+                    onlineRadioBtn.setVisibility(View.VISIBLE);
+                    cashRadioBtn.setVisibility(View.VISIBLE);
+                    terminalRadioBtn.setVisibility(View.VISIBLE);
+                    transferRadioBtn.setVisibility(View.VISIBLE);
+                    corporateRadioBtn.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -725,6 +769,23 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                         senderTntEditText.getText().toString().trim(),
                         senderFedexEditText.getText().toString().trim(),
                         senderCompanyEditText.getText().toString().trim(),null, null, null, 0));
+
+                if (((Country) payerCountrySpinner.getSelectedItem()).getId() != 191) {
+                    paymentMethodRadioGroup.setVisibility(View.GONE);
+                    onlineRadioBtn.setVisibility(View.GONE);
+                    cashRadioBtn.setVisibility(View.GONE);
+                    terminalRadioBtn.setVisibility(View.GONE);
+                    transferRadioBtn.setVisibility(View.GONE);
+                    corporateRadioBtn.setVisibility(View.GONE);
+                }
+                else {
+                    paymentMethodRadioGroup.setVisibility(View.VISIBLE);
+                    onlineRadioBtn.setVisibility(View.VISIBLE);
+                    cashRadioBtn.setVisibility(View.VISIBLE);
+                    terminalRadioBtn.setVisibility(View.VISIBLE);
+                    transferRadioBtn.setVisibility(View.VISIBLE);
+                    corporateRadioBtn.setVisibility(View.VISIBLE);
+                }
                 return;
             }
             if (checkedId == recipientIsPayerRadioBtn.getId()) {
@@ -817,7 +878,6 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
             }
             createInvoiceViewModel.addConsignment(
                     packagingType.getId(),
-                    packagingType.getName(),
                     !TextUtils.isEmpty(length) ? Double.parseDouble(length) : 0,
                     !TextUtils.isEmpty(width) ? Double.parseDouble(width) : 0,
                     !TextUtils.isEmpty(height) ? Double.parseDouble(height) : 0,
@@ -980,19 +1040,19 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                     return;
                 }
             }
-            if (packagingAndPriceAdapter.getSelectedPackagingId() <= 0) {
+            if (createInvoiceViewModel.getPackagingId() <= 0 && packagingAndPriceAdapter.getSelectedPackagingId() <= 0) {
                 Toast.makeText(requireContext(), "Выберите тариф", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (packagingAndPriceAdapter.getSelectedPrice() <= 0) {
+            if (createInvoiceViewModel.getTotalPrice() <= 0 && packagingAndPriceAdapter.getSelectedPrice() <= 0) {
                 Toast.makeText(requireContext(), "Выберите тариф", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (paymentMethodRadioGroup.getCheckedRadioButtonId() != onlineRadioBtn.getId()
+            if (createInvoiceViewModel.getPaymentMethod() <=0 && (paymentMethodRadioGroup.getCheckedRadioButtonId() != onlineRadioBtn.getId()
                     && paymentMethodRadioGroup.getCheckedRadioButtonId() != cashRadioBtn.getId()
                     && paymentMethodRadioGroup.getCheckedRadioButtonId() != terminalRadioBtn.getId()
                     && paymentMethodRadioGroup.getCheckedRadioButtonId() != transferRadioBtn.getId()
-                    && paymentMethodRadioGroup.getCheckedRadioButtonId() != corporateRadioBtn.getId()) {
+                    && paymentMethodRadioGroup.getCheckedRadioButtonId() != corporateRadioBtn.getId())) {
                 Toast.makeText(requireContext(), "Метод оплаты не выбран", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -1038,7 +1098,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                     payerTntTax,
                     payerFedexTax,
                     payerCompany,
-                    Double.parseDouble(discount),
+                    TextUtils.isEmpty(discount) ? 0.0 : Double.parseDouble(discount),
                     payerInn,
                     contractNumber,
                     instructions);
@@ -1173,6 +1233,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
         });
 
         createInvoiceViewModel.getReceivedConsignmentList().observe(getViewLifecycleOwner(), consignmentList -> {
+            Log.i(TAG, "onActivityCreated(): consignmentList=" + consignmentList);
             createInvoiceViewModel.setCurrentConsignmentList(consignmentList);
             consignmentAdapter.setItemList(consignmentList);
             consignmentAdapter.notifyDataSetChanged();
@@ -1193,6 +1254,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
         });
 
         createInvoiceViewModel.getZoneSettingsList().observe(getViewLifecycleOwner(), zoneSettingsList -> {
+            Log.i(TAG, "zoneSettingsList: " + zoneSettingsList);
             createInvoiceViewModel.setSelectedZoneSettingsList(zoneSettingsList);
         });
 

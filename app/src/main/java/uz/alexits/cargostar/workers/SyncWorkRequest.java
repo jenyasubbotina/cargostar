@@ -33,6 +33,8 @@ import uz.alexits.cargostar.workers.requests.InsertRequestWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationStatusesWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationsWorker;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -182,6 +184,24 @@ public class SyncWorkRequest {
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, DEFAULT_DELAY, TimeUnit.MILLISECONDS)
                 .addTag("synchronize")
                 .build();
+        final List<OneTimeWorkRequest> locationChainList = new ArrayList<>();
+        locationChainList.add(fetchCountriesRequest);
+        locationChainList.add(fetchRegionsRequest);
+        locationChainList.add(fetchCitiesRequest);
+        locationChainList.add(fetchBranchesRequest);
+        locationChainList.add(fetchTransitPointsRequest);
+
+        final List<OneTimeWorkRequest> packagingChainList = new ArrayList<>();
+        packagingChainList.add(fetchProviderListRequest);
+        packagingChainList.add(fetchPackagingRequest);
+        packagingChainList.add(fetchPackagingTypesRequest);
+        packagingChainList.add(fetchVatRequest);
+
+        final List<OneTimeWorkRequest> zoneChainList = new ArrayList<>();
+        zoneChainList.add(fetchZonesRequest);
+        zoneChainList.add(fetchZoneCountriesRequest);
+        zoneChainList.add(fetchZoneSettingsRequest);
+
         final WorkContinuation syncChain = WorkManager.getInstance(context)
                 .beginWith(fetchCountriesRequest)
                 .then(fetchRegionsRequest)

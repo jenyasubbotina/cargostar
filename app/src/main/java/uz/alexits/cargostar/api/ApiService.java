@@ -47,46 +47,35 @@ import uz.alexits.cargostar.entities.transportation.TransportationStatus;
 public interface ApiService {
     /* Location data */
     @GET("country")
-    Call<List<Country>> getCountries(@Query("per-page") final int perPage);
-
-    @GET("country/new/")
-    Call<List<Country>> getCountries(@Query("per-page") final int perPage, @Query("id") final long lastId);
+    Call<List<Country>> getCountries(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("region")
-    Call<List<Region>> getRegions(@Query("per-page") final int perPage);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("region/new/")
-    Call<List<Region>> getRegions(@Query("per-page") final int perPage, @Query("id") final long lastId);
+    Call<List<Region>> getRegions(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers({"Content-Type: application/json; charset=utf-8;"})
     @GET("city")
-    Call<List<City>> getCities(@Query("per-page") final int perPage);
-
-    @Headers({"Content-Type: application/json; charset=utf-8;"})
-    @GET("city/new/")
-    Call<List<City>> getCities(@Query("per-page") final int perPage, @Query("id") final long lastId);
+    Call<List<City>> getCities(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers({"Content-Type: application/json; charset=utf-8;"})
     @GET("branche")
-    Call<List<Branche>> getBranches(@Query("per-page") final int perPage);
+    Call<List<Branche>> getBranches(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transit-point")
-    Call<List<TransitPoint>> getTransitPoints(@Query("per-page") final int perPage);
+    Call<List<TransitPoint>> getTransitPoints(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("zone")
-    Call<List<Zone>> getZones(@Query("per-page") final int perPage);
+    Call<List<Zone>> getZones(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("zone-country")
-    Call<List<ZoneCountry>> getZoneCountries(@Query("per-page") final int perPage);
+    Call<List<ZoneCountry>> getZoneCountries(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("zone-setting")
-    Call<List<ZoneSettings>> getZoneSettings(@Query("per-page") final int perPage);
+    Call<List<ZoneSettings>> getZoneSettings(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("setting")
@@ -124,12 +113,8 @@ public interface ApiService {
     Call<Client> getClient(@Query("id") final long clientId);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("client/new")
-    Call<List<Client>> getClients(@Query("per-page") final int perPage, @Query("id") final long lastId);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("client")
-    Call<List<Client>> getClients(@Query("per-page") final int perPage);
+    Call<List<Client>> getClients(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     /* Address Book */
     @Headers("Content-Type: application/json; charset=utf-8;")
@@ -138,24 +123,16 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("address-book")
-    Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("address-book/new")
-    Call<List<AddressBook>> getAddressBook(@Query("per-page") final int perPage, @Query("id") final long lastId);
+    Call<List<AddressBook>> getAddressBook(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     /* Requests */
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request")
-    Call<List<Request>> getPublicRequests(@Query("per-page") final int perPage);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("request/new")
-    Call<List<Request>> getPublicRequests(@Query("per-page") final int perPage, @Query("id") final long lastId);
+    Call<List<Request>> getPublicRequests(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request/employee")
-    Call<List<Request>> getMyRequests(@Query("per-page") final int perPage, @Query("id") final long courierId);
+    Call<List<Request>> getMyRequests(@Query("page") final Integer page, @Query("per-page") final Integer perPage, @Query("id") final long courierId);
 
     @Headers("Content-type: application/json; charset=utf-8;")
     @PUT("request/update")
@@ -176,11 +153,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("invoice")
-    Call<List<Invoice>> getInvoiceList(@Query("per-page") final int perPage);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("invoice/new")
-    Call<List<Invoice>> getInvoiceList(@Query("per-page") final int perPage, @Query("id") final long lastId);
+    Call<List<Invoice>> getInvoiceList(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     /* Transportation */
     @Headers("Content-Type: application/json; charset=utf-8;")
@@ -193,11 +166,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("transportation")
-    Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("transportation/new")
-    Call<List<Transportation>> getCurrentTransportations(@Query("per-page") final int perPage, @Query("id") final long lastId);
+    Call<List<Transportation>> getCurrentTransportations(@Query("page") final Integer page, @Query("per-page") final Integer perPage);
 
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("partial")
@@ -236,8 +205,4 @@ public interface ApiService {
     @Headers("Content-Type: application/json; charset=utf-8;")
     @GET("request/partial")
     Call<List<Consignment>> getCargoListByRequestId(@Query("id") final long requestId);
-
-    @Headers("Content-Type: application/json; charset=utf-8;")
-    @GET("client")
-    Call<List<Client>> getAllCustomers(@Query("per-page") final int perPage);
 }

@@ -12,64 +12,76 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import uz.alexits.cargostar.database.cache.LocalCache;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.entities.location.Branche;
 import uz.alexits.cargostar.api.RetrofitClient;
 
 import java.io.IOException;
 import java.util.List;
 import retrofit2.Response;
+import uz.alexits.cargostar.entities.location.City;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchBranchesWorker extends Worker {
-    private final int perPage;
-    @Nullable private final String login;
-    @Nullable private final String password;
+    private String login;
+    private String password;
     private final String token;
+
+    private final Integer perPage;
+    private Integer pageCount;
 
     public FetchBranchesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.perPage = getInputData().getInt(SyncWorkRequest.KEY_PER_PAGE, SyncWorkRequest.DEFAULT_PER_PAGE);
-        this.login = getInputData().getString(Constants.KEY_LOGIN);
-        this.password = getInputData().getString(Constants.KEY_PASSWORD);
+
+        this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
+        this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
+
+        if (login == null || password == null) {
+            this.login = getInputData().getString(Constants.KEY_LOGIN);
+            this.password = getInputData().getString(Constants.KEY_PASSWORD);
+        }
+        this.perPage = 50;
+        this.pageCount = 1;
     }
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
-        if (login == null || password == null) {
-            Log.e(TAG, "getBranches(): login or password is empty");
-            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
-            return Result.failure();
-        }
-
+    public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            final Response<List<Branche>> response = RetrofitClient.getInstance(getApplicationContext()).getBranches(perPage);
 
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    final List<Branche> brancheList = response.body();
+            for (int i = 1; i <= pageCount; i++) {
+                Response<List<Branche>> response = RetrofitClient.getInstance(getApplicationContext()).getBranches(i, perPage);
 
-                    LocalCache.getInstance(getApplicationContext()).locationDao().insertBranches(brancheList);
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
 
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 25).build();
-                    return ListenableWorker.Result.success(outputData);
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
+
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<Branche> brancheList = response.body();
+
+                        LocalCache.getInstance(getApplicationContext()).locationDao().insertBranches(brancheList);
+                    }
+                }
+                else {
+                    Log.e(TAG, "fetchBranches(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "doWork(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
-            Log.e(TAG, "doWork(): ", e);
-            return ListenableWorker.Result.failure();
+            Log.e(TAG, "fetchBranches(): ", e);
+            return Result.failure();
         }
     }
 

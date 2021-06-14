@@ -192,4 +192,6 @@ public class Constants {
     public static final String ADDRESSEE_IS_ACCEPTED = "addressee_is_accepted";
     public static final String LAST_INVOICE_ID = "last_invoice_id";
     public static final String SCAN_TYPE = "scan_type";
+    public static final String TRANSPORTATION_TYPE = "transportation_type";
+    public static final String IMPORT_STATUS = "import_status";
 }

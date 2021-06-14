@@ -4,16 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Entity(tableName = "packagingType",
-        foreignKeys = {@ForeignKey(entity = Packaging.class, parentColumns = "id", childColumns = "packaging_id", onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)},
-        indices = {@Index(value = "packaging_id")})
+@Entity(tableName = "packagingType")
 public class PackagingType {
     @Expose
     @SerializedName("id")

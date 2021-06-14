@@ -35,30 +35,47 @@ public class ImportDiffUtil extends DiffUtil.Callback {
         if (oldList.get(oldItemPosition).getInvoiceId() != newList.get(newItemPosition).getInvoiceId()) {
             return false;
         }
-        if (!oldList.get(oldItemPosition).getImportStatus().equals(newList.get(newItemPosition).getImportStatus())) {
-            return false;
-        }
         if (oldList.get(oldItemPosition).getTransportationType() != newList.get(newItemPosition).getTransportationType()) {
             return false;
         }
-        if (!oldList.get(oldItemPosition).getFullName().equals(newList.get(newItemPosition).getFullName())) {
-            return false;
+        if (oldList.get(oldItemPosition).getImportStatus() != null && newList.get(newItemPosition).getImportStatus() != null) {
+            if (!oldList.get(oldItemPosition).getImportStatus().equals(newList.get(newItemPosition).getImportStatus())) {
+                return false;
+            }
         }
-        if (!oldList.get(oldItemPosition).getPhone().equals( newList.get(newItemPosition).getPhone())) {
-            return false;
+        if (oldList.get(oldItemPosition).getFullName() != null && newList.get(newItemPosition).getFullName() != null) {
+            if (!oldList.get(oldItemPosition).getFullName().equals(newList.get(newItemPosition).getFullName())) {
+                return false;
+            }
         }
-        if (!oldList.get(oldItemPosition).getAddress().equals(newList.get(newItemPosition).getAddress())) {
-            return false;
+        if (oldList.get(oldItemPosition).getPhone() != null && newList.get(newItemPosition).getPhone() != null) {
+            if (!oldList.get(oldItemPosition).getPhone().equals( newList.get(newItemPosition).getPhone())) {
+                return false;
+            }
         }
-        if (!oldList.get(oldItemPosition).getOrganization().equals(newList.get(newItemPosition).getOrganization())) {
-            return false;
+        if (oldList.get(oldItemPosition).getAddress() != null && newList.get(newItemPosition).getAddress() != null) {
+            if (!oldList.get(oldItemPosition).getAddress().equals(newList.get(newItemPosition).getAddress())) {
+                return false;
+            }
         }
-        if (!oldList.get(oldItemPosition).getComment().equals( newList.get(newItemPosition).getComment())) {
-            return false;
+        if (oldList.get(oldItemPosition).getOrganization() != null && newList.get(newItemPosition).getOrganization() != null) {
+            if (!oldList.get(oldItemPosition).getOrganization().equals(newList.get(newItemPosition).getOrganization())) {
+                return false;
+            }
         }
-        if (!oldList.get(oldItemPosition).getRecipientSignature().equals( newList.get(newItemPosition).getRecipientSignature())) {
-            return false;
+        if (oldList.get(oldItemPosition).getComment() != null && newList.get(newItemPosition).getComment() != null) {
+            if (!oldList.get(oldItemPosition).getComment().equals(newList.get(newItemPosition).getComment())) {
+                return false;
+            }
         }
-        return oldList.get(oldItemPosition).getRecipientSignatureDate().equals(newList.get(newItemPosition).getRecipientSignatureDate());
+        if (oldList.get(oldItemPosition).getRecipientSignature() != null && newList.get(newItemPosition).getRecipientSignatureDate() != null) {
+            if (!oldList.get(oldItemPosition).getRecipientSignature().equals(newList.get(newItemPosition).getRecipientSignature())) {
+                return false;
+            }
+        }
+        if (oldList.get(oldItemPosition).getRecipientSignatureDate() != null && newList.get(newItemPosition).getRecipientSignatureDate() != null) {
+            return oldList.get(oldItemPosition).getRecipientSignatureDate().equals(newList.get(newItemPosition).getRecipientSignatureDate());
+        }
+        return false;
     }
 }

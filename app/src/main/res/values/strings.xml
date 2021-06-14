@@ -236,6 +236,7 @@
     <string name="consignment_index">%d.</string>
 
     <string name="delivery_invoice_id">ID накладной: %1$d</string>
+    <string name="tracking_code">Код отслеживания: %1$s</string>
     <string name="delivery_recipient_full_name">Ф.И.О.: %1$s</string>
     <string name="delivery_recipient_phone">Номер телефона: %1$s</string>
     <string name="delivery_address">Адрес доставки</string>
@@ -253,5 +254,8 @@
     <string name="nr">NR</string>
     <string name="ok">OK</string>
     <string name="delivery_list">Доставочный Лист</string>
+    <string name="end_date">Дата до</string>
+    <string name="date_hint">0000-00-00</string>
+    <string name="start_date">Дата от</string>
 
 </resources>

@@ -13,6 +13,7 @@ import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.entities.actor.AddressBook;
 import uz.alexits.cargostar.entities.actor.Client;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
@@ -21,63 +22,61 @@ public class FetchSenderListWorker extends Worker {
     private String login;
     private String password;
     private final String token;
-    private final long lastId;
+
+    private final Integer perPage;
+    private Integer pageCount;
 
     public FetchSenderListWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
+
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
-        this.lastId = getInputData().getLong(Constants.LAST_SENDER_ID, 0L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
             this.password = getInputData().getString(Constants.KEY_PASSWORD);
         }
+        this.perPage = 50;
+        this.pageCount = 1;
     }
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
+    public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            Response<List<Client>> response = null;
 
-            if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getClients(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
-            }
-            else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getClients(SyncWorkRequest.DEFAULT_PER_PAGE);
-            }
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAllCustomers(): response=" + response.body());
-                    final List<Client> senderList = response.body();
+            for (int i = 1; i <= pageCount; i++) {
+                Response<List<Client>> response = RetrofitClient.getInstance(getApplicationContext()).getClients(i, perPage);
 
-                    if (senderList == null) {
-                        Log.e(TAG, "fetchAllCustomers(): sender is NULL");
-                        return Result.failure();
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
+
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
+
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<Client> clientList = response.body();
+
+                        LocalCache.getInstance(getApplicationContext()).clientDao().insertClientList(clientList);
                     }
-
-                    LocalCache.getInstance(getApplicationContext()).clientDao().insertClientList(senderList);
-
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 75)
-                            .build();
-                    return ListenableWorker.Result.success(outputData);
+                }
+                else {
+                    Log.e(TAG, "fetchSenderList(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "fetchAllCustomers(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
-            Log.e(TAG, "fetchAllCustomers(): ", e);
-            return ListenableWorker.Result.failure();
+            Log.e(TAG, "fetchSenderList(): ", e);
+            return Result.failure();
         }
     }
 

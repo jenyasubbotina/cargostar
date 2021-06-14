@@ -106,14 +106,17 @@ public class AddresseeDataDialog extends DialogFragment {
                 Toast.makeText(requireContext(), "Выберите одну из опций: Получено/Отказано", Toast.LENGTH_SHORT).show();
                 return;
             }
+            final String fullName = fullNameEditText.getText().toString().trim();
+            final String phone = phoneEditText.getText().toString().trim();
+            final String address = addressEditText.getText().toString().trim();
+            final String company = companyEditText.getText().toString().trim();
             final String comment = commentEditText.getText().toString().trim();
 
+            if (acceptanceRadioGroup.getCheckedRadioButtonId() == refusedRadioBtn.getId() && TextUtils.isEmpty(comment)) {
+                Toast.makeText(requireContext(), "При Отказе обязательно добавьте комментарий", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (acceptedRadioBtn.isChecked()) {
-                final String fullName = fullNameEditText.getText().toString().trim();
-                final String phone = phoneEditText.getText().toString().trim();
-                final String address = addressEditText.getText().toString().trim();
-                final String company = companyEditText.getText().toString().trim();
-
                 startActivityForResult(new Intent(requireContext(), SignatureActivity.class)
                         .putExtra(Constants.KEY_INVOICE_ID, invoiceId)
                         .putExtra(Constants.ADDRESSEE_FULL_NAME, fullName)
@@ -121,16 +124,15 @@ public class AddresseeDataDialog extends DialogFragment {
                         .putExtra(Constants.ADDRESSEE_ADDRESS, address)
                         .putExtra(Constants.ADDRESSEE_ORGANIZATION, company)
                         .putExtra(Constants.ADDRESSEE_COMMENT, comment)
-                        .putExtra(Constants.ADDRESSEE_IS_ACCEPTED, acceptedRadioBtn.isChecked()), IntentConstants.REQUEST_RECIPIENT_SIGNATURE);
+                        .putExtra(Constants.ADDRESSEE_IS_ACCEPTED, true), IntentConstants.REQUEST_RECIPIENT_SIGNATURE);
                 return;
             }
-            if (acceptanceRadioGroup.getCheckedRadioButtonId() == refusedRadioBtn.getId() || TextUtils.isEmpty(comment)) {
-                Toast.makeText(requireContext(), "При Отказе обязательно добавьте комментарий", Toast.LENGTH_SHORT).show();
-                return;
+            if (refusedRadioBtn.isChecked()) {
+                startActivityForResult(new Intent(requireContext(), SignatureActivity.class)
+                        .putExtra(Constants.KEY_INVOICE_ID, invoiceId)
+                        .putExtra(Constants.ADDRESSEE_COMMENT, comment)
+                        .putExtra(Constants.ADDRESSEE_IS_ACCEPTED, false), IntentConstants.REQUEST_RECIPIENT_SIGNATURE);
             }
-            startActivityForResult(new Intent(requireContext(), SignatureActivity.class)
-                    .putExtra(Constants.ADDRESSEE_COMMENT, comment)
-                    .putExtra(Constants.ADDRESSEE_IS_ACCEPTED, acceptedRadioBtn.isChecked()), IntentConstants.REQUEST_RECIPIENT_SIGNATURE);
         });
 
         builder.setView(root);

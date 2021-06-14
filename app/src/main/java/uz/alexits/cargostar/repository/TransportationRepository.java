@@ -23,12 +23,10 @@ import uz.alexits.cargostar.entities.location.TransitPoint;
 import uz.alexits.cargostar.entities.transportation.Transportation;
 import uz.alexits.cargostar.entities.transportation.TransportationStatus;
 import uz.alexits.cargostar.utils.Constants;
-import uz.alexits.cargostar.workers.invoice.FetchInvoiceWorker;
 import uz.alexits.cargostar.workers.location.FetchTransitPointsWorker;
-import uz.alexits.cargostar.workers.requests.FetchRequestDataWorker;
+import uz.alexits.cargostar.workers.requests.BindRequestWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationStatusesWorker;
 import uz.alexits.cargostar.workers.transportation.FetchTransportationsWorker;
-import uz.alexits.cargostar.workers.transportation.GetLastTransportationId;
 import uz.alexits.cargostar.workers.transportation.SearchTransportationWorker;
 
 public class TransportationRepository {
@@ -81,18 +79,12 @@ public class TransportationRepository {
                 .setRequiresStorageNotLow(false)
                 .setRequiresDeviceIdle(false)
                 .build();
-        final OneTimeWorkRequest getLastTransportationIdRequest = new OneTimeWorkRequest.Builder(GetLastTransportationId.class)
-                .setConstraints(dbConstraints)
-                .build();
         final OneTimeWorkRequest fetchTransportationsRequest = new OneTimeWorkRequest.Builder(FetchTransportationsWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 5*1000L, TimeUnit.MILLISECONDS)
                 .build();
-        WorkManager.getInstance(context)
-                .beginWith(getLastTransportationIdRequest)
-                .then(fetchTransportationsRequest)
-                .enqueue();
+        WorkManager.getInstance(context).enqueue(fetchTransportationsRequest);
         return fetchTransportationsRequest.getId();
     }
 
@@ -126,8 +118,14 @@ public class TransportationRepository {
         return fetchTransportationStatusListRequest.getId();
     }
 
-    public UUID searchTransportationByQr(final String qr) {
-        final Constraints constraints = new Constraints.Builder()
+    public UUID searchTransportationByQrAndBindRequest(final String qr) {
+        final Constraints onlineConstraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresCharging(false)
+                .setRequiresStorageNotLow(false)
+                .setRequiresDeviceIdle(false)
+                .build();
+        final Constraints offlineConstraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
                 .setRequiresCharging(false)
                 .setRequiresStorageNotLow(false)
@@ -137,11 +135,16 @@ public class TransportationRepository {
                 .putString(Constants.KEY_TRANSPORTATION_QR, qr)
                 .build();
         final OneTimeWorkRequest searchTransportationRequest = new OneTimeWorkRequest.Builder(SearchTransportationWorker.class)
-                .setConstraints(constraints)
+                .setConstraints(offlineConstraints)
                 .setInputData(inputData)
                 .build();
-        WorkManager.getInstance(context).enqueue(searchTransportationRequest);
-        return searchTransportationRequest.getId();
+        final OneTimeWorkRequest bindRequest = new OneTimeWorkRequest.Builder(BindRequestWorker.class)
+                .setConstraints(onlineConstraints)
+                .setInputMerger(OverwritingInputMerger.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 5*1000L, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance(context).beginWith(searchTransportationRequest).then(bindRequest).enqueue();
+        return bindRequest.getId();
     }
 
 //    public UUID fetchTransportationByTrackingCode(final String trackingCode) {

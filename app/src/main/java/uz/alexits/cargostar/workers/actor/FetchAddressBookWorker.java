@@ -14,6 +14,7 @@ import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.entities.actor.AddressBook;
+import uz.alexits.cargostar.entities.location.Branche;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
@@ -21,66 +22,61 @@ public class FetchAddressBookWorker extends Worker {
     private String login;
     private String password;
     private final String token;
-    private final long lastId;
+
+    private final Integer perPage;
+    private Integer pageCount;
 
     public FetchAddressBookWorker(@NonNull final Context context, @NonNull final WorkerParameters workerParams) {
         super(context, workerParams);
+
         this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
         this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
-        this.lastId = getInputData().getLong(Constants.LAST_ADDRESS_BOOK_ID, 0L);
 
         if (login == null || password == null) {
             this.login = getInputData().getString(Constants.KEY_LOGIN);
             this.password = getInputData().getString(Constants.KEY_PASSWORD);
         }
+        this.perPage = 50;
+        this.pageCount = 1;
     }
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
+    public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
 
-            Response<List<AddressBook>> response = null;
+            for (int i = 1; i <= pageCount; i++) {
+                Response<List<AddressBook>> response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(i, perPage);
 
-            if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
-            }
-            else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getAddressBook(SyncWorkRequest.DEFAULT_PER_PAGE);
-            }
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
 
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "fetchAddressBook(): response=" + response.body());
-                    final List<AddressBook> addressBook = response.body();
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
 
-                    if (addressBook == null) {
-                        Log.e(TAG, "fetchAddressBook(): sender is NULL");
-                        return Result.failure();
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<AddressBook> addressBook = response.body();
+
+                        LocalCache.getInstance(getApplicationContext()).addressBookDao().insertAddressBookEntries(addressBook);
                     }
-
-                    LocalCache.getInstance(getApplicationContext()).addressBookDao().insertAddressBookEntries(addressBook);
-
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 80)
-                            .build();
-
-                    return ListenableWorker.Result.success(outputData);
+                }
+                else {
+                    Log.e(TAG, "fetchAddressBook(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "fetchAddressBook(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
             Log.e(TAG, "fetchAddressBook(): ", e);
-            return ListenableWorker.Result.failure();
+            return Result.failure();
         }
     }
 

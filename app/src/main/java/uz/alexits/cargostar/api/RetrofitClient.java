@@ -89,53 +89,33 @@ public class RetrofitClient {
     }
 
     /* Location data */
-    public Response<List<Country>> getCountries(final int perPage) throws IOException {
-        return apiService.getCountries(perPage).execute();
+    public Response<List<Country>> getCountries(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getCountries(page, perPage).execute();
     }
 
-    public Response<List<Country>> getCountries(final int perPage, final long lastId) throws IOException {
-        return apiService.getCountries(perPage, lastId).execute();
+    public Response<List<Region>> getRegions(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getRegions(page, perPage).execute();
     }
 
-    public Response<List<Region>> getRegions(final int perPage) throws IOException {
-        return apiService.getRegions(perPage).execute();
+    public Response<List<City>> getCities(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getCities(page, perPage).execute();
     }
 
-    public Response<List<Region>> getRegions(final int perPage, final long lastId) throws IOException {
-        return apiService.getRegions(perPage, lastId).execute();
+    public Response<List<Branche>> getBranches(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getBranches(page, perPage).execute();
     }
 
-    public Response<List<City>> getCities(final int perPage) throws IOException {
-        return apiService.getCities(perPage).execute();
+    public Response<List<TransitPoint>> getTransitPoints(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getTransitPoints(page, perPage).execute();
     }
 
-    public Response<List<City>> getCities(final int perPage, final long lastId) throws IOException {
-        return apiService.getCities(perPage, lastId).execute();
-    }
-
-    public Response<List<Branche>> getBranches(final int perPage) throws IOException {
-        return apiService.getBranches(perPage).execute();
-    }
-
-    public Response<List<TransitPoint>> getTransitPoints(final int perPage) throws IOException {
-        return apiService.getTransitPoints(perPage).execute();
-    }
-
-    public Response<List<AddressBook>> getAddressBook(final int perPage) throws IOException {
-        return apiService.getAddressBook(perPage).execute();
-    }
-
-    public Response<List<AddressBook>> getAddressBook(final int perPage, final long lastId) throws IOException {
-        return apiService.getAddressBook(perPage, lastId).execute();
+    public Response<List<AddressBook>> getAddressBook(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getAddressBook(page, perPage).execute();
     }
 
     /*Requests requests */
-    public Response<List<Request>> getPublicRequests(final int perPage) throws IOException {
-        return apiService.getPublicRequests(perPage).execute();
-    }
-
-    public Response<List<Request>> getPublicRequests(final int perPage, final long lastId) throws IOException {
-        return apiService.getPublicRequests(perPage, lastId).execute();
+    public Response<List<Request>> getPublicRequests(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getPublicRequests(page, perPage).execute();
     }
 
     public Response<Request> getRequest(final long requestId) throws IOException {
@@ -155,16 +135,16 @@ public class RetrofitClient {
         return apiService.getPackagingTypes().execute();
     }
 
-    public Response<List<Zone>> getZones(final int perPage) throws IOException {
-        return apiService.getZones(perPage).execute();
+    public Response<List<Zone>> getZones(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getZones(page, perPage).execute();
     }
 
-    public Response<List<ZoneCountry>> getZoneCountries(final int perPage) throws IOException {
-        return apiService.getZoneCountries(perPage).execute();
+    public Response<List<ZoneCountry>> getZoneCountries(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getZoneCountries(page, perPage).execute();
     }
 
-    public Response<List<ZoneSettings>> getZoneSettings(final int perPage) throws IOException {
-        return apiService.getZoneSettings(perPage).execute();
+    public Response<List<ZoneSettings>> getZoneSettings(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getZoneSettings(page, perPage).execute();
     }
 
     public Response<Vat> getVat() throws IOException {
@@ -180,12 +160,8 @@ public class RetrofitClient {
         return apiService.getClient(clientId).execute();
     }
 
-    public Response<List<Client>> getClients(final int perPage) throws IOException {
-        return apiService.getClients(perPage).execute();
-    }
-
-    public Response<List<Client>> getClients(final int perPage, final long lastId) throws IOException {
-        return apiService.getClients(perPage, lastId).execute();
+    public Response<List<Client>> getClients(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getClients(page, perPage).execute();
     }
 
     /* Courier */
@@ -215,12 +191,8 @@ public class RetrofitClient {
         return apiService.getInvoice(invoiceId).execute();
     }
 
-    public Response<List<Invoice>> getInvoiceList(final int perPage) throws IOException {
-        return apiService.getInvoiceList(perPage).execute();
-    }
-
-    public Response<List<Invoice>> getInvoiceList(final int perPage, final long lastId) throws IOException {
-        return apiService.getInvoiceList(perPage, lastId).execute();
+    public Response<List<Invoice>> getInvoiceList(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getInvoiceList(page, perPage).execute();
     }
 
     public Response<Invoice> sendRecipientSignature(final AddresseeParams params) throws IOException {
@@ -236,15 +208,11 @@ public class RetrofitClient {
         return apiService.getTransportation(trackingCode).execute();
     }
 
-    public Response<List<Transportation>> getCurrentTransportations(final int perPage) throws IOException {
-        return apiService.getCurrentTransportations(perPage).execute();
+    public Response<List<Transportation>> getCurrentTransportations(final Integer page, final Integer perPage) throws IOException {
+        return apiService.getCurrentTransportations(page, perPage).execute();
     }
 
-    public Response<List<Transportation>> getCurrentTransportations(final int perPage, final long lastId) throws IOException {
-        return apiService.getCurrentTransportations(perPage, lastId).execute();
-    }
-
-    public Response<List<TransportationStatus>> getTransportationStatusList(final int perPage) throws IOException {
+    public Response<List<TransportationStatus>> getTransportationStatusList(final Integer perPage) throws IOException {
         return apiService.getTransportationStatusList(perPage).execute();
     }
 
@@ -273,9 +241,9 @@ public class RetrofitClient {
         return apiService.getCargoListByRequestId(requestId).execute();
     }
 
-    public Response<List<Client>> getAllCustomers(final int perPage) throws IOException {
-        return apiService.getAllCustomers(perPage).execute();
-    }
-
     private static final String TAG = RetrofitClient.class.toString();
+    public static final String PAGINATION_TOTAL_COUNT = "X-Pagination-Total-Count";
+    public static final String PAGINATION_PAGE_COUNT = "X-Pagination-Page-Count";
+    public static final String PAGINATION_CURRENT_PAGE = "X-Pagination-Current-Page";
+    public static final String PAGINATION_PER_PAGE = "X-Pagination-Per-Page";
 }

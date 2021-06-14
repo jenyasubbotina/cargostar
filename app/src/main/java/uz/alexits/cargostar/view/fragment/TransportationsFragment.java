@@ -31,10 +31,10 @@ import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.view.UiUtils;
 import uz.alexits.cargostar.utils.IntentConstants;
 import uz.alexits.cargostar.view.activity.MainActivity;
-import uz.alexits.cargostar.view.activity.ScanQrActivity;
 import uz.alexits.cargostar.view.adapter.TransportationAdapter;
 import uz.alexits.cargostar.view.adapter.CustomArrayAdapter;
 import uz.alexits.cargostar.view.callback.TransportationCallback;
+import uz.alexits.cargostar.view.dialog.ScanQrDialog;
 import uz.alexits.cargostar.viewmodel.TransportationViewModel;
 import uz.alexits.cargostar.viewmodel.factory.TransportationViewModelFactory;
 
@@ -195,14 +195,15 @@ public class TransportationsFragment extends Fragment implements TransportationC
         });
 
         scanQrImageView.setOnClickListener(v -> {
-            final Intent scanQrIntent = new Intent(requireContext(), ScanQrActivity.class);
-            startActivityForResult(scanQrIntent, IntentConstants.REQUEST_SCAN_QR_MENU);
+            ScanQrDialog dialogFragment = ScanQrDialog.newInstance(0, IntentConstants.REQUEST_SCAN_QR_MENU);
+            dialogFragment.setTargetFragment(TransportationsFragment.this, IntentConstants.REQUEST_SCAN_QR_MENU);
+            dialogFragment.show(getParentFragmentManager().beginTransaction(), TAG);
         });
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
+            transportationViewModel.fetchTransportationList();
             transportationViewModel.fetchTransportationStatuses();
             transportationViewModel.fetchTransitPoints();
-            transportationViewModel.fetchTransportationList();
         });
     }
 
@@ -211,6 +212,7 @@ public class TransportationsFragment extends Fragment implements TransportationC
         super.onActivityCreated(savedInstanceState);
 
         final boolean[] activityCreated = {true, true};
+        transportationViewModel.removeSearchTransportationByQrUUID();
 
         /* header */
         transportationViewModel.getCourierData(requireContext()).observe(getViewLifecycleOwner(), courier -> {
@@ -259,9 +261,15 @@ public class TransportationsFragment extends Fragment implements TransportationC
 
         /* transportation view model */
         transportationViewModel.getSearchTransportationByQrResult(requireContext()).observe(getViewLifecycleOwner(), workInfo -> {
+            if (workInfo.getState() == WorkInfo.State.CANCELLED || workInfo.getState() == WorkInfo.State.FAILED) {
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(requireContext(), "Перевозка уже была привязана" + workInfo.getOutputData().getString(Constants.KEY_TRANSPORTATION_QR), Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                swipeRefreshLayout.setRefreshing(false);
                 NavHostFragment.findNavController(this).navigate(
-                        TransportationsFragmentDirections.actionTransportationsFragmentToInvoiceFragment()
+                        TransportationsFragmentDirections.actionTransportationsFragmentToStatusFragment()
                                 .setTransportationId(workInfo.getOutputData().getLong(Constants.KEY_TRANSPORTATION_ID, 0))
                                 .setInvoiceId(workInfo.getOutputData().getLong(Constants.KEY_INVOICE_ID, 0))
                                 .setRequestId(workInfo.getOutputData().getLong(Constants.KEY_REQUEST_ID, 0))
@@ -281,10 +289,7 @@ public class TransportationsFragment extends Fragment implements TransportationC
                                 .setDirection(workInfo.getOutputData().getString(Constants.KEY_DIRECTION)));
                 return;
             }
-            if (workInfo.getState() == WorkInfo.State.CANCELLED || workInfo.getState() == WorkInfo.State.FAILED) {
-//                Toast.makeText(requireContext(), "QR код " + qr + " не найден", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            swipeRefreshLayout.setRefreshing(true);
         });
 
         transportationViewModel.getTransportationStatuses().observe(getViewLifecycleOwner(), transportationStatusList -> {
@@ -324,6 +329,7 @@ public class TransportationsFragment extends Fragment implements TransportationC
         transportationViewModel.getTransportationList().observe(getViewLifecycleOwner(), transportationList -> {
             if (transportationList != null) {
                 transportationAdapter.setTransportationList(transportationList);
+                transportationAdapter.notifyDataSetChanged();
             }
         });
 
@@ -366,7 +372,7 @@ public class TransportationsFragment extends Fragment implements TransportationC
         }
         if (resultCode == RESULT_OK && data != null) {
             if (requestCode == IntentConstants.REQUEST_SCAN_QR_MENU) {
-                transportationViewModel.searchTransportationByQr(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
+                transportationViewModel.searchTransportationByQrAndBindRequest(data.getStringExtra(IntentConstants.INTENT_RESULT_VALUE));
             }
         }
     }

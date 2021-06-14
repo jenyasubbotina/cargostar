@@ -17,66 +17,71 @@ import java.util.List;
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
+import uz.alexits.cargostar.entities.location.Branche;
 import uz.alexits.cargostar.entities.location.Region;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchRegionsWorker extends Worker {
-    @Nullable private final String login;
-    @Nullable private final String password;
+    private String login;
+    private String password;
     private final String token;
-    private final long lastId;
+
+    private final Integer perPage;
+    private Integer pageCount;
 
     public FetchRegionsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        this.login = getInputData().getString(Constants.KEY_LOGIN);
-        this.password = getInputData().getString(Constants.KEY_PASSWORD);
+
+        this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
+        this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
-        this.lastId = getInputData().getLong(Constants.LAST_REGION_ID, 0L);
+
+        if (login == null || password == null) {
+            this.login = getInputData().getString(Constants.KEY_LOGIN);
+            this.password = getInputData().getString(Constants.KEY_PASSWORD);
+        }
+        this.perPage = 1000;
+        this.pageCount = 1;
     }
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
-        if (login == null || password == null) {
-            Log.e(TAG, "fetchRegions(): login or password is empty");
-            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
-            return ListenableWorker.Result.failure();
-        }
-
+    public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            Response<List<Region>> response = null;
 
-            if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getRegions(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
-            }
-            else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getRegions(SyncWorkRequest.DEFAULT_PER_PAGE);
-            }
+            for (int i = 1; i <= pageCount; i++) {
+                Response<List<Region>> response = RetrofitClient.getInstance(getApplicationContext()).getRegions(i, perPage);
 
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    final List<Region> regionList = response.body();
-                    LocalCache.getInstance(getApplicationContext()).locationDao().insertRegions(regionList);
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
 
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 15)
-                            .build();
-                    return ListenableWorker.Result.success(outputData);
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
+
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<Region> regionList = response.body();
+
+                        LocalCache.getInstance(getApplicationContext()).locationDao().insertRegions(regionList);
+                    }
+                }
+                else {
+                    Log.e(TAG, "fetchRegions(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "fetchRegions(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
             Log.e(TAG, "fetchRegions(): ", e);
-            return ListenableWorker.Result.failure();
+            return Result.failure();
         }
     }
 

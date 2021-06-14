@@ -24,7 +24,6 @@ import uz.alexits.cargostar.database.cache.LocalCache;
 import uz.alexits.cargostar.database.dao.AddressBookDao;
 import uz.alexits.cargostar.entities.actor.AddressBook;
 import uz.alexits.cargostar.workers.actor.FetchAddressBookWorker;
-import uz.alexits.cargostar.workers.actor.GetLastAddressBookId;
 
 public class AddressBookRepository {
     private final Context context;
@@ -62,15 +61,12 @@ public class AddressBookRepository {
                 .setRequiresStorageNotLow(false)
                 .setRequiresDeviceIdle(false)
                 .build();
-        final OneTimeWorkRequest getLastAddressBookIdRequest = new OneTimeWorkRequest.Builder(GetLastAddressBookId.class)
-                .setConstraints(dbConstraints)
-                .build();
         final OneTimeWorkRequest fetchAddressBookListRequest = new OneTimeWorkRequest.Builder(FetchAddressBookWorker.class)
                 .setConstraints(constraints)
                 .setInputMerger(OverwritingInputMerger.class)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 5*1000L, TimeUnit.MILLISECONDS)
                 .build();
-        WorkManager.getInstance(context).beginWith(getLastAddressBookIdRequest).then(fetchAddressBookListRequest).enqueue();
+        WorkManager.getInstance(context).enqueue(fetchAddressBookListRequest);
         return fetchAddressBookListRequest.getId();
     }
 

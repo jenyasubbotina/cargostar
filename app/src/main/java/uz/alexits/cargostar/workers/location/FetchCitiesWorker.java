@@ -17,67 +17,71 @@ import java.util.List;
 import retrofit2.Response;
 import uz.alexits.cargostar.api.RetrofitClient;
 import uz.alexits.cargostar.database.cache.LocalCache;
+import uz.alexits.cargostar.database.cache.SharedPrefs;
 import uz.alexits.cargostar.entities.location.City;
+import uz.alexits.cargostar.entities.location.Country;
 import uz.alexits.cargostar.utils.Constants;
 import uz.alexits.cargostar.workers.SyncWorkRequest;
 
 public class FetchCitiesWorker extends Worker {
-    @Nullable private final String login;
-    @Nullable private final String password;
+    private String login;
+    private String password;
     private final String token;
-    private final long lastId;
+
+    private Integer pageCount;
+    private final Integer perPage;
 
     public FetchCitiesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
 
-        this.login = getInputData().getString(Constants.KEY_LOGIN);
-        this.password = getInputData().getString(Constants.KEY_PASSWORD);
+        this.login = SharedPrefs.getInstance(context).getString(Constants.KEY_LOGIN);
+        this.password = SharedPrefs.getInstance(context).getString(Constants.KEY_PASSWORD);
         this.token = getInputData().getString(Constants.KEY_TOKEN);
-        this.lastId = getInputData().getLong(Constants.LAST_CITY_ID, 0L);
+
+        if (login == null || password == null) {
+            this.login = getInputData().getString(Constants.KEY_LOGIN);
+            this.password = getInputData().getString(Constants.KEY_PASSWORD);
+        }
+        this.perPage = 1000;
+        this.pageCount = 1;
     }
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
-        if (login == null || password == null) {
-            Log.e(TAG, "fetchCities(): login or password is empty");
-            Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
-            return Result.failure();
-        }
-
+    public Result doWork() {
         try {
             RetrofitClient.getInstance(getApplicationContext()).setServerData(login, password);
-            Response<List<City>> response = null;
 
-            if (lastId > 0) {
-                response = RetrofitClient.getInstance(getApplicationContext()).getCities(SyncWorkRequest.DEFAULT_PER_PAGE, lastId);
-            }
-            else {
-                response = RetrofitClient.getInstance(getApplicationContext()).getCities(SyncWorkRequest.DEFAULT_PER_PAGE);
-            }
+            for (int i = 1; i <= pageCount; i++) {
+                Response<List<City>> response = RetrofitClient.getInstance(getApplicationContext()).getCities(i, perPage);
 
-            if (response.code() == 200) {
-                if (response.isSuccessful()) {
-                    final List<City> cityList = response.body();
+                String pageCountStr = response.headers().get(RetrofitClient.PAGINATION_PAGE_COUNT);
 
-                    LocalCache.getInstance(getApplicationContext()).locationDao().insertCities(cityList);
+                if (pageCountStr != null) {
+                    pageCount = Integer.parseInt(pageCountStr);
+                }
 
-                    final Data outputData = new Data.Builder()
-                            .putString(Constants.KEY_LOGIN, login)
-                            .putString(Constants.KEY_PASSWORD, password)
-                            .putString(Constants.KEY_TOKEN, token)
-                            .putInt(Constants.KEY_PROGRESS, 20).build();
-                    return ListenableWorker.Result.success(outputData);
+                if (response.code() == 200) {
+                    if (response.isSuccessful()) {
+                        final List<City> cityList = response.body();
+
+                        LocalCache.getInstance(getApplicationContext()).locationDao().insertCities(cityList);
+                    }
+                }
+                else {
+                    Log.e(TAG, "fetchCities(): " + response.errorBody());
+                    return Result.failure();
                 }
             }
-            else {
-                Log.e(TAG, "fetchCities(): " + response.errorBody());
-            }
-            return ListenableWorker.Result.failure();
+            return Result.success(new Data.Builder()
+                    .putString(Constants.KEY_LOGIN, login)
+                    .putString(Constants.KEY_PASSWORD, password)
+                    .putString(Constants.KEY_TOKEN, token)
+                    .build());
         }
         catch (IOException e) {
             Log.e(TAG, "fetchCities(): ", e);
-            return ListenableWorker.Result.failure();
+            return Result.failure();
         }
     }
 
