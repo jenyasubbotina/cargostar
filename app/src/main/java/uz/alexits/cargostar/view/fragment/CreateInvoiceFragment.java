@@ -701,36 +701,6 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
             }
         });
 
-//        final TextWatcher payerCompanyWatcher = new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if (((Country) payerCountrySpinner.getSelectedItem()).getNameEn().equalsIgnoreCase(getString(R.string.uzbekistan))) {
-//                    if (TextUtils.isEmpty(s.toString().trim())) {
-//                        cashRadioBtn.setVisibility(View.VISIBLE);
-//                        terminalRadioBtn.setVisibility(View.VISIBLE);
-//                        transferRadioBtn.setVisibility(View.INVISIBLE);
-//                        corporateRadioBtn.setVisibility(View.INVISIBLE);
-//                    }
-//                    else {
-//                        cashRadioBtn.setVisibility(View.INVISIBLE);
-//                        terminalRadioBtn.setVisibility(View.INVISIBLE);
-//                        transferRadioBtn.setVisibility(View.VISIBLE);
-//                        corporateRadioBtn.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//            }
-//        };
-
         final TextWatcher senderEmailWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
@@ -749,14 +719,19 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                 }
             }
         };
-//        payerCompanyEditText.addTextChangedListener(payerCompanyWatcher);
         senderEmailEditText.addTextChangedListener(senderEmailWatcher);
 
         payerIsSomeoneRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == senderIsPayerRadioBtn.getId()) {
+                final Country country = (Country) senderCountrySpinner.getSelectedItem();
+
+                if (country == null) {
+                    Log.e(TAG, "senderCountry is null");
+                    return;
+                }
                 setPayerUiFields(new AddressBook(
                         1, 0,
-                        ((Country) senderCountrySpinner.getSelectedItem()).getId(),
+                        country.getId(),
                         senderCityNameEditText.getText().toString().trim(),
                         senderAddressEditText.getText().toString().trim(),
                         senderZipEditText.getText().toString().trim(),
@@ -770,7 +745,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                         senderFedexEditText.getText().toString().trim(),
                         senderCompanyEditText.getText().toString().trim(),null, null, null, 0));
 
-                if (((Country) payerCountrySpinner.getSelectedItem()).getId() != 191) {
+                if (country.getId() != 191) {
                     paymentMethodRadioGroup.setVisibility(View.GONE);
                     onlineRadioBtn.setVisibility(View.GONE);
                     cashRadioBtn.setVisibility(View.GONE);
@@ -789,9 +764,15 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                 return;
             }
             if (checkedId == recipientIsPayerRadioBtn.getId()) {
+                final Country country = (Country) recipientCountrySpinner.getSelectedItem();
+
+                if (country == null) {
+                    Log.e(TAG, "recipientCountry is null");
+                    return;
+                }
                 setPayerUiFields(new AddressBook(
                         1, 0,
-                        ((Country) recipientCountrySpinner.getSelectedItem()).getId(),
+                        country.getId(),
                         recipientCityNameEditText.getText().toString().trim(),
                         recipientAddressEditText.getText().toString().trim(),
                         recipientZipEditText.getText().toString().trim(),

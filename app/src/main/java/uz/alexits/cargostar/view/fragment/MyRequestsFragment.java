@@ -189,13 +189,8 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         });
 
         requestsViewModel.getMyRequests().observe(getViewLifecycleOwner(), requestList -> {
-            for (final Request request : requestList) {
-                Log.i(TAG, "->" + request);
-            }
             adapter.setMyRequestList(requestList);
         });
-
-
 
         requestsViewModel.getFetchRequestListResult(requireContext()).observe(getViewLifecycleOwner(), workInfo -> {
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
@@ -221,6 +216,7 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
         currentItem.setNew(false);
         requestsViewModel.readRequest(currentItem.getId());
         adapter.notifyItemChanged(position);
+
         NavHostFragment.findNavController(this).navigate(
                 MyRequestsFragmentDirections.actionMyRequestsFragmentToInvoiceFragment()
                         .setIsPublic(false)
@@ -237,9 +233,9 @@ public class MyRequestsFragment extends Fragment implements RequestCallback {
                         .setSenderPhone(currentItem.getSenderPhone())
                         .setSenderAddress(currentItem.getSenderAddress())
                         .setSenderCountryId(currentItem.getSenderCountryId())
-                        .setSenderCityName(currentItem.getSenderCity())
+                        .setSenderCityName(currentItem.getSenderCityName())
                         .setRecipientCountryId(currentItem.getRecipientCountryId())
-                        .setRecipientCityName(currentItem.getRecipientCity())
+                        .setRecipientCityName(currentItem.getRecipientCityName())
                         .setDeliveryType(currentItem.getDeliveryType())
                         .setComment(currentItem.getComment())
                         .setConsignmentQuantity(currentItem.getConsignmentQuantity())
