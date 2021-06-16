@@ -31,8 +31,8 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="60dp"
-                android:layout_marginStart="36dp"
                 android:text="@string/current_parcels_one_line"
                 android:textSize="18sp"
                 android:textColor="@color/colorBlack"
@@ -128,8 +128,9 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="35dp"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+                android:layout_marginTop="@dimen/m_margin" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
+
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

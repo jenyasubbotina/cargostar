@@ -45,6 +45,8 @@
             app:layout_constraintStart_toStartOf="@id/sender_email_text_view"
             app:layout_constraintTop_toBottomOf="@id/sender_email_text_view"
             app:layout_constraintEnd_toStartOf="@id/sender_signature_field"
+            app:layout_constraintTop_toTopOf="@id/sender_signature_field"
+            app:layout_constraintBottom_toBottomOf="@id/sender_signature_field"
             android:layout_marginEnd="12dp"
             android:layout_marginTop="4dp"
             android:inputType="textEmailAddress"
@@ -57,10 +59,11 @@
 
         <TextView
             android:id="@+id/sender_signature_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/sender_email_text_view"
             app:layout_constraintStart_toStartOf="@id/sender_signature_field"
+            app:layout_constraintEnd_toEndOf="@id/sender_signature_field"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
@@ -70,9 +73,8 @@
             android:id="@+id/sender_signature_field"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/sender_email_edit_text"
-            app:layout_constraintBottom_toBottomOf="@id/sender_email_edit_text"
             app:layout_constraintStart_toEndOf="@id/sender_email_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/sender_signature_text_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="1"
             android:layout_marginEnd="35dp">
@@ -326,10 +328,11 @@
 
         <TextView
             android:id="@+id/sender_tnt_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/sender_address_edit_text"
             app:layout_constraintStart_toStartOf="@id/sender_address_text_view"
+            app:layout_constraintEnd_toEndOf="@id/sender_tnt_edit_text"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
@@ -353,10 +356,11 @@
 
         <TextView
             android:id="@+id/sender_fedex_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/sender_tnt_text_view"
             app:layout_constraintStart_toStartOf="@id/sender_zip_text_view"
+            app:layout_constraintEnd_toEndOf="@id/sender_fedex_edit_text"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"
@@ -379,10 +383,11 @@
 
         <TextView
             android:id="@+id/sender_company_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/sender_tnt_edit_text"
             app:layout_constraintStart_toStartOf="@id/sender_tnt_text_view"
+            app:layout_constraintEnd_toEndOf="@id/sender_company_edit_text"
             android:layout_marginTop="24dp"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
@@ -720,6 +725,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@id/recipient_phone_text_view"
             app:layout_constraintStart_toStartOf="@id/recipient_zip_text_view"
+            app:layout_constraintEnd_toEndOf="parent"
             android:textSize="16sp"
             android:textColor="#A5ABC0"
             android:fontFamily="@font/geometria_actual"

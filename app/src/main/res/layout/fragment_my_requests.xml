@@ -14,13 +14,13 @@
         android:overScrollMode="never"
         android:fillViewport="true"
         android:fitsSystemWindows="true"
-        android:background="#FFF">
+        android:background="@color/colorWhite">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="18dp"
-            android:layout_marginBottom="18dp"
+            android:layout_marginHorizontal="@dimen/s_margin"
+            android:layout_marginBottom="@dimen/s_margin"
             android:background="@drawable/card_bottom_radius_white"
             android:elevation="8dp">
 
@@ -30,10 +30,10 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="60dp"
-                android:layout_marginStart="36dp"
+                android:layout_marginTop="@dimen/xxxl_margin"
+                android:layout_marginStart="@dimen/xl_margin"
                 android:text="@string/my_bids_one_line"
-                android:textSize="19sp"
+                android:textSize="@dimen/h1"
                 android:textColor="@color/colorBlack"
                 android:fontFamily="@font/geometria_bold"
                 android:lines="1"/>
@@ -46,7 +46,11 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="20dp"/>
+                android:layout_marginTop="@dimen/m_margin"
+                android:layout_marginBottom="@dimen/s_margin"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
+
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

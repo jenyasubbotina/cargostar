@@ -15,16 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/card_bottom_radius_white"
-        android:layout_marginHorizontal="18dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginHorizontal="@dimen/s_margin"
+        android:layout_marginBottom="@dimen/m_margin"
         android:elevation="8dp">
 
         <TextView
             android:id="@+id/personal_data_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/logout_text_view"
             android:layout_marginTop="58dp"
             android:layout_marginStart="35dp"
             android:textSize="19sp"
@@ -176,6 +177,7 @@
             app:layout_constraintStart_toStartOf="@id/login_edit_text"
             app:layout_constraintEnd_toEndOf="@id/login_edit_text"
             android:inputType="textEmailAddress"
+            android:minLines="2"
             android:background="@drawable/edit_text_locked"
             android:textSize="16sp"
             android:fontFamily="@font/geometria_actual"

@@ -335,6 +335,7 @@
                 android:id="@+id/calculationsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="345dp"
+                tools:itemCount="2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"

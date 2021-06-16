@@ -1,142 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="uz.alexits.cargostar.view.activity.SignInActivity"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/logo_image_view"
-        android:layout_width="0dp"
-        android:layout_height="97dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/img_cargostar_logo"
-        android:layout_marginTop="55dp"
-        android:contentDescription="@string/cargostar"/>
-
-    <TextView
-        android:id="@+id/authorization_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/logo_image_view"
-        app:layout_constraintStart_toStartOf="@id/login_edit_text"
-        android:layout_marginTop="112dp"
-        android:text="@string/authorization"
-        android:textColor="@color/colorBlack"
-        android:fontFamily="@font/geometria_medium"
-        android:textSize="20sp"/>
-
-    <EditText
-        android:id="@+id/login_edit_text"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        app:layout_constraintTop_toBottomOf="@id/authorization_text_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="120dp"
-        android:layout_marginTop="33dp"
-        android:background="@drawable/edit_text_locked"
-        android:textSize="16sp"
-        android:textColor="@color/colorBlack"
-        android:fontFamily="@font/geometria_actual"
-        android:textColorHint="#A5ABC0"
-        android:hint="@string/login"
-        android:paddingHorizontal="21dp"
-        android:inputType="text"
-        android:autofillHints="@string/login" />
-
-    <RelativeLayout
-        android:id="@+id/password_field"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/login_edit_text"
-        app:layout_constraintStart_toStartOf="@id/login_edit_text"
-        app:layout_constraintEnd_toEndOf="@id/login_edit_text"
-        android:layout_marginTop="33dp">
-
-        <EditText
-            android:id="@+id/password_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/edit_text_locked"
-            android:textSize="16sp"
-            android:textColor="@color/colorBlack"
-            android:fontFamily="@font/geometria_actual"
-            android:textColorHint="#A5ABC0"
-            android:hint="@string/password"
-            android:paddingHorizontal="21dp"
-            android:inputType="textPassword"
-            android:autofillHints="@string/password" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        tools:context="uz.alexits.cargostar.view.activity.SignInActivity">
 
         <ImageView
-            android:id="@+id/password_eye_image_view"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_alignEnd="@id/password_edit_text"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_hide_password"
-            android:scaleType="fitCenter"
-            android:layout_marginEnd="18dp"
-            android:contentDescription="@string/password"/>
-    </RelativeLayout>
+            android:id="@+id/logo_image_view"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/logo_height"
+            android:layout_marginTop="@dimen/xl_margin"
+            android:contentDescription="@string/cargostar"
+            android:src="@drawable/img_cargostar_logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/sign_in_btn"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        app:layout_constraintTop_toBottomOf="@id/password_field"
-        app:layout_constraintStart_toStartOf="@id/login_edit_text"
-        app:layout_constraintEnd_toEndOf="@id/login_edit_text"
-        android:layout_marginTop="45dp"
-        android:background="@drawable/btn_gradient_orange"
-        android:textSize="17sp"
-        android:text="@string/sign_in"
-        android:fontFamily="@font/geometria_medium"
-        android:textColor="#FFF"
-        android:textAllCaps="false"
-        android:clickable="true"
-        android:focusable="true"/>
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logo_image_view" />
 
-    <CheckBox
-        android:id="@+id/keep_logging_check_box"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/sign_in_btn"
-        app:layout_constraintStart_toStartOf="@id/sign_in_btn"
-        android:text="@string/keep_logging"
-        android:checked="true"
-        android:textSize="14sp"
-        android:textColor="@color/colorBlack"
-        android:fontFamily="@font/geometria_actual"
-        android:layout_marginTop="24dp"
-        android:buttonTint="@color/colorBlue"
-        android:translationX="-4dp"/>
+        <TextView
+            android:id="@+id/authorization_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/l_margin"
+            android:fontFamily="@font/geometria_medium"
+            android:text="@string/authorization"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/h1"
+            app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+            app:layout_constraintStart_toStartOf="@id/login_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/progress_bar" />
 
-    <ImageView
-        android:id="@+id/parcels_image_view"
-        android:layout_width="0dp"
-        android:layout_height="162dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/img_parcels"
-        android:contentDescription="@string/cargostar"
-        android:layout_marginBottom="55dp"/>
+        <EditText
+            android:id="@+id/login_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/edittext_login_height"
+            android:minWidth="@dimen/edittext_login_height"
+            android:layout_marginHorizontal="@dimen/edittext_login_margin_horizontal"
+            android:layout_marginTop="@dimen/xl_margin"
+            android:autofillHints="@string/login"
+            android:background="@drawable/edit_text_locked"
+            android:fontFamily="@font/geometria_actual"
+            android:hint="@string/login"
+            android:inputType="text"
+            android:paddingHorizontal="@dimen/m_margin"
+            android:textColor="@color/colorBlack"
+            android:textColorHint="@color/colorTextHint"
+            android:textSize="@dimen/h2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/authorization_text_view" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        app:layout_constraintTop_toBottomOf="@id/logo_image_view"
-        app:layout_constraintBottom_toTopOf="@id/authorization_text_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"/>
-    
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <RelativeLayout
+            android:id="@+id/password_field"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/xl_margin"
+            app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+            app:layout_constraintStart_toStartOf="@id/login_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/login_edit_text">
+
+            <EditText
+                android:id="@+id/password_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/edittext_login_height"
+                android:minWidth="@dimen/edittext_login_height"
+                android:autofillHints="@string/password"
+                android:background="@drawable/edit_text_locked"
+                android:fontFamily="@font/geometria_actual"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:paddingHorizontal="@dimen/m_margin"
+                android:textColor="@color/colorBlack"
+                android:textColorHint="@color/colorTextHint"
+                android:textSize="@dimen/h2" />
+
+            <ImageView
+                android:id="@+id/password_eye_image_view"
+                android:layout_width="@dimen/icon_eye_size"
+                android:layout_height="@dimen/icon_eye_size"
+                android:layout_alignEnd="@id/password_edit_text"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/s_margin"
+                android:contentDescription="@string/password"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_hide_password" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/sign_in_btn"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/edittext_login_height"
+            android:layout_marginTop="@dimen/xxl_margin"
+            android:background="@drawable/btn_gradient_orange"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/geometria_medium"
+            android:text="@string/sign_in"
+            android:textAllCaps="false"
+            android:textColor="#FFF"
+            android:textSize="@dimen/h2"
+            app:layout_constraintEnd_toEndOf="@id/login_edit_text"
+            app:layout_constraintStart_toStartOf="@id/login_edit_text"
+            app:layout_constraintTop_toBottomOf="@id/password_field" />
+
+        <CheckBox
+            android:id="@+id/keep_logging_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/m_margin"
+            android:buttonTint="@color/colorBlue"
+            android:checked="true"
+            android:fontFamily="@font/geometria_actual"
+            android:text="@string/keep_logging"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/h3"
+            android:translationX="-4dp"
+            app:layout_constraintEnd_toEndOf="@id/sign_in_btn"
+            app:layout_constraintStart_toStartOf="@id/sign_in_btn"
+            app:layout_constraintTop_toBottomOf="@id/sign_in_btn" />
+
+        <ImageView
+            android:id="@+id/parcels_image_view"
+            android:layout_width="0dp"
+            android:layout_height="162dp"
+            android:contentDescription="@string/cargostar"
+            android:src="@drawable/img_parcels"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/keep_logging_check_box" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
