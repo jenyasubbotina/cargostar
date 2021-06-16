@@ -290,7 +290,7 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
             if (b) {
                 tntRadioBtn.setChecked(false);
                 fedexRadioBtn.setChecked(false);
-                calculatorViewModel.setSelectedProvider(6L);
+                calculatorViewModel.setSelectedProviderId(6L);
             }
         });
 
@@ -298,7 +298,7 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
             if (b) {
                 cargostarRadioBtn.setChecked(false);
                 fedexRadioBtn.setChecked(false);
-                calculatorViewModel.setSelectedProvider(5L);
+                calculatorViewModel.setSelectedProviderId(5L);
             }
         });
 
@@ -306,7 +306,7 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
             if (b) {
                 cargostarRadioBtn.setChecked(false);
                 tntRadioBtn.setChecked(false);
-                calculatorViewModel.setSelectedProvider(4L);
+                calculatorViewModel.setSelectedProviderId(4L);
             }
         });
 
@@ -517,7 +517,11 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
             }
         });
 
-        calculatorViewModel.getProviderList().observe(getViewLifecycleOwner(), providerList -> {
+        calculatorViewModel.getSelectedProvider().observe(getViewLifecycleOwner(), provider -> {
+            calculatorViewModel.setSelectedProvider(provider);
+        });
+
+        calculatorViewModel.getProviderIdList().observe(getViewLifecycleOwner(), providerList -> {
             if (providerList == null || providerList.isEmpty()) {
                 //other -> other = provider radio group is empty
                 cargostarRadioBtn.setChecked(false);
@@ -537,12 +541,12 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
                 return;
             }
             if (providerList.size() == 1) {
-                final String providerName = providerList.get(0).getNameEn();
+                final long providerId = providerList.get(0);
 
-                if (providerName == null) {
+                if (providerId <= 0) {
                     return;
                 }
-                if (providerName.equalsIgnoreCase(getString(R.string.cargostar))) {
+                if (providerId == 6L) {
                     cargostarRadioBtn.setChecked(false);
                     cargostarRadioBtn.setVisibility(View.VISIBLE);
                     cargostarImageView.setVisibility(View.VISIBLE);
@@ -559,7 +563,7 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
                     fedexCardView.setVisibility(View.GONE);
                     return;
                 }
-                if (providerName.equalsIgnoreCase(getString(R.string.tnt))) {
+                if (providerId == 5L) {
                     cargostarRadioBtn.setChecked(false);
                     cargostarRadioBtn.setVisibility(View.GONE);
                     cargostarImageView.setVisibility(View.GONE);

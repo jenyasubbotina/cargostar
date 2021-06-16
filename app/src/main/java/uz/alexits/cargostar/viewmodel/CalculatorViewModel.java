@@ -21,6 +21,7 @@ import uz.alexits.cargostar.entities.location.Country;
 import uz.alexits.cargostar.entities.transportation.Consignment;
 import uz.alexits.cargostar.entities.calculation.Provider;
 import uz.alexits.cargostar.repository.PackagingRepository;
+import uz.alexits.cargostar.repository.ProviderRepository;
 import uz.alexits.cargostar.repository.VatRepository;
 import uz.alexits.cargostar.repository.ZoneRepository;
 
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class CalculatorViewModel extends HeaderViewModel {
+    protected final ProviderRepository providerRepository;
     protected final PackagingRepository packagingRepository;
     private final VatRepository vatRepository;
     private final ZoneRepository zoneRepository;
@@ -49,15 +51,9 @@ public class CalculatorViewModel extends HeaderViewModel {
     private double totalPrice;
 
     /* providers */
-    private final Provider cargostar;
-    private final Provider tnt;
-    private final Provider fedex;
-    private final List<Provider> cargostarProviderList;
-    private final List<Provider> tntProviderList;
-    private final List<Provider> tntAndFedexProviderList;
-
     protected final MutableLiveData<Long> selectedProviderId;
-    private final MediatorLiveData<List<Provider>> providerList;
+    protected final MutableLiveData<Provider> selectedProvider;
+    private final MediatorLiveData<List<Long>> providerIdList;
 
     /* packaging */
     protected final MutableLiveData<Integer> selectedType;
@@ -82,6 +78,8 @@ public class CalculatorViewModel extends HeaderViewModel {
 
     public CalculatorViewModel(final Context context) {
         super(context);
+
+        this.providerRepository = new ProviderRepository(context);
         this.packagingRepository = new PackagingRepository(context);
         this.vatRepository = new VatRepository(context);
         this.zoneRepository = new ZoneRepository(context);
@@ -92,111 +90,78 @@ public class CalculatorViewModel extends HeaderViewModel {
         this.destCountry = new MutableLiveData<>();
         this.destCountryId = new MutableLiveData<>();
 
-        this.cargostar = new Provider(
-                6L,
-                "Cargo Star",
-                "Cargo Star",
-                "Cargo Star",
-                false,
-                false,
-                "ООО \\\"Cargo Star\\\" - официальный агент НАК \\\"Узбекистон Хаво Йуллари\\\" по продаже грузовых перевозок, сертифицированный транспортный экспедитор с застрахованной ответственностью, зарегистрированный в ГТК таможенный брокер и лицензированный перевозчик.",
-                "",
-                "",
-                0.0);
-        this.tnt = new Provider(
-                5L,
-                "TNT",
-                "TNT",
-                "TNT",
-                true,
-                true,
-                "ТНТ Экспресс — одна из крупнейших компаний экспресс-доставки. Штаб-квартира находится в Нидерландах, в городе Хофддорп.",
-                "",
-                "",
-                17.5);
-        this.fedex = new Provider(
-                4L,
-                "FedEx",
-                "FedEx",
-                "FedEx",
-                true,
-                false,
-                "FedEx Express — американская грузовая авиакомпания, базирующаяся в городе Мемфис, штат Теннесси.",
-                "",
-                "",
-                17.5);
-        this.cargostarProviderList = new ArrayList<>();
-        this.tntProviderList = new ArrayList<>();
-        this.tntAndFedexProviderList = new ArrayList<>();
-
-        this.cargostarProviderList.add(cargostar);
-        this.tntProviderList.add(tnt);
-        this.tntAndFedexProviderList.add(tnt);
-        this.tntAndFedexProviderList.add(fedex);
-
+        this.selectedProvider = new MutableLiveData<>();
         this.selectedProviderId = new MutableLiveData<>();
+        this.providerIdList = new MediatorLiveData<>();
 
-        this.providerList = new MediatorLiveData<>();
+        final List<Long> cargostarProviderList = new ArrayList<>();
+        final List<Long> tntProviderList = new ArrayList<>();
+        final List<Long> tntAndFedexProviderList = new ArrayList<>();
 
-        this.providerList.addSource(srcCountry, selectedSrcCountry -> {
+        cargostarProviderList.add(6L);
+        tntProviderList.add(5L);
+        tntAndFedexProviderList.add(4L);
+        tntAndFedexProviderList.add(5L);
+
+        this.providerIdList.addSource(srcCountry, selectedSrcCountry -> {
             if (destCountry.getValue() != null) {
                 //cargostar only
                 if (selectedSrcCountry.getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))
                         && destCountry.getValue().getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))) {
-                    providerList.setValue(cargostarProviderList);
+                    providerIdList.setValue(cargostarProviderList);
                     selectedCountryId.setValue(selectedSrcCountry.getId());
                 }
                 //tnt only
                 else if (!selectedSrcCountry.getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))
                         && destCountry.getValue().getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))) {
-                    providerList.setValue(tntProviderList);
+                    providerIdList.setValue(tntProviderList);
                     selectedCountryId.setValue(selectedSrcCountry.getId());
                 }
                 //tnt & fedex
                 else if (selectedSrcCountry.getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))
                         && !destCountry.getValue().getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))) {
-                    providerList.setValue(tntAndFedexProviderList);
+                    providerIdList.setValue(tntAndFedexProviderList);
                     selectedCountryId.setValue(destCountryId.getValue());
                 }
                 //nothing
                 else {
-                    providerList.setValue(null);
+                    providerIdList.setValue(null);
                 }
             }
             //nothing
             else {
-                providerList.setValue(null);
+                providerIdList.setValue(null);
             }
         });
-        this.providerList.addSource(destCountry, selectedDestCountry -> {
+        this.providerIdList.addSource(destCountry, selectedDestCountry -> {
             if (srcCountry.getValue() != null) {
                 //cargostar only
                 if (srcCountry.getValue().getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))
                         && selectedDestCountry.getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))) {
-                    providerList.setValue(cargostarProviderList);
+                    providerIdList.setValue(cargostarProviderList);
                     selectedCountryId.setValue(selectedDestCountry.getId());
                 }
                 //tnt only
                 else if (!srcCountry.getValue().getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))
                         && selectedDestCountry.getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))) {
-                    providerList.setValue(tntProviderList);
+                    providerIdList.setValue(tntProviderList);
                     selectedCountryId.setValue(srcCountryId.getValue());
                 }
                 //tnt & fedex
                 else if (srcCountry.getValue().getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))
                         && !selectedDestCountry.getNameEn().equalsIgnoreCase(context.getString(R.string.uzbekistan))) {
-                    providerList.setValue(tntAndFedexProviderList);
+                    providerIdList.setValue(tntAndFedexProviderList);
                     selectedCountryId.setValue(selectedDestCountry.getId());
                 }
                 //nothing
                 else {
-                    providerList.setValue(null);
+                    providerIdList.setValue(null);
                     selectedCountryId.setValue(null);
                 }
             }
             //nothing
             else {
-                providerList.setValue(null);
+                providerIdList.setValue(null);
                 selectedCountryId.setValue(null);
             }
         });
@@ -227,8 +192,8 @@ public class CalculatorViewModel extends HeaderViewModel {
         return locationRepository.selectAllCountries();
     }
 
-    public LiveData<List<Provider>> getProviderList() {
-        return providerList;
+    public LiveData<List<Long>> getProviderIdList() {
+        return providerIdList;
     }
 
     public LiveData<List<PackagingType>> getPackagingTypeList() {
@@ -289,34 +254,23 @@ public class CalculatorViewModel extends HeaderViewModel {
         this.destCountryId.setValue(country.getId());
     }
 
-    public void setSelectedProvider(final long providerId) {
-        if (providerId == fedex.getId()) {
-            this.selectedProviderId.setValue(fedex.getId());
-            this.providerId = fedex.getId();
-            return;
-        }
-        if (providerId == tnt.getId()) {
-            this.selectedProviderId.setValue(tnt.getId());
-            this.providerId = tnt.getId();
-            return;
-        }
-        if (providerId == cargostar.getId()) {
-            this.selectedProviderId.setValue(cargostar.getId());
-            this.providerId = cargostar.getId();
-            return;
-        }
-        this.selectedProviderId.setValue(0L);
-        this.providerId = 0L;
+    public void setSelectedProviderId(final long providerId) {
+        this.selectedProviderId.setValue(providerId);
+        this.providerId = providerId;
+    }
+
+    public LiveData<Provider> getSelectedProvider() {
+        return Transformations.switchMap(selectedProviderId, providerRepository::selectProviderById);
+    }
+
+    public void setSelectedProvider(final Provider provider) {
+        this.selectedProvider.setValue(provider);
     }
 
     public void setSelectedType(final int type) {
         this.selectedType.setValue(type);
         this.type = type;
     }
-
-//    public int getType() {
-//        return type;
-//    }
 
     public void setSelectedPackagingType(final PackagingType packagingType) {
         this.selectedPackagingType.setValue(packagingType);
@@ -388,18 +342,7 @@ public class CalculatorViewModel extends HeaderViewModel {
             Log.e(TAG, "calculateTotalPrice(): packagingList is undefined");
             return;
         }
-        Provider selectedProvider = null;
-
-        if (selectedProviderId.getValue() == fedex.getId()) {
-            selectedProvider = fedex;
-        }
-        else if (selectedProviderId.getValue() == tnt.getId()) {
-            selectedProvider = tnt;
-        }
-        else if (selectedProviderId.getValue() == cargostar.getId()) {
-            selectedProvider = cargostar;
-        }
-        else {
+        if (selectedProvider.getValue() == null) {
             Log.e(TAG, "calculateTotalPrice(): wrong selected provider data");
             return;
         }
@@ -454,7 +397,7 @@ public class CalculatorViewModel extends HeaderViewModel {
                         totalPrice += correspondingTariff.getParcelFee();
                     }
                 }
-                totalPrice = totalPrice * (selectedProvider.getFuel() + 100) / 100;
+                totalPrice = totalPrice * (selectedProvider.getValue().getFuel() + 100) / 100;
                 totalPrice *= (selectedVat.getValue().getVat() + 100) / 100;
                 totalPrice = (double) Math.round(totalPrice*100) / 100;
             }

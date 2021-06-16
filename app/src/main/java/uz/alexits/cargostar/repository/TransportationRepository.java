@@ -146,22 +146,4 @@ public class TransportationRepository {
         WorkManager.getInstance(context).beginWith(searchTransportationRequest).then(bindRequest).enqueue();
         return bindRequest.getId();
     }
-
-//    public UUID fetchTransportationByTrackingCode(final String trackingCode) {
-//        final Constraints constraints = new Constraints.Builder()
-//                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-//                .setRequiresCharging(false)
-//                .setRequiresStorageNotLow(false)
-//                .setRequiresDeviceIdle(false)
-//                .build();
-//        final Data inputData = new Data.Builder()
-//                .putString(Constants.KEY_TRACKING_CODE, trackingCode)
-//                .build();
-//        final OneTimeWorkRequest fetchTransportationRequest = new OneTimeWorkRequest.Builder(FetchTransportationByTrackingCodeWorker.class)
-//                .setConstraints(constraints)
-//                .setInputData(inputData)
-//                .build();
-//        WorkManager.getInstance(context).enqueue(fetchTransportationRequest);
-//        return fetchTransportationRequest.getId();
-//    }
 }
