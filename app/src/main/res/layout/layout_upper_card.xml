@@ -1,0 +1,146 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="@dimen/standart_elevation"
+    android:padding="@dimen/xs_margin"
+    android:background="@drawable/card_bottom_radius_white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/m_margin"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/xl_margin">
+
+        <TextView
+            android:id="@+id/bids_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/m_margin"
+            android:layout_marginTop="@dimen/m_margin"
+            android:fontFamily="@font/geometria_bold"
+            android:text="@string/bids"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/h1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/upper_stroke"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginHorizontal="@dimen/m_margin"
+            android:layout_marginTop="@dimen/m_margin"
+            android:background="@color/colorStroke"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bids_text_view" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/m_margin"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/upper_stroke"
+            app:layout_constraintTop_toBottomOf="@id/upper_stroke">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/public_requests_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/card_white"
+                    android:contentDescription="@string/cargostar"
+                    android:paddingHorizontal="@dimen/xl_margin"
+                    android:paddingVertical="@dimen/m_margin"
+                    android:src="@drawable/img_public_bids" />
+
+                <TextView
+                    android:id="@+id/public_requests_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/public_requests_image_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/s_margin"
+                    android:fontFamily="@font/geometria_medium"
+                    android:gravity="center"
+                    android:text="@string/public_requests"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/h2" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/my_requests_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/card_white"
+                    android:contentDescription="@string/cargostar"
+                    android:paddingHorizontal="@dimen/xl_margin"
+                    android:paddingVertical="@dimen/m_margin"
+                    android:src="@drawable/img_my_bids" />
+
+                <TextView
+                    android:id="@+id/my_requests_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/my_requests_image_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/s_margin"
+                    android:fontFamily="@font/geometria_medium"
+                    android:gravity="center"
+                    android:text="@string/my_requests"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/h2" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/create_parcel_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/card_white"
+                    android:contentDescription="@string/cargostar"
+                    android:paddingHorizontal="@dimen/xl_margin"
+                    android:paddingVertical="@dimen/m_margin"
+                    android:src="@drawable/img_my_bids" />
+
+                <TextView
+                    android:id="@+id/create_receipt_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/create_parcel_image_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/s_margin"
+                    android:fontFamily="@font/geometria_medium"
+                    android:gravity="center"
+                    android:text="@string/create_receipt"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/h2" />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

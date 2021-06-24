@@ -152,6 +152,7 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
         totalQuantityTextView = root.findViewById(R.id.total_quantity_value_text_view);
         totalWeightTextView = root.findViewById(R.id.total_weight_value_text_view);
         totalDimensionsTextView = root.findViewById(R.id.total_dimensions_value_text_view);
+
         calculateBtn = root.findViewById(R.id.calculate_btn);
 
         packageTypeRadioGroup = root.findViewById(R.id.package_type_radio_group);

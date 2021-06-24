@@ -93,13 +93,13 @@ public class TransportationViewModel extends HeaderViewModel {
     public void setSelectedTransitPoint(final TransitPoint transitPoint) {
         this.selectedTransitPointId.setValue(transitPoint.getId());
         this.selectedTransitPointIdAndStatusId.setValue(new Pair<>(transitPoint.getId(),
-                selectedTransportationStatusId.getValue() != null ? selectedTransportationStatusId.getValue() : 0));
+                selectedTransportationStatusId.getValue() != null ? selectedTransportationStatusId.getValue() : 0L));
     }
 
     public void setSelectedTransportationStatus(final TransportationStatus transportationStatus) {
         this.selectedTransportationStatusId.setValue(transportationStatus.getId());
         this.selectedTransitPointIdAndStatusId.setValue(new Pair<>(
-                selectedTransitPointId.getValue() != null ? selectedTransitPointId.getValue() : 0, transportationStatus.getId()));
+                selectedTransitPointId.getValue() != null ? selectedTransitPointId.getValue() : 0L, transportationStatus.getId()));
     }
 
     public void removeSearchTransportationByQrUUID() {

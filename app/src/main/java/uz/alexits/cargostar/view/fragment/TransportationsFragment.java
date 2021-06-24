@@ -240,6 +240,7 @@ public class TransportationsFragment extends Fragment implements TransportationC
                 requestSearchEditText.setEnabled(true);
                 return;
             }
+
             if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                 requestSearchEditText.setEnabled(true);
                 startActivity(new Intent(requireContext(), MainActivity.class)

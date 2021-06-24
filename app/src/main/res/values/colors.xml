@@ -12,4 +12,5 @@
     <color name="colorGreen">#7AC261</color>
     <color name="colorTextHint">#A5ABC0</color>
     <color name="colorStroke">#F2F2F2</color>
+    <color name="colorAppVersion">#AFAFAF</color>
 </resources>

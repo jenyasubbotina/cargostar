@@ -1,0 +1,164 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_top_radius_white"
+    android:elevation="@dimen/standart_elevation"
+    android:padding="@dimen/standart_elevation">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/s_margin"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/m_margin"
+        android:paddingBottom="@dimen/xl_margin">
+
+        <TextView
+            android:id="@+id/parcels_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/m_margin"
+            android:layout_marginTop="@dimen/m_margin"
+            android:fontFamily="@font/geometria_bold"
+            android:text="@string/parcels"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/h1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/upper_stroke"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginHorizontal="@dimen/m_margin"
+            android:layout_marginTop="@dimen/m_margin"
+            android:background="@color/colorStroke"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/parcels_text_view" />
+
+        <LinearLayout
+            android:id="@+id/linear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/m_margin"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/upper_stroke"
+            app:layout_constraintTop_toBottomOf="@id/upper_stroke">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/current_parcels_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/card_white"
+                    android:contentDescription="@string/cargostar"
+                    android:paddingHorizontal="@dimen/xl_margin"
+                    android:paddingVertical="@dimen/m_margin"
+                    android:src="@drawable/img_current_parcels" />
+
+                <TextView
+                    android:id="@+id/current_transportations_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/current_parcels_image_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/s_margin"
+                    android:fontFamily="@font/geometria_medium"
+                    android:gravity="center"
+                    android:text="@string/current_parcels"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/h2" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/scan_parcels_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/card_white"
+                    android:contentDescription="@string/cargostar"
+                    android:paddingHorizontal="@dimen/xl_margin"
+                    android:paddingVertical="@dimen/m_margin"
+                    android:src="@drawable/img_scan_parcels" />
+
+                <TextView
+                    android:id="@+id/scan_parcels_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/scan_parcels_image_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/s_margin"
+                    android:fontFamily="@font/geometria_medium"
+                    android:gravity="center"
+                    android:text="@string/scan_parcels"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/h2" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/parcel_delivery_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/card_white"
+                    android:contentDescription="@string/cargostar"
+                    android:paddingHorizontal="@dimen/xl_margin"
+                    android:paddingVertical="@dimen/m_margin"
+                    android:src="@drawable/img_parcels_delivery" />
+
+                <TextView
+                    android:id="@+id/create_receipt_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/parcel_delivery_image_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/s_margin"
+                    android:fontFamily="@font/geometria_medium"
+                    android:gravity="center"
+                    android:text="@string/create_receipt"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/h2" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/app_version_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/constraint"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/xxs_margin"
+        android:fontFamily="@font/geometria_light"
+        android:text="@string/app_version"
+        android:textColor="@color/colorAppVersion"
+        android:textSize="@dimen/h4"
+        android:textStyle="italic" />
+
+</RelativeLayout>
