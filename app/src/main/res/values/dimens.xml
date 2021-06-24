@@ -23,7 +23,10 @@
     <dimen name="xxxl_margin"> 55dp </dimen>
     <dimen name="header_icon_size"> 37dp </dimen>
 
+    <dimen name="radiogroup_margin_top"> 120dp </dimen>
+
     <dimen name="standart_elevation"> 8dp </dimen>
     <dimen name="spinner_height"> 56dp </dimen>
     <dimen name="calculator_logos_height"> 66dp </dimen>
+    <dimen name="upper_stroke_height"> 1dp </dimen>
 </resources>

@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -107,6 +109,8 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
 
     private CalculatorViewModel calculatorViewModel;
 
+    private ConstraintLayout constraintLayout;
+
     public CalculatorFragment() {
         // Required empty public constructor
     }
@@ -168,6 +172,8 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
         cargostarRadioBtn = root.findViewById(R.id.cargostar_radio_btn);
         tntRadioBtn = root.findViewById(R.id.tnt_radio_btn);
         fedexRadioBtn = root.findViewById(R.id.fedex_radio_btn);
+
+        constraintLayout = root.findViewById(R.id.parent_constraint);
 
         final RecyclerView consignmentRecyclerView = root.findViewById(R.id.calculationsRecyclerView);
         final RecyclerView calculationResultRecyclerView = root.findViewById(R.id.tariff_price_recycler_view);
@@ -558,6 +564,11 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
                     fedexRadioBtn.setVisibility(View.GONE);
                     fedexImageView.setVisibility(View.GONE);
                     fedexCardView.setVisibility(View.GONE);
+
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.package_type_radio_group, ConstraintSet.TOP, R.id.cargostar_card_view, ConstraintSet.BOTTOM,30);
+                    constraintSet.applyTo(constraintLayout);
                     return;
                 }
                 if (providerName.equalsIgnoreCase(getString(R.string.tnt))) {
@@ -575,6 +586,11 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
                     fedexRadioBtn.setVisibility(View.GONE);
                     fedexImageView.setVisibility(View.GONE);
                     fedexCardView.setVisibility(View.GONE);
+
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.package_type_radio_group, ConstraintSet.TOP, R.id.tnt_card_view, ConstraintSet.BOTTOM,30);
+                    constraintSet.applyTo(constraintLayout);
                 }
                 return;
             }
@@ -593,6 +609,11 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
                 fedexRadioBtn.setVisibility(View.VISIBLE);
                 fedexImageView.setVisibility(View.VISIBLE);
                 fedexCardView.setVisibility(View.VISIBLE);
+
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(constraintLayout);
+                constraintSet.connect(R.id.package_type_radio_group, ConstraintSet.TOP, R.id.fedex_card_view, ConstraintSet.BOTTOM,30);
+                constraintSet.applyTo(constraintLayout);
             }
         });
 
@@ -614,10 +635,12 @@ public class CalculatorFragment extends Fragment implements ConsignmentCallback 
         });
 
         calculatorViewModel.getPackagingAndPriceList().observe(getViewLifecycleOwner(), packagingAndPrices -> {
+            System.out.println(packagingAndPrices.size() + " size");
             packagingAndPriceAdapter.setResultList(packagingAndPrices);
         });
 
         calculatorViewModel.getPackagingList().observe(getViewLifecycleOwner(), packagingList -> {
+            System.out.println(packagingList.size() + " size");
             calculatorViewModel.setSelectedPackagingList(packagingList);
         });
 
