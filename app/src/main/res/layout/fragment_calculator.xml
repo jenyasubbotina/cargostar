@@ -23,7 +23,7 @@
                 android:id="@+id/calculator_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/xl_margin"
+                android:layout_marginStart="@dimen/m_margin"
                 android:layout_marginTop="@dimen/xl_margin"
                 android:fontFamily="@font/geometria_bold"
                 android:text="@string/calculator"
@@ -59,13 +59,13 @@
                 app:layout_constraintStart_toEndOf="@id/source_country_spinner"
                 app:layout_constraintTop_toTopOf="@id/source_country_spinner" />
 
-            <View
+            <androidx.cardview.widget.CardView
                 android:id="@+id/cargostar_card_view"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/calculator_logos_height"
                 android:layout_marginTop="@dimen/xl_margin"
                 android:layout_marginEnd="@dimen/xxs_margin"
-                android:elevation="@dimen/standart_elevation"
+                app:cardElevation="@dimen/cardview_shadow_elevation"
                 app:layout_constraintEnd_toStartOf="@id/tnt_card_view"
                 app:layout_constraintStart_toStartOf="@id/source_country_spinner"
                 app:layout_constraintTop_toBottomOf="@id/source_country_spinner" />
@@ -85,6 +85,7 @@
                 android:layout_height="0dp"
                 android:contentDescription="@string/cargostar"
                 android:scaleType="fitCenter"
+                android:elevation="@dimen/standart_elevation"
                 android:scaleX="0.8"
                 android:scaleY="0.8"
                 android:src="@drawable/logo_cargo_calc"
@@ -93,11 +94,13 @@
                 app:layout_constraintStart_toStartOf="@id/cargostar_card_view"
                 app:layout_constraintTop_toTopOf="@id/cargostar_card_view" />
 
-            <View
+            <androidx.cardview.widget.CardView
                 android:id="@+id/tnt_card_view"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/calculator_logos_height"
                 android:layout_marginTop="@dimen/xl_margin"
+                app:cardElevation="@dimen/cardview_shadow_elevation"
+                app:cardBackgroundColor="@color/colorWhite"
                 app:layout_constraintEnd_toStartOf="@id/fedex_card_view"
                 app:layout_constraintStart_toEndOf="@id/cargostar_card_view"
                 app:layout_constraintTop_toBottomOf="@id/source_country_spinner" />
@@ -116,6 +119,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:contentDescription="@string/tnt"
+                android:elevation="@dimen/standart_elevation"
                 android:scaleType="fitCenter"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
@@ -125,12 +129,13 @@
                 app:layout_constraintStart_toStartOf="@id/tnt_card_view"
                 app:layout_constraintTop_toTopOf="@id/tnt_card_view" />
 
-            <View
+            <androidx.cardview.widget.CardView
                 android:id="@+id/fedex_card_view"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/calculator_logos_height"
                 android:layout_marginStart="@dimen/xxs_margin"
                 android:layout_marginTop="@dimen/xl_margin"
+                app:cardElevation="@dimen/cardview_shadow_elevation"
                 app:layout_constraintEnd_toEndOf="@id/destination_country_spinner"
                 app:layout_constraintStart_toEndOf="@id/tnt_card_view"
                 app:layout_constraintTop_toBottomOf="@id/source_country_spinner" />
@@ -140,6 +145,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorBlue"
+                android:elevation="@dimen/standart_elevation"
                 app:layout_constraintStart_toStartOf="@id/fedex_card_view"
                 app:layout_constraintTop_toTopOf="@id/fedex_card_view" />
 
@@ -149,6 +155,7 @@
                 android:layout_height="0dp"
                 android:contentDescription="@string/tnt"
                 android:scaleType="fitCenter"
+                android:elevation="@dimen/standart_elevation"
                 android:scaleX="0.4"
                 android:scaleY="0.4"
                 android:src="@drawable/logo_fedex_calc"
@@ -419,17 +426,18 @@
 
             <Button
                 android:id="@+id/calculate_btn"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_gradient_orange"
                 android:fontFamily="@font/geometria_medium"
+                android:layout_marginHorizontal="100dp"
                 android:layout_marginTop="@dimen/s_margin"
-                android:paddingHorizontal="@dimen/text_space"
+                android:paddingHorizontal="@dimen/s_margin"
                 android:paddingVertical="@dimen/m_margin"
                 android:text="@string/calculate"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
-                android:textSize="@dimen/h2"
+                android:textSize="@dimen/h1"
                 app:layout_constraintTop_toBottomOf="@id/calculationsRecyclerView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />

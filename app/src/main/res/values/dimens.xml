@@ -29,4 +29,6 @@
     <dimen name="spinner_height"> 56dp </dimen>
     <dimen name="calculator_logos_height"> 66dp </dimen>
     <dimen name="upper_stroke_height"> 1dp </dimen>
+
+    <dimen name="cardview_shadow_elevation"> 4dp </dimen>
 </resources>

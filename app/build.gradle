@@ -81,4 +81,6 @@ dependencies {
 
     //seek bar
     implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
