@@ -54,7 +54,6 @@ import uz.alexits.cargostar.view.adapter.PackagingAndPriceRadioAdapter;
 import uz.alexits.cargostar.view.callback.ConsignmentCallback;
 import uz.alexits.cargostar.view.callback.TariffCallback;
 import uz.alexits.cargostar.view.dialog.ScanQrDialog;
-import uz.alexits.cargostar.view.viewholder.TariffPriceRadioViewHolder;
 import uz.alexits.cargostar.viewmodel.CreateInvoiceViewModel;
 import uz.alexits.cargostar.viewmodel.factory.CreateInvoiceViewModelFactory;
 
@@ -513,7 +512,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
             if (b) {
                 tntRadioBtn.setChecked(false);
                 fedexRadioBtn.setChecked(false);
-                createInvoiceViewModel.setSelectedProvider(6L);
+                createInvoiceViewModel.setSelectedProviderId(6L);
             }
         });
 
@@ -521,7 +520,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
             if (b) {
                 cargostarRadioBtn.setChecked(false);
                 fedexRadioBtn.setChecked(false);
-                createInvoiceViewModel.setSelectedProvider(5L);
+                createInvoiceViewModel.setSelectedProviderId(5L);
             }
         });
 
@@ -529,7 +528,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
             if (b) {
                 cargostarRadioBtn.setChecked(false);
                 tntRadioBtn.setChecked(false);
-                createInvoiceViewModel.setSelectedProvider(4L);
+                createInvoiceViewModel.setSelectedProviderId(4L);
             }
         });
 
@@ -1157,7 +1156,11 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
         });
 
         /* content view data */
-        createInvoiceViewModel.getProviderList().observe(getViewLifecycleOwner(), providerList -> {
+        createInvoiceViewModel.getSelectedProvider().observe(getViewLifecycleOwner(), provider -> {
+            createInvoiceViewModel.setSelectedProvider(provider);
+        });
+
+        createInvoiceViewModel.getProviderIdList().observe(getViewLifecycleOwner(), providerList -> {
             if (providerList == null || providerList.isEmpty()) {
                 //other -> other = provider radio group is empty
                 cargostarRadioBtn.setVisibility(View.INVISIBLE);
@@ -1174,11 +1177,11 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                 return;
             }
             if (providerList.size() == 1) {
-                final String providerName = providerList.get(0).getNameEn();
-                if (providerName == null) {
+                final long providerId = providerList.get(0);
+                if (providerId <= 0) {
                     return;
                 }
-                if (providerName.equalsIgnoreCase(getString(R.string.cargostar))) {
+                if (providerId == 6L) {
                     cargostarRadioBtn.setVisibility(View.VISIBLE);
                     cargostarImageView.setVisibility(View.VISIBLE);
                     cargostarCardView.setVisibility(View.VISIBLE);
@@ -1192,7 +1195,7 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
                     fedexCardView.setVisibility(View.GONE);
                     return;
                 }
-                if (providerName.equalsIgnoreCase(getString(R.string.tnt))) {
+                if (providerId == 5L) {
                     cargostarRadioBtn.setVisibility(View.GONE);
                     cargostarImageView.setVisibility(View.GONE);
                     cargostarCardView.setVisibility(View.GONE);
@@ -1233,7 +1236,6 @@ public class CreateInvoiceFragment extends Fragment implements ConsignmentCallba
         });
 
         createInvoiceViewModel.getReceivedConsignmentList().observe(getViewLifecycleOwner(), consignmentList -> {
-            Log.i(TAG, "onActivityCreated(): consignmentList=" + consignmentList);
             createInvoiceViewModel.setCurrentConsignmentList(consignmentList);
             consignmentAdapter.setItemList(consignmentList);
             consignmentAdapter.notifyDataSetChanged();

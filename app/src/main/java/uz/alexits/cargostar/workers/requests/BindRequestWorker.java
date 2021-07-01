@@ -68,12 +68,9 @@ public class BindRequestWorker extends Worker {
                     final Request request = response.body();
 
                     if (request == null) {
-                        Log.e(TAG, "bindRequest(): courier is NULL");
+                        Log.e(TAG, "bindRequest(): request is NULL");
                         return Result.failure();
                     }
-
-                    Log.i(TAG, "bindRequest(): " + request);
-
                     final int rowUpdated = LocalCache.getInstance(getApplicationContext()).requestDao().updateRequest(request);
 
                     if (rowUpdated == -1) {
