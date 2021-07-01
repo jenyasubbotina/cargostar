@@ -22,7 +22,7 @@ public class NotificationViewModel extends HeaderViewModel {
 
     public void createNotification(final Notification notification) {
         notificationRepository.createNotification(notification);
-    }
+    }////
 
     public LiveData<List<Notification>> selectAllNotifications() {
         return notificationRepository.selectAllNotifications();
